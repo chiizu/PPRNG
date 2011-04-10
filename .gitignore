@@ -1,0 +1,5 @@
+# ignore build directory
+build/
+PPRNG.xcodeproj/*.mode2v3
+PPRNG.xcodeproj/*.pbxuser
+Classes/VersionCheckURL.h

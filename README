@@ -1,0 +1,74 @@
+
+PPRNG 1.0.5
+
+Mac Requirements: Intel Mac with OS X 10.5 or greater.
+
+DS Requirements: DS or DS Lite. If you have DSi / XL / 3DS, only C-Gear is
+supported at this time. Researchers are working hard to figure this out, but
+it's not a simple task.
+
+
+
+Quick Start:
+1. First, before doing anything else, open the DS / Game Config screen.
+2. Enter what you know about your game and DS (at minimum, that would be game
+   version and MAC address).
+3. Click OK to save the config.
+4. If you don't know your DS Parameters, go to the DS Parameter Searcher to find
+   your parameters. (If you don't know how to do this, see next post for a brief
+   description.) Once you have found your parameters, go back to the DS / Game
+   Config screen and add them to your configuration.
+5. You are now ready to search for Standard Seeds in the Standard Seed Searcher.
+
+General Usage Tip:
+In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
+on a result row to bring up the seed inspector for that specific seed.
+
+
+New in 1.0.5:
+* Added Stationary Encounter frame type to cover encounters such as Coballion.
+* Various minor GUI fixes.
+
+
+Known Issues in this version:
+
+* There's no ID/SID abuse support at the moment. It's the next major thing on
+  the list.
+* None of the 'Find' or 'Save' buttons in the seed inspectors work. For now,
+  you'll just have to scroll through manually. 'Save' buttons in the searcher
+  windows should properly save CSV files of the results.
+* Copy / Paste will work on specific fields that you can type in, but at the
+  moment you can't copy other things such as result rows.
+* There is not much in the way of argument checking. If you set a minimum IV
+  that is greater than the corresponding maximum IV, it will try very hard to
+  find that impossible IV spread.
+* There is some funny behavior when editing the DS / Game Config with multiple
+  windows open. The selected config in other windows appears to change. It is a
+  minor annoyance, but for now just set your config again in the other window
+  from it's drop down menu. Down the line there will be a bit of an interface
+  change to deal with this.
+
+Upcoming Features:
+
+* ID/SID Abuse support - You could probably do this now using the Standard Seed
+  Searcher, Inspector, the SID Searcher, and a little knowledge, though.
+* Generation 4 Support - Seed Inspection, time permitting.
+
+Previous Releases:
+
+1.0.4
+* Bugfix for incorrect Encounter Slot calculation.
+* Added Sync and ESV columns to shiny section of the Standard Seed Searcher.
+
+1.0.3
+Fixed a bug causing the Standard Seed Searcher to not display shiny PID frame
+information.
+
+1.0.2
+Actual fix for OS X 10.5 issues.
+
+1.0.1
+Attempt to fix issues when running on OS X 10.5.
+
+1.0.0
+Initial Release
