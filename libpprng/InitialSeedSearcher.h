@@ -65,6 +65,7 @@ public:
     IVs                       maxIVs;
     uint32_t                  maxSkippedFrames;
     boost::posix_time::ptime  startTime;
+    uint32_t                  pressedButtons;
     
     uint64_t ExpectedNumberOfResults();
   };

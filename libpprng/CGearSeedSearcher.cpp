@@ -89,6 +89,17 @@ uint64_t CGearSeedSearcher::Criteria::ExpectedNumberOfResults()
   
   uint64_t  numFrames = maxFrame - minFrame + 1;
   
+  uint64_t  hpDivisor = 1;
+  if (hiddenType != Element::UNKNOWN)
+  {
+    hpDivisor = 40; // number of power levels
+    
+    if (hiddenType != Element::ANY)
+    {
+      hpDivisor *= 16;
+    }
+  }
+  
   IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
   
   uint32_t  numIVs = (maxIVs.hp() - minIVs.hp() + 1) *
@@ -97,7 +108,8 @@ uint64_t CGearSeedSearcher::Criteria::ExpectedNumberOfResults()
                      (maxIVs.sa() - minIVs.sa() + 1) *
                      (maxIVs.sd() - minIVs.sd() + 1) *
                      (maxIVs.sp() - minIVs.sp() + 1);
-  return numFrames * numSeeds * numIVs / (32 * 32 * 32 * 32 * 32 * 32);
+  return numFrames * numSeeds * numIVs /
+         (32 * 32 * 32 * 32 * 32 * 32 * hpDivisor);
 }
 
 void CGearSeedSearcher::Search(const Criteria &criteria,

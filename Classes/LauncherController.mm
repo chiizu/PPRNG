@@ -27,7 +27,7 @@
 #import "WonderCardSeedInspectorController.h"
 #import "CGearSeedSearcherController.h"
 #import "CGearSeedInspectorController.h"
-#import "SIDSearcherController.h"
+#import "TrainerIDSearcherController.h"
 #import "DSParameterSearcherController.h"
 #import "Gen5ConfigurationEditController.h"
 #import "Gen4SeedSearcherController.h"
@@ -54,7 +54,7 @@
         [launchWonderCardSeedInspector title],
       [CGearSeedSearcherController class], [launchCGearSeedSearcher title],
       [CGearSeedInspectorController class], [launchCGearSeedInspector title],
-      [SIDSearcherController class], [launchSIDSearcher title],
+      [TrainerIDSearcherController class], [launchTIDSearcher title],
       [DSParameterSearcherController class], [launchDSParameterSearcher title],
       [Gen5ConfigurationEditController class],
         [launchGen5ConfigurationEdit title],

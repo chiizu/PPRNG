@@ -40,6 +40,17 @@
   return contentArray;
 }
 
+
+- (void)setGetValidatedSearchCriteriaSelector:(SEL)sel
+{
+  getValidatedSearchCriteriaSelector = sel;
+}
+
+- (void)setDoSearchWithCriteriaSelector:(SEL)sel
+{
+  doSearchWithCriteriaSelector = sel;
+}
+
 - (BOOL)isSearching
 {
   return isSearching;
@@ -76,7 +87,7 @@
 - (void)startSearch:(NSValue*)criteria
 {
   [self setIsSearching: YES];
-  [delegate performSelector: @selector(doSearchWithCriteria:)
+  [delegate performSelector: doSearchWithCriteriaSelector
             withObject: criteria];
   [self setIsSearching: NO];
   [self performSelectorOnMainThread: @selector(finishSearch)
@@ -96,7 +107,7 @@
   else
   {
     NSValue  *criteria =
-      [delegate performSelector: @selector(getValidatedSearchCriteria)];
+      [delegate performSelector: getValidatedSearchCriteriaSelector];
     
     if (criteria != nil)
     {

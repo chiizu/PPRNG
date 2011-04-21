@@ -34,12 +34,43 @@ using namespace pprng;
 namespace
 {
 
+struct GUICriteria : public HashedSeedSearcher::Criteria
+{
+  uint32_t      tid, sid;
+  bool          shinyOnly;
+  Nature::Type  nature;
+  uint32_t      minPIDFrame, maxPIDFrame;
+  
+  uint64_t ExpectedNumberOfResults()
+  {
+    uint64_t  result = HashedSeedSearcher::Criteria::ExpectedNumberOfResults();
+    uint64_t  pidFrameMultiplier = 1;
+    uint64_t  shinyDivisor = 1;
+    uint64_t  natureDivisor = 1;
+    
+    if (shinyOnly)
+    {
+      shinyDivisor = 8192;
+      pidFrameMultiplier = maxPIDFrame - minPIDFrame + 1;
+      
+      if ((nature != Nature::ANY) && (nature != Nature::UNKNOWN))
+      {
+        natureDivisor = 25;
+      }
+    }
+    
+    return (result  * pidFrameMultiplier) / (shinyDivisor * natureDivisor);
+  }
+};
+
 struct ResultHandler
 {
   ResultHandler(SearcherController *c, uint32_t tid, uint32_t sid,
-                BOOL shinyOnly, Nature::Type nature, uint32_t maxPIDFrame)
+                BOOL shinyOnly, Nature::Type nature,
+                uint32_t minPIDFrame, uint32_t maxPIDFrame)
     : controller(c), m_tid(tid), m_sid(sid),
-      m_shinyOnly(shinyOnly), m_nature(nature), m_maxFrame(maxPIDFrame)
+      m_shinyOnly(shinyOnly), m_nature(nature),
+      m_minFrame(minPIDFrame), m_maxFrame(maxPIDFrame)
   {}
   
   void operator()(const HashedIVFrame &frame)
@@ -51,10 +82,15 @@ struct ResultHandler
                                     m_tid, m_sid);
     bool                   found = false;
     
+    while (frameGen.CurrentFrame().number < (m_minFrame - 1))
+      frameGen.AdvanceFrame();
+    
     while (frameGen.CurrentFrame().number < m_maxFrame)
     {
       frameGen.AdvanceFrame();
-      if (frameGen.CurrentFrame().pid.IsShiny(m_tid, m_sid))
+      if (frameGen.CurrentFrame().pid.IsShiny(m_tid, m_sid) &&
+          ((m_nature == Nature::ANY) ||
+           (frameGen.CurrentFrame().nature == m_nature)))
       {
         found = true;
         break;
@@ -121,7 +157,7 @@ struct ResultHandler
   uint32_t            m_tid, m_sid;
   BOOL                m_shinyOnly;
   Nature::Type        m_nature;
-  uint32_t            m_maxFrame;
+  uint32_t            m_minFrame, m_maxFrame;
 };
 
 struct ProgressHandler
@@ -155,6 +191,11 @@ struct ProgressHandler
 - (void)awakeFromNib
 {
   [super awakeFromNib];
+  
+  [searcherController setGetValidatedSearchCriteriaSelector:
+                      @selector(getValidatedSearchCriteria)];
+  [searcherController setDoSearchWithCriteriaSelector:
+                      @selector(doSearchWithCriteria:)];
   
   [[[[[searcherController tableView] tableColumnWithIdentifier: @"seed"]
     dataCell] formatter]
@@ -206,7 +247,7 @@ struct ProgressHandler
   using namespace boost::gregorian;
   using namespace boost::posix_time;
 
-  HashedSeedSearcher::Criteria  criteria;
+  GUICriteria  criteria;
   
   criteria.macAddressLow = [gen5ConfigController macAddressLow];
   criteria.macAddressHigh = [gen5ConfigController macAddressHigh];
@@ -277,6 +318,13 @@ struct ProgressHandler
     criteria.hiddenType = Element::UNKNOWN;
   }
   
+  criteria.tid = [gen5ConfigController tid];
+  criteria.sid = [gen5ConfigController sid];
+  criteria.shinyOnly = [shinyOnlyButton state];
+  criteria.nature = Nature::Type([[shinyNaturePopUp selectedItem] tag]);
+  criteria.minPIDFrame = [minPIDFrameField intValue];
+  criteria.maxPIDFrame = [maxPIDFrameField intValue];
+  
   if (criteria.ExpectedNumberOfResults() > 10000)
   {
     NSAlert *alert = [[NSAlert alloc] init];
@@ -295,24 +343,23 @@ struct ProgressHandler
   else
   {
     return [NSValue
-             valueWithPointer: new HashedSeedSearcher::Criteria(criteria)];
+             valueWithPointer: new GUICriteria(criteria)];
   }
 }
 
 - (void)doSearchWithCriteria:(NSValue*)criteriaPtr
 {
-  std::auto_ptr<HashedSeedSearcher::Criteria> 
-    criteria(static_cast<HashedSeedSearcher::Criteria*>
-               ([criteriaPtr pointerValue]));
+  std::auto_ptr<GUICriteria> 
+    criteria(static_cast<GUICriteria*>([criteriaPtr pointerValue]));
   
   HashedSeedSearcher  searcher;
   
   searcher.Search(*criteria,
     ResultHandler(searcherController,
-                  [gen5ConfigController tid], [gen5ConfigController sid],
-                  [shinyOnlyButton state],
-                  static_cast<Nature::Type>([[shinyNaturePopUp selectedItem] tag]),
-                  [maxPIDFrameField intValue]),
+                  criteria->tid, criteria->sid,
+                  criteria->shinyOnly,
+                  criteria->nature,
+                  criteria->minPIDFrame, criteria->maxPIDFrame),
                   ProgressHandler(searcherController));
 }
 

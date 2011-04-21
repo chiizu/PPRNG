@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="1"/>
+			<integer value="2"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -175,7 +175,7 @@
 											<object class="NSButtonCell" key="NSCell" id="15526924">
 												<int key="NSCellFlags">-2080244224</int>
 												<int key="NSCellFlags2">134217728</int>
-												<string key="NSContents">SID Searcher</string>
+												<string key="NSContents">Trainer ID Searcher</string>
 												<reference key="NSSupport" ref="634247281"/>
 												<reference key="NSControlView" ref="6561032"/>
 												<int key="NSButtonFlags">-2038152961</int>
@@ -487,14 +487,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
-						<string key="label">launchSIDSearcher</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="6561032"/>
-					</object>
-					<int key="connectionID">51</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
 						<string key="label">launchHashedSeedSearcher</string>
 						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="67308562"/>
@@ -524,6 +516,14 @@
 						<reference key="destination" ref="877616628"/>
 					</object>
 					<int key="connectionID">58</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">launchTIDSearcher</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="6561032"/>
+					</object>
+					<int key="connectionID">59</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -865,7 +865,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">58</int>
+			<int key="maxID">59</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -895,7 +895,7 @@
 							<string>launchGen5ConfigurationEdit</string>
 							<string>launchHashedSeedInspector</string>
 							<string>launchHashedSeedSearcher</string>
-							<string>launchSIDSearcher</string>
+							<string>launchTIDSearcher</string>
 							<string>launchWonderCardSeedInspector</string>
 							<string>launchWonderCardSeedSearcher</string>
 						</object>
@@ -924,7 +924,7 @@
 							<string>launchGen5ConfigurationEdit</string>
 							<string>launchHashedSeedInspector</string>
 							<string>launchHashedSeedSearcher</string>
-							<string>launchSIDSearcher</string>
+							<string>launchTIDSearcher</string>
 							<string>launchWonderCardSeedInspector</string>
 							<string>launchWonderCardSeedSearcher</string>
 						</object>
@@ -959,7 +959,7 @@
 								<string key="candidateClassName">NSButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">launchSIDSearcher</string>
+								<string key="name">launchTIDSearcher</string>
 								<string key="candidateClassName">NSButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">

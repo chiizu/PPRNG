@@ -103,6 +103,17 @@ uint64_t WonderCardSeedSearcher::Criteria::ExpectedNumberOfResults()
   
   uint64_t  numFrames = maxFrame - minFrame + 1;
   
+  uint64_t  hpDivisor = 1;
+  if (hiddenType != Element::UNKNOWN)
+  {
+    hpDivisor = 40; // number of power levels
+    
+    if (hiddenType != Element::ANY)
+    {
+      hpDivisor *= 16;
+    }
+  }
+  
   IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
   
   uint32_t  numIVs = (maxIVs.hp() - minIVs.hp() + 1) *
@@ -115,7 +126,7 @@ uint64_t WonderCardSeedSearcher::Criteria::ExpectedNumberOfResults()
   uint64_t  natureDivisor = (nature != Nature::ANY) ? 25 : 1;
   
   return numSeeds * numFrames * numIVs /
-    (32 * 32 * 32 * 32 * 32 * 32 * natureDivisor);
+         (32 * 32 * 32 * 32 * 32 * 32 * natureDivisor * hpDivisor);
 }
 
 void WonderCardSeedSearcher::Search(const Criteria &criteria,

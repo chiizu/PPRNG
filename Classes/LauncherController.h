@@ -30,7 +30,7 @@
   IBOutlet NSButton  *launchWonderCardSeedInspector;
   IBOutlet NSButton  *launchCGearSeedSearcher;
   IBOutlet NSButton  *launchCGearSeedInspector;
-  IBOutlet NSButton  *launchSIDSearcher;
+  IBOutlet NSButton  *launchTIDSearcher;
   IBOutlet NSButton  *launchDSParameterSearcher;
   IBOutlet NSButton  *launchGen5ConfigurationEdit;
   

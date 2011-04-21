@@ -29,8 +29,6 @@
 {
   IBOutlet Gen5ConfigurationController  *gen5ConfigController;
   
-  IBOutlet NSPopUpButton          *versionMenu;
-  
   IBOutlet NSTextField            *timer0LowField;
   IBOutlet NSTextField            *timer0HighField;
   IBOutlet NSTextField            *vcountLowField;
@@ -40,12 +38,16 @@
   
   IBOutlet IVParameterController  *ivParameterController;
   
-  IBOutlet SearcherController     *searcherController;
-  
   IBOutlet NSDatePicker           *startDate;
   IBOutlet NSTextField            *startHour;
   IBOutlet NSTextField            *startMinute;
   IBOutlet NSTextField            *startSecond;
+  
+  IBOutlet NSPopUpButton          *keyOnePopUp;
+  IBOutlet NSPopUpButton          *keyTwoPopUp;
+  IBOutlet NSPopUpButton          *keyThreePopUp;
+  
+  IBOutlet SearcherController     *searcherController;
 }
 
 @end

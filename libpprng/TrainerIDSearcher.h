@@ -18,8 +18,8 @@
   along with libpprng.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SID_SEARCHER_H
-#define SID_SEARCHER_H
+#ifndef TRAINER_ID_SEARCHER_H
+#define TRAINER_ID_SEARCHER_H
 
 #include "BasicTypes.h"
 #include "SeedSearcher.h"
@@ -29,26 +29,31 @@
 namespace pprng
 {
 
-class SIDSearcher
+class TrainerIDSearcher
 {
 public:
   struct Criteria
   {
-    Game::Version                     version;
-    uint32_t                          macAddressLow, macAddressHigh;
-    uint32_t                          timer0Low, timer0High;
-    uint32_t                          vcountLow, vcountHigh;
-    uint32_t                          vframeLow, vframeHigh;
-    boost::gregorian::date            startDate;
-    boost::posix_time::time_duration  startTime;
-    boost::posix_time::time_duration  endTime;
-    uint32_t                          tid;
-    uint32_t                          minFrame, maxFrame;
+    Game::Version             version;
+    uint32_t                  macAddressLow, macAddressHigh;
+    uint32_t                  timer0Low, timer0High;
+    uint32_t                  vcountLow, vcountHigh;
+    uint32_t                  vframeLow, vframeHigh;
+    boost::posix_time::ptime  fromTime, toTime;
+    Button::List              buttonPresses;
+    uint32_t                  minFrame, maxFrame;
+    bool                      hasTID;
+    uint32_t                  tid;
+    bool                      hasShinyPID;
+    PID                       shinyPID;
+    bool                      wildShiny;
+    bool                      giftShiny;
+    bool                      eggShiny;
     
     uint64_t ExpectedNumberOfResults();
   };
   
-  SIDSearcher() {}
+  TrainerIDSearcher() {}
   
   typedef SeedSearcher<Gen5TrainerIDFrameGenerator>  SearcherType;
   typedef SearcherType::Frame                        Frame;

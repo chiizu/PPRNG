@@ -1,5 +1,5 @@
 
-PPRNG 1.0.5
+PPRNG 1.1.0
 
 Mac Requirements: Intel Mac with OS X 10.5 or greater.
 
@@ -15,9 +15,8 @@ Quick Start:
    version and MAC address).
 3. Click OK to save the config.
 4. If you don't know your DS Parameters, go to the DS Parameter Searcher to find
-   your parameters. (If you don't know how to do this, see next post for a brief
-   description.) Once you have found your parameters, go back to the DS / Game
-   Config screen and add them to your configuration.
+   your parameters.  Once you have found your parameters, go back to the
+   DS / Game Config screen and add them to your configuration.
 5. You are now ready to search for Standard Seeds in the Standard Seed Searcher.
 
 General Usage Tip:
@@ -25,15 +24,15 @@ In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
 on a result row to bring up the seed inspector for that specific seed.
 
 
-New in 1.0.5:
-* Added Stationary Encounter frame type to cover encounters such as Coballion.
-* Various minor GUI fixes.
+New in 1.1.0:
+* ID/SID Abuse - See Trainer ID Searcher
+* DS Parameter Searcher now uses the MAC address from your configuration.
+* Min PID frame for shiny search in Standard Seed Searcher
+* Better estimation of the number of results (now considers HP type, shininess)
 
 
 Known Issues in this version:
 
-* There's no ID/SID abuse support at the moment. It's the next major thing on
-  the list.
 * None of the 'Find' or 'Save' buttons in the seed inspectors work. For now,
   you'll just have to scroll through manually. 'Save' buttons in the searcher
   windows should properly save CSV files of the results.
@@ -50,11 +49,13 @@ Known Issues in this version:
 
 Upcoming Features:
 
-* ID/SID Abuse support - You could probably do this now using the Standard Seed
-  Searcher, Inspector, the SID Searcher, and a little knowledge, though.
 * Generation 4 Support - Seed Inspection, time permitting.
 
 Previous Releases:
+
+1.0.5:
+* Added Stationary Encounter frame type to cover encounters such as Coballion.
+* Various minor GUI fixes.
 
 1.0.4
 * Bugfix for incorrect Encounter Slot calculation.

@@ -45,6 +45,7 @@
   
   IBOutlet NSButton       *shinyOnlyButton;
   IBOutlet NSPopUpButton  *shinyNaturePopUp;
+  IBOutlet NSTextField    *minPIDFrameField;
   IBOutlet NSTextField    *maxPIDFrameField;
 }
 

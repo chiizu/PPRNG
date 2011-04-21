@@ -32,6 +32,9 @@
   IBOutlet NSTableView          *resultsTableView;
   IBOutlet NSArrayController    *contentArray;
   
+  SEL                           getValidatedSearchCriteriaSelector;
+  SEL                           doSearchWithCriteriaSelector;
+  
   BOOL                          isSearching;
   BOOL                          shouldStopSearch;
 }
@@ -42,6 +45,8 @@
 - (NSTableView*)tableView;
 - (NSArrayController*)arrayController;
 
+- (void)setGetValidatedSearchCriteriaSelector:(SEL)sel;
+- (void)setDoSearchWithCriteriaSelector:(SEL)sel;
 - (BOOL)isSearching;
 - (void)setIsSearching:(BOOL)is;
 - (BOOL)searchIsCanceled;

@@ -112,6 +112,11 @@ struct ProgressHandler
 {
   [super awakeFromNib];
   
+  [searcherController setGetValidatedSearchCriteriaSelector:
+                      @selector(getValidatedSearchCriteria)];
+  [searcherController setDoSearchWithCriteriaSelector:
+                      @selector(doSearchWithCriteria:)];
+  
   [[[[[searcherController tableView] tableColumnWithIdentifier: @"seed"]
     dataCell] formatter]
    setFormatWidth: 16];

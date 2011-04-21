@@ -13,6 +13,7 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		C02E0A0213515E1A00855098 /* README in Resources */ = {isa = PBXBuildFile; fileRef = C02E0A0113515E1A00855098 /* README */; };
 		C02E0A0413515E2300855098 /* COPYING in Resources */ = {isa = PBXBuildFile; fileRef = C02E0A0313515E2300855098 /* COPYING */; };
+		C0DAED071356A9CC008D00D5 /* TrainerIDSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */; };
 		C0E3041B1346343400C56C1A /* BasicTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303F81346343400C56C1A /* BasicTypes.cpp */; };
 		C0E3041C1346343400C56C1A /* CGearSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303FB1346343400C56C1A /* CGearSeedSearcher.cpp */; };
 		C0E3041D1346343400C56C1A /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303FE1346343400C56C1A /* Frame.cpp */; };
@@ -23,7 +24,6 @@
 		C0E304221346343400C56C1A /* InitialSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E304091346343400C56C1A /* InitialSeedSearcher.cpp */; };
 		C0E304231346343400C56C1A /* MersenneTwisterRNG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E3040D1346343400C56C1A /* MersenneTwisterRNG.cpp */; };
 		C0E304241346343400C56C1A /* SeedGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E304121346343400C56C1A /* SeedGenerator.cpp */; };
-		C0E304251346343400C56C1A /* SIDSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E304151346343400C56C1A /* SIDSearcher.cpp */; };
 		C0E304261346343400C56C1A /* TimeSeed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E304171346343400C56C1A /* TimeSeed.cpp */; };
 		C0E304271346343400C56C1A /* WonderCardSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E304191346343400C56C1A /* WonderCardSeedSearcher.cpp */; };
 		C0E304511346349900C56C1A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E3042A1346349900C56C1A /* AppDelegate.mm */; };
@@ -40,14 +40,14 @@
 		C0E3045C1346349900C56C1A /* IVParameterController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304401346349900C56C1A /* IVParameterController.mm */; };
 		C0E3045D1346349900C56C1A /* LauncherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304421346349900C56C1A /* LauncherController.mm */; };
 		C0E3045E1346349900C56C1A /* SearcherController.m in Sources */ = {isa = PBXBuildFile; fileRef = C0E304441346349900C56C1A /* SearcherController.m */; };
-		C0E3045F1346349900C56C1A /* SIDSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304461346349900C56C1A /* SIDSearcherController.mm */; };
+		C0E3045F1346349900C56C1A /* TrainerIDSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304461346349900C56C1A /* TrainerIDSearcherController.mm */; };
 		C0E304601346349900C56C1A /* SynchroScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = C0E304481346349900C56C1A /* SynchroScrollView.m */; };
 		C0E304611346349900C56C1A /* VersionTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E3044A1346349900C56C1A /* VersionTransformer.mm */; };
 		C0E304621346349900C56C1A /* VertResizeOnlyWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = C0E3044C1346349900C56C1A /* VertResizeOnlyWindowController.m */; };
 		C0E304631346349900C56C1A /* WonderCardSeedInspectorController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E3044E1346349900C56C1A /* WonderCardSeedInspectorController.mm */; };
 		C0E304641346349900C56C1A /* WonderCardSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */; };
 		C0E30466134634BF00C56C1A /* Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = C0E30465134634BF00C56C1A /* Icon.icns */; };
-		C0E3046F134634FD00C56C1A /* SIDSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E30467134634FD00C56C1A /* SIDSearcher.nib */; };
+		C0E3046F134634FD00C56C1A /* TrainerIDSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E30467134634FD00C56C1A /* TrainerIDSearcher.nib */; };
 		C0E30471134634FD00C56C1A /* WonderCardSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E3046B134634FD00C56C1A /* WonderCardSeedInspector.nib */; };
 		C0E30472134634FD00C56C1A /* WonderCardSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E3046D134634FD00C56C1A /* WonderCardSeedSearcher.nib */; };
 		C0E304751346350400C56C1A /* Launcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E304731346350400C56C1A /* Launcher.nib */; };
@@ -73,6 +73,8 @@
 		8D1107320486CEB800E47090 /* PPRNG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PPRNG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C02E0A0113515E1A00855098 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		C02E0A0313515E2300855098 /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrainerIDSearcher.cpp; sourceTree = "<group>"; };
+		C0DAED061356A9CC008D00D5 /* TrainerIDSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerIDSearcher.h; sourceTree = "<group>"; };
 		C0E303F81346343400C56C1A /* BasicTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BasicTypes.cpp; sourceTree = "<group>"; };
 		C0E303F91346343400C56C1A /* BasicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicTypes.h; sourceTree = "<group>"; };
 		C0E303FA1346343400C56C1A /* CGearSeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGearSeed.h; sourceTree = "<group>"; };
@@ -102,8 +104,6 @@
 		C0E304121346343400C56C1A /* SeedGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SeedGenerator.cpp; sourceTree = "<group>"; };
 		C0E304131346343400C56C1A /* SeedGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeedGenerator.h; sourceTree = "<group>"; };
 		C0E304141346343400C56C1A /* SeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeedSearcher.h; sourceTree = "<group>"; };
-		C0E304151346343400C56C1A /* SIDSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIDSearcher.cpp; sourceTree = "<group>"; };
-		C0E304161346343400C56C1A /* SIDSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SIDSearcher.h; sourceTree = "<group>"; };
 		C0E304171346343400C56C1A /* TimeSeed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimeSeed.cpp; sourceTree = "<group>"; };
 		C0E304181346343400C56C1A /* TimeSeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeSeed.h; sourceTree = "<group>"; };
 		C0E304191346343400C56C1A /* WonderCardSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WonderCardSeedSearcher.cpp; sourceTree = "<group>"; };
@@ -136,8 +136,8 @@
 		C0E304421346349900C56C1A /* LauncherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LauncherController.mm; sourceTree = "<group>"; };
 		C0E304431346349900C56C1A /* SearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearcherController.h; sourceTree = "<group>"; };
 		C0E304441346349900C56C1A /* SearcherController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearcherController.m; sourceTree = "<group>"; };
-		C0E304451346349900C56C1A /* SIDSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SIDSearcherController.h; sourceTree = "<group>"; };
-		C0E304461346349900C56C1A /* SIDSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SIDSearcherController.mm; sourceTree = "<group>"; };
+		C0E304451346349900C56C1A /* TrainerIDSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerIDSearcherController.h; sourceTree = "<group>"; };
+		C0E304461346349900C56C1A /* TrainerIDSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TrainerIDSearcherController.mm; sourceTree = "<group>"; };
 		C0E304471346349900C56C1A /* SynchroScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchroScrollView.h; sourceTree = "<group>"; };
 		C0E304481346349900C56C1A /* SynchroScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynchroScrollView.m; sourceTree = "<group>"; };
 		C0E304491346349900C56C1A /* VersionTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionTransformer.h; sourceTree = "<group>"; };
@@ -149,7 +149,7 @@
 		C0E3044F1346349900C56C1A /* WonderCardSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderCardSeedSearcherController.h; sourceTree = "<group>"; };
 		C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WonderCardSeedSearcherController.mm; sourceTree = "<group>"; };
 		C0E30465134634BF00C56C1A /* Icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Icon.icns; sourceTree = "<group>"; };
-		C0E30468134634FD00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/SIDSearcher.nib; sourceTree = "<group>"; };
+		C0E30468134634FD00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/TrainerIDSearcher.nib; sourceTree = "<group>"; };
 		C0E3046C134634FD00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/WonderCardSeedInspector.nib; sourceTree = "<group>"; };
 		C0E3046E134634FD00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/WonderCardSeedSearcher.nib; sourceTree = "<group>"; };
 		C0E304741346350400C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Launcher.nib; sourceTree = "<group>"; };
@@ -205,10 +205,10 @@
 				C0E304421346349900C56C1A /* LauncherController.mm */,
 				C0E304431346349900C56C1A /* SearcherController.h */,
 				C0E304441346349900C56C1A /* SearcherController.m */,
-				C0E304451346349900C56C1A /* SIDSearcherController.h */,
-				C0E304461346349900C56C1A /* SIDSearcherController.mm */,
 				C0E304471346349900C56C1A /* SynchroScrollView.h */,
 				C0E304481346349900C56C1A /* SynchroScrollView.m */,
+				C0E304451346349900C56C1A /* TrainerIDSearcherController.h */,
+				C0E304461346349900C56C1A /* TrainerIDSearcherController.mm */,
 				C0E304491346349900C56C1A /* VersionTransformer.h */,
 				C0E3044A1346349900C56C1A /* VersionTransformer.mm */,
 				C0E3044B1346349900C56C1A /* VertResizeOnlyWindowController.h */,
@@ -286,7 +286,7 @@
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				C0E304731346350400C56C1A /* Launcher.nib */,
 				29B97318FDCFA39411CA2CEA /* MainMenu.nib */,
-				C0E30467134634FD00C56C1A /* SIDSearcher.nib */,
+				C0E30467134634FD00C56C1A /* TrainerIDSearcher.nib */,
 				C0E3046B134634FD00C56C1A /* WonderCardSeedInspector.nib */,
 				C0E3046D134634FD00C56C1A /* WonderCardSeedSearcher.nib */,
 			);
@@ -334,10 +334,10 @@
 				C0E304121346343400C56C1A /* SeedGenerator.cpp */,
 				C0E304131346343400C56C1A /* SeedGenerator.h */,
 				C0E304141346343400C56C1A /* SeedSearcher.h */,
-				C0E304151346343400C56C1A /* SIDSearcher.cpp */,
-				C0E304161346343400C56C1A /* SIDSearcher.h */,
 				C0E304171346343400C56C1A /* TimeSeed.cpp */,
 				C0E304181346343400C56C1A /* TimeSeed.h */,
+				C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */,
+				C0DAED061356A9CC008D00D5 /* TrainerIDSearcher.h */,
 				C0E304191346343400C56C1A /* WonderCardSeedSearcher.cpp */,
 				C0E3041A1346343400C56C1A /* WonderCardSeedSearcher.h */,
 			);
@@ -397,7 +397,7 @@
 				8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				C0E30466134634BF00C56C1A /* Icon.icns in Resources */,
-				C0E3046F134634FD00C56C1A /* SIDSearcher.nib in Resources */,
+				C0E3046F134634FD00C56C1A /* TrainerIDSearcher.nib in Resources */,
 				C0E30471134634FD00C56C1A /* WonderCardSeedInspector.nib in Resources */,
 				C0E30472134634FD00C56C1A /* WonderCardSeedSearcher.nib in Resources */,
 				C0E304751346350400C56C1A /* Launcher.nib in Resources */,
@@ -431,7 +431,6 @@
 				C0E304221346343400C56C1A /* InitialSeedSearcher.cpp in Sources */,
 				C0E304231346343400C56C1A /* MersenneTwisterRNG.cpp in Sources */,
 				C0E304241346343400C56C1A /* SeedGenerator.cpp in Sources */,
-				C0E304251346343400C56C1A /* SIDSearcher.cpp in Sources */,
 				C0E304261346343400C56C1A /* TimeSeed.cpp in Sources */,
 				C0E304271346343400C56C1A /* WonderCardSeedSearcher.cpp in Sources */,
 				C0E304511346349900C56C1A /* AppDelegate.mm in Sources */,
@@ -448,12 +447,13 @@
 				C0E3045C1346349900C56C1A /* IVParameterController.mm in Sources */,
 				C0E3045D1346349900C56C1A /* LauncherController.mm in Sources */,
 				C0E3045E1346349900C56C1A /* SearcherController.m in Sources */,
-				C0E3045F1346349900C56C1A /* SIDSearcherController.mm in Sources */,
+				C0E3045F1346349900C56C1A /* TrainerIDSearcherController.mm in Sources */,
 				C0E304601346349900C56C1A /* SynchroScrollView.m in Sources */,
 				C0E304611346349900C56C1A /* VersionTransformer.mm in Sources */,
 				C0E304621346349900C56C1A /* VertResizeOnlyWindowController.m in Sources */,
 				C0E304631346349900C56C1A /* WonderCardSeedInspectorController.mm in Sources */,
 				C0E304641346349900C56C1A /* WonderCardSeedSearcherController.mm in Sources */,
+				C0DAED071356A9CC008D00D5 /* TrainerIDSearcher.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -476,12 +476,12 @@
 			name = MainMenu.nib;
 			sourceTree = "<group>";
 		};
-		C0E30467134634FD00C56C1A /* SIDSearcher.nib */ = {
+		C0E30467134634FD00C56C1A /* TrainerIDSearcher.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				C0E30468134634FD00C56C1A /* English */,
 			);
-			name = SIDSearcher.nib;
+			name = TrainerIDSearcher.nib;
 			sourceTree = "<group>";
 		};
 		C0E3046B134634FD00C56C1A /* WonderCardSeedInspector.nib */ = {

@@ -90,6 +90,11 @@ struct ProgressHandler
 {
   [super awakeFromNib];
   
+  [searcherController setGetValidatedSearchCriteriaSelector:
+                      @selector(getValidatedSearchCriteria)];
+  [searcherController setDoSearchWithCriteriaSelector:
+                      @selector(doSearchWithCriteria:)];
+  
   [[[[[searcherController tableView] tableColumnWithIdentifier: @"seed"]
     dataCell] formatter]
    setFormatWidth: 16];
@@ -110,8 +115,7 @@ struct ProgressHandler
   criteria.macAddressLow = [gen5ConfigController macAddressLow];
   criteria.macAddressHigh = [gen5ConfigController macAddressHigh];
   
-  criteria.version =
-    static_cast<Game::Version>([[versionMenu selectedItem] tag]);
+  criteria.version = [gen5ConfigController version];
   
   criteria.timer0Low = [timer0LowField intValue];
   criteria.timer0High = [timer0HighField intValue];
@@ -134,6 +138,10 @@ struct ProgressHandler
           hours([startHour intValue]) +
           minutes([startMinute intValue]) +
           seconds([startSecond intValue]));
+  
+  criteria.pressedButtons = [[keyOnePopUp selectedItem] tag] |
+                            [[keyTwoPopUp selectedItem] tag] |
+                            [[keyThreePopUp selectedItem] tag];
   
   if (criteria.ExpectedNumberOfResults() > 100)
   {

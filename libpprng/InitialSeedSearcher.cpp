@@ -137,9 +137,9 @@ void InitialIVSeedSearcher::Search(const Criteria &criteria,
   c.vcountHigh = criteria.vcountHigh;
   c.vframeLow = criteria.vframeLow;
   c.vframeHigh = criteria.vframeHigh;
-  c.buttonPresses.push_back(0);
+  c.buttonPresses.push_back(criteria.pressedButtons);
   c.fromTime = criteria.startTime - seconds(5);
-  c.toTime = criteria.startTime + seconds(5);
+  c.toTime = criteria.startTime + seconds(10);
   c.minFrame = 1;
   c.maxFrame = 1;
   c.maxResults = 1;

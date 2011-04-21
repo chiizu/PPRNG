@@ -24,7 +24,6 @@
 #import "VertResizeOnlyWindowController.h"
 #import "Gen5ConfigurationController.h"
 #import "IVParameterController.h"
-#import "SearcherController.h"
 
 @interface HashedSeedInspectorController : VertResizeOnlyWindowController
 {

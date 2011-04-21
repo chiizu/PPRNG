@@ -50,14 +50,16 @@ public:
               const ProgressCallback &progressHandler)
   {
     typename SeedGenerator::SeedCountType  numSeeds = seedGenerator.NumSeeds();
-    double                                 seedPercent = 1.0 / numSeeds;
-    typename SeedGenerator::SeedCountType  stepPercentSeeds;
     
-    if (seedPercent < 0.002)
+    double  seedPercent = double(SeedGenerator::SeedsPerChunk) / numSeeds;
+    
+    if (seedPercent > 0.02)
     {
-      seedPercent = 0.002;
+      seedPercent = 0.02;
     }
-    stepPercentSeeds = seedPercent * numSeeds;
+    
+    typename SeedGenerator::SeedCountType  stepPercentSeeds =
+      seedPercent * numSeeds;
     
     const double stepPercent = seedPercent * 100.0;
     

@@ -140,7 +140,7 @@ std::string Button::ToString(uint32_t keys)
     {
       if (!result.empty())
       {
-        result += ", ";
+        result += " + ";
       }
       
       uint32_t  i = 0;
@@ -155,7 +155,7 @@ std::string Button::ToString(uint32_t keys)
       {
         if ((buttons & 0x1) != 0)
         {
-          result += ", " + ButtonName[i];
+          result += " + " + ButtonName[i];
         }
         ++i;
       }

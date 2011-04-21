@@ -35,6 +35,8 @@ public:
   typedef uint32_t  SeedType;
   typedef uint32_t  SeedCountType;
   
+  enum { SeedsPerChunk = 20000 };
+  
   TimeSeedGenerator(uint32_t minDelay, uint32_t maxDelay)
     : m_minDelay(minDelay), m_maxDelay(maxDelay & 0xffff),
       m_dayMonthMinuteSecond(0xff000000), m_hour(0x00170000),
@@ -79,6 +81,8 @@ public:
   typedef TimeSeedGenerator::SeedType       SeedType;
   typedef TimeSeedGenerator::SeedCountType  SeedCountType;
   
+  enum { SeedsPerChunk = 10000 };
+  
   CGearSeedGenerator(uint32_t minDelay, uint32_t maxDelay,
                      uint32_t macAddressLow)
     : m_macAddressLow(macAddressLow), m_timeSeedGenerator(minDelay, maxDelay)
@@ -107,7 +111,9 @@ class HashedSeedGenerator
 {
 public:
   typedef HashedSeed  SeedType;
-  typedef uint64_t      SeedCountType;
+  typedef uint64_t    SeedCountType;
+  
+  enum { SeedsPerChunk = 50000 };
   
   HashedSeedGenerator(Game::Version version,
                         uint32_t macAddressLow, uint32_t macAddressHigh,
