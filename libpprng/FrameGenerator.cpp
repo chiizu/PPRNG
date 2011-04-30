@@ -62,16 +62,18 @@ void HashedIVFrameGenerator::AdvanceFrame()
 
 
 Gen5PIDFrameGenerator::Gen5PIDFrameGenerator
-    (const HashedSeed &seed, FrameType frameType, uint32_t tid, uint32_t sid)
+    (const HashedSeed &seed, FrameType frameType, bool useCompoundEyes,
+     uint32_t tid, uint32_t sid)
   : m_PIDFrameGenerator(s_FrameGeneratorInfo[frameType].pidFrameGenerator),
     m_ESVGenerator(s_FrameGeneratorInfo[frameType].esvGenerator),
     m_RNG(seed.m_rawSeed),
     m_PIDRNG(m_RNG, s_FrameGeneratorInfo[frameType].pidType, tid, sid),
-    m_frame(seed)
+    m_frame(seed), m_useCompoundEyes(useCompoundEyes)
 {
   m_frame.number = 0;
+  m_frame.synched = false;
   m_frame.esv = 0;
-  m_frame.heldItem = 0;
+  m_frame.heldItem = HeldItem::NO_ITEM;
   m_frame.canFish = 0;
   m_frame.findItem = 0;
 }
@@ -104,7 +106,7 @@ const Gen5PIDFrameGenerator::FrameGeneratorInfo
     &Gen5PIDFrameGenerator::WaterESV },
   // ShakingGrassFrame
   { PIDRNG::WildPID,
-    &Gen5PIDFrameGenerator::NextShakingGrassFrame,
+    &Gen5PIDFrameGenerator::NextWildFrame,
     &Gen5PIDFrameGenerator::LandESV },
   // SwirlingDustFrame
   { PIDRNG::WildPID,
@@ -149,18 +151,6 @@ bool Gen5PIDFrameGenerator::GeneratesESV() const
 {
   return (m_PIDFrameGenerator != &Gen5PIDFrameGenerator::NextStationaryFrame) &&
          (m_PIDFrameGenerator != &Gen5PIDFrameGenerator::NextSimpleFrame);
-}
-
-bool Gen5PIDFrameGenerator::GeneratesSync() const
-{
-  return m_PIDFrameGenerator != &Gen5PIDFrameGenerator::NextSimpleFrame;
-}
-
-bool Gen5PIDFrameGenerator::GeneratesHeldItem() const
-{
-  return (m_PIDFrameGenerator == &Gen5PIDFrameGenerator::NextWildFrame) &&
-         (m_PIDFrameGenerator == &Gen5PIDFrameGenerator::NextFishingFrame) &&
-         (m_PIDFrameGenerator == &Gen5PIDFrameGenerator::NextShakingGrassFrame);
 }
 
 bool Gen5PIDFrameGenerator::GeneratesCanFish() const
@@ -214,48 +204,101 @@ void Gen5PIDFrameGenerator::NoESV()
 
 void Gen5PIDFrameGenerator::NextWildFrame()
 {
-  m_frame.synched = (m_RNG.Next() >> 63) == 0x1;
+  if (!m_useCompoundEyes)
+    NextSync();
+  
   (this->*m_ESVGenerator)();
-  m_frame.heldItem = m_RNG.Next() >> 32;
+  
+  // unknown
+  m_RNG.Next();
+  
   NextSimpleFrame();
+  NextHeldItem();
 }
 
 void Gen5PIDFrameGenerator::NextFishingFrame()
 {
-  m_frame.synched = (m_RNG.Next() >> 63) == 0x1;
-  m_frame.canFish = (m_RNG.Next() % 5) != 0;
-  (this->*m_ESVGenerator)();
-  m_frame.heldItem = m_RNG.Next() >> 32;
+  if (!m_useCompoundEyes)
+    NextSync();
+  
+  m_frame.canFish = (m_RNG.Next() >> 63) == 0;
+  WaterESV();
+  
+  // unknown
+  m_RNG.Next();
+  
   NextSimpleFrame();
-}
-
-void Gen5PIDFrameGenerator::NextShakingGrassFrame()
-{
-  m_frame.synched = (m_RNG.Next() >> 63) == 0x1;
-  m_RNG.Next(); // unused
-  (this->*m_ESVGenerator)();
-  m_frame.heldItem = m_RNG.Next() >> 32;
-  NextSimpleFrame();
+  NextHeldItem();
 }
 
 void Gen5PIDFrameGenerator::NextDustOrShadowFrame()
 {
-  m_frame.synched = (m_RNG.Next() >> 63) == 0x1;
-  m_frame.findItem = (m_RNG.Next() & 0x3) != 0;
-  (this->*m_ESVGenerator)();
-  NextSimpleFrame();
+  m_frame.findItem = (((m_RNG.Next() >> 32) * 1000) >> 32) >= 400;
+  NextWildFrame();
 }
 
 void Gen5PIDFrameGenerator::NextStationaryFrame()
 {
-  m_frame.synched = (m_RNG.Next() >> 63) == 0x1;
+  if (!m_useCompoundEyes)
+    NextSync();
+  
   NextSimpleFrame();
+  NextHeldItem();
 }
 
 void Gen5PIDFrameGenerator::NextSimpleFrame()
 {
   m_frame.pid = m_PIDRNG.NextPIDWord();
   m_frame.nature = static_cast<Nature::Type>(((m_RNG.Next() >> 32) * 25) >> 32);
+}
+
+void Gen5PIDFrameGenerator::NextSync()
+{
+  m_frame.synched = (m_RNG.Next() >> 63) == 0x1;
+}
+
+void Gen5PIDFrameGenerator::NextHeldItem()
+{
+  uint32_t  heldItemPercent = ((m_RNG.Next() >> 32) * 100) >> 32;
+  
+  if (m_useCompoundEyes)
+  {
+    if (heldItemPercent < 60)
+    {
+      m_frame.heldItem = HeldItem::FIFTY_PERCENT_ITEM;
+    }
+    else if (heldItemPercent < 80)
+    {
+      m_frame.heldItem = HeldItem::FIVE_PERCENT_ITEM;
+    }
+    else if (heldItemPercent < 85)
+    {
+      m_frame.heldItem = HeldItem::ONE_PERCENT_ITEM;
+    }
+    else
+    {
+      m_frame.heldItem = HeldItem::NO_ITEM;
+    }
+  }
+  else
+  {
+    if (heldItemPercent < 50)
+    {
+      m_frame.heldItem = HeldItem::FIFTY_PERCENT_ITEM;
+    }
+    else if (heldItemPercent < 55)
+    {
+      m_frame.heldItem = HeldItem::FIVE_PERCENT_ITEM;
+    }
+    else if (heldItemPercent == 55)
+    {
+      m_frame.heldItem = HeldItem::ONE_PERCENT_ITEM;
+    }
+    else
+    {
+      m_frame.heldItem = HeldItem::NO_ITEM;
+    }
+  }
 }
 
 
@@ -280,13 +323,14 @@ void Gen5BreedingFrameGenerator::AdvanceFrame()
   
   ++m_frame.number;
   
-  m_frame.everstoneActivated = (m_RNG.Next() >> 63) == 1;
   m_frame.nature = static_cast<Nature::Type>(((m_RNG.Next() >> 32) * 25) >> 32);
-  m_frame.dreamWorldAbilityPassed = (((m_RNG.Next() >> 32) * 5) >> 32) > 2;
+  
+  if (m_hasEverstone)
+    m_frame.everstoneActivated = (m_RNG.Next() >> 63) == 1;
+  
+  m_frame.dreamWorldAbilityPassed = (((m_RNG.Next() >> 32) * 5) >> 32) >= 2;
   
   if (m_hasDitto)
-    m_RNG.Next();
-  if (m_hasEverstone)
     m_RNG.Next();
   
   uint32_t  numInherited = 0;

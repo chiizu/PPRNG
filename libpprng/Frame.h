@@ -65,7 +65,7 @@ struct Gen5PIDFrame
   Nature::Type      nature;
   bool              synched;
   uint32_t          esv;
-  uint32_t          heldItem;
+  HeldItem::Type    heldItem;
   bool              canFish;
   bool              findItem;
 };

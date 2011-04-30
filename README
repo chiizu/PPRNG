@@ -1,5 +1,5 @@
 
-PPRNG 1.1.0
+PPRNG 1.1.5
 
 Mac Requirements: Intel Mac with OS X 10.5 or greater.
 
@@ -24,12 +24,25 @@ In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
 on a result row to bring up the seed inspector for that specific seed.
 
 
-New in 1.1.0:
-* ID/SID Abuse - See Trainer ID Searcher
-* DS Parameter Searcher now uses the MAC address from your configuration.
-* Min PID frame for shiny search in Standard Seed Searcher
-* Better estimation of the number of results (now considers HP type, shininess)
-
+New in 1.1.5
+* Added Characteristic calculation for egg frames if you supply the IV frame
+  number and the IVs of both parents.  This is helpful for locating which frame
+  you landed on.
+* Fixed (hopefully) incorrect egg frame generation.
+* Removed the ES (everstone) column from the egg tab of the Standard Seed
+  Inspector.  If breeding with an everstone, the nature will be replaced with
+  <ES> if the everstone takes effect.
+* Added columns for held item, fishing success, and dust/shadow item to the
+  PID frame section of the Standard Seed Searcher.
+* Added a switch for when the first pokemon in your party has the ability
+  Compound Eyes to the PID frame section of the Standard Seed Inspector. This
+  has a small effect on how the frame is generated, but most importantly it has
+  an effect on the item that a wild Pokemon holds (if it holds any at all).
+* Added columns for fishing success and dust/shadow encounter to the Trainer ID
+  searcher so that you can know whether your shiny PID will allow you to fish
+  and / or find a Pokemon in swirling dust / bridge shadows.
+* Fixed a bug where you couldn't have an ID / SID of 0.
+* Fixed a bug where you couldn't type into the Hidden Power minimum power field.
 
 Known Issues in this version:
 
@@ -49,9 +62,17 @@ Known Issues in this version:
 
 Upcoming Features:
 
+* Egg searching.
+* More info related to shiny frames in the Standard Seed Searcher.
 * Generation 4 Support - Seed Inspection, time permitting.
 
 Previous Releases:
+
+1.1.0:
+* ID/SID Abuse - See Trainer ID Searcher
+* DS Parameter Searcher now uses the MAC address from your configuration.
+* Min PID frame for shiny search in Standard Seed Searcher
+* Better estimation of the number of results (now considers HP type, shininess)
 
 1.0.5:
 * Added Stationary Encounter frame type to cover encounters such as Coballion.

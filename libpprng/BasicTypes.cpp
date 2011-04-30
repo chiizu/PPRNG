@@ -100,6 +100,22 @@ static const uint32_t  DPadDirections[] =
   Button::DOWN_BUTTON, Button::UP_RIGHT, Button::UP_LEFT,
   Button::DOWN_RIGHT, Button::DOWN_LEFT };
 
+static const char *CharacteristicNameArray[] =
+{ "Loves to eat", "Often dozes off", "Often scatters things",
+  "Scatters things often", "Likes to relax", "Proud of its power",
+  "Likes to thrash about", "A little quick tempered", "Likes to fight",
+  "Quick tempered", "Sturdy body", "Capable of taking hits",
+  "Highly persistent", "Good endurance", "Good perseverance", "Highly curious",
+  "Mischievous", "Thoroughly cunning", "Often lost in thought", "Very finicky",
+  "Strong willed", "Somewhat vain", "Strongly defiant", "Hates to lose",
+  "Somewhat stubborn", "Likes to run", "Alert to sounds", "Impetuous and silly",
+  "Somewhat of a clown", "Quick to flee", "Unknown Characteristic" };
+
+static const std::vector<std::string>  CharacteristicName
+  (CharacteristicNameArray,
+   CharacteristicNameArray +
+     (sizeof(CharacteristicNameArray) / sizeof(const char *)));
+
 static std::string MakeBadIVIndexExceptionString(int i)
 {
   std::ostringstream  os;
@@ -286,32 +302,6 @@ Nature::Type Nature::FromString(const std::string &name)
   }
 }
 
-std::string PersonalityValue::GenderString() const
-{
-  uint32_t  genderValue = GenderValue();
-  
-  if (genderValue < 31)
-  {
-    return "F/F/F/F";
-  }
-  else if (genderValue < 63)
-  {
-    return "M/F/F/F";
-  }
-  else if (genderValue < 127)
-  {
-    return "M/M/F/F";
-  }
-  else if (genderValue < 191)
-  {
-    return "M/M/M/F";
-  }
-  else
-  {
-    return "M/M/M/M";
-  }
-}
-
 const std::string& Element::ToString(Element::Type t)
 {
   if ((t >= NORMAL) && (t <= UNKNOWN))
@@ -414,6 +404,107 @@ bool IVs::betterThanOrEqual(const IndividualValues &ivs) const
          ((word & IVs::SA_MASK) >= (ivs.word & IVs::SA_MASK)) &&
          ((word & IVs::SD_MASK) >= (ivs.word & IVs::SD_MASK)) &&
          ((word & IVs::SP_MASK) >= (ivs.word & IVs::SP_MASK));
+}
+
+Characteristic::Type Characteristic::Get(PID pid, IVs ivs)
+{
+  uint32_t      maxIVValue = 0;
+  unsigned int  maxes = 0;
+  
+  if (ivs.hp() >= maxIVValue)
+  {
+    maxIVValue = ivs.hp();
+    maxes = 0x1 << IVs::HP;
+  }
+  
+  if (ivs.at() > maxIVValue)
+  {
+    maxIVValue = ivs.at();
+    maxes = 0x1 << IVs::AT;
+  }
+  else if (ivs.at() == maxIVValue)
+  {
+    maxes |= 0x1 << IVs::AT;
+  }
+  
+  if (ivs.df() > maxIVValue)
+  {
+    maxIVValue = ivs.df();
+    maxes = 0x1 << IVs::DF;
+  }
+  else if (ivs.df() == maxIVValue)
+  {
+    maxes |= 0x1 << IVs::DF;
+  }
+  
+  if (ivs.sa() > maxIVValue)
+  {
+    maxIVValue = ivs.sa();
+    maxes = 0x1 << IVs::SA;
+  }
+  else if (ivs.sa() == maxIVValue)
+  {
+    maxes |= 0x1 << IVs::SA;
+  }
+  
+  if (ivs.sd() > maxIVValue)
+  {
+    maxIVValue = ivs.sd();
+    maxes = 0x1 << IVs::SD;
+  }
+  else if (ivs.sd() == maxIVValue)
+  {
+    maxes |= 0x1 << IVs::SD;
+  }
+  
+  if (ivs.sp() > maxIVValue)
+  {
+    maxIVValue = ivs.sp();
+    maxes = 0x1 << IVs::SP;
+  }
+  else if (ivs.sp() == maxIVValue)
+  {
+    maxes |= 0x1 << IVs::SP;
+  }
+  
+  uint32_t  offset = maxIVValue % 10;
+  if (offset > 4)
+    offset -= 5;
+  
+  const IVs::Type  ivOrder[6] =
+    { IVs::HP, IVs::AT, IVs::DF, IVs::SP, IVs::SA, IVs::SD };
+  
+  const Type  start[6] =
+    { LOVES_TO_EAT, PROUD_OF_ITS_POWER, STURDY_BODY,
+      LIKES_TO_RUN, HIGHLY_CURIOUS, STRONG_WILLED };
+  
+  uint32_t   index = pid.word % 6;
+  uint32_t   count = 0;
+  
+  while (count < 6)
+  {
+    if (maxes & (0x1 << ivOrder[index]))
+    {
+      return Type(start[index] + offset);
+    }
+    
+    if (++index > 5) index = 0;
+    ++count;
+  }
+  
+  return UNKNOWN;
+}
+
+const std::string& Characteristic::ToString(Characteristic::Type c)
+{
+  if ((c >= LOVES_TO_EAT) && (c <= UNKNOWN))
+  {
+    return CharacteristicName[c];
+  }
+  else
+  {
+    return CharacteristicName[UNKNOWN];
+  }
 }
 
 }

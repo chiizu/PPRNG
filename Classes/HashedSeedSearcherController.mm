@@ -23,6 +23,7 @@
 
 #include "HashedSeedSearcher.h"
 #include "FrameGenerator.h"
+#include "Utilities.h"
 
 #import "HashedSeedInspectorController.h"
 
@@ -79,7 +80,7 @@ struct ResultHandler
     
     Gen5PIDFrameGenerator  frameGen(frame.seed,
                                     Gen5PIDFrameGenerator::GrassCaveFrame,
-                                    m_tid, m_sid);
+                                    false, m_tid, m_sid);
     bool                   found = false;
     
     while (frameGen.CurrentFrame().number < (m_minFrame - 1))
@@ -109,8 +110,7 @@ struct ResultHandler
         [NSNumber numberWithUnsignedInt: pidFrame.pid.Gen5Ability()],
           @"shinyAbility",
         [NSNumber numberWithUnsignedInt: pidFrame.esv], @"shinyESV",
-        [NSString stringWithFormat: @"%s", pidFrame.pid.GenderString().c_str()],
-          @"shinyGender",
+        GenderString(pidFrame.pid), @"shinyGender",
         nil];
     }
     else if (m_shinyOnly)

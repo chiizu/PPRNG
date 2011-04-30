@@ -222,7 +222,6 @@ struct PersonalityValue
   }
   
   uint32_t GenderValue() const { return word & 0xff; }
-  std::string GenderString() const;
   
   uint32_t Gen34Ability() const { return word & 0x1; }
   uint32_t Gen5Ability() const { return (word >> 16) & 0x1; }
@@ -427,6 +426,78 @@ inline bool operator==(const IVs &ivs1, const IVs &ivs2)
 { return ivs1.word == ivs2.word; }
 inline bool operator!=(const IVs &ivs1, const IVs &ivs2)
 { return ivs1.word != ivs2.word; }
+
+
+
+struct Characteristic
+{
+  enum Type
+  {
+    // HP
+    LOVES_TO_EAT = 0,        // 0 or 5
+    OFTEN_DOZES_OFF,         // 1 or 6
+    OFTEN_SCATTERS_THINGS,   // 2 or 7
+    SCATTERS_THINGS_OFTEN,   // 3 or 8
+    LIKES_TO_RELAX,          // 4 or 9
+    
+    // ATK
+    PROUD_OF_ITS_POWER,      // 0 or 5
+    LIKES_TO_THRASH_ABOUT,   // 1 or 6
+    A_LITTLE_QUICK_TEMPERED, // 2 or 7
+    LIKES_TO_FIGHT,          // 3 or 8
+    QUICK_TEMPERED,          // 4 or 9
+    
+    // DEF
+    STURDY_BODY,             // 0 or 5
+    CAPABLE_OF_TAKING_HITS,  // 1 or 6
+    HIGHLY_PERSISTENT,       // 2 or 7
+    GOOD_ENDURANCE,          // 3 or 8
+    GOOD_PERSEVERANCE,       // 4 or 9
+    
+    // SPA
+    HIGHLY_CURIOUS,          // 0 or 5
+    MISCHIEVOUS,             // 1 or 6
+    THOROUGHLY_CUNNING,      // 2 or 7
+    OFTEN_LOST_IN_THOUGHT,   // 3 or 8
+    VERY_FINICKY,            // 4 or 9
+    
+    // SPD
+    STRONG_WILLED,           // 0 or 5
+    SOMEWHAT_VAIN,           // 1 or 6
+    STRONGLY_DEFIANT,        // 2 or 7
+    HATES_TO_LOSE,           // 3 or 8
+    SOMEWHAT_STUBBORN,       // 4 or 9
+    
+    // SPE
+    LIKES_TO_RUN,            // 0 or 5
+    ALERT_TO_SOUNDS,         // 1 or 6
+    IMPETUOUS_AND_SILLY,     // 2 or 7
+    SOMEWHAT_OF_A_CLOWN,     // 3 or 8
+    QUICK_TO_FLEE,           // 4 or 9
+    
+    NUM_CHARACTERISTICS,
+    
+    ANY = NUM_CHARACTERISTICS,
+    
+    UNKNOWN
+  };
+  
+  static Type Get(PID pid, IVs ivs);
+  static const std::string& ToString(Type c);
+};
+
+
+// type of item a wild pokemon might hold
+struct HeldItem
+{
+  enum Type
+  {
+    NO_ITEM = 0,
+    FIFTY_PERCENT_ITEM,
+    FIVE_PERCENT_ITEM,
+    ONE_PERCENT_ITEM
+  };
+};
 
 
 }

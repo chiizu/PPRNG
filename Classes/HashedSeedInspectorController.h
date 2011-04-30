@@ -47,6 +47,7 @@
   
   
   IBOutlet NSPopUpButton          *pidFrameTypeMenu;
+  IBOutlet NSButton               *useCompoundEyesCheckBox;
   IBOutlet NSTextField            *minPIDFrameField;
   IBOutlet NSTextField            *maxPIDFrameField;
   
@@ -89,6 +90,34 @@
   IBOutlet NSTextField            *eggsMinPIDFrameField;
   IBOutlet NSTextField            *eggsMaxPIDFrameField;
   
+  IBOutlet NSButton               *eggsEnableParentIVsCheckBox;
+  
+  IBOutlet NSTextField            *eggsFemaleHPField;
+  IBOutlet NSStepper              *eggsFemaleHPStepper;
+  IBOutlet NSTextField            *eggsFemaleAtkField;
+  IBOutlet NSStepper              *eggsFemaleAtkStepper;
+  IBOutlet NSTextField            *eggsFemaleDefField;
+  IBOutlet NSStepper              *eggsFemaleDefStepper;
+  IBOutlet NSTextField            *eggsFemaleSpAField;
+  IBOutlet NSStepper              *eggsFemaleSpAStepper;
+  IBOutlet NSTextField            *eggsFemaleSpDField;
+  IBOutlet NSStepper              *eggsFemaleSpDStepper;
+  IBOutlet NSTextField            *eggsFemaleSpeField;
+  IBOutlet NSStepper              *eggsFemaleSpeStepper;
+  
+  IBOutlet NSTextField            *eggsMaleHPField;
+  IBOutlet NSStepper              *eggsMaleHPStepper;
+  IBOutlet NSTextField            *eggsMaleAtkField;
+  IBOutlet NSStepper              *eggsMaleAtkStepper;
+  IBOutlet NSTextField            *eggsMaleDefField;
+  IBOutlet NSStepper              *eggsMaleDefStepper;
+  IBOutlet NSTextField            *eggsMaleSpAField;
+  IBOutlet NSStepper              *eggsMaleSpAStepper;
+  IBOutlet NSTextField            *eggsMaleSpDField;
+  IBOutlet NSStepper              *eggsMaleSpDStepper;
+  IBOutlet NSTextField            *eggsMaleSpeField;
+  IBOutlet NSStepper              *eggsMaleSpeStepper;
+  
   IBOutlet NSTableView            *eggsTableView;
   IBOutlet NSArrayController      *eggsContentArray;
   
@@ -101,6 +130,7 @@
 - (IBAction)generateIVFrames:(id)sender;
 - (IBAction)generateAdjacents:(id)sender;
 - (IBAction)toggleEggIVs:(id)sender;
+- (IBAction)toggleParentIVs:(id)sender;
 - (IBAction)generateEggs:(id)sender;
 
 // take HashedSeed from NSData pointer

@@ -22,6 +22,8 @@
 #import "TrainerIDSearcherController.h"
 
 #include "TrainerIDSearcher.h"
+#include "Utilities.h"
+
 #include <boost/lexical_cast.hpp>
 
 
@@ -214,10 +216,12 @@ struct IDFrameSearchProgressHandler
   uint32_t  frameNum = 0, limitFrame = minPIDFrame - 1;
   
   Gen5PIDFrameGenerator
-    gcGenerator(seed, Gen5PIDFrameGenerator::GrassCaveFrame, 0, 0),
-    fsGenerator(seed, Gen5PIDFrameGenerator::FishingFrame, 0, 0),
-    stGenerator(seed, Gen5PIDFrameGenerator::StationaryFrame, 0, 0),
-    pidGenerator(seed, Gen5PIDFrameGenerator::StarterFossilGiftFrame, 0, 0);
+    gcGenerator(seed, Gen5PIDFrameGenerator::GrassCaveFrame, false, 0, 0),
+    fsGenerator(seed, Gen5PIDFrameGenerator::FishingFrame, false, 0, 0),
+    sdGenerator(seed, Gen5PIDFrameGenerator::SwirlingDustFrame, false, 0, 0),
+    stGenerator(seed, Gen5PIDFrameGenerator::StationaryFrame, false, 0, 0),
+    pidGenerator(seed, Gen5PIDFrameGenerator::StarterFossilGiftFrame,
+                 false, 0, 0);
   
   // get the PIDs in sync
   gcGenerator.AdvanceFrame();
@@ -233,6 +237,7 @@ struct IDFrameSearchProgressHandler
   {
     gcGenerator.AdvanceFrame();
     fsGenerator.AdvanceFrame();
+    sdGenerator.AdvanceFrame();
     stGenerator.AdvanceFrame();
     pidGenerator.AdvanceFrame();
     ++frameNum;
@@ -245,12 +250,14 @@ struct IDFrameSearchProgressHandler
   {
     gcGenerator.AdvanceFrame();
     fsGenerator.AdvanceFrame();
+    sdGenerator.AdvanceFrame();
     stGenerator.AdvanceFrame();
     pidGenerator.AdvanceFrame();
     ++frameNum;
     
     Gen5PIDFrame  gcFrame = gcGenerator.CurrentFrame();
     Gen5PIDFrame  fsFrame = fsGenerator.CurrentFrame();
+    Gen5PIDFrame  sdFrame = sdGenerator.CurrentFrame();
     Gen5PIDFrame  stFrame = stGenerator.CurrentFrame();
     Gen5PIDFrame  pidFrame = pidGenerator.CurrentFrame();
     
@@ -261,13 +268,14 @@ struct IDFrameSearchProgressHandler
           Nature::ToString(pidFrame.nature).c_str()], @"nature",
         [NSNumber numberWithUnsignedInt: pidFrame.pid.word], @"pid",
         [NSNumber numberWithUnsignedInt: pidFrame.pid.Gen5Ability()], @"ability",
-        [NSString stringWithFormat: @"%s", pidFrame.pid.GenderString().c_str()],
-          @"gender",
+        GenderString(pidFrame.pid), @"gender",
         (gcFrame.synched ? @"Y" : @""), @"syncA",
         (fsFrame.synched ? @"Y" : @""), @"syncB",
         (stFrame.synched ? @"Y" : @""), @"syncC",
         [NSString stringWithFormat: @"%d", gcFrame.esv], @"esvL",
         [NSString stringWithFormat: @"%d", fsFrame.esv], @"esvW",
+        (fsFrame.canFish ? @"Y" : @""), @"canFish",
+        (sdFrame.findItem ? @"" : @"Y"), @"findPoke",
         nil];
     
     [rowArray addObject: result];

@@ -24,6 +24,7 @@
 
 #include "HashedSeed.h"
 #include "FrameGenerator.h"
+#include "Utilities.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
@@ -32,7 +33,8 @@ using namespace pprng;
 
 static
 NSString* GetEggIV(Gen5BreedingFrame::Inheritance inheritance, uint32_t iv,
-                   bool showIvs)
+                   bool showIvs, uint32_t femaleIV, uint32_t maleIV,
+                   bool showParentIVs)
 {
   switch (inheritance)
   {
@@ -43,12 +45,46 @@ NSString* GetEggIV(Gen5BreedingFrame::Inheritance inheritance, uint32_t iv,
     else
       return @"";
   case Gen5BreedingFrame::ParentX:
-    return @"♀";
+    if (showParentIVs)
+      return [NSString stringWithFormat:@"%d", femaleIV];
+    else
+      return @"♀";
     break;
   case Gen5BreedingFrame::ParentY:
-    return @"♂";
+    if (showParentIVs)
+      return [NSString stringWithFormat:@"%d", maleIV];
+    else
+      return @"♂";
     break;
   }
+}
+
+static
+NSString* GetEggCharacteristic(const Gen5BreedingFrame &frame, IVs eggIVs,
+                               IVs femaleIVs, IVs maleIVs)
+{
+  uint32_t  i;
+  
+  for (i = 0; i < 6; ++i)
+  {
+    switch (frame.inheritance[i])
+    {
+    case Gen5BreedingFrame::ParentX:
+      eggIVs.setIV(i, femaleIVs.iv(i));
+      break;
+      
+    case Gen5BreedingFrame::ParentY:
+      eggIVs.setIV(i, maleIVs.iv(i));
+      break;
+      
+    default:
+    case Gen5BreedingFrame::NotInherited:
+      break;
+    }
+  }
+  
+  return [NSString stringWithFormat: @"%s",
+    Characteristic::ToString(Characteristic::Get(frame.pid, eggIVs)).c_str()];
 }
 
 static
@@ -194,10 +230,12 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
     static_cast<Gen5PIDFrameGenerator::FrameType>
       ([[pidFrameTypeMenu selectedItem] tag]);
   
-  Gen5PIDFrameGenerator  generator(seed, frameType, tid, sid);
+  Gen5PIDFrameGenerator  generator(seed, frameType,
+                                   [useCompoundEyesCheckBox state], tid, sid);
   
   bool  generatesESV = generator.GeneratesESV();
-  bool  generatesSync = generator.GeneratesSync();
+  bool  generatesCanFish = generator.GeneratesCanFish();
+  bool  generatesFindItem = generator.GeneratesFindItem();
   
   while (frameNum < limitFrame)
   {
@@ -225,9 +263,11 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
         [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
         (generatesESV ? [NSString stringWithFormat: @"%d", frame.esv] : @""),
           @"esv",
-        ((generatesSync && frame.synched) ? @"Y" : @""), @"sync",
-        [NSString stringWithFormat: @"%s", frame.pid.GenderString().c_str()],
-          @"gender",
+        (frame.synched ? @"Y" : @""), @"sync",
+        ((generatesCanFish && frame.canFish) ? @"Y" : @""), @"canFish",
+        ((generatesFindItem && frame.findItem) ? @"Y" : @""), @"findItem",
+        GenderString(frame.pid), @"gender",
+        HeldItemString(frame.heldItem), @"heldItem",
         nil];
     
     [rowArray addObject: result];
@@ -387,7 +427,7 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
       
       IVs  ivs = ivGenerator.CurrentFrame().ivs;
       
-      Gen5PIDFrameGenerator  pidGenerator(seed, frameType, tid, sid);
+      Gen5PIDFrameGenerator  pidGenerator(seed, frameType, false, tid, sid);
       
       for (uint32_t j = 0; j < pidStartFrameNum; ++j)
         pidGenerator.AdvanceFrame();
@@ -407,7 +447,7 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
           [NSString stringWithFormat: @"%s",
             Nature::ToString(frame.nature).c_str()], @"nature",
           [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
-          [NSString stringWithFormat: @"%s", frame.pid.GenderString().c_str()],
+          GenderString(frame.pid), @"gender",
             @"gender",
           [NSNumber numberWithUnsignedInt: ivs.hp()], @"hp",
           [NSNumber numberWithUnsignedInt: ivs.at()], @"atk",
@@ -431,6 +471,37 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
   [eggsIVFrameField setEnabled: enabled];
 }
 
+- (IBAction)toggleParentIVs:(id)sender
+{
+  BOOL enabled = [eggsEnableParentIVsCheckBox state];
+  
+  [eggsFemaleHPField setEnabled: enabled];
+  [eggsFemaleHPStepper setEnabled: enabled];
+  [eggsFemaleAtkField setEnabled: enabled];
+  [eggsFemaleAtkStepper setEnabled: enabled];
+  [eggsFemaleDefField setEnabled: enabled];
+  [eggsFemaleDefStepper setEnabled: enabled];
+  [eggsFemaleSpAField setEnabled: enabled];
+  [eggsFemaleSpAStepper setEnabled: enabled];
+  [eggsFemaleSpDField setEnabled: enabled];
+  [eggsFemaleSpDStepper setEnabled: enabled];
+  [eggsFemaleSpeField setEnabled: enabled];
+  [eggsFemaleSpeStepper setEnabled: enabled];
+  
+  [eggsMaleHPField setEnabled: enabled];
+  [eggsMaleHPStepper setEnabled: enabled];
+  [eggsMaleAtkField setEnabled: enabled];
+  [eggsMaleAtkStepper setEnabled: enabled];
+  [eggsMaleDefField setEnabled: enabled];
+  [eggsMaleDefStepper setEnabled: enabled];
+  [eggsMaleSpAField setEnabled: enabled];
+  [eggsMaleSpAStepper setEnabled: enabled];
+  [eggsMaleSpDField setEnabled: enabled];
+  [eggsMaleSpDStepper setEnabled: enabled];
+  [eggsMaleSpeField setEnabled: enabled];
+  [eggsMaleSpeStepper setEnabled: enabled];
+}
+
 - (IBAction)generateEggs:(id)sender
 {
   if ([[seedField stringValue] length] == 0)
@@ -443,7 +514,7 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
   HashedSeed  seed([[seedField objectValue] unsignedLongLongValue]);
   
   bool      showIVs = [eggsEnableIVsButton state];
-  uint32_t  ivFrame = [eggsIVFrameField intValue];
+  uint32_t  ivFrame = showIVs ? [eggsIVFrameField intValue] : 0;
   uint32_t  frameNum = 0;
   
   HashedIVFrameGenerator  ivGenerator(seed, HashedIVFrameGenerator::Normal);
@@ -451,6 +522,25 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
     ivGenerator.AdvanceFrame();
   
   IVs  ivs = ivGenerator.CurrentFrame().ivs;
+  
+  bool      parentIVs = [eggsEnableParentIVsCheckBox state];
+  IVs       femaleIVs, maleIVs;
+  if (parentIVs)
+  {
+    femaleIVs.hp([eggsFemaleHPField intValue]);
+    femaleIVs.at([eggsFemaleAtkField intValue]);
+    femaleIVs.df([eggsFemaleDefField intValue]);
+    femaleIVs.sa([eggsFemaleSpAField intValue]);
+    femaleIVs.sd([eggsFemaleSpDField intValue]);
+    femaleIVs.sp([eggsFemaleSpeField intValue]);
+    
+    maleIVs.hp([eggsMaleHPField intValue]);
+    maleIVs.at([eggsMaleAtkField intValue]);
+    maleIVs.df([eggsMaleDefField intValue]);
+    maleIVs.sa([eggsMaleSpAField intValue]);
+    maleIVs.sd([eggsMaleSpDField intValue]);
+    maleIVs.sp([eggsMaleSpeField intValue]);
+  }
   
   uint32_t  tid = [gen5ConfigController tid];
   uint32_t  sid = [gen5ConfigController sid];
@@ -484,23 +574,30 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
 				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        [NSString stringWithFormat: @"%s",
-          Nature::ToString(frame.nature).c_str()], @"nature",
-        ((hasEverstone && frame.everstoneActivated) ? @"E" : @""), @"everstone",
+        ((hasEverstone && frame.everstoneActivated) ? @"<ES>" :
+          [NSString stringWithFormat: @"%s",
+            Nature::ToString(frame.nature).c_str()]), @"nature",
         [NSNumber numberWithUnsignedInt: frame.pid.word], @"pid",
         (frame.pid.IsShiny(tid, sid) ? @"!!!" : @""), @"shiny",
         ((!hasDitto && frame.dreamWorldAbilityPassed) ? @"Y" : @""),
           @"dreamWorld",
         [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
-        [NSString stringWithFormat: @"%s", frame.pid.GenderString().c_str()],
-          @"gender",
-        GetEggIV(frame.inheritance[0], ivs.hp(), showIVs), @"hp",
-        GetEggIV(frame.inheritance[1], ivs.at(), showIVs), @"atk",
-        GetEggIV(frame.inheritance[2], ivs.df(), showIVs), @"def",
-        GetEggIV(frame.inheritance[3], ivs.sa(), showIVs), @"spa",
-        GetEggIV(frame.inheritance[4], ivs.sd(), showIVs), @"spd",
-        GetEggIV(frame.inheritance[5], ivs.sp(), showIVs), @"spe",
-        GetEggHiddenPowers(frame.inheritance, ivs, showIVs), @"hiddenType",
+        GenderString(frame.pid), @"gender",
+        GetEggIV(frame.inheritance[0], ivs.hp(), showIVs,
+                 femaleIVs.hp(), maleIVs.hp(), parentIVs), @"hp",
+        GetEggIV(frame.inheritance[1], ivs.at(), showIVs,
+                 femaleIVs.at(), maleIVs.at(), parentIVs), @"atk",
+        GetEggIV(frame.inheritance[2], ivs.df(), showIVs,
+                 femaleIVs.df(), maleIVs.df(), parentIVs), @"def",
+        GetEggIV(frame.inheritance[3], ivs.sa(), showIVs,
+                 femaleIVs.sa(), maleIVs.sa(), parentIVs), @"spa",
+        GetEggIV(frame.inheritance[4], ivs.sd(), showIVs,
+                 femaleIVs.sd(), maleIVs.sd(), parentIVs), @"spd",
+        GetEggIV(frame.inheritance[5], ivs.sp(), showIVs,
+                 femaleIVs.sp(), maleIVs.sp(), parentIVs), @"spe",
+        ((showIVs && parentIVs) ? 
+            GetEggCharacteristic(frame, ivs, femaleIVs, maleIVs) : @""),
+          @"characteristic",
         nil];
     
     [rowArray addObject: result];

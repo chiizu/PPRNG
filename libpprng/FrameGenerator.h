@@ -152,15 +152,13 @@ public:
   };
   
   Gen5PIDFrameGenerator(const HashedSeed &seed, FrameType frameType,
-                        uint32_t tid, uint32_t sid);
+                        bool useCompoundEyes, uint32_t tid, uint32_t sid);
   
   void AdvanceFrame();
   
   const Frame& CurrentFrame() const { return m_frame; }
   
   bool GeneratesESV() const;
-  bool GeneratesSync() const;
-  bool GeneratesHeldItem() const;
   bool GeneratesCanFish() const;
   bool GeneratesFindItem() const;
   
@@ -185,18 +183,22 @@ private:
   
   void NextWildFrame();
   void NextFishingFrame();
-  void NextShakingGrassFrame();
   void NextDustOrShadowFrame();
   void NextStationaryFrame();
   void NextSimpleFrame();
+  
+  void NextSync();
   
   void LandESV();
   void WaterESV();
   void NoESV();
   
-  RNG       m_RNG;
-  PIDRNG    m_PIDRNG;
-  Frame     m_frame;
+  void NextHeldItem();
+  
+  RNG         m_RNG;
+  PIDRNG      m_PIDRNG;
+  Frame       m_frame;
+  const bool  m_useCompoundEyes;
 };
 
 class WonderCardFrameGenerator

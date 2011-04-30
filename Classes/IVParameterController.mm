@@ -94,8 +94,9 @@ enum Pattern
     if ([self shouldCheckHiddenPower])
     {
       ivs.hp(30); ivs.at(0); ivs.df(30); ivs.sa(30); ivs.sd(30); ivs.sp(30);
+      uint32_t  minHiddenPower = [self minHiddenPower];
       
-      if (([self minHiddenPower] == 70) && (minIVs == ivs))
+      if ((minHiddenPower == 70) && (minIVs == ivs))
       {
         [ivPatternMenu selectItemWithTag: SpecialHiddenPowerFlawless];
         return;
