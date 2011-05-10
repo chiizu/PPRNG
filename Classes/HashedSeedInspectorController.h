@@ -23,7 +23,9 @@
 #import <Cocoa/Cocoa.h>
 #import "VertResizeOnlyWindowController.h"
 #import "Gen5ConfigurationController.h"
-#import "IVParameterController.h"
+#import "HashedSeedInspectorFramesTabController.h"
+#import "HashedSeedInspectorAdjacentsTabController.h"
+#import "HashedSeedInspectorEggsTabController.h"
 
 @interface HashedSeedInspectorController : VertResizeOnlyWindowController
 {
@@ -42,96 +44,18 @@
   IBOutlet NSPopUpButton          *key2Menu;
   IBOutlet NSPopUpButton          *key3Menu;
   
-  
   IBOutlet NSTextField            *seedField;
   
+  IBOutlet HashedSeedInspectorFramesTabController     *framesTabController;
   
-  IBOutlet NSPopUpButton          *pidFrameTypeMenu;
-  IBOutlet NSButton               *useCompoundEyesCheckBox;
-  IBOutlet NSTextField            *minPIDFrameField;
-  IBOutlet NSTextField            *maxPIDFrameField;
+  IBOutlet HashedSeedInspectorAdjacentsTabController  *adjacentsTabController;
   
-  IBOutlet NSTableView            *pidFrameTableView;
-  IBOutlet NSArrayController      *pidFrameContentArray;
-  
-  IBOutlet NSPopUpButton          *natureMenu;
-  IBOutlet NSButton               *shinyCheckBox;
-  
-  
-  IBOutlet NSTextField            *minIVFrameField;
-  IBOutlet NSTextField            *maxIVFrameField;
-  
-  IBOutlet NSTableView            *ivFrameTableView;
-  IBOutlet NSArrayController      *ivFrameContentArray;
-  
-  IBOutlet IVParameterController  *ivParameterController;
-  
-  
-  IBOutlet NSTextField            *adjacentsTimeVarianceField;
-  
-  IBOutlet NSTextField            *adjacentsIVFrameField;
-  IBOutlet NSButton               *adjacentsRoamerButton;
-  
-  IBOutlet NSTextField            *adjacentsPIDFrameField;
-  IBOutlet NSTextField            *adjacentsPIDFrameVarianceField;
-  IBOutlet NSPopUpButton          *adjacentsPIDFrameTypeMenu;
-  
-  IBOutlet NSTableView            *adjacentsTableView;
-  IBOutlet NSArrayController      *adjacentsContentArray;
-  
-  
-  IBOutlet NSButton               *eggsInternationalButton;
-  IBOutlet NSButton               *eggsUseEverstoneButton;
-  IBOutlet NSButton               *eggsUseDittoButton;
-  
-  IBOutlet NSButton               *eggsEnableIVsButton;
-  IBOutlet NSTextField            *eggsIVFrameField;
-  
-  IBOutlet NSTextField            *eggsMinPIDFrameField;
-  IBOutlet NSTextField            *eggsMaxPIDFrameField;
-  
-  IBOutlet NSButton               *eggsEnableParentIVsCheckBox;
-  
-  IBOutlet NSTextField            *eggsFemaleHPField;
-  IBOutlet NSStepper              *eggsFemaleHPStepper;
-  IBOutlet NSTextField            *eggsFemaleAtkField;
-  IBOutlet NSStepper              *eggsFemaleAtkStepper;
-  IBOutlet NSTextField            *eggsFemaleDefField;
-  IBOutlet NSStepper              *eggsFemaleDefStepper;
-  IBOutlet NSTextField            *eggsFemaleSpAField;
-  IBOutlet NSStepper              *eggsFemaleSpAStepper;
-  IBOutlet NSTextField            *eggsFemaleSpDField;
-  IBOutlet NSStepper              *eggsFemaleSpDStepper;
-  IBOutlet NSTextField            *eggsFemaleSpeField;
-  IBOutlet NSStepper              *eggsFemaleSpeStepper;
-  
-  IBOutlet NSTextField            *eggsMaleHPField;
-  IBOutlet NSStepper              *eggsMaleHPStepper;
-  IBOutlet NSTextField            *eggsMaleAtkField;
-  IBOutlet NSStepper              *eggsMaleAtkStepper;
-  IBOutlet NSTextField            *eggsMaleDefField;
-  IBOutlet NSStepper              *eggsMaleDefStepper;
-  IBOutlet NSTextField            *eggsMaleSpAField;
-  IBOutlet NSStepper              *eggsMaleSpAStepper;
-  IBOutlet NSTextField            *eggsMaleSpDField;
-  IBOutlet NSStepper              *eggsMaleSpDStepper;
-  IBOutlet NSTextField            *eggsMaleSpeField;
-  IBOutlet NSStepper              *eggsMaleSpeStepper;
-  
-  IBOutlet NSTableView            *eggsTableView;
-  IBOutlet NSArrayController      *eggsContentArray;
-  
+  IBOutlet HashedSeedInspectorEggsTabController       *eggsTabController;
   
   NSData  *currentSeed;
 }
 
 - (IBAction)calculateSeed:(id)sender;
-- (IBAction)generatePIDFrames:(id)sender;
-- (IBAction)generateIVFrames:(id)sender;
-- (IBAction)generateAdjacents:(id)sender;
-- (IBAction)toggleEggIVs:(id)sender;
-- (IBAction)toggleParentIVs:(id)sender;
-- (IBAction)generateEggs:(id)sender;
 
 // take HashedSeed from NSData pointer
 - (void)setSeed:(NSData*)seedData;

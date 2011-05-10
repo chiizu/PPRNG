@@ -24,25 +24,18 @@ In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
 on a result row to bring up the seed inspector for that specific seed.
 
 
-New in 1.1.5
-* Added Characteristic calculation for egg frames if you supply the IV frame
-  number and the IVs of both parents.  This is helpful for locating which frame
-  you landed on.
-* Fixed (hopefully) incorrect egg frame generation.
-* Removed the ES (everstone) column from the egg tab of the Standard Seed
-  Inspector.  If breeding with an everstone, the nature will be replaced with
-  <ES> if the everstone takes effect.
-* Added columns for held item, fishing success, and dust/shadow item to the
-  PID frame section of the Standard Seed Searcher.
-* Added a switch for when the first pokemon in your party has the ability
-  Compound Eyes to the PID frame section of the Standard Seed Inspector. This
-  has a small effect on how the frame is generated, but most importantly it has
-  an effect on the item that a wild Pokemon holds (if it holds any at all).
-* Added columns for fishing success and dust/shadow encounter to the Trainer ID
-  searcher so that you can know whether your shiny PID will allow you to fish
-  and / or find a Pokemon in swirling dust / bridge shadows.
-* Fixed a bug where you couldn't have an ID / SID of 0.
-* Fixed a bug where you couldn't type into the Hidden Power minimum power field.
+New in 1.2.0
+* Initial Egg Seed Searcher added.  It isn't always accurate when calculating
+  how many expected results there will be, but it shouldn't prevent you from
+  running reasonable searches.  In some cases you can run searches that will
+  return way too many results.
+* Added Characteristic to the Adjacents Tab of the Standard Seed Inspector.
+* Updated wild encounter PID generation to use the newest researched algorithm.
+* Fixed a bug where you couldn't have an ID or SID of 0 (again).
+* Fixed a bug where the searches would get stuck if there were too few seeds
+  being considered (most commonly seen in the ID Frame Search tab).
+* Various minor cosmetic changes.  Most notable is that shiny is now indicated
+  with a star instead of '!!!' (because I felt like it).
 
 Known Issues in this version:
 
@@ -62,11 +55,31 @@ Known Issues in this version:
 
 Upcoming Features:
 
-* Egg searching.
 * More info related to shiny frames in the Standard Seed Searcher.
+* Perhaps a Seed Inspector specifically for Eggs.
 * Generation 4 Support - Seed Inspection, time permitting.
 
 Previous Releases:
+
+1.1.5
+* Added Characteristic calculation for egg frames if you supply the IV frame
+  number and the IVs of both parents.  This is helpful for locating which frame
+  you landed on.
+* Fixed (hopefully) incorrect egg frame generation.
+* Removed the ES (everstone) column from the egg tab of the Standard Seed
+  Inspector.  If breeding with an everstone, the nature will be replaced with
+  <ES> if the everstone takes effect.
+* Added columns for held item, fishing success, and dust/shadow item to the
+  PID frame section of the Standard Seed Searcher.
+* Added a switch for when the first pokemon in your party has the ability
+  Compound Eyes to the PID frame section of the Standard Seed Inspector. This
+  has a small effect on how the frame is generated, but most importantly it has
+  an effect on the item that a wild Pokemon holds (if it holds any at all).
+* Added columns for fishing success and dust/shadow encounter to the Trainer ID
+  searcher so that you can know whether your shiny PID will allow you to fish
+  and / or find a Pokemon in swirling dust / bridge shadows.
+* Fixed a bug where you couldn't have an ID / SID of 0.
+* Fixed a bug where you couldn't type into the Hidden Power minimum power field.
 
 1.1.0:
 * ID/SID Abuse - See Trainer ID Searcher

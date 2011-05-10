@@ -19,105 +19,27 @@
 */
 
 
-#import "HashedSeedSearcherController.h"
-
-#include "HashedSeedSearcher.h"
-#include "FrameGenerator.h"
-#include "Utilities.h"
+#import "EggSeedSearcherController.h"
 
 #import "HashedSeedInspectorController.h"
 
-#include <memory>
-#include <boost/lexical_cast.hpp>
+#include "EggSeedSearcher.h"
+#include "Utilities.h"
 
 using namespace pprng;
 
 namespace
 {
 
-struct GUICriteria : public HashedSeedSearcher::Criteria
-{
-  uint32_t      tid, sid;
-  bool          shinyOnly;
-  Nature::Type  nature;
-  uint32_t      minPIDFrame, maxPIDFrame;
-  
-  uint64_t ExpectedNumberOfResults()
-  {
-    uint64_t  result = HashedSeedSearcher::Criteria::ExpectedNumberOfResults();
-    uint64_t  pidFrameMultiplier = 1;
-    uint64_t  shinyDivisor = 1;
-    uint64_t  natureDivisor = 1;
-    
-    if (shinyOnly)
-    {
-      shinyDivisor = 8192;
-      pidFrameMultiplier = maxPIDFrame - minPIDFrame + 1;
-      
-      if ((nature != Nature::ANY) && (nature != Nature::UNKNOWN))
-      {
-        natureDivisor = 25;
-      }
-    }
-    
-    return (result  * pidFrameMultiplier) / (shinyDivisor * natureDivisor);
-  }
-};
-
 struct ResultHandler
 {
   ResultHandler(SearcherController *c, uint32_t tid, uint32_t sid,
-                BOOL shinyOnly, Nature::Type nature,
-                uint32_t minPIDFrame, uint32_t maxPIDFrame)
-    : controller(c), m_tid(tid), m_sid(sid),
-      m_shinyOnly(shinyOnly), m_nature(nature),
-      m_minFrame(minPIDFrame), m_maxFrame(maxPIDFrame)
+                bool usingEverstone)
+    : controller(c), m_tid(tid), m_sid(sid), m_usingEverstone(usingEverstone)
   {}
   
-  void operator()(const HashedIVFrame &frame)
+  void operator()(const Gen5EggFrame &frame)
   {
-    NSMutableDictionary  *pidResult = nil;
-    
-    Gen5PIDFrameGenerator  frameGen(frame.seed,
-                                    Gen5PIDFrameGenerator::GrassCaveFrame,
-                                    false, m_tid, m_sid);
-    bool                   found = false;
-    
-    while (frameGen.CurrentFrame().number < (m_minFrame - 1))
-      frameGen.AdvanceFrame();
-    
-    while (frameGen.CurrentFrame().number < m_maxFrame)
-    {
-      frameGen.AdvanceFrame();
-      if (frameGen.CurrentFrame().pid.IsShiny(m_tid, m_sid) &&
-          ((m_nature == Nature::ANY) ||
-           (frameGen.CurrentFrame().nature == m_nature)))
-      {
-        found = true;
-        break;
-      }
-    }
-    
-    if (found)
-    {
-      Gen5PIDFrame  pidFrame = frameGen.CurrentFrame();
-      
-      pidResult = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedInt: pidFrame.number], @"shinyFrame",
-        [NSString stringWithFormat: @"%s",
-          Nature::ToString(pidFrame.nature).c_str()], @"shinyNature",
-        (pidFrame.synched ? @"Y" : @""), @"shinySync",
-        [NSNumber numberWithUnsignedInt: pidFrame.pid.Gen5Ability()],
-          @"shinyAbility",
-        [NSNumber numberWithUnsignedInt: pidFrame.esv], @"shinyESV",
-        GenderString(pidFrame.pid), @"shinyGender",
-        nil];
-    }
-    else if (m_shinyOnly)
-    {
-      return;
-    }
-    
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
         [NSNumber numberWithUnsignedLongLong: frame.seed.m_rawSeed], @"seed",
@@ -128,7 +50,17 @@ struct ResultHandler
         [NSNumber numberWithUnsignedInt: frame.seed.m_timer0], @"timer0",
 				[NSString stringWithFormat: @"%s",
           Button::ToString(frame.seed.m_keyInput).c_str()], @"keys",
-				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
+				[NSNumber numberWithUnsignedInt: frame.number], @"pidFrame",
+        (m_usingEverstone && frame.everstoneActivated) ?
+            @"<ES>" :
+            [NSString stringWithFormat: @"%s",
+              Nature::ToString(frame.nature).c_str()],
+          @"nature",
+        frame.pid.IsShiny(m_tid, m_sid) ? @"★" : @"", @"shiny",
+        frame.dreamWorldAbilityPassed ? @"Y" : @"", @"dw",
+        [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
+        GenderString(frame.pid), @"gender",
+				[NSNumber numberWithUnsignedInt: frame.ivFrameNumber], @"ivFrame",
         [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
         [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
         [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
@@ -143,11 +75,6 @@ struct ResultHandler
           @"fullSeed",
         nil];
     
-    if (pidResult)
-    {
-      [result addEntriesFromDictionary: pidResult];
-    }
-    
     [controller performSelectorOnMainThread: @selector(addResult:)
                 withObject: result
                 waitUntilDone: NO];
@@ -155,9 +82,7 @@ struct ResultHandler
   
   SearcherController  *controller;
   uint32_t            m_tid, m_sid;
-  BOOL                m_shinyOnly;
-  Nature::Type        m_nature;
-  uint32_t            m_minFrame, m_maxFrame;
+  bool                m_usingEverstone;
 };
 
 struct ProgressHandler
@@ -180,12 +105,11 @@ struct ProgressHandler
 
 }
 
-
-@implementation HashedSeedSearcherController
+@implementation EggSeedSearcherController
 
 - (NSString *)windowNibName
 {
-	return @"HashedSeedSearcher";
+	return @"EggSeedSearcher";
 }
 
 - (void)awakeFromNib
@@ -206,13 +130,6 @@ struct ProgressHandler
   NSDate  *now = [NSDate date];
   [fromDateField setObjectValue: now];
   [toDateField setObjectValue: now];
-}
-
-- (IBAction)toggleShinyOnly:(id)sender
-{
-  BOOL  enabled = [sender state];
-  
-  [shinyNaturePopUp setEnabled: enabled];
 }
 
 - (void)inspectSeed:(id)sender
@@ -242,12 +159,40 @@ struct ProgressHandler
         contextInfo:(void *)contextInfo
 {}
 
+- (IVs)femaleParentIVs
+{
+  IVs  result;
+  
+  result.hp([femaleHPField intValue]);
+  result.at([femaleAtkField intValue]);
+  result.df([femaleDefField intValue]);
+  result.sa([femaleSpAField intValue]);
+  result.sd([femaleSpDField intValue]);
+  result.sp([femaleSpeField intValue]);
+  
+  return result;
+}
+
+- (IVs)maleParentIVs
+{
+  IVs  result;
+  
+  result.hp([maleHPField intValue]);
+  result.at([maleAtkField intValue]);
+  result.df([maleDefField intValue]);
+  result.sa([maleSpAField intValue]);
+  result.sd([maleSpDField intValue]);
+  result.sp([maleSpeField intValue]);
+  
+  return result;
+}
+
 - (NSValue*)getValidatedSearchCriteria
 {
   using namespace boost::gregorian;
   using namespace boost::posix_time;
 
-  GUICriteria  criteria;
+  EggSeedSearcher::Criteria  criteria;
   
   criteria.macAddressLow = [gen5ConfigController macAddressLow];
   criteria.macAddressHigh = [gen5ConfigController macAddressHigh];
@@ -300,13 +245,18 @@ struct ProgressHandler
                boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2))),
           hours(23) + minutes(59) + seconds(59));
   
-  criteria.minFrame = [minIVFrameField intValue];
-  criteria.maxFrame = [maxIVFrameField intValue];
+  criteria.femaleIVs = [self femaleParentIVs];
+  criteria.maleIVs = [self maleParentIVs];
+  criteria.usingEverstone = [everstoneButton state];
+  criteria.usingDitto = [dittoButton state];
+  criteria.internationalParents = [internationalButton state];
+  
+  criteria.minIVFrame = [minIVFrameField intValue];
+  criteria.maxIVFrame = [maxIVFrameField intValue];
   
   criteria.minIVs = [ivParameterController minIVs];
   criteria.shouldCheckMaxIVs = [ivParameterController shouldCheckMaxIVs];
   criteria.maxIVs = [ivParameterController maxIVs];
-  criteria.isRoamer = [ivParameterController isRoamer];
   
   if ([ivParameterController shouldCheckHiddenPower])
   {
@@ -320,12 +270,32 @@ struct ProgressHandler
   
   criteria.tid = [gen5ConfigController tid];
   criteria.sid = [gen5ConfigController sid];
-  criteria.shinyOnly = [shinyOnlyButton state];
-  criteria.nature = Nature::Type([[shinyNaturePopUp selectedItem] tag]);
+  criteria.shinyOnly = [shinyButton state];
+  criteria.nature = Nature::Type([[naturePopUp selectedItem] tag]);
+  criteria.ability = [[abilityPopUp selectedItem] tag];
+  criteria.inheritsDreamworldAbility = [dreamworldButton state];
+  
   criteria.minPIDFrame = [minPIDFrameField intValue];
   criteria.maxPIDFrame = [maxPIDFrameField intValue];
   
-  if (criteria.ExpectedNumberOfResults() > 10000)
+  uint64_t  numResults = criteria.ExpectedNumberOfResults();
+  
+  if (numResults == 0)
+  {
+    NSAlert *alert = [[NSAlert alloc] init];
+    
+    [alert addButtonWithTitle:@"OK"];
+    [alert setMessageText:@"Invalid Search Parameters"];
+    [alert setInformativeText:@"The Parent IVs specified cannot produce the desired Egg IVs."];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    
+    [alert beginSheetModalForWindow:[self window] modalDelegate:self
+           didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:)
+           contextInfo:nil];
+    
+    return nil;
+  }
+  else if (criteria.ExpectedNumberOfResults() > 10000)
   {
     NSAlert *alert = [[NSAlert alloc] init];
     
@@ -342,23 +312,22 @@ struct ProgressHandler
   }
   else
   {
-    return [NSValue valueWithPointer: new GUICriteria(criteria)];
+    return [NSValue valueWithPointer: new EggSeedSearcher::Criteria(criteria)];
   }
 }
 
 - (void)doSearchWithCriteria:(NSValue*)criteriaPtr
 {
-  std::auto_ptr<GUICriteria> 
-    criteria(static_cast<GUICriteria*>([criteriaPtr pointerValue]));
+  std::auto_ptr<EggSeedSearcher::Criteria> 
+    criteria(static_cast<EggSeedSearcher::Criteria*>
+      ([criteriaPtr pointerValue]));
   
-  HashedSeedSearcher  searcher;
+  EggSeedSearcher  searcher;
   
   searcher.Search(*criteria,
-    ResultHandler(searcherController,
-                  criteria->tid, criteria->sid,
-                  criteria->shinyOnly,
-                  criteria->nature,
-                  criteria->minPIDFrame, criteria->maxPIDFrame),
+                  ResultHandler(searcherController,
+                                criteria->tid, criteria->sid,
+                                criteria->usingEverstone),
                   ProgressHandler(searcherController));
 }
 

@@ -9951,10 +9951,12 @@
 					<string>746.IBPluginDependency</string>
 					<string>747.IBPluginDependency</string>
 					<string>748.IBPluginDependency</string>
+					<string>749.CustomClassName</string>
 					<string>749.IBNumberFormatterBehaviorMetadataKey</string>
 					<string>749.IBNumberFormatterLocalizesFormatMetadataKey</string>
 					<string>749.IBPluginDependency</string>
 					<string>750.IBPluginDependency</string>
+					<string>751.CustomClassName</string>
 					<string>751.IBNumberFormatterBehaviorMetadataKey</string>
 					<string>751.IBNumberFormatterLocalizesFormatMetadataKey</string>
 					<string>751.IBPluginDependency</string>
@@ -10661,10 +10663,12 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>TrainerIDFormatter</string>
 					<integer value="1041"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>TrainerIDFormatter</string>
 					<integer value="1041"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -11992,6 +11996,14 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBDocumentRelativeSource</string>
 						<string key="minorKey">../Classes/SearcherController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">TrainerIDFormatter</string>
+					<string key="superclassName">NSNumberFormatter</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBDocumentRelativeSource</string>
+						<string key="minorKey">../Classes/TrainerIDFormatter.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

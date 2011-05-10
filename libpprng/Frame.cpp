@@ -87,4 +87,43 @@ Gen4Frame::Gen4Frame(const Gen34Frame &baseFrame)
   }
 }
 
+
+namespace
+{
+
+static IVs GetEggIVs(const Gen5BreedingFrame &frame,
+                     IVs baseIVs, IVs parentXIVs, IVs parentYIVs)
+{
+  IVs  ivs;
+  
+  for (uint32_t i = 0; i < 6; ++i)
+  {
+    switch (frame.inheritance[i])
+    {
+    default:
+    case Gen5BreedingFrame::NotInherited:
+      ivs.setIV(i, baseIVs.iv(i));
+      break;
+    case Gen5BreedingFrame::ParentX:
+      ivs.setIV(i, parentXIVs.iv(i));
+      break;
+    case Gen5BreedingFrame::ParentY:
+      ivs.setIV(i, parentYIVs.iv(i));
+      break;
+    }
+  }
+  
+  return ivs;
+}
+
+}
+
+Gen5EggFrame::Gen5EggFrame(const Gen5BreedingFrame &f,
+                           uint32_t ivFrame, IVs baseIVs,
+                           IVs parentXIVs, IVs parentYIVs)
+  : Gen5BreedingFrame(f),
+    ivFrameNumber(ivFrame), ivs(GetEggIVs(f, baseIVs, parentXIVs, parentYIVs)),
+    characteristic(Characteristic::Get(f.pid, ivs))
+{}
+
 }

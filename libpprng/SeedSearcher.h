@@ -53,13 +53,13 @@ public:
     
     double  seedPercent = double(SeedGenerator::SeedsPerChunk) / numSeeds;
     
-    if (seedPercent > 0.02)
+    if (seedPercent > 0.002)
     {
-      seedPercent = 0.02;
+      seedPercent = 0.002;
     }
     
     typename SeedGenerator::SeedCountType  stepPercentSeeds =
-      seedPercent * numSeeds;
+      (seedPercent * numSeeds) + 1;
     
     const double stepPercent = seedPercent * 100.0;
     

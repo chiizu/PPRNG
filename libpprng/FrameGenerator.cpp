@@ -360,6 +360,4 @@ void Gen5BreedingFrameGenerator::AdvanceFrame()
   }
 }
 
-
-
 }

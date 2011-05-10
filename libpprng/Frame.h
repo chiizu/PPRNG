@@ -139,6 +139,16 @@ struct Gen5BreedingFrame
   }
 };
 
+struct Gen5EggFrame : public Gen5BreedingFrame
+{
+  Gen5EggFrame(const Gen5BreedingFrame &f, uint32_t ivFrame, IVs baseIVs,
+               IVs parentXIVs, IVs parentYIVs);
+  
+  uint32_t              ivFrameNumber;
+  IVs                   ivs;
+  Characteristic::Type  characteristic;
+};
+
 }
 
 #endif

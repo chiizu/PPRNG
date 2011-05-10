@@ -18,8 +18,8 @@
   along with libpprng.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HASHED_SEED_SEARCHER_H
-#define HASHED_SEED_SEARCHER_H
+#ifndef EGG_SEED_SEARCHER_H
+#define EGG_SEED_SEARCHER_H
 
 
 #include "BasicTypes.h"
@@ -30,7 +30,7 @@
 namespace pprng
 {
 
-class HashedSeedSearcher
+class EggSeedSearcher
 {
 public:
   struct Criteria
@@ -42,23 +42,34 @@ public:
     uint32_t                  vframeLow, vframeHigh;
     boost::posix_time::ptime  fromTime, toTime;
     Button::List              buttonPresses;
-    uint32_t                  minFrame, maxFrame;
-    uint32_t                  maxResults;
+    
+    uint32_t                  tid, sid;
+    
+    IVs                       femaleIVs, maleIVs;
+    bool                      usingEverstone;
+    bool                      usingDitto;
+    bool                      internationalParents;
+    
+    uint32_t                  minPIDFrame, maxPIDFrame;
+    Nature::Type              nature;
+    uint32_t                  ability;
+    bool                      inheritsDreamworldAbility;
+    bool                      shinyOnly;
+    
+    uint32_t                  minIVFrame, maxIVFrame;
     bool                      shouldCheckMaxIVs;
     IVs                       minIVs, maxIVs;
     Element::Type             hiddenType;
     uint32_t                  minHiddenPower;
-    bool                      isRoamer;
     
     uint64_t ExpectedNumberOfResults();
   };
   
-  HashedSeedSearcher() {}
+  EggSeedSearcher() {}
   
-  typedef SeedSearcher<HashedIVFrameGenerator>  SearcherType;
-  typedef SearcherType::Frame                   Frame;
-  typedef SearcherType::ResultCallback          ResultCallback;
-  typedef SearcherType::ProgressCallback        ProgressCallback;
+  typedef Gen5EggFrame                            Frame;
+  typedef boost::function<void (const Frame&)>    ResultCallback;
+  typedef boost::function<bool (double percent)>  ProgressCallback;
   
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
               const ProgressCallback &progressHandler);

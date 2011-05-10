@@ -84,7 +84,7 @@ public:
   Gen5PIDRNG(RNG &rng, Type type, uint32_t tid, uint32_t sid)
     : m_RNG(rng),
       m_PIDWordGenerator(GeneratorForType(type)),
-      m_idLowBitsDiffer((tid & 0x1) ^ (sid & 0x1)),
+      m_idLowBitsDiffer((tid ^ sid) & 0x1),
       m_fullId((sid << 16) | tid)
   {}
   
@@ -101,11 +101,14 @@ private:
   uint32_t NextWildPIDWord()
   {
     uint32_t  result = (m_RNG.Next() >> 32) ^ 0x00010000;
-    uint32_t  pidHighLowBitsDiffer = (result & 0x1) ^ ((result >> 31) & 0x1);
     
-    if (m_idLowBitsDiffer ^ pidHighLowBitsDiffer)
+    if ((m_idLowBitsDiffer ^ result) & 0x1)
     {
-      result = result ^ 0x80000000;
+      result = result | 0x80000000;
+    }
+    else
+    {
+      result = result & 0x7fffffff;
     }
     
     return result;

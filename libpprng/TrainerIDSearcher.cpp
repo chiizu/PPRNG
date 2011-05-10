@@ -32,8 +32,6 @@ struct FrameChecker
 {
   FrameChecker(const TrainerIDSearcher::Criteria &criteria)
     : m_criteria(criteria),
-      m_pidHighLowBitsDiffer((criteria.shinyPID.word & 0x1) ^
-                             ((criteria.shinyPID.word >> 31) & 0x1)),
       m_eggPID((uint64_t(criteria.shinyPID.word) * 0xFFFFFFFFULL) >> 32)
   {}
   
@@ -50,11 +48,16 @@ struct FrameChecker
       
       if (m_criteria.wildShiny)
       {
-        uint32_t  idLowBitsDiffer = (frame.tid & 0x1) ^ (frame.sid & 0x1);
         uint32_t  pidWord = m_criteria.shinyPID.word;
         
-        if (m_pidHighLowBitsDiffer ^ idLowBitsDiffer)
-          pidWord = pidWord ^ 0x10000000;
+        if ((frame.tid ^ frame.sid ^ pidWord) & 0x1)
+        {
+          pidWord = pidWord | 0x80000000;
+        }
+        else
+        {
+          pidWord = pidWord & 0x7fffffff;
+        }
         
         if (!PID(pidWord).IsShiny(frame.tid, frame.sid))
           return false;
@@ -68,7 +71,6 @@ struct FrameChecker
   }
   
   const TrainerIDSearcher::Criteria  &m_criteria;
-  const uint32_t                     m_pidHighLowBitsDiffer;
   const PID                          m_eggPID;
 };
 

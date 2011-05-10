@@ -144,6 +144,8 @@ struct IDFrameSearchProgressHandler
 {
   [super awakeFromNib];
   
+  [[pidSeedField formatter] setFormatWidth: 16];
+  
   [[[[pidFrameTableView tableColumnWithIdentifier: @"pid"] dataCell] formatter]
    setFormatWidth: 8];
   
@@ -156,18 +158,6 @@ struct IDFrameSearchProgressHandler
     dataCell] formatter]
    setFormatWidth: 16];
   
-  NSNumberFormatter  *formatter =
-    [[[[tidSidSearcherController tableView] tableColumnWithIdentifier: @"tid"]
-      dataCell] formatter];
-  [formatter setFormatWidth: 5];
-  [formatter setPaddingCharacter: @"0"];
-
-  formatter =
-    [[[[tidSidSearcherController tableView] tableColumnWithIdentifier: @"sid"]
-     dataCell] formatter];
-  [formatter setFormatWidth: 5];
-  [formatter setPaddingCharacter: @"0"];
-  
   NSDate  *now = [NSDate date];
   [tidSidFromDateField setObjectValue: now];
   [tidSidToDateField setObjectValue: now];
@@ -177,25 +167,9 @@ struct IDFrameSearchProgressHandler
   [idFrameSearcherController setDoSearchWithCriteriaSelector:
                              @selector(idFrameSearchDoSearchWithCriteria:)];
   
-  formatter = [idFrameTrainerIDField formatter];
-  [formatter setFormatWidth: 5];
-  [formatter setPaddingCharacter: @"0"];
-  
   [[[[[idFrameSearcherController tableView] tableColumnWithIdentifier: @"seed"]
     dataCell] formatter]
    setFormatWidth: 16];
-  
-  formatter =
-    [[[[idFrameSearcherController tableView] tableColumnWithIdentifier: @"tid"]
-      dataCell] formatter];
-  [formatter setFormatWidth: 5];
-  [formatter setPaddingCharacter: @"0"];
-
-  formatter =
-    [[[[idFrameSearcherController tableView] tableColumnWithIdentifier: @"sid"]
-     dataCell] formatter];
-  [formatter setFormatWidth: 5];
-  [formatter setPaddingCharacter: @"0"];
   
   [idFrameDateField setObjectValue: now];
 }

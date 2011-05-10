@@ -77,11 +77,6 @@ using namespace pprng;
     [[macAddressField5 formatter] setFormatWidth: 2];
   }
   
-  [[tidField formatter] setFormatWidth: 5];
-  [[tidField formatter] setPaddingCharacter: @"0"];
-  [[sidField formatter] setFormatWidth: 5];
-  [[sidField formatter] setPaddingCharacter: @"0"];
-  
   [self setCurrentConfiguration];
 }
 

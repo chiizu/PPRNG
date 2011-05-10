@@ -13,6 +13,13 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		C02E0A0213515E1A00855098 /* README in Resources */ = {isa = PBXBuildFile; fileRef = C02E0A0113515E1A00855098 /* README */; };
 		C02E0A0413515E2300855098 /* COPYING in Resources */ = {isa = PBXBuildFile; fileRef = C02E0A0313515E2300855098 /* COPYING */; };
+		C0821492136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0821491136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm */; };
+		C08214B5136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C08214B4136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.mm */; };
+		C08214C4136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C08214C3136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.mm */; };
+		C0821518136EE9F600B6E0E5 /* TrainerIDFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = C0821517136EE9F600B6E0E5 /* TrainerIDFormatter.m */; };
+		C082154F137107DB00B6E0E5 /* EggSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C082154D137107DB00B6E0E5 /* EggSeedSearcher.nib */; };
+		C08215661372F4FF00B6E0E5 /* EggSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C08215641372F4FF00B6E0E5 /* EggSeedSearcher.cpp */; };
+		C082156D1375923500B6E0E5 /* EggSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C082156C1375923500B6E0E5 /* EggSeedSearcherController.mm */; };
 		C0D1A3B8136C2C3100D6E2DA /* Utilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */; };
 		C0DAED071356A9CC008D00D5 /* TrainerIDSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */; };
 		C0E3041B1346343400C56C1A /* BasicTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303F81346343400C56C1A /* BasicTypes.cpp */; };
@@ -74,6 +81,19 @@
 		8D1107320486CEB800E47090 /* PPRNG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PPRNG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C02E0A0113515E1A00855098 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		C02E0A0313515E2300855098 /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		C0821490136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashedSeedInspectorFramesTabController.h; sourceTree = "<group>"; };
+		C0821491136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HashedSeedInspectorFramesTabController.mm; sourceTree = "<group>"; };
+		C08214B3136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashedSeedInspectorAdjacentsTabController.h; sourceTree = "<group>"; };
+		C08214B4136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HashedSeedInspectorAdjacentsTabController.mm; sourceTree = "<group>"; };
+		C08214C2136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashedSeedInspectorEggsTabController.h; sourceTree = "<group>"; };
+		C08214C3136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HashedSeedInspectorEggsTabController.mm; sourceTree = "<group>"; };
+		C0821516136EE9F600B6E0E5 /* TrainerIDFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TrainerIDFormatter.h; path = ../PPRNG/Classes/TrainerIDFormatter.h; sourceTree = SOURCE_ROOT; };
+		C0821517136EE9F600B6E0E5 /* TrainerIDFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TrainerIDFormatter.m; path = ../PPRNG/Classes/TrainerIDFormatter.m; sourceTree = SOURCE_ROOT; };
+		C082154E137107DB00B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/EggSeedSearcher.nib; sourceTree = SOURCE_ROOT; };
+		C08215641372F4FF00B6E0E5 /* EggSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EggSeedSearcher.cpp; path = ../PPRNG/libpprng/EggSeedSearcher.cpp; sourceTree = SOURCE_ROOT; };
+		C08215651372F4FF00B6E0E5 /* EggSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EggSeedSearcher.h; path = ../PPRNG/libpprng/EggSeedSearcher.h; sourceTree = SOURCE_ROOT; };
+		C082156B1375923500B6E0E5 /* EggSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EggSeedSearcherController.h; sourceTree = "<group>"; };
+		C082156C1375923500B6E0E5 /* EggSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EggSeedSearcherController.mm; sourceTree = "<group>"; };
 		C0D1A3B6136C2C3100D6E2DA /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Utilities.mm; sourceTree = "<group>"; };
 		C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrainerIDSearcher.cpp; sourceTree = "<group>"; };
@@ -190,14 +210,22 @@
 				C0E304301346349900C56C1A /* DSParameterSearcherController.mm */,
 				C0E304311346349900C56C1A /* DSTypeTransformer.h */,
 				C0E304321346349900C56C1A /* DSTypeTransformer.mm */,
+				C082156B1375923500B6E0E5 /* EggSeedSearcherController.h */,
+				C082156C1375923500B6E0E5 /* EggSeedSearcherController.mm */,
 				C0E304331346349900C56C1A /* Gen4SeedSearcherController.h */,
 				C0E304341346349900C56C1A /* Gen4SeedSearcherController.mm */,
 				C0E304351346349900C56C1A /* Gen5ConfigurationController.h */,
 				C0E304361346349900C56C1A /* Gen5ConfigurationController.mm */,
 				C0E304371346349900C56C1A /* Gen5ConfigurationEditController.h */,
 				C0E304381346349900C56C1A /* Gen5ConfigurationEditController.mm */,
+				C08214B3136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.h */,
+				C08214B4136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.mm */,
 				C0E304391346349900C56C1A /* HashedSeedInspectorController.h */,
 				C0E3043A1346349900C56C1A /* HashedSeedInspectorController.mm */,
+				C08214C2136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.h */,
+				C08214C3136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.mm */,
+				C0821490136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.h */,
+				C0821491136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm */,
 				C0E3043B1346349900C56C1A /* HashedSeedSearcherController.h */,
 				C0E3043C1346349900C56C1A /* HashedSeedSearcherController.mm */,
 				C0E3043D1346349900C56C1A /* HexadecimalFormatter.h */,
@@ -210,8 +238,12 @@
 				C0E304441346349900C56C1A /* SearcherController.m */,
 				C0E304471346349900C56C1A /* SynchroScrollView.h */,
 				C0E304481346349900C56C1A /* SynchroScrollView.m */,
+				C0821516136EE9F600B6E0E5 /* TrainerIDFormatter.h */,
+				C0821517136EE9F600B6E0E5 /* TrainerIDFormatter.m */,
 				C0E304451346349900C56C1A /* TrainerIDSearcherController.h */,
 				C0E304461346349900C56C1A /* TrainerIDSearcherController.mm */,
+				C0D1A3B6136C2C3100D6E2DA /* Utilities.h */,
+				C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */,
 				C0E304491346349900C56C1A /* VersionTransformer.h */,
 				C0E3044A1346349900C56C1A /* VersionTransformer.mm */,
 				C0E3044B1346349900C56C1A /* VertResizeOnlyWindowController.h */,
@@ -220,8 +252,6 @@
 				C0E3044E1346349900C56C1A /* WonderCardSeedInspectorController.mm */,
 				C0E3044F1346349900C56C1A /* WonderCardSeedSearcherController.h */,
 				C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */,
-				C0D1A3B6136C2C3100D6E2DA /* Utilities.h */,
-				C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -282,6 +312,7 @@
 				C0E304761346350F00C56C1A /* CGearSeedInspector.nib */,
 				C0E304781346350F00C56C1A /* CGearSeedSearcher.nib */,
 				C0E3047A1346350F00C56C1A /* DSParameterSearcher.nib */,
+				C082154D137107DB00B6E0E5 /* EggSeedSearcher.nib */,
 				C0E3047C1346350F00C56C1A /* Gen4SeedSearcher.nib */,
 				C0E3047E1346350F00C56C1A /* Gen5Configuration.nib */,
 				C0E304801346350F00C56C1A /* HashedSeedInspector.nib */,
@@ -316,6 +347,8 @@
 				C0E303FB1346343400C56C1A /* CGearSeedSearcher.cpp */,
 				C0E303FC1346343400C56C1A /* CGearSeedSearcher.h */,
 				C0E303FD1346343400C56C1A /* EEGA.h */,
+				C08215641372F4FF00B6E0E5 /* EggSeedSearcher.cpp */,
+				C08215651372F4FF00B6E0E5 /* EggSeedSearcher.h */,
 				C0E303FE1346343400C56C1A /* Frame.cpp */,
 				C0E303FF1346343400C56C1A /* Frame.h */,
 				C0E304001346343400C56C1A /* FrameGenerator.cpp */,
@@ -415,6 +448,7 @@
 				C0E3048A1346350F00C56C1A /* HashedSeedSearcher.nib in Resources */,
 				C02E0A0213515E1A00855098 /* README in Resources */,
 				C02E0A0413515E2300855098 /* COPYING in Resources */,
+				C082154F137107DB00B6E0E5 /* EggSeedSearcher.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -460,6 +494,12 @@
 				C0E304641346349900C56C1A /* WonderCardSeedSearcherController.mm in Sources */,
 				C0DAED071356A9CC008D00D5 /* TrainerIDSearcher.cpp in Sources */,
 				C0D1A3B8136C2C3100D6E2DA /* Utilities.mm in Sources */,
+				C0821492136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm in Sources */,
+				C08214B5136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.mm in Sources */,
+				C08214C4136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.mm in Sources */,
+				C0821518136EE9F600B6E0E5 /* TrainerIDFormatter.m in Sources */,
+				C08215661372F4FF00B6E0E5 /* EggSeedSearcher.cpp in Sources */,
+				C082156D1375923500B6E0E5 /* EggSeedSearcherController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -480,6 +520,14 @@
 				29B97319FDCFA39411CA2CEA /* English */,
 			);
 			name = MainMenu.nib;
+			sourceTree = "<group>";
+		};
+		C082154D137107DB00B6E0E5 /* EggSeedSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C082154E137107DB00B6E0E5 /* English */,
+			);
+			name = EggSeedSearcher.nib;
 			sourceTree = "<group>";
 		};
 		C0E30467134634FD00C56C1A /* TrainerIDSearcher.nib */ = {

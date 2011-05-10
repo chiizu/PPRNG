@@ -21,25 +21,9 @@
 
 #import <Cocoa/Cocoa.h>
 
-
-@interface LauncherController : NSWindowController
+@interface TrainerIDFormatter : NSNumberFormatter
 {
-  IBOutlet NSButton  *launchHashedSeedSearcher;
-  IBOutlet NSButton  *launchHashedSeedInspector;
-  IBOutlet NSButton  *launchEggSeedSearcher;
-  IBOutlet NSButton  *launchWonderCardSeedSearcher;
-  IBOutlet NSButton  *launchWonderCardSeedInspector;
-  IBOutlet NSButton  *launchCGearSeedSearcher;
-  IBOutlet NSButton  *launchCGearSeedInspector;
-  IBOutlet NSButton  *launchTIDSearcher;
-  IBOutlet NSButton  *launchDSParameterSearcher;
-  IBOutlet NSButton  *launchGen5ConfigurationEdit;
-  
-  IBOutlet NSButton  *launchGen4SeedSearcher;
-  
-  NSDictionary    *buttonToClassMap;
 }
 
-- (IBAction)launch:(id)sender;
 
 @end

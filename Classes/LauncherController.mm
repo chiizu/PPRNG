@@ -23,6 +23,7 @@
 
 #import "HashedSeedSearcherController.h"
 #import "HashedSeedInspectorController.h"
+#import "EggSeedSearcherController.h"
 #import "WonderCardSeedSearcherController.h"
 #import "WonderCardSeedInspectorController.h"
 #import "CGearSeedSearcherController.h"
@@ -48,6 +49,8 @@
         [launchHashedSeedSearcher title],
       [HashedSeedInspectorController class],
         [launchHashedSeedInspector title],
+      [EggSeedSearcherController class],
+        [launchEggSeedSearcher title],
       [WonderCardSeedSearcherController class],
         [launchWonderCardSeedSearcher title],
       [WonderCardSeedInspectorController class],

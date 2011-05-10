@@ -105,11 +105,6 @@ using namespace pprng;
   [[macAddressField4 formatter] setFormatWidth: 2];
   [[macAddressField5 formatter] setFormatWidth: 2];
   
-  [[tidField formatter] setFormatWidth: 5];
-  [[tidField formatter] setPaddingCharacter: @"0"];
-  [[sidField formatter] setFormatWidth: 5];
-  [[sidField formatter] setPaddingCharacter: @"0"];
-  
   /* get current config */
   NSInteger  currentConfigIndex =
     [[NSUserDefaults standardUserDefaults] integerForKey: @"gen5ConfigIndex"];
