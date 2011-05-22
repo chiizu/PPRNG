@@ -26,3 +26,6 @@
 extern NSString* NatureString(pprng::Nature::Type nature);
 extern NSString* GenderString(pprng::PID pid);
 extern NSString* HeldItemString(pprng::HeldItem::Type t);
+
+extern void SaveTableContentsToCSV(NSTableView *tableView,
+                                   NSArrayController *contentArray);

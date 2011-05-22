@@ -233,6 +233,15 @@ struct IVFrameGeneratorFactory
 
 uint64_t EggSeedSearcher::Criteria::ExpectedNumberOfResults()
 {
+  IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
+  
+  std::vector<IVRange>  ivRanges =
+    GenerateIVRanges(femaleIVs, maleIVs, minIVs, maxIVs);
+  
+  if (ivRanges.size() == 0)
+    return 0;
+  
+  
   uint64_t  seconds = (toTime - fromTime).total_seconds() + 1;
   uint64_t  keyCombos = buttonPresses.size();
   uint64_t  timer0Values = (timer0High - timer0Low) + 1;
@@ -247,37 +256,13 @@ uint64_t EggSeedSearcher::Criteria::ExpectedNumberOfResults()
   uint64_t  hpDivisor = 1;
   if (hiddenType != Element::UNKNOWN)
   {
-    hpDivisor = 40; // number of power levels
+    hpDivisor = 1; // number of power levels is 40, but...
     
     if (hiddenType != Element::ANY)
     {
       hpDivisor *= 16;
     }
   }
-  
-  IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
-  
-  
-  std::vector<IVRange>  ivRanges =
-    GenerateIVRanges(femaleIVs, maleIVs, minIVs, maxIVs);
-  
-  if (ivRanges.size() == 0)
-    return 0;
-  
-  std::vector<IVRange>::const_iterator  i;
-  uint64_t                              ivMatches = 0UL;
-  for (i = ivRanges.begin(); i != ivRanges.end(); ++i)
-  {
-    ivMatches += (i->maxIVs.hp() - i->minIVs.hp() + 1) *
-                 (i->maxIVs.at() - i->minIVs.at() + 1) *
-                 (i->maxIVs.df() - i->minIVs.df() + 1) *
-                 (i->maxIVs.sa() - i->minIVs.sa() + 1) *
-                 (i->maxIVs.sd() - i->minIVs.sd() + 1) *
-                 (i->maxIVs.sp() - i->minIVs.sp() + 1) *
-                 i->inheritancePatterns /
-                 (/* 6 choose 3 = */ 20 * /* total inheritance patterns */ 8);
-  }
-  ivMatches /= ivRanges.size();
   
   uint64_t  natureMultiplier, natureDivisor;
   if (nature != Nature::ANY)
@@ -314,11 +299,29 @@ uint64_t EggSeedSearcher::Criteria::ExpectedNumberOfResults()
   
   uint64_t  numPIDFrames = maxPIDFrame - minPIDFrame + 1;
   
-  uint64_t  result =
-    (numIVFrames * numSeeds * numPIDFrames * ivMatches *
-     natureMultiplier * dwMultiplier * shinyMultiplier) /
-    (hpDivisor * natureDivisor * abilityDivisor * dwDivisor * shinyDivisor *
-     32UL * 32UL * 32UL * 32UL * 32UL * 32UL);
+  uint64_t  multiplier = numIVFrames * numSeeds * numPIDFrames *
+                         natureMultiplier * dwMultiplier * shinyMultiplier;
+  
+  uint64_t  divisor = hpDivisor * natureDivisor * abilityDivisor * dwDivisor *
+                      shinyDivisor * 32UL * 32UL * 32UL * 32UL * 32UL * 32UL;
+  
+  
+  std::vector<IVRange>::const_iterator  i;
+  uint64_t                              ivMatches = 0UL;
+  for (i = ivRanges.begin(); i != ivRanges.end(); ++i)
+  {
+    uint64_t  ivSets = (i->maxIVs.hp() - i->minIVs.hp() + 1) *
+                       (i->maxIVs.at() - i->minIVs.at() + 1) *
+                       (i->maxIVs.df() - i->minIVs.df() + 1) *
+                       (i->maxIVs.sa() - i->minIVs.sa() + 1) *
+                       (i->maxIVs.sd() - i->minIVs.sd() + 1) *
+                       (i->maxIVs.sp() - i->minIVs.sp() + 1);
+    
+    ivMatches += ivSets * i->inheritancePatterns /
+                 /* total inheritance patterns * 6c3 */ 160UL;
+  }
+  
+  uint64_t  result = ivMatches * multiplier / divisor;
   
   return result + 1;
 }

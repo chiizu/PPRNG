@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 29B97318FDCFA39411CA2CEA /* MainMenu.nib */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -17,9 +16,21 @@
 		C08214B5136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C08214B4136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.mm */; };
 		C08214C4136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C08214C3136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.mm */; };
 		C0821518136EE9F600B6E0E5 /* TrainerIDFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = C0821517136EE9F600B6E0E5 /* TrainerIDFormatter.m */; };
-		C082154F137107DB00B6E0E5 /* EggSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C082154D137107DB00B6E0E5 /* EggSeedSearcher.nib */; };
 		C08215661372F4FF00B6E0E5 /* EggSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C08215641372F4FF00B6E0E5 /* EggSeedSearcher.cpp */; };
 		C082156D1375923500B6E0E5 /* EggSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C082156C1375923500B6E0E5 /* EggSeedSearcherController.mm */; };
+		C08216FB137E1D7000B6E0E5 /* CGearSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216E1137E1D7000B6E0E5 /* CGearSeedInspector.nib */; };
+		C08216FC137E1D7000B6E0E5 /* CGearSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216E3137E1D7000B6E0E5 /* CGearSeedSearcher.nib */; };
+		C08216FD137E1D7000B6E0E5 /* DSParameterSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216E5137E1D7000B6E0E5 /* DSParameterSearcher.nib */; };
+		C08216FE137E1D7000B6E0E5 /* EggSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216E7137E1D7000B6E0E5 /* EggSeedSearcher.nib */; };
+		C08216FF137E1D7000B6E0E5 /* Gen4SeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216E9137E1D7000B6E0E5 /* Gen4SeedSearcher.nib */; };
+		C0821700137E1D7000B6E0E5 /* Gen5Configuration.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216EB137E1D7000B6E0E5 /* Gen5Configuration.nib */; };
+		C0821701137E1D7000B6E0E5 /* HashedSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216ED137E1D7000B6E0E5 /* HashedSeedInspector.nib */; };
+		C0821702137E1D7000B6E0E5 /* HashedSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216EF137E1D7000B6E0E5 /* HashedSeedSearcher.nib */; };
+		C0821703137E1D7000B6E0E5 /* Launcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F1137E1D7000B6E0E5 /* Launcher.nib */; };
+		C0821704137E1D7000B6E0E5 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F3137E1D7000B6E0E5 /* MainMenu.nib */; };
+		C0821705137E1D7000B6E0E5 /* TrainerIDSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F5137E1D7000B6E0E5 /* TrainerIDSearcher.nib */; };
+		C0821706137E1D7000B6E0E5 /* WonderCardSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F7137E1D7000B6E0E5 /* WonderCardSeedInspector.nib */; };
+		C0821707137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F9137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib */; };
 		C0D1A3B8136C2C3100D6E2DA /* Utilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */; };
 		C0DAED071356A9CC008D00D5 /* TrainerIDSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */; };
 		C0E3041B1346343400C56C1A /* BasicTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303F81346343400C56C1A /* BasicTypes.cpp */; };
@@ -47,25 +58,13 @@
 		C0E3045B1346349900C56C1A /* HexadecimalFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = C0E3043E1346349900C56C1A /* HexadecimalFormatter.m */; };
 		C0E3045C1346349900C56C1A /* IVParameterController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304401346349900C56C1A /* IVParameterController.mm */; };
 		C0E3045D1346349900C56C1A /* LauncherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304421346349900C56C1A /* LauncherController.mm */; };
-		C0E3045E1346349900C56C1A /* SearcherController.m in Sources */ = {isa = PBXBuildFile; fileRef = C0E304441346349900C56C1A /* SearcherController.m */; };
+		C0E3045E1346349900C56C1A /* SearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304441346349900C56C1A /* SearcherController.mm */; };
 		C0E3045F1346349900C56C1A /* TrainerIDSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304461346349900C56C1A /* TrainerIDSearcherController.mm */; };
-		C0E304601346349900C56C1A /* SynchroScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = C0E304481346349900C56C1A /* SynchroScrollView.m */; };
 		C0E304611346349900C56C1A /* VersionTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E3044A1346349900C56C1A /* VersionTransformer.mm */; };
 		C0E304621346349900C56C1A /* VertResizeOnlyWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = C0E3044C1346349900C56C1A /* VertResizeOnlyWindowController.m */; };
 		C0E304631346349900C56C1A /* WonderCardSeedInspectorController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E3044E1346349900C56C1A /* WonderCardSeedInspectorController.mm */; };
 		C0E304641346349900C56C1A /* WonderCardSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */; };
 		C0E30466134634BF00C56C1A /* Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = C0E30465134634BF00C56C1A /* Icon.icns */; };
-		C0E3046F134634FD00C56C1A /* TrainerIDSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E30467134634FD00C56C1A /* TrainerIDSearcher.nib */; };
-		C0E30471134634FD00C56C1A /* WonderCardSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E3046B134634FD00C56C1A /* WonderCardSeedInspector.nib */; };
-		C0E30472134634FD00C56C1A /* WonderCardSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E3046D134634FD00C56C1A /* WonderCardSeedSearcher.nib */; };
-		C0E304751346350400C56C1A /* Launcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E304731346350400C56C1A /* Launcher.nib */; };
-		C0E304841346350F00C56C1A /* CGearSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E304761346350F00C56C1A /* CGearSeedInspector.nib */; };
-		C0E304851346350F00C56C1A /* CGearSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E304781346350F00C56C1A /* CGearSeedSearcher.nib */; };
-		C0E304861346350F00C56C1A /* DSParameterSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E3047A1346350F00C56C1A /* DSParameterSearcher.nib */; };
-		C0E304871346350F00C56C1A /* Gen4SeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E3047C1346350F00C56C1A /* Gen4SeedSearcher.nib */; };
-		C0E304881346350F00C56C1A /* Gen5Configuration.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E3047E1346350F00C56C1A /* Gen5Configuration.nib */; };
-		C0E304891346350F00C56C1A /* HashedSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E304801346350F00C56C1A /* HashedSeedInspector.nib */; };
-		C0E3048A1346350F00C56C1A /* HashedSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0E304821346350F00C56C1A /* HashedSeedSearcher.nib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -73,7 +72,6 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		29B97319FDCFA39411CA2CEA /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* PPRNG_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPRNG_Prefix.pch; sourceTree = "<group>"; };
@@ -89,11 +87,23 @@
 		C08214C3136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HashedSeedInspectorEggsTabController.mm; sourceTree = "<group>"; };
 		C0821516136EE9F600B6E0E5 /* TrainerIDFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TrainerIDFormatter.h; path = ../PPRNG/Classes/TrainerIDFormatter.h; sourceTree = SOURCE_ROOT; };
 		C0821517136EE9F600B6E0E5 /* TrainerIDFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TrainerIDFormatter.m; path = ../PPRNG/Classes/TrainerIDFormatter.m; sourceTree = SOURCE_ROOT; };
-		C082154E137107DB00B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/EggSeedSearcher.nib; sourceTree = SOURCE_ROOT; };
 		C08215641372F4FF00B6E0E5 /* EggSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EggSeedSearcher.cpp; path = ../PPRNG/libpprng/EggSeedSearcher.cpp; sourceTree = SOURCE_ROOT; };
 		C08215651372F4FF00B6E0E5 /* EggSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EggSeedSearcher.h; path = ../PPRNG/libpprng/EggSeedSearcher.h; sourceTree = SOURCE_ROOT; };
 		C082156B1375923500B6E0E5 /* EggSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EggSeedSearcherController.h; sourceTree = "<group>"; };
 		C082156C1375923500B6E0E5 /* EggSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EggSeedSearcherController.mm; sourceTree = "<group>"; };
+		C08216E2137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/CGearSeedInspector.nib; sourceTree = SOURCE_ROOT; };
+		C08216E4137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/CGearSeedSearcher.nib; sourceTree = SOURCE_ROOT; };
+		C08216E6137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/DSParameterSearcher.nib; sourceTree = SOURCE_ROOT; };
+		C08216E8137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/EggSeedSearcher.nib; sourceTree = SOURCE_ROOT; };
+		C08216EA137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/Gen4SeedSearcher.nib; sourceTree = SOURCE_ROOT; };
+		C08216EC137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/Gen5Configuration.nib; sourceTree = SOURCE_ROOT; };
+		C08216EE137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/HashedSeedInspector.nib; sourceTree = SOURCE_ROOT; };
+		C08216F0137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/HashedSeedSearcher.nib; sourceTree = SOURCE_ROOT; };
+		C08216F2137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/Launcher.nib; sourceTree = SOURCE_ROOT; };
+		C08216F4137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/MainMenu.nib; sourceTree = SOURCE_ROOT; };
+		C08216F6137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/TrainerIDSearcher.nib; sourceTree = SOURCE_ROOT; };
+		C08216F8137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/WonderCardSeedInspector.nib; sourceTree = SOURCE_ROOT; };
+		C08216FA137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/WonderCardSeedSearcher.nib; sourceTree = SOURCE_ROOT; };
 		C0D1A3B6136C2C3100D6E2DA /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Utilities.mm; sourceTree = "<group>"; };
 		C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrainerIDSearcher.cpp; sourceTree = "<group>"; };
@@ -158,11 +168,9 @@
 		C0E304411346349900C56C1A /* LauncherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LauncherController.h; sourceTree = "<group>"; };
 		C0E304421346349900C56C1A /* LauncherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LauncherController.mm; sourceTree = "<group>"; };
 		C0E304431346349900C56C1A /* SearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearcherController.h; sourceTree = "<group>"; };
-		C0E304441346349900C56C1A /* SearcherController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearcherController.m; sourceTree = "<group>"; };
+		C0E304441346349900C56C1A /* SearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SearcherController.mm; sourceTree = "<group>"; };
 		C0E304451346349900C56C1A /* TrainerIDSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerIDSearcherController.h; sourceTree = "<group>"; };
 		C0E304461346349900C56C1A /* TrainerIDSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TrainerIDSearcherController.mm; sourceTree = "<group>"; };
-		C0E304471346349900C56C1A /* SynchroScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchroScrollView.h; sourceTree = "<group>"; };
-		C0E304481346349900C56C1A /* SynchroScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynchroScrollView.m; sourceTree = "<group>"; };
 		C0E304491346349900C56C1A /* VersionTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionTransformer.h; sourceTree = "<group>"; };
 		C0E3044A1346349900C56C1A /* VersionTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VersionTransformer.mm; sourceTree = "<group>"; };
 		C0E3044B1346349900C56C1A /* VertResizeOnlyWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VertResizeOnlyWindowController.h; sourceTree = "<group>"; };
@@ -172,17 +180,6 @@
 		C0E3044F1346349900C56C1A /* WonderCardSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderCardSeedSearcherController.h; sourceTree = "<group>"; };
 		C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WonderCardSeedSearcherController.mm; sourceTree = "<group>"; };
 		C0E30465134634BF00C56C1A /* Icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Icon.icns; sourceTree = "<group>"; };
-		C0E30468134634FD00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/TrainerIDSearcher.nib; sourceTree = "<group>"; };
-		C0E3046C134634FD00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/WonderCardSeedInspector.nib; sourceTree = "<group>"; };
-		C0E3046E134634FD00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/WonderCardSeedSearcher.nib; sourceTree = "<group>"; };
-		C0E304741346350400C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Launcher.nib; sourceTree = "<group>"; };
-		C0E304771346350F00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/CGearSeedInspector.nib; sourceTree = "<group>"; };
-		C0E304791346350F00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/CGearSeedSearcher.nib; sourceTree = "<group>"; };
-		C0E3047B1346350F00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/DSParameterSearcher.nib; sourceTree = "<group>"; };
-		C0E3047D1346350F00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Gen4SeedSearcher.nib; sourceTree = "<group>"; };
-		C0E3047F1346350F00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Gen5Configuration.nib; sourceTree = "<group>"; };
-		C0E304811346350F00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/HashedSeedInspector.nib; sourceTree = "<group>"; };
-		C0E304831346350F00C56C1A /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/HashedSeedSearcher.nib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -235,9 +232,7 @@
 				C0E304411346349900C56C1A /* LauncherController.h */,
 				C0E304421346349900C56C1A /* LauncherController.mm */,
 				C0E304431346349900C56C1A /* SearcherController.h */,
-				C0E304441346349900C56C1A /* SearcherController.m */,
-				C0E304471346349900C56C1A /* SynchroScrollView.h */,
-				C0E304481346349900C56C1A /* SynchroScrollView.m */,
+				C0E304441346349900C56C1A /* SearcherController.mm */,
 				C0821516136EE9F600B6E0E5 /* TrainerIDFormatter.h */,
 				C0821517136EE9F600B6E0E5 /* TrainerIDFormatter.m */,
 				C0E304451346349900C56C1A /* TrainerIDSearcherController.h */,
@@ -307,24 +302,24 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C08216E1137E1D7000B6E0E5 /* CGearSeedInspector.nib */,
+				C08216E3137E1D7000B6E0E5 /* CGearSeedSearcher.nib */,
+				C08216E5137E1D7000B6E0E5 /* DSParameterSearcher.nib */,
+				C08216E7137E1D7000B6E0E5 /* EggSeedSearcher.nib */,
+				C08216E9137E1D7000B6E0E5 /* Gen4SeedSearcher.nib */,
+				C08216EB137E1D7000B6E0E5 /* Gen5Configuration.nib */,
+				C08216ED137E1D7000B6E0E5 /* HashedSeedInspector.nib */,
+				C08216EF137E1D7000B6E0E5 /* HashedSeedSearcher.nib */,
+				C08216F1137E1D7000B6E0E5 /* Launcher.nib */,
+				C08216F3137E1D7000B6E0E5 /* MainMenu.nib */,
+				C08216F5137E1D7000B6E0E5 /* TrainerIDSearcher.nib */,
+				C08216F7137E1D7000B6E0E5 /* WonderCardSeedInspector.nib */,
+				C08216F9137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib */,
 				C02E0A0113515E1A00855098 /* README */,
 				C02E0A0313515E2300855098 /* COPYING */,
-				C0E304761346350F00C56C1A /* CGearSeedInspector.nib */,
-				C0E304781346350F00C56C1A /* CGearSeedSearcher.nib */,
-				C0E3047A1346350F00C56C1A /* DSParameterSearcher.nib */,
-				C082154D137107DB00B6E0E5 /* EggSeedSearcher.nib */,
-				C0E3047C1346350F00C56C1A /* Gen4SeedSearcher.nib */,
-				C0E3047E1346350F00C56C1A /* Gen5Configuration.nib */,
-				C0E304801346350F00C56C1A /* HashedSeedInspector.nib */,
-				C0E304821346350F00C56C1A /* HashedSeedSearcher.nib */,
 				C0E30465134634BF00C56C1A /* Icon.icns */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
-				C0E304731346350400C56C1A /* Launcher.nib */,
-				29B97318FDCFA39411CA2CEA /* MainMenu.nib */,
-				C0E30467134634FD00C56C1A /* TrainerIDSearcher.nib */,
-				C0E3046B134634FD00C56C1A /* WonderCardSeedInspector.nib */,
-				C0E3046D134634FD00C56C1A /* WonderCardSeedSearcher.nib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -432,23 +427,23 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				C0E30466134634BF00C56C1A /* Icon.icns in Resources */,
-				C0E3046F134634FD00C56C1A /* TrainerIDSearcher.nib in Resources */,
-				C0E30471134634FD00C56C1A /* WonderCardSeedInspector.nib in Resources */,
-				C0E30472134634FD00C56C1A /* WonderCardSeedSearcher.nib in Resources */,
-				C0E304751346350400C56C1A /* Launcher.nib in Resources */,
-				C0E304841346350F00C56C1A /* CGearSeedInspector.nib in Resources */,
-				C0E304851346350F00C56C1A /* CGearSeedSearcher.nib in Resources */,
-				C0E304861346350F00C56C1A /* DSParameterSearcher.nib in Resources */,
-				C0E304871346350F00C56C1A /* Gen4SeedSearcher.nib in Resources */,
-				C0E304881346350F00C56C1A /* Gen5Configuration.nib in Resources */,
-				C0E304891346350F00C56C1A /* HashedSeedInspector.nib in Resources */,
-				C0E3048A1346350F00C56C1A /* HashedSeedSearcher.nib in Resources */,
 				C02E0A0213515E1A00855098 /* README in Resources */,
 				C02E0A0413515E2300855098 /* COPYING in Resources */,
-				C082154F137107DB00B6E0E5 /* EggSeedSearcher.nib in Resources */,
+				C08216FB137E1D7000B6E0E5 /* CGearSeedInspector.nib in Resources */,
+				C08216FC137E1D7000B6E0E5 /* CGearSeedSearcher.nib in Resources */,
+				C08216FD137E1D7000B6E0E5 /* DSParameterSearcher.nib in Resources */,
+				C08216FE137E1D7000B6E0E5 /* EggSeedSearcher.nib in Resources */,
+				C08216FF137E1D7000B6E0E5 /* Gen4SeedSearcher.nib in Resources */,
+				C0821700137E1D7000B6E0E5 /* Gen5Configuration.nib in Resources */,
+				C0821701137E1D7000B6E0E5 /* HashedSeedInspector.nib in Resources */,
+				C0821702137E1D7000B6E0E5 /* HashedSeedSearcher.nib in Resources */,
+				C0821703137E1D7000B6E0E5 /* Launcher.nib in Resources */,
+				C0821704137E1D7000B6E0E5 /* MainMenu.nib in Resources */,
+				C0821705137E1D7000B6E0E5 /* TrainerIDSearcher.nib in Resources */,
+				C0821706137E1D7000B6E0E5 /* WonderCardSeedInspector.nib in Resources */,
+				C0821707137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -485,9 +480,8 @@
 				C0E3045B1346349900C56C1A /* HexadecimalFormatter.m in Sources */,
 				C0E3045C1346349900C56C1A /* IVParameterController.mm in Sources */,
 				C0E3045D1346349900C56C1A /* LauncherController.mm in Sources */,
-				C0E3045E1346349900C56C1A /* SearcherController.m in Sources */,
+				C0E3045E1346349900C56C1A /* SearcherController.mm in Sources */,
 				C0E3045F1346349900C56C1A /* TrainerIDSearcherController.mm in Sources */,
-				C0E304601346349900C56C1A /* SynchroScrollView.m in Sources */,
 				C0E304611346349900C56C1A /* VersionTransformer.mm in Sources */,
 				C0E304621346349900C56C1A /* VertResizeOnlyWindowController.m in Sources */,
 				C0E304631346349900C56C1A /* WonderCardSeedInspectorController.mm in Sources */,
@@ -514,108 +508,108 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		29B97318FDCFA39411CA2CEA /* MainMenu.nib */ = {
+		C08216E1137E1D7000B6E0E5 /* CGearSeedInspector.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				29B97319FDCFA39411CA2CEA /* English */,
-			);
-			name = MainMenu.nib;
-			sourceTree = "<group>";
-		};
-		C082154D137107DB00B6E0E5 /* EggSeedSearcher.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C082154E137107DB00B6E0E5 /* English */,
-			);
-			name = EggSeedSearcher.nib;
-			sourceTree = "<group>";
-		};
-		C0E30467134634FD00C56C1A /* TrainerIDSearcher.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C0E30468134634FD00C56C1A /* English */,
-			);
-			name = TrainerIDSearcher.nib;
-			sourceTree = "<group>";
-		};
-		C0E3046B134634FD00C56C1A /* WonderCardSeedInspector.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C0E3046C134634FD00C56C1A /* English */,
-			);
-			name = WonderCardSeedInspector.nib;
-			sourceTree = "<group>";
-		};
-		C0E3046D134634FD00C56C1A /* WonderCardSeedSearcher.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C0E3046E134634FD00C56C1A /* English */,
-			);
-			name = WonderCardSeedSearcher.nib;
-			sourceTree = "<group>";
-		};
-		C0E304731346350400C56C1A /* Launcher.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C0E304741346350400C56C1A /* English */,
-			);
-			name = Launcher.nib;
-			sourceTree = "<group>";
-		};
-		C0E304761346350F00C56C1A /* CGearSeedInspector.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C0E304771346350F00C56C1A /* English */,
+				C08216E2137E1D7000B6E0E5 /* English */,
 			);
 			name = CGearSeedInspector.nib;
 			sourceTree = "<group>";
 		};
-		C0E304781346350F00C56C1A /* CGearSeedSearcher.nib */ = {
+		C08216E3137E1D7000B6E0E5 /* CGearSeedSearcher.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C0E304791346350F00C56C1A /* English */,
+				C08216E4137E1D7000B6E0E5 /* English */,
 			);
 			name = CGearSeedSearcher.nib;
 			sourceTree = "<group>";
 		};
-		C0E3047A1346350F00C56C1A /* DSParameterSearcher.nib */ = {
+		C08216E5137E1D7000B6E0E5 /* DSParameterSearcher.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C0E3047B1346350F00C56C1A /* English */,
+				C08216E6137E1D7000B6E0E5 /* English */,
 			);
 			name = DSParameterSearcher.nib;
 			sourceTree = "<group>";
 		};
-		C0E3047C1346350F00C56C1A /* Gen4SeedSearcher.nib */ = {
+		C08216E7137E1D7000B6E0E5 /* EggSeedSearcher.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C0E3047D1346350F00C56C1A /* English */,
+				C08216E8137E1D7000B6E0E5 /* English */,
+			);
+			name = EggSeedSearcher.nib;
+			sourceTree = "<group>";
+		};
+		C08216E9137E1D7000B6E0E5 /* Gen4SeedSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C08216EA137E1D7000B6E0E5 /* English */,
 			);
 			name = Gen4SeedSearcher.nib;
 			sourceTree = "<group>";
 		};
-		C0E3047E1346350F00C56C1A /* Gen5Configuration.nib */ = {
+		C08216EB137E1D7000B6E0E5 /* Gen5Configuration.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C0E3047F1346350F00C56C1A /* English */,
+				C08216EC137E1D7000B6E0E5 /* English */,
 			);
 			name = Gen5Configuration.nib;
 			sourceTree = "<group>";
 		};
-		C0E304801346350F00C56C1A /* HashedSeedInspector.nib */ = {
+		C08216ED137E1D7000B6E0E5 /* HashedSeedInspector.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C0E304811346350F00C56C1A /* English */,
+				C08216EE137E1D7000B6E0E5 /* English */,
 			);
 			name = HashedSeedInspector.nib;
 			sourceTree = "<group>";
 		};
-		C0E304821346350F00C56C1A /* HashedSeedSearcher.nib */ = {
+		C08216EF137E1D7000B6E0E5 /* HashedSeedSearcher.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C0E304831346350F00C56C1A /* English */,
+				C08216F0137E1D7000B6E0E5 /* English */,
 			);
 			name = HashedSeedSearcher.nib;
+			sourceTree = "<group>";
+		};
+		C08216F1137E1D7000B6E0E5 /* Launcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C08216F2137E1D7000B6E0E5 /* English */,
+			);
+			name = Launcher.nib;
+			sourceTree = "<group>";
+		};
+		C08216F3137E1D7000B6E0E5 /* MainMenu.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C08216F4137E1D7000B6E0E5 /* English */,
+			);
+			name = MainMenu.nib;
+			sourceTree = "<group>";
+		};
+		C08216F5137E1D7000B6E0E5 /* TrainerIDSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C08216F6137E1D7000B6E0E5 /* English */,
+			);
+			name = TrainerIDSearcher.nib;
+			sourceTree = "<group>";
+		};
+		C08216F7137E1D7000B6E0E5 /* WonderCardSeedInspector.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C08216F8137E1D7000B6E0E5 /* English */,
+			);
+			name = WonderCardSeedInspector.nib;
+			sourceTree = "<group>";
+		};
+		C08216F9137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C08216FA137E1D7000B6E0E5 /* English */,
+			);
+			name = WonderCardSeedSearcher.nib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

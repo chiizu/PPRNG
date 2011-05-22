@@ -104,3 +104,95 @@ NSString* HeldItemString(HeldItem::Type t)
     break;
   }
 }
+
+void SaveTableContentsToCSV(NSTableView *tableView,
+                            NSArrayController *contentArray)
+{
+  NSSavePanel  *sp = [NSSavePanel savePanel];
+  
+  [sp setRequiredFileType: @"csv"];
+  
+  int          runResult = [sp runModal];
+  
+  if (runResult != NSOKButton)
+    return;
+  
+  NSString        *result = @"";
+  
+  NSArray         *columns = [tableView tableColumns];
+  NSEnumerator    *columnEnumerator = [columns objectEnumerator];
+  NSTableColumn   *column;
+  NSMutableArray  *columnIds =
+    [NSMutableArray arrayWithCapacity: [columns count]];
+  NSMutableArray  *columnCells =
+    [NSMutableArray arrayWithCapacity: [columns count]];
+  
+  /* output header row */
+  column = [columnEnumerator nextObject];
+  while ((column != nil) && [column isHidden])
+  {
+    column = [columnEnumerator nextObject];
+  }
+  
+  if (column != nil)
+  {
+    [columnIds addObject: [column identifier]];
+    [columnCells addObject: [column dataCell]];
+    result = [result stringByAppendingString:[[column headerCell] stringValue]];
+    
+    while (column = [columnEnumerator nextObject])
+    {
+      if (![column isHidden])
+      {
+        [columnIds addObject: [column identifier]];
+        [columnCells addObject: [column dataCell]];
+        result = [result stringByAppendingFormat: @",%@",
+                        [[column headerCell] stringValue]];
+      }
+    }
+    
+    result = [result stringByAppendingString: @"\n"];
+  }
+  
+  NSArray              *rows = [contentArray arrangedObjects];
+  NSEnumerator         *rowEnumerator = [rows objectEnumerator];
+  NSMutableDictionary  *row;
+  
+  /* output data rows */
+  while (row = [rowEnumerator nextObject])
+  {
+    columnEnumerator = [columnIds objectEnumerator];
+    NSString  *columnId = [columnEnumerator nextObject];
+    
+    NSEnumerator  *cellEnum = [columnCells objectEnumerator];
+    NSCell        *cell = [cellEnum nextObject];
+    
+    if (columnId != nil)
+    {
+      id  dataObject = [row objectForKey: columnId];
+      
+      [cell setObjectValue: dataObject];
+      
+      NSString  *data = [cell stringValue];
+      
+      result = [result stringByAppendingString: data];
+      
+      while (columnId = [columnEnumerator nextObject])
+      {
+        cell = [cellEnum nextObject];
+        dataObject = [row objectForKey: columnId];
+        
+        [cell setObjectValue: dataObject];
+        data = [cell stringValue];
+        
+        result = [result stringByAppendingFormat: @",%@", data];
+      }
+      
+      result = [result stringByAppendingString: @"\n"];
+    }
+  }
+  
+  NSError  *error;
+  [result writeToFile: [sp filename] atomically: YES
+          encoding: NSUTF8StringEncoding error: &error];
+}

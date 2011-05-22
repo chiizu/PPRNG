@@ -325,7 +325,9 @@ struct ProgressHandler
   criteria.minPIDFrame = [minPIDFrameField intValue];
   criteria.maxPIDFrame = [maxPIDFrameField intValue];
   
-  if (criteria.ExpectedNumberOfResults() > 10000)
+  uint32_t  numResults = criteria.ExpectedNumberOfResults();
+  
+  if (numResults > 10000)
   {
     NSAlert *alert = [[NSAlert alloc] init];
     

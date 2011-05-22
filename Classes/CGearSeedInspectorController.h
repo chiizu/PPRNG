@@ -35,11 +35,10 @@
   IBOutlet NSTextField            *minIVFrameField;
   IBOutlet NSTextField            *maxIVFrameField;
   
-  IBOutlet NSScrollView           *ivFrameTableScrollView;
   IBOutlet NSTableView            *ivFrameTableView;
   IBOutlet NSArrayController      *ivFrameContentArray;
   
-  IBOutlet IVParameterController  *ivParameterController;
+  IBOutlet IVParameterController  *ivFrameParameterController;
   
   
   IBOutlet NSTextField            *timeFinderYearField;
@@ -50,11 +49,14 @@
   IBOutlet NSArrayController      *timeFinderContentArray;
   
   
-  IBOutlet NSTextField            *adjacentsIVFrameField;
+  IBOutlet NSTextField            *adjacentsMinIVFrameField;
+  IBOutlet NSTextField            *adjacentsMaxIVFrameField;
   IBOutlet NSButton               *adjacentsRoamerButton;
   
   IBOutlet NSTextField            *adjacentsDelayVarianceField;
   IBOutlet NSTextField            *adjacentsTimeVarianceField;
+  
+  IBOutlet IVParameterController  *adjacentsIVParameterController;
   
   IBOutlet NSTableView            *adjacentsTableView;
   IBOutlet NSArrayController      *adjacentsContentArray;
@@ -65,6 +67,7 @@
 - (IBAction)generateIVFrames:(id)sender;
 - (IBAction)calculateTimes:(id)sender;
 - (IBAction)generateAdjacents:(id)sender;
+- (IBAction)findAdjacent:(id)sender;
 
 - (void)setSeed:(uint32_t)seed;
 

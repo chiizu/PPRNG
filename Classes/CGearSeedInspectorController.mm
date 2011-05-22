@@ -65,7 +65,7 @@ using namespace pprng;
   uint32_t  maxIVFrame = [maxIVFrameField intValue];
   uint32_t  frameNum = 0, limitFrame = minIVFrame - 1;
   
-  CGearIVFrameGenerator  generator(seed, [ivParameterController isRoamer] ?
+  CGearIVFrameGenerator  generator(seed, [ivFrameParameterController isRoamer] ?
                                          CGearIVFrameGenerator::Roamer :
                                          CGearIVFrameGenerator::Normal);
   
@@ -191,7 +191,8 @@ using namespace pprng;
   
   uint32_t  delayVariance = [adjacentsDelayVarianceField intValue];
   uint32_t  secondVariance = [adjacentsTimeVarianceField intValue];
-  uint32_t  ivFrameNum = [adjacentsIVFrameField intValue];
+  uint32_t  minIVFrameNum = [adjacentsMinIVFrameField intValue];
+  uint32_t  maxIVFrameNum = [adjacentsMaxIVFrameField intValue];
   bool      isRoamer = [adjacentsRoamerButton state];
   
   uint32_t  targetDelay = timeElement.delay;
@@ -231,29 +232,82 @@ using namespace pprng;
                                          (isRoamer ?
                                           CGearIVFrameGenerator::Roamer :
                                           CGearIVFrameGenerator::Normal));
-      
-      for (uint32_t f = 0; f < ivFrameNum; ++f)
+      uint32_t   f;
+      for (f = 0; f < (minIVFrameNum - 1); ++f)
         ivGenerator.AdvanceFrame();
       
-      IVs  ivs = ivGenerator.CurrentFrame().ivs;
-      
-      [rowArray addObject:
-        [NSMutableDictionary dictionaryWithObjectsAndKeys:
-          [NSNumber numberWithUnsignedInt: s.m_rawSeed], @"seed",
-          dateStr, @"date",
-          timeStr, @"time",
-          [NSNumber numberWithUnsignedInt: delay], @"delay",
-          [NSNumber numberWithUnsignedInt: ivs.hp()], @"hp",
-          [NSNumber numberWithUnsignedInt: ivs.at()], @"atk",
-          [NSNumber numberWithUnsignedInt: ivs.df()], @"def",
-          [NSNumber numberWithUnsignedInt: ivs.sa()], @"spa",
-          [NSNumber numberWithUnsignedInt: ivs.sd()], @"spd",
-          [NSNumber numberWithUnsignedInt: ivs.sp()], @"spe",
-          nil]];
+      while (f < maxIVFrameNum)
+      {
+        ivGenerator.AdvanceFrame();
+        IVs  ivs = ivGenerator.CurrentFrame().ivs;
+        
+        [rowArray addObject:
+          [NSMutableDictionary dictionaryWithObjectsAndKeys:
+            [NSNumber numberWithUnsignedInt: s.m_rawSeed], @"seed",
+            dateStr, @"date",
+            timeStr, @"time",
+            [NSNumber numberWithUnsignedInt: delay], @"delay",
+            [NSNumber numberWithUnsignedInt: ++f], @"frame",
+            [NSNumber numberWithUnsignedInt: ivs.hp()], @"hp",
+            [NSNumber numberWithUnsignedInt: ivs.at()], @"atk",
+            [NSNumber numberWithUnsignedInt: ivs.df()], @"def",
+            [NSNumber numberWithUnsignedInt: ivs.sa()], @"spa",
+            [NSNumber numberWithUnsignedInt: ivs.sd()], @"spd",
+            [NSNumber numberWithUnsignedInt: ivs.sp()], @"spe",
+            [NSNumber numberWithUnsignedInt: ivs.word], @"ivWord",
+            nil]];
+      }
     }
   }
   
   [adjacentsContentArray addObjects: rowArray];
+}
+
+
+// dummy method for error panel
+- (void)alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode
+        contextInfo:(void *)contextInfo
+{}
+
+
+- (IBAction)findAdjacent:(id)sender
+{
+  IVs  minIVs = [adjacentsIVParameterController minIVs];
+  IVs  maxIVs = [adjacentsIVParameterController maxIVs];
+  
+  NSArray       *rows = [adjacentsContentArray arrangedObjects];
+  NSInteger     numRows = [rows count];
+  NSInteger     rowNum = [adjacentsTableView selectedRow];
+  NSDictionary  *row;
+  
+  while (++rowNum < numRows)
+  {
+    row = [rows objectAtIndex: rowNum];
+    IVs  rowIVs([[row objectForKey: @"ivWord"] unsignedIntValue]);
+    
+    if (rowIVs.betterThanOrEqual(minIVs) && rowIVs.worseThanOrEqual(maxIVs))
+    {
+      [adjacentsTableView
+        selectRowIndexes: [NSIndexSet indexSetWithIndex: rowNum]
+        byExtendingSelection: NO];
+      [adjacentsTableView scrollRowToVisible: rowNum];
+      break;
+    }
+  }
+  
+  if (row == nil)
+  {
+    NSAlert *alert = [[NSAlert alloc] init];
+    
+    [alert addButtonWithTitle:@"OK"];
+    [alert setMessageText:@"No matching row found"];
+    [alert setInformativeText:@"No adjacents row has IVs matching those specified."];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    
+    [alert beginSheetModalForWindow: [self window] modalDelegate: self
+           didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:)
+           contextInfo:nil];
+  }
 }
 
 

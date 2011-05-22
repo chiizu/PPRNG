@@ -295,7 +295,7 @@ struct ProgressHandler
     
     return nil;
   }
-  else if (criteria.ExpectedNumberOfResults() > 10000)
+  else if (numResults > 10000)
   {
     NSAlert *alert = [[NSAlert alloc] init];
     
