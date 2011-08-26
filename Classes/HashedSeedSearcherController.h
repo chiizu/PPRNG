@@ -43,14 +43,26 @@
   IBOutlet NSDatePicker   *fromDateField;
   IBOutlet NSDatePicker   *toDateField;
   
-  IBOutlet NSButton       *shinyOnlyButton;
-  IBOutlet NSPopUpButton  *shinyNaturePopUp;
+  IBOutlet NSButton       *shinyOnlyCheckbox;
+  IBOutlet NSPopUpButton  *shinyEncounterTypePopUp;
+  IBOutlet NSButton       *shinyFromFirstPIDCheckBox;
   IBOutlet NSTextField    *minPIDFrameField;
   IBOutlet NSTextField    *maxPIDFrameField;
+  IBOutlet NSPopUpButton  *shinyNaturePopUp;
+  IBOutlet NSPopUpButton  *shinyAbilityPopUp;
+  IBOutlet NSPopUpButton  *shinyGenderPopUp;
+  IBOutlet NSPopUpButton  *shinyGenderRatioPopUp;
+  IBOutlet NSButton       *shinySyncACheckBox;
+  IBOutlet NSButton       *shinySyncBCheckBox;
+  IBOutlet NSButton       *shinySyncCCheckBox;
+  IBOutlet NSPopUpButton  *shinyLandESVPopUp;
+  IBOutlet NSPopUpButton  *shinyWaterESVPopUp;
+  IBOutlet NSButton       *shinyCanFishCheckBox;
+  IBOutlet NSButton       *shinyDustIsPokeCheckBox;
+  IBOutlet NSButton       *shinyShadowIsPokeCheckBox;
 }
 
-- (IBAction)toggleShinyOnly:(id)sender;
-
-- (void)inspectSeed:(id)sender;
+- (IBAction)toggleSearchFromStartFrame:(id)sender;
+- (IBAction)toggleESVChoice:(id)sender;
 
 @end

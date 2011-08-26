@@ -23,6 +23,19 @@
 
 using namespace pprng;
 
+boost::gregorian::date NSDateToBoostDate(NSDate *date)
+{
+  NSCalendar *calendar = [[NSCalendar alloc]
+                          initWithCalendarIdentifier:NSGregorianCalendar];
+  NSDateComponents *components =
+    [calendar
+     components: (NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit)
+     fromDate: date];
+  
+  return boost::gregorian::date([components year], [components month],
+                                [components day]);
+}
+
 NSString* NatureString(pprng::Nature::Type nature)
 {
   return @"";
@@ -61,23 +74,23 @@ NSString* GenderString(PID pid)
   
   if (genderValue < 31)
   {
-    return @"≥ 12.5%";
+    return @"♀";
   }
   else if (genderValue < 63)
   {
-    return @"≥ 25%";
+    return @"≥¼";
   }
   else if (genderValue < 127)
   {
-    return @"≥ 50%";
+    return @"≥½";
   }
   else if (genderValue < 191)
   {
-    return @"≥ 75%";
+    return @"≥¾";
   }
   else
   {
-    return @"100% ♂";
+    return @"♂";
   }
 }
 */
@@ -99,6 +112,23 @@ NSString* HeldItemString(HeldItem::Type t)
     break;
     
   case HeldItem::NO_ITEM:
+  default:
+    return @"";
+    break;
+  }
+}
+
+NSString* SpeciesString(FemaleParent::Type t, uint32_t childSpecies)
+{
+  switch (t)
+  {
+  case FemaleParent::NIDORAN_FEMALE:
+    return (childSpecies == 0) ? @"Nidoran ♀" : @"Nidoran ♂";
+    break;
+  case FemaleParent::ILLUMISE:
+    return (childSpecies == 0) ? @"Volbeat" : @"Illumise";
+    break;
+  case FemaleParent::OTHER:
   default:
     return @"";
     break;
@@ -195,4 +225,79 @@ void SaveTableContentsToCSV(NSTableView *tableView,
   NSError  *error;
   [result writeToFile: [sp filename] atomically: YES
           encoding: NSUTF8StringEncoding error: &error];
+}
+
+
+BOOL CheckExpectedResults
+  (SeedSearchCriteria &criteria, uint64_t maxResults,
+   NSString *tooManyResultsMessage, id caller, SEL alertHandler)
+{
+  uint64_t  numResults = 0;
+  NSString  *messageText = nil, *informativeText = nil;
+  BOOL      failed = NO;
+  
+  try
+  {
+    numResults = criteria.ExpectedNumberOfResults();
+  }
+  catch (IVs::ImpossibleMinMaxIVRangeException &e)
+  {
+    failed = YES;
+    messageText = @"Impossible IVs";
+    informativeText = @"The desired IVs are not possible.  Please ensure that each minimum IV is less than or equal to each corresponding maximum IV.";
+  }
+  catch (IVs::ImpossibleMinHiddenPowerException &e)
+  {
+    failed = YES;
+    messageText = @"Impossible Minimum Hidden Power";
+    informativeText = @"The minimum Hidden Power specified is not possible with the desired IVs.  Please modify the desired IVs, lower the minimum Hidden Power, or disable the Hidden Power search parameters.";
+  }
+  catch (IVs::ImpossibleHiddenTypeException &e)
+  {
+    failed = YES;
+    messageText = @"Impossible Hidden Power Type";
+    informativeText = @"The Hidden Power type specified is not possible with the desired IVs.  Please modify the desired IVs, select a different Hidden Power type or 'Any', or disable the Hidden Power search parameters.";
+  }
+  catch (Exception &e)
+  {
+    failed = YES;
+    messageText = @"Unexpected PPRNG Exception";
+    informativeText = [NSString stringWithFormat: @"An unexpected PPRNG exception has occurred while verifying the search parameters: '%s'\nPlease take a screenshot of your search parameters and inform the developer.",
+                       e.what()];
+  }
+  catch (std::exception &e)
+  {
+    failed = YES;
+    messageText = @"Unexpected C++ Exception";
+    informativeText = [NSString stringWithFormat: @"An unexpected C++ exception has occurred while verifying the search parameters: '%s'\nPlease take a screenshot of your search parameters and inform the developer.",
+                       e.what()];
+  }
+  catch (...)
+  {
+    failed = YES;
+    messageText = @"Unknown Exception";
+    informativeText = @"An unknown exception has occurred while verifying the search parameters.  Please take a screenshot of your search parameters and inform the developer.";
+  }
+  
+  if (!failed && (numResults > maxResults))
+  {
+    failed = YES;
+    messageText = @"Please Limit Search Parameters";
+    informativeText = tooManyResultsMessage;
+  }
+  
+  if (failed)
+  {
+    NSAlert *alert = [[NSAlert alloc] init];
+    
+    [alert addButtonWithTitle:@"OK"];
+    [alert setMessageText: messageText];
+    [alert setInformativeText: informativeText];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    
+    [alert beginSheetModalForWindow: [caller window] modalDelegate: caller
+           didEndSelector: alertHandler contextInfo: nil];
+  }
+  
+  return !failed;
 }

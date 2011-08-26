@@ -112,6 +112,8 @@ using namespace pprng;
   [configurationTableView
     selectRowIndexes: [NSIndexSet indexSetWithIndex: currentConfigIndex]
     byExtendingSelection: NO];
+  
+  [versionPopUp setAutoenablesItems: NO];
 }
 
 - (IBAction)addConfig:(id)sender

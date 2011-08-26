@@ -26,9 +26,6 @@
 #include "FrameGenerator.h"
 #include "Utilities.h"
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/lexical_cast.hpp>
-
 using namespace pprng;
 
 
@@ -52,10 +49,7 @@ using namespace pprng;
   using namespace boost::gregorian;
   using namespace boost::posix_time;
   
-  const char *dstr = [[[startDate objectValue] description] UTF8String];
-  date  d(boost::lexical_cast<uint32_t>(std::string(dstr, 4)),
-          boost::lexical_cast<uint32_t>(std::string(dstr + 5, 2)),
-          boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2)));
+  date  d = NSDateToBoostDate([startDate objectValue]);
   
   time_duration t
     (hours([startHour intValue]) +
@@ -78,14 +72,17 @@ using namespace pprng;
   HashedSeed  seed(d.year(), d.month(), d.day(), d.day_of_week(),
                    t.hours(), t.minutes(), t.seconds(),
                    macAddressLow, macAddressHigh,
-                   HashedSeed::NazoForVersion(version), 0, 0, 0,
-                   vcount, timer0, HashedSeed::GxStat, vframe, pressedKeys);
+                   HashedSeed::NazoForVersion(version),
+                   vcount, timer0, HashedSeed::GxStat, vframe, pressedKeys,
+                   0, 0, 0, 0, 0, 0, 0, 0x40);
   
   currentSeed = [NSData dataWithBytes: &seed length: sizeof(HashedSeed)];
   [adjacentsTabController setSeed: currentSeed];
   
   [seedField setObjectValue:
     [NSNumber numberWithUnsignedLongLong: seed.m_rawSeed]];
+  [initialPIDFrameField setObjectValue:
+    [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
 }
 
 
@@ -143,6 +140,22 @@ using namespace pprng;
     
     [seedField setObjectValue:
       [NSNumber numberWithUnsignedLongLong: seed.m_rawSeed]];
+    [initialPIDFrameField setObjectValue:
+      [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
+  }
+}
+
+- (void)controlTextDidEndEditing:(NSNotification*)notification
+{
+  if ([[seedField stringValue] length] == 0)
+  {
+    [initialPIDFrameField setObjectValue: nil];
+  }
+  else
+  {
+    HashedSeed  seed([[seedField objectValue] unsignedLongLongValue]);
+    [initialPIDFrameField setObjectValue:
+        [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
   }
 }
 

@@ -28,21 +28,62 @@
 #import "HashedSeedInspectorController.h"
 
 #include <memory>
-#include <boost/lexical_cast.hpp>
 
 using namespace pprng;
 
 namespace
 {
 
+uint32_t GetESVBitmask(NSPopUpButton *esvMenu)
+{
+  uint32_t   mask = 0;
+  NSInteger  numItems = [esvMenu numberOfItems];
+  NSInteger  i;
+  
+  for (i = 0; i < numItems; ++i)
+  {
+    NSMenuItem  *item = [esvMenu itemAtIndex: i];
+    NSInteger   tag = [item tag];
+    
+    if ((tag >= 0) && ([item state] == NSOnState))
+    {
+      mask |= 0x1 << tag;
+    }
+  }
+  
+  return mask;
+}
+
 struct GUICriteria : public HashedSeedSearcher::Criteria
 {
-  uint32_t      tid, sid;
-  bool          shinyOnly;
-  Nature::Type  nature;
-  uint32_t      minPIDFrame, maxPIDFrame;
+  enum EncounterType
+  {
+    WildEncounter = 0,
+    GiftEncounter,
+    BothEncounters,
+    AnyEncounter = -1
+  };
   
-  uint64_t ExpectedNumberOfResults()
+  uint32_t       tid, sid;
+  bool           shinyOnly;
+  EncounterType  encounterType;
+  bool           startFromLowestPID;
+  uint32_t       minPIDFrame, maxPIDFrame;
+  Nature::Type   nature;
+  uint32_t       ability;
+  Gender::Type   gender;
+  Gender::Ratio  genderRatio;
+  bool           syncA;
+  bool           syncB;
+  bool           syncC;
+  uint32_t       esvMaskLand;
+  uint32_t       esvMaskWater;
+  bool           canFish;
+  bool           dustIsPoke;
+  bool           shadowIsPoke;
+  
+  
+  uint64_t ExpectedNumberOfResults() const
   {
     uint64_t  result = HashedSeedSearcher::Criteria::ExpectedNumberOfResults();
     uint64_t  pidFrameMultiplier = 1;
@@ -66,61 +107,157 @@ struct GUICriteria : public HashedSeedSearcher::Criteria
 
 struct ResultHandler
 {
-  ResultHandler(SearcherController *c, uint32_t tid, uint32_t sid,
-                BOOL shinyOnly, Nature::Type nature,
-                uint32_t minPIDFrame, uint32_t maxPIDFrame)
-    : controller(c), m_tid(tid), m_sid(sid),
-      m_shinyOnly(shinyOnly), m_nature(nature),
-      m_minFrame(minPIDFrame), m_maxFrame(maxPIDFrame)
+  ResultHandler(SearcherController *c, const GUICriteria &criteria)
+    : controller(c), m_criteria(criteria)
   {}
   
   void operator()(const HashedIVFrame &frame)
   {
     NSMutableDictionary  *pidResult = nil;
     
-    Gen5PIDFrameGenerator  frameGen(frame.seed,
-                                    Gen5PIDFrameGenerator::GrassCaveFrame,
-                                    false, m_tid, m_sid);
-    bool                   found = false;
+    Gen5PIDFrameGenerator
+      gcGenerator(frame.seed, Gen5PIDFrameGenerator::GrassCaveFrame,
+                  false, m_criteria.tid, m_criteria.sid),
+      fsGenerator(frame.seed, Gen5PIDFrameGenerator::FishingFrame,
+                  false, m_criteria.tid, m_criteria.sid),
+      sdGenerator(frame.seed, Gen5PIDFrameGenerator::SwirlingDustFrame,
+                  false, m_criteria.tid, m_criteria.sid),
+      bsGenerator(frame.seed, Gen5PIDFrameGenerator::BridgeShadowFrame,
+                  false, m_criteria.tid, m_criteria.sid),
+      stGenerator(frame.seed, Gen5PIDFrameGenerator::StationaryFrame,
+                  false, m_criteria.tid, m_criteria.sid),
+      pidGenerator(frame.seed, Gen5PIDFrameGenerator::StarterFossilGiftFrame,
+                   false, m_criteria.tid, m_criteria.sid);
     
-    while (frameGen.CurrentFrame().number < (m_minFrame - 1))
-      frameGen.AdvanceFrame();
+    // get the PIDs in sync
+    gcGenerator.AdvanceFrame();
+    stGenerator.AdvanceFrame();
+    stGenerator.AdvanceFrame();
+    stGenerator.AdvanceFrame();
+    pidGenerator.AdvanceFrame();
+    pidGenerator.AdvanceFrame();
+    pidGenerator.AdvanceFrame();
+    pidGenerator.AdvanceFrame();
     
-    while (frameGen.CurrentFrame().number < m_maxFrame)
+    bool      found = false;
+    uint32_t  minFrame = m_criteria.minPIDFrame - 1;
+    
+    if (m_criteria.startFromLowestPID)
+      minFrame = frame.seed.GetSkippedPIDFrames();
+    
+    while (fsGenerator.CurrentFrame().number < minFrame)
     {
-      frameGen.AdvanceFrame();
-      if (frameGen.CurrentFrame().pid.IsShiny(m_tid, m_sid) &&
-          ((m_nature == Nature::ANY) ||
-           (frameGen.CurrentFrame().nature == m_nature)))
+      gcGenerator.AdvanceFrame();
+      fsGenerator.AdvanceFrame();
+      sdGenerator.AdvanceFrame();
+      bsGenerator.AdvanceFrame();
+      stGenerator.AdvanceFrame();
+      pidGenerator.AdvanceFrame();
+    }
+    
+    bool  wildShiny, giftShiny;
+    
+    while ((fsGenerator.CurrentFrame().number < m_criteria.maxPIDFrame) &&
+           !found)
+    {
+      gcGenerator.AdvanceFrame();
+      fsGenerator.AdvanceFrame();
+      sdGenerator.AdvanceFrame();
+      bsGenerator.AdvanceFrame();
+      stGenerator.AdvanceFrame();
+      pidGenerator.AdvanceFrame();
+      
+      Gen5PIDFrame  gcFrame = gcGenerator.CurrentFrame();
+      Gen5PIDFrame  fsFrame = fsGenerator.CurrentFrame();
+      Gen5PIDFrame  sdFrame = sdGenerator.CurrentFrame();
+      Gen5PIDFrame  bsFrame = bsGenerator.CurrentFrame();
+      Gen5PIDFrame  stFrame = stGenerator.CurrentFrame();
+      Gen5PIDFrame  pidFrame = pidGenerator.CurrentFrame();
+      
+      wildShiny = gcGenerator.CurrentFrame().pid.IsShiny(m_criteria.tid,
+                                                         m_criteria.sid);
+      giftShiny = pidGenerator.CurrentFrame().pid.IsShiny(m_criteria.tid,
+                                                          m_criteria.sid);
+      bool  shinyFound = false;
+      
+      switch (m_criteria.encounterType)
+      {
+      case GUICriteria::WildEncounter:
+        shinyFound = wildShiny;
+        break;
+      case GUICriteria::GiftEncounter:
+        shinyFound = giftShiny;
+        break;
+      case GUICriteria::BothEncounters:
+        shinyFound = wildShiny && giftShiny;
+        break;
+      case GUICriteria::AnyEncounter:
+      default:
+        shinyFound = wildShiny || giftShiny;
+        break;
+      }
+      
+      if (shinyFound &&
+          ((m_criteria.nature == Nature::ANY) ||
+           (pidFrame.nature == m_criteria.nature)) &&
+          ((m_criteria.ability > 1) ||
+           (m_criteria.ability == pidFrame.pid.Gen5Ability())) &&
+          Gender::GenderValueMatches(pidFrame.pid.GenderValue(),
+                                     m_criteria.gender,
+                                     m_criteria.genderRatio) &&
+          (!m_criteria.syncA || gcFrame.synched) &&
+          (!m_criteria.syncB || fsFrame.synched) &&
+          (!m_criteria.syncC || stFrame.synched) &&
+          ((m_criteria.esvMaskLand & (0x1 << gcFrame.esv)) != 0) &&
+          ((m_criteria.esvMaskWater & (0x1 << fsFrame.esv)) != 0) &&
+          (!m_criteria.canFish || fsFrame.isEncounter) &&
+          (!m_criteria.dustIsPoke || !sdFrame.isEncounter) &&
+          (!m_criteria.shadowIsPoke || !bsFrame.isEncounter))
       {
         found = true;
-        break;
       }
     }
     
     if (found)
     {
-      Gen5PIDFrame  pidFrame = frameGen.CurrentFrame();
+      Gen5PIDFrame  gcFrame = gcGenerator.CurrentFrame();
+      Gen5PIDFrame  fsFrame = fsGenerator.CurrentFrame();
+      Gen5PIDFrame  sdFrame = sdGenerator.CurrentFrame();
+      Gen5PIDFrame  bsFrame = bsGenerator.CurrentFrame();
+      Gen5PIDFrame  stFrame = stGenerator.CurrentFrame();
+      Gen5PIDFrame  pidFrame = pidGenerator.CurrentFrame();
+      
+      uint32_t  genderValue = pidFrame.pid.GenderValue();
       
       pidResult = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedInt: pidFrame.number], @"shinyFrame",
+        [NSNumber numberWithUnsignedInt: sdFrame.number], @"shinyFrame",
+        (wildShiny ? @"Y" : @""), @"wildIsShiny",
+        (giftShiny ? @"Y" : @""), @"giftIsShiny",
         [NSString stringWithFormat: @"%s",
           Nature::ToString(pidFrame.nature).c_str()], @"shinyNature",
-        (pidFrame.synched ? @"Y" : @""), @"shinySync",
         [NSNumber numberWithUnsignedInt: pidFrame.pid.Gen5Ability()],
           @"shinyAbility",
-        [NSNumber numberWithUnsignedInt: pidFrame.esv], @"shinyESV",
-        GenderString(pidFrame.pid), @"shinyGender",
+        ((genderValue < 31) ? @"♀" : @"♂"), @"gender18",
+        ((genderValue < 63) ? @"♀" : @"♂"), @"gender14",
+        ((genderValue < 127) ? @"♀" : @"♂"), @"gender12",
+        ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
+        (gcFrame.synched ? @"Y" : @""), @"shinySyncA",
+        (fsFrame.synched ? @"Y" : @""), @"shinySyncB",
+        (stFrame.synched ? @"Y" : @""), @"shinySyncC",
+        [NSString stringWithFormat: @"%d", gcFrame.esv], @"shinyLandESV",
+        [NSString stringWithFormat: @"%d", fsFrame.esv], @"shinyWaterESV",
+        (fsFrame.isEncounter ? @"Y" : @""), @"canFish",
+        (sdFrame.isEncounter ? @"" : @"Y"), @"dustIsPoke",
+        (bsFrame.isEncounter ? @"" : @"Y"), @"shadowIsPoke",
         nil];
     }
-    else if (m_shinyOnly)
+    else if (m_criteria.shinyOnly)
     {
       return;
     }
     
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedLongLong: frame.seed.m_rawSeed], @"seed",
         [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
           frame.seed.m_year, frame.seed.m_month, frame.seed.m_day], @"date",
         [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
@@ -139,6 +276,8 @@ struct ResultHandler
           Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
         [NSNumber numberWithUnsignedInt: frame.ivs.HiddenPower()],
           @"hiddenPower",
+        [NSNumber numberWithUnsignedInt: frame.seed.GetSkippedPIDFrames() + 1],
+          @"startFrame",
         [NSData dataWithBytes: &frame.seed length: sizeof(HashedSeed)],
           @"fullSeed",
         nil];
@@ -154,10 +293,7 @@ struct ResultHandler
   }
   
   SearcherController  *controller;
-  uint32_t            m_tid, m_sid;
-  BOOL                m_shinyOnly;
-  Nature::Type        m_nature;
-  uint32_t            m_minFrame, m_maxFrame;
+  const GUICriteria   &m_criteria;
 };
 
 struct ProgressHandler
@@ -208,11 +344,60 @@ struct ProgressHandler
   [toDateField setObjectValue: now];
 }
 
-- (IBAction)toggleShinyOnly:(id)sender
+- (IBAction)toggleSearchFromStartFrame:(id)sender
 {
   BOOL  enabled = [sender state];
   
-  [shinyNaturePopUp setEnabled: enabled];
+  [minPIDFrameField setEnabled: !enabled];
+}
+
+- (IBAction)toggleESVChoice:(id)sender
+{
+  NSMenuItem  *selectedItem = [sender selectedItem];
+  
+  if ([selectedItem tag] >= 0)
+  {
+    [selectedItem setState: ![selectedItem state]];
+  }
+  else if ([selectedItem tag] != -5)
+  {
+    NSInteger  action = [selectedItem tag];
+    NSInteger  numItems = [sender numberOfItems];
+    NSInteger  i;
+    
+    for (i = 0; i < numItems; ++i)
+    {
+      NSMenuItem  *item = [sender itemAtIndex: i];
+      NSInteger   tag = [item tag];
+      
+      if (tag >= 0)
+      {
+        switch (action)
+        {
+        case -1:
+          [item setState: NSOnState];
+          break;
+        case -2:
+          if (tag & 0x1)
+            [item setState: NSOnState];
+          else
+            [item setState: NSOffState];
+          break;
+        case -3:
+          if (tag & 0x1)
+            [item setState: NSOffState];
+          else
+            [item setState: NSOnState];
+          break;
+        case -4:
+          [item setState: NSOffState];
+          break;
+        default:
+          break;
+        }
+      }
+    }
+  }
 }
 
 - (void)inspectSeed:(id)sender
@@ -286,22 +471,14 @@ struct ProgressHandler
                                   Button::ThreeButtonCombos().end());
   }
   
-  const char *dstr = [[[fromDateField objectValue] description] UTF8String];
-  criteria.fromTime =
-    ptime(date(boost::lexical_cast<uint32_t>(std::string(dstr, 4)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 5, 2)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2))),
-          seconds(0));
+  criteria.fromTime = ptime(NSDateToBoostDate([fromDateField objectValue]),
+                            seconds(0));
   
-  dstr = [[[toDateField objectValue] description] UTF8String];
-  criteria.toTime =
-    ptime(date(boost::lexical_cast<uint32_t>(std::string(dstr, 4)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 5, 2)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2))),
-          hours(23) + minutes(59) + seconds(59));
+  criteria.toTime   = ptime(NSDateToBoostDate([toDateField objectValue]),
+                            hours(23) + minutes(59) + seconds(59));
   
-  criteria.minFrame = [minIVFrameField intValue];
-  criteria.maxFrame = [maxIVFrameField intValue];
+  criteria.minIVFrame = [minIVFrameField intValue];
+  criteria.maxIVFrame = [maxIVFrameField intValue];
   
   criteria.minIVs = [ivParameterController minIVs];
   criteria.shouldCheckMaxIVs = [ivParameterController shouldCheckMaxIVs];
@@ -320,31 +497,36 @@ struct ProgressHandler
   
   criteria.tid = [gen5ConfigController tid];
   criteria.sid = [gen5ConfigController sid];
-  criteria.shinyOnly = [shinyOnlyButton state];
-  criteria.nature = Nature::Type([[shinyNaturePopUp selectedItem] tag]);
+  criteria.shinyOnly = [shinyOnlyCheckbox state];
+  criteria.encounterType =
+    GUICriteria::EncounterType([[shinyEncounterTypePopUp selectedItem] tag]);
+  criteria.startFromLowestPID = [shinyFromFirstPIDCheckBox state];
   criteria.minPIDFrame = [minPIDFrameField intValue];
   criteria.maxPIDFrame = [maxPIDFrameField intValue];
+  criteria.nature = Nature::Type([[shinyNaturePopUp selectedItem] tag]);
+  criteria.ability = [[shinyAbilityPopUp selectedItem] tag];
+  criteria.gender = Gender::Type([[shinyGenderPopUp selectedItem] tag]);
+  criteria.genderRatio =
+    Gender::Ratio([[shinyGenderRatioPopUp selectedItem] tag]);
+  criteria.syncA = [shinySyncACheckBox state];
+  criteria.syncB = [shinySyncBCheckBox state];
+  criteria.syncC = [shinySyncCCheckBox state];
+  criteria.esvMaskLand = GetESVBitmask(shinyLandESVPopUp);
+  criteria.esvMaskWater = GetESVBitmask(shinyWaterESVPopUp);
+  criteria.canFish = [shinyCanFishCheckBox state];
+  criteria.dustIsPoke = [shinyDustIsPokeCheckBox state];
+  criteria.shadowIsPoke = [shinyShadowIsPokeCheckBox state];
   
-  uint32_t  numResults = criteria.ExpectedNumberOfResults();
-  
-  if (numResults > 10000)
+  if (CheckExpectedResults(criteria, 10000,
+                           @"The current search parameters are expected to return more than 10,000 results. Please set more specific IVs, limit the date range, use fewer held keys, or other similar settings to reduce the number of expected results.",
+                           self,
+                           @selector(alertDidEnd:returnCode:contextInfo:)))
   {
-    NSAlert *alert = [[NSAlert alloc] init];
-    
-    [alert addButtonWithTitle:@"OK"];
-    [alert setMessageText:@"Please Limit Search Parameters"];
-    [alert setInformativeText:@"The current search parameters are expected to return more than 10,000 results. Please set more specific IVs, limit the date range, use fewer held keys, or other similar settings to reduce the number of expected results."];
-    [alert setAlertStyle:NSWarningAlertStyle];
-    
-    [alert beginSheetModalForWindow:[self window] modalDelegate:self
-           didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:)
-           contextInfo:nil];
-    
-    return nil;
+    return [NSValue valueWithPointer: new GUICriteria(criteria)];
   }
   else
   {
-    return [NSValue valueWithPointer: new GUICriteria(criteria)];
+    return nil;
   }
 }
 
@@ -355,12 +537,7 @@ struct ProgressHandler
   
   HashedSeedSearcher  searcher;
   
-  searcher.Search(*criteria,
-    ResultHandler(searcherController,
-                  criteria->tid, criteria->sid,
-                  criteria->shinyOnly,
-                  criteria->nature,
-                  criteria->minPIDFrame, criteria->maxPIDFrame),
+  searcher.Search(*criteria, ResultHandler(searcherController, *criteria),
                   ProgressHandler(searcherController));
 }
 

@@ -23,6 +23,7 @@
 
 #include "BasicTypes.h"
 #include "HashedSeed.h"
+#include <list>
 #include <vector>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -65,6 +66,11 @@ public:
     return m_dayMonthMinuteSecond | m_hour | m_delay;
   }
   
+  std::list<TimeSeedGenerator>  Split(uint32_t parts)
+  {
+    return std::list<TimeSeedGenerator>();
+  }
+  
 private:
   const uint32_t  m_minDelay;
   const uint32_t  m_maxDelay;
@@ -100,6 +106,11 @@ public:
     return result + m_macAddressLow;
   }
   
+  std::list<CGearSeedGenerator>  Split(uint32_t parts)
+  {
+    return std::list<CGearSeedGenerator>();
+  }
+  
 private:
   const uint32_t  m_macAddressLow;
   
@@ -116,17 +127,21 @@ public:
   enum { SeedsPerChunk = 50000 };
   
   HashedSeedGenerator(Game::Version version,
-                        uint32_t macAddressLow, uint32_t macAddressHigh,
-                        uint32_t timer0Low, uint32_t timer0High,
-                        uint32_t vcountLow, uint32_t vcountHigh,
-                        uint32_t vframeLow, uint32_t vframeHigh,
-                        boost::posix_time::ptime fromTime,
-                        boost::posix_time::ptime toTime,
-                        const std::vector<uint32_t> &keyCombos);
+                      uint32_t macAddressLow, uint32_t macAddressHigh,
+                      uint32_t timer0Low, uint32_t timer0High,
+                      uint32_t vcountLow, uint32_t vcountHigh,
+                      uint32_t vframeLow, uint32_t vframeHigh,
+                      boost::posix_time::ptime fromTime,
+                      boost::posix_time::ptime toTime,
+                      const std::vector<uint32_t> &keyCombos);
+  
+  HashedSeedGenerator(const HashedSeedGenerator &other);
   
   SeedCountType NumSeeds() const;
   
   SeedType Next();
+  
+  std::list<HashedSeedGenerator>  Split(uint32_t parts);
   
 private:
   const uint32_t                  m_nazo;
@@ -134,8 +149,8 @@ private:
   const uint32_t                  m_timer0Low, m_timer0High;
   const uint32_t                  m_vcountLow, m_vcountHigh;
   const uint32_t                  m_vframeLow, m_vframeHigh;
-  const boost::posix_time::ptime  m_fromTime, m_toTime;
   const std::vector<uint32_t>     m_keyCombos;
+  boost::posix_time::ptime        m_fromTime, m_toTime;
   
   boost::posix_time::ptime               m_time;
   uint32_t                               m_timer0;

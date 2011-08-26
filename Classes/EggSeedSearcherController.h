@@ -52,24 +52,32 @@
   IBOutlet NSTextField            *maleSpDField;
   IBOutlet NSTextField            *maleSpeField;
   
+  IBOutlet NSPopUpButton          *femaleSpeciesPopUp;
   IBOutlet NSButton               *everstoneButton;
   IBOutlet NSButton               *dittoButton;
   IBOutlet NSButton               *internationalButton;
   
-  IBOutlet NSTextField            *minIVFrameField;
-  IBOutlet NSTextField            *maxIVFrameField;
-  
+  IBOutlet NSButton               *useInitialPIDFrameCheckBox;
   IBOutlet NSTextField            *minPIDFrameField;
   IBOutlet NSTextField            *maxPIDFrameField;
+  
+  IBOutlet NSTextField            *minIVFrameField;
+  IBOutlet NSTextField            *maxIVFrameField;
   
   IBOutlet NSPopUpButton          *naturePopUp;
   IBOutlet NSPopUpButton          *abilityPopUp;
   IBOutlet NSButton               *dreamworldButton;
   IBOutlet NSButton               *shinyButton;
+  IBOutlet NSPopUpButton          *speciesPopUp;
+  IBOutlet NSPopUpButton          *genderPopUp;
+  IBOutlet NSPopUpButton          *genderRatioPopUp;
   
   IBOutlet IVParameterController  *ivParameterController;
   
   IBOutlet SearcherController     *searcherController;
 }
+
+- (IBAction)onFemaleSpeciesChange:(id)sender;
+- (IBAction)toggleSearchFromStartFrame:(id)sender;
 
 @end

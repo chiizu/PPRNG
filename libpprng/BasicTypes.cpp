@@ -20,6 +20,8 @@
 
 
 #include "BasicTypes.h"
+#include <list>
+#include <map>
 #include <vector>
 #include <sstream>
 #include <iomanip>
@@ -44,7 +46,7 @@ static const char *GameVersionNameArray[] =
   "Black (English)", "Black (French)", "Black (German)", "Black (Italian)",
   "Black (Japanese)", "Black (Spanish)",
   "White (English)", "White (French)", "White (German)", "White (Italian)",
-  "White (Japanese)", "White (Spanish)",
+  "White (Japanese)", "White (Spanish)", "Black (Korean)", "White (Korean)",
   "Unknown Version"
 };
 
@@ -171,7 +173,7 @@ std::string Button::ToString(uint32_t keys)
       {
         if ((buttons & 0x1) != 0)
         {
-          result += " + " + ButtonName[i];
+          result += '-' + ButtonName[i];
         }
         ++i;
       }
@@ -369,7 +371,7 @@ Element::Type IVs::HiddenType() const
   typeSum += (word & (0x1 << SA_SHIFT)) >> (SA_SHIFT - 4);
   typeSum += (word & (0x1 << SD_SHIFT)) >> (SD_SHIFT - 5);
   
-  return static_cast<Element::Type>(((typeSum * 15) / 63) + 1);
+  return Element::Type(((typeSum * 15) / 63) + 1);
 }
 
 uint32_t IVs::HiddenPower() const
@@ -384,6 +386,206 @@ uint32_t IVs::HiddenPower() const
   powerSum += (word & (0x2 << SD_SHIFT)) >> (SD_SHIFT - 4);
   
   return ((powerSum * 40) / 63) + 30;
+}
+
+
+namespace
+{
+
+struct HPSumCount { uint32_t  sum, count; };
+typedef std::list<HPSumCount>  HPSumCountList;
+
+static void UpdateHPSumsAndCounts(HPSumCountList &sumList, uint32_t addend,
+                                  uint32_t numEvenIVs, uint32_t numOddIVs)
+{
+  HPSumCountList::iterator it;
+  
+  if (numEvenIVs > 0)
+  {
+    HPSumCountList  newOddSums;
+    
+    if (numOddIVs > 0)
+    {
+      // new sums to be added because the interesting bit is set
+      newOddSums = sumList;
+      
+      for (it = newOddSums.begin(); it != newOddSums.end(); ++it)
+      {
+        it->sum += addend;  // add this bit's value
+        it->count *= numOddIVs;
+      }
+    }
+    
+    if (numEvenIVs > 1)
+    {
+      // update counts for the IV values with unset bits
+      for (it = sumList.begin(); it != sumList.end(); ++it)
+      {
+        it->count *= numEvenIVs;
+      }
+    }
+    
+    // add in odd counts with new sums
+    sumList.splice(sumList.end(), newOddSums);
+  }
+  else
+  {
+    // no even IVs, so just update sums and counts in current list
+    for (it = sumList.begin(); it != sumList.end(); ++it)
+    {
+      it->sum += addend;
+      it->count *= numOddIVs;
+    }
+  }
+}
+
+template <typename KeyType, uint32_t Multiplier, uint32_t Addend>
+void BuildHPMap(std::map<KeyType, uint32_t> &map,
+                const HPSumCountList &sumList)
+{
+  HPSumCountList::const_iterator  lit;
+  for (lit = sumList.begin(); lit != sumList.end(); ++lit)
+  {
+    KeyType  key = KeyType(((lit->sum * Multiplier) / 63) + Addend);
+    
+    typename std::map<KeyType, uint32_t>::iterator  mit = map.find(key);
+    if (mit == map.end())
+    {
+      map[key] = lit->count;
+    }
+    else
+    {
+      mit->second += lit->count;
+    }
+  }
+}
+
+std::string MakeImpossibleMinMaxIVRangeExceptionString
+  (IndividualValues minIVs, IndividualValues maxIVs)
+{
+  return "Min IVs are not all less than or equal to max IVs";
+}
+
+std::string MakeImpossibleHiddenTypeExceptionString
+  (IndividualValues minIVs, IndividualValues maxIVs, Element::Type type)
+{
+  std::ostringstream  os;
+  os << "Impossible Hidden Power Type: " << ElementName[type];
+  return os.str();
+}
+
+std::string MakeImpossibleMinHiddenPowerExceptionString
+  (IndividualValues minIVs, IndividualValues maxIVs, uint32_t minPower)
+{
+  std::ostringstream  os;
+  os << "Impossible Minimum Hidden Power: " << minPower;
+  return os.str();
+}
+
+}
+
+IVs::ImpossibleMinMaxIVRangeException::ImpossibleMinMaxIVRangeException
+    (IndividualValues minIVs, IndividualValues maxIVs)
+: Exception(MakeImpossibleMinMaxIVRangeExceptionString(minIVs, maxIVs))
+{}
+
+IVs::ImpossibleHiddenTypeException::ImpossibleHiddenTypeException
+    (IndividualValues minIVs, IndividualValues maxIVs, Element::Type type)
+: Exception(MakeImpossibleHiddenTypeExceptionString(minIVs, maxIVs, type))
+{}
+
+IVs::ImpossibleMinHiddenPowerException::ImpossibleMinHiddenPowerException
+    (IndividualValues minIVs, IndividualValues maxIVs, uint32_t minPower)
+: Exception(MakeImpossibleMinHiddenPowerExceptionString(minIVs, maxIVs, minPower))
+{}
+
+// This complicated function (including helper function above) is used to
+// properly adjust the number of expected results that will be returned based
+// on the desired hidden power and type.
+uint64_t IVs::AdjustExpectedResultsForHiddenPower
+  (uint64_t numResults, IndividualValues minIVs, IndividualValues maxIVs,
+   Element::Type type, uint32_t minPower)
+      throw (ImpossibleHiddenTypeException, ImpossibleMinHiddenPowerException)
+{
+  static const Type  IVOrdering[] = { HP, AT, DF, SP, SA, SD };
+  
+  if (type == Element::UNKNOWN)  return numResults;
+  
+  uint32_t  addend = 0x1;
+  uint64_t  numIVCombos = 1;
+  
+  HPSumCountList  typeSumList, powerSumList;
+  HPSumCount      dummy; dummy.sum = 0; dummy.count = 1;
+  
+  typeSumList.push_back(dummy);  powerSumList.push_back(dummy);
+  
+  // For both the hidden type and its power, generate each possible sum and
+  // the number of times it can appear in all possible IV combinations produced
+  // by the given min and max IVs.
+  for (uint32_t i = 0; i < NUM_IVS; ++i)
+  {
+    uint32_t  minIV = minIVs.iv(IVOrdering[i]);
+    uint32_t  maxIV = maxIVs.iv(IVOrdering[i]);
+    uint32_t  numEvenTypeIVs = 0, numOddTypeIVs = 0;
+    uint32_t  numEvenPwrIVs = 0, numOddPwrIVs = 0;
+    
+    // Count how many set and unset first and second bits there are
+    // in this IV's range of values.
+    // This could perhaps be done with some smarter math, but it would end
+    // up being more complicated, and the rest is already complicated enough.
+    for (uint32_t j = minIV; j <= maxIV; ++j)
+    {
+      numEvenTypeIVs += (j & 0x1) ^ 0x1;
+      numOddTypeIVs += j & 0x1;
+      numEvenPwrIVs += ((j & 0x2) >> 1) ^ 0x1;
+      numOddPwrIVs += (j & 0x2) >> 1;
+    }
+    
+    UpdateHPSumsAndCounts(typeSumList, addend, numEvenTypeIVs, numOddTypeIVs);
+    UpdateHPSumsAndCounts(powerSumList, addend, numEvenPwrIVs, numOddPwrIVs);
+    
+    addend <<= 1;
+    numIVCombos *= numEvenTypeIVs + numOddTypeIVs;
+  }
+  
+  // Now that all of the sums and counts are determined, do the final
+  // calculations to determine the real distributions
+  std::map<Element::Type, uint32_t>  typeCountMap;
+  std::map<uint32_t, uint32_t>       powerCountMap;
+  
+  BuildHPMap<Element::Type, 15, 1>(typeCountMap, typeSumList);
+  BuildHPMap<uint32_t, 40, 30>(powerCountMap, powerSumList);
+  
+  // specified power is minimum
+  std::map<uint32_t, uint32_t>::const_iterator  pit;
+  pit = powerCountMap.lower_bound(minPower);
+  
+  uint64_t  hpMultiplier = 0;
+  
+  while (pit != powerCountMap.end())
+  {
+    hpMultiplier += pit->second;
+    ++pit;
+  }
+  
+  if (hpMultiplier == 0)
+    throw ImpossibleMinHiddenPowerException(minIVs, maxIVs, minPower);
+  
+  uint64_t  hpDivisor = numIVCombos;
+  
+  if (type != Element::ANY)
+  {
+    std::map<Element::Type, uint32_t>::const_iterator  it;
+    it = typeCountMap.find(type);
+    
+    if (it == typeCountMap.end())
+      throw ImpossibleHiddenTypeException(minIVs, maxIVs, type);
+    
+    hpMultiplier *= it->second;
+    hpDivisor *= numIVCombos;
+  }
+  
+  return numResults * hpMultiplier / hpDivisor;
 }
 
 bool IVs::betterThan(const IndividualValues &ivs) const

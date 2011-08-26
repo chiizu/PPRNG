@@ -35,6 +35,7 @@
   IBOutlet NSButton               *eggsEnableIVsButton;
   IBOutlet NSTextField            *eggsIVFrameField;
   
+  IBOutlet NSButton               *eggsUseInitialPIDButton;
   IBOutlet NSTextField            *eggsMinPIDFrameField;
   IBOutlet NSTextField            *eggsMaxPIDFrameField;
   
@@ -66,10 +67,13 @@
   IBOutlet NSTextField            *eggsMaleSpeField;
   IBOutlet NSStepper              *eggsMaleSpeStepper;
   
+  IBOutlet NSPopUpButton          *eggsFemaleSpeciesPopup;
+  
   IBOutlet NSTableView            *eggsTableView;
   IBOutlet NSArrayController      *eggsContentArray;
 }
 
+- (IBAction)toggleUseInitialPID:(id)sender;
 - (IBAction)toggleEggIVs:(id)sender;
 - (IBAction)toggleParentIVs:(id)sender;
 - (IBAction)generateEggs:(id)sender;

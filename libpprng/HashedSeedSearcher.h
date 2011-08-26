@@ -33,7 +33,7 @@ namespace pprng
 class HashedSeedSearcher
 {
 public:
-  struct Criteria
+  struct Criteria : public SeedSearchCriteria
   {
     Game::Version             version;
     uint32_t                  macAddressLow, macAddressHigh;
@@ -42,7 +42,7 @@ public:
     uint32_t                  vframeLow, vframeHigh;
     boost::posix_time::ptime  fromTime, toTime;
     Button::List              buttonPresses;
-    uint32_t                  minFrame, maxFrame;
+    uint32_t                  minIVFrame, maxIVFrame;
     uint32_t                  maxResults;
     bool                      shouldCheckMaxIVs;
     IVs                       minIVs, maxIVs;
@@ -50,7 +50,7 @@ public:
     uint32_t                  minHiddenPower;
     bool                      isRoamer;
     
-    uint64_t ExpectedNumberOfResults();
+    uint64_t ExpectedNumberOfResults() const;
   };
   
   HashedSeedSearcher() {}

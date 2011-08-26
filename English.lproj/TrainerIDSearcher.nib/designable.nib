@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
-		<string key="IBDocument.SystemVersion">10H574</string>
-		<string key="IBDocument.InterfaceBuilderVersion">823</string>
-		<string key="IBDocument.AppKitVersion">1038.35</string>
+		<string key="IBDocument.SystemVersion">10K540</string>
+		<string key="IBDocument.InterfaceBuilderVersion">851</string>
+		<string key="IBDocument.AppKitVersion">1038.36</string>
 		<string key="IBDocument.HIToolboxVersion">461.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">823</string>
+			<string key="NS.object.0">851</string>
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -3496,7 +3496,7 @@
 															<object class="NSButton" id="460500864">
 																<reference key="NSNextResponder" ref="434328460"/>
 																<int key="NSvFlags">268</int>
-																<string key="NSFrame">{{16, 12}, {48, 18}}</string>
+																<string key="NSFrame">{{76, 30}, {48, 18}}</string>
 																<reference key="NSSuperview" ref="434328460"/>
 																<bool key="NSEnabled">YES</bool>
 																<object class="NSButtonCell" key="NSCell" id="516551363">
@@ -3518,7 +3518,7 @@
 															<object class="NSButton" id="232748620">
 																<reference key="NSNextResponder" ref="434328460"/>
 																<int key="NSvFlags">268</int>
-																<string key="NSFrame">{{76, 30}, {49, 18}}</string>
+																<string key="NSFrame">{{16, 12}, {49, 18}}</string>
 																<reference key="NSSuperview" ref="434328460"/>
 																<bool key="NSEnabled">YES</bool>
 																<object class="NSButtonCell" key="NSCell" id="815333879">
@@ -9836,8 +9836,8 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="122360454"/>
 							<reference ref="347427687"/>
-							<reference ref="232748620"/>
 							<reference ref="460500864"/>
+							<reference ref="232748620"/>
 						</object>
 						<reference key="parent" ref="246128573"/>
 					</object>
@@ -11056,7 +11056,6 @@
 					<string>917.IBNumberFormatterLocalizesFormatMetadataKey</string>
 					<string>917.IBPluginDependency</string>
 					<string>918.IBPluginDependency</string>
-					<string>924.CustomClassName</string>
 					<string>924.IBPluginDependency</string>
 					<string>924.IBViewBoundsToFrameTransform</string>
 					<string>925.IBPluginDependency</string>
@@ -11089,9 +11088,9 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{0, 124}, {700, 732}}</string>
+					<string>{{327, 124}, {700, 732}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{0, 124}, {700, 732}}</string>
+					<string>{{327, 124}, {700, 732}}</string>
 					<integer value="1"/>
 					<string>{196, 240}</string>
 					<string>{{357, 418}, {480, 270}}</string>
@@ -11275,11 +11274,11 @@
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
-						<bytes key="NSTransformStruct">P4AAAL+AAABBqAAAwqYAAA</bytes>
+						<bytes key="NSTransformStruct">P4AAAL+AAABBgAAAwQAAAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
-						<bytes key="NSTransformStruct">P4AAAL+AAABBgAAAwogAAA</bytes>
+						<bytes key="NSTransformStruct">P4AAAL+AAABBgAAAweAAAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -11849,7 +11848,6 @@
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>SynchroScrollView</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
 						<bytes key="NSTransformStruct">P4AAAL+AAABBiAAAw/uAAA</bytes>
@@ -12209,14 +12207,6 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">Classes/SearcherController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">SynchroScrollView</string>
-					<string key="superclassName">NSScrollView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">Classes/SynchroScrollView.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -12844,14 +12834,6 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBDocumentRelativeSource</string>
 						<string key="minorKey">../Classes/SearcherController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">SynchroScrollView</string>
-					<string key="superclassName">NSScrollView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBDocumentRelativeSource</string>
-						<string key="minorKey">../Classes/SynchroScrollView.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

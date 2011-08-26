@@ -54,9 +54,8 @@ NSString* GetEggIV(Gen5BreedingFrame::Inheritance inheritance, uint32_t iv,
   }
 }
 
-static
-NSString* GetEggCharacteristic(const Gen5BreedingFrame &frame, IVs eggIVs,
-                               IVs femaleIVs, IVs maleIVs)
+IVs GetEggIVs(const Gen5BreedingFrame &frame, IVs eggIVs,
+              IVs femaleIVs, IVs maleIVs)
 {
   uint32_t  i;
   
@@ -78,8 +77,7 @@ NSString* GetEggCharacteristic(const Gen5BreedingFrame &frame, IVs eggIVs,
     }
   }
   
-  return [NSString stringWithFormat: @"%s",
-    Characteristic::ToString(Characteristic::Get(frame.pid, eggIVs)).c_str()];
+  return eggIVs;
 }
 
 static
@@ -153,6 +151,12 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
 {
   [[[[eggsTableView tableColumnWithIdentifier: @"pid"] dataCell] formatter]
    setFormatWidth: 8];
+}
+
+- (IBAction)toggleUseInitialPID:(id)sender
+{
+  BOOL enabled = [eggsUseInitialPIDButton state];
+  [eggsMinPIDFrameField setEnabled: !enabled];
 }
 
 - (IBAction)toggleEggIVs:(id)sender
@@ -237,7 +241,11 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
   bool      isInternational = [eggsInternationalButton state];
   bool      hasDitto = [eggsUseDittoButton state];
   bool      hasEverstone = [eggsUseEverstoneButton state];
-  uint32_t  minPIDFrame = [eggsMinPIDFrameField intValue];
+  FemaleParent::Type femaleSpecies =
+    FemaleParent::Type([[eggsFemaleSpeciesPopup selectedItem] tag]);
+  uint32_t  minPIDFrame = [eggsUseInitialPIDButton state] ?
+                          (seed.GetSkippedPIDFrames() + 1) :
+                          [eggsMinPIDFrameField intValue];
   uint32_t  maxPIDFrame = [eggsMaxPIDFrameField intValue];
   uint32_t  limitFrame = minPIDFrame - 1;
   
@@ -260,6 +268,23 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
     ++frameNum;
     
     Gen5BreedingFrame  frame = generator.CurrentFrame();
+    uint32_t           genderValue = frame.pid.GenderValue();
+    id                 hiddenType = @"";
+    id                 hiddenPower = @"";
+    id                 characteristic = @"";
+    
+    if (showIVs && parentIVs)
+    {
+      IVs  eggIVs = GetEggIVs(frame, ivs, femaleIVs, maleIVs);
+      
+      characteristic =
+        [NSString stringWithFormat: @"%s",
+          Characteristic::ToString
+            (Characteristic::Get(frame.pid, eggIVs)).c_str()];
+      hiddenType = [NSString stringWithFormat: @"%s",
+                     Element::ToString(eggIVs.HiddenType()).c_str()];
+      hiddenPower = [NSNumber numberWithUnsignedInt: eggIVs.HiddenPower()];
+    }
     
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -272,7 +297,10 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
         ((!hasDitto && frame.dreamWorldAbilityPassed) ? @"Y" : @""),
           @"dreamWorld",
         [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
-        GenderString(frame.pid), @"gender",
+        ((genderValue < 31) ? @"♀" : @"♂"), @"gender18",
+        ((genderValue < 63) ? @"♀" : @"♂"), @"gender14",
+        ((genderValue < 127) ? @"♀" : @"♂"), @"gender12",
+        ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
         GetEggIV(frame.inheritance[0], ivs.hp(), showIVs,
                  femaleIVs.hp(), maleIVs.hp(), parentIVs), @"hp",
         GetEggIV(frame.inheritance[1], ivs.at(), showIVs,
@@ -285,9 +313,10 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
                  femaleIVs.sd(), maleIVs.sd(), parentIVs), @"spd",
         GetEggIV(frame.inheritance[5], ivs.sp(), showIVs,
                  femaleIVs.sp(), maleIVs.sp(), parentIVs), @"spe",
-        ((showIVs && parentIVs) ? 
-            GetEggCharacteristic(frame, ivs, femaleIVs, maleIVs) : @""),
-          @"characteristic",
+        hiddenType, @"hiddenType",
+        hiddenPower, @"hiddenPower",
+        characteristic, @"characteristic",
+        SpeciesString(femaleSpecies, frame.species), @"species",
         nil];
     
     [rowArray addObject: result];

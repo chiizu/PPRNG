@@ -90,7 +90,7 @@ struct FrameGeneratorFactory
 
 }
 
-uint64_t WonderCardSeedSearcher::Criteria::ExpectedNumberOfResults()
+uint64_t WonderCardSeedSearcher::Criteria::ExpectedNumberOfResults() const
 {
   uint64_t  seconds = (toTime - fromTime).total_seconds() + 1;
   uint64_t  keyCombos = buttonPresses.size();
@@ -103,30 +103,22 @@ uint64_t WonderCardSeedSearcher::Criteria::ExpectedNumberOfResults()
   
   uint64_t  numFrames = maxFrame - minFrame + 1;
   
-  uint64_t  hpDivisor = 1;
-  if (hiddenType != Element::UNKNOWN)
-  {
-    hpDivisor = 40; // number of power levels
-    
-    if (hiddenType != Element::ANY)
-    {
-      hpDivisor *= 16;
-    }
-  }
-  
   IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
   
-  uint32_t  numIVs = (maxIVs.hp() - minIVs.hp() + 1) *
-                     (maxIVs.at() - minIVs.at() + 1) *
-                     (maxIVs.df() - minIVs.df() + 1) *
-                     (maxIVs.sa() - minIVs.sa() + 1) *
-                     (maxIVs.sd() - minIVs.sd() + 1) *
-                     (maxIVs.sp() - minIVs.sp() + 1);
+  uint64_t  numIVs = IVs::CalculateNumberOfCombinations(minIVs, maxIVs);
   
   uint64_t  natureDivisor = (nature != Nature::ANY) ? 25 : 1;
   
-  return numSeeds * numFrames * numIVs /
-         (32 * 32 * 32 * 32 * 32 * 32 * natureDivisor * hpDivisor);
+  uint64_t  numResults = numSeeds * numFrames * numIVs /
+                         (32 * 32 * 32 * 32 * 32 * 32 * natureDivisor);
+  
+  if (hiddenType != Element::UNKNOWN)
+  {
+    numResults = IVs::AdjustExpectedResultsForHiddenPower
+      (numResults, minIVs, maxIVs, hiddenType, minHiddenPower);
+  }
+  
+  return numResults;
 }
 
 void WonderCardSeedSearcher::Search(const Criteria &criteria,
@@ -134,22 +126,22 @@ void WonderCardSeedSearcher::Search(const Criteria &criteria,
                                     const ProgressCallback &progressHandler)
 {
   HashedSeedGenerator   seedGenerator(criteria.version,
-                                        criteria.macAddressLow,
-                                        criteria.macAddressHigh,
-                                        criteria.timer0Low, criteria.timer0High,
-                                        criteria.vcountLow, criteria.vcountHigh,
-                                        criteria.vframeLow, criteria.vframeHigh,
-                                        criteria.fromTime, criteria.toTime,
-                                        criteria.buttonPresses);
+                                      criteria.macAddressLow,
+                                      criteria.macAddressHigh,
+                                      criteria.timer0Low, criteria.timer0High,
+                                      criteria.vcountLow, criteria.vcountHigh,
+                                      criteria.vframeLow, criteria.vframeHigh,
+                                      criteria.fromTime, criteria.toTime,
+                                      criteria.buttonPresses);
   
   FrameChecker              frameChecker(criteria);
   SearcherType::FrameRange  frameRange(criteria.minFrame, criteria.maxFrame);
   
   SearcherType              searcher;
   
-  searcher.Search(seedGenerator, FrameGeneratorFactory(criteria),
-                  frameRange, frameChecker,
-                  resultHandler, progressHandler);
+  searcher.SearchThreaded(seedGenerator, FrameGeneratorFactory(criteria),
+                          frameRange, frameChecker,
+                          resultHandler, progressHandler);
 }
 
 }

@@ -54,7 +54,7 @@ public:
 class InitialIVSeedSearcher
 {
 public:
-  struct Criteria
+  struct Criteria : public SeedSearchCriteria
   {
     Game::Version             version;
     uint32_t                  macAddressLow, macAddressHigh;
@@ -67,7 +67,7 @@ public:
     boost::posix_time::ptime  startTime;
     uint32_t                  pressedButtons;
     
-    uint64_t ExpectedNumberOfResults();
+    uint64_t ExpectedNumberOfResults() const;
   };
   
   typedef HashedSeedSearcher::Frame             Frame;

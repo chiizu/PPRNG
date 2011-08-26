@@ -28,14 +28,16 @@
   
   IBOutlet NSTextField            *seedField;
   
-  IBOutlet NSTextField            *adjacentsTimeVarianceField;
+  IBOutlet NSPopUpButton          *adjacentsPIDFrameTypeMenu;
   
-  IBOutlet NSTextField            *adjacentsIVFrameField;
-  IBOutlet NSButton               *adjacentsRoamerButton;
+  IBOutlet NSTextField            *adjacentsTimeVarianceField;
   
   IBOutlet NSTextField            *adjacentsPIDFrameField;
   IBOutlet NSTextField            *adjacentsPIDFrameVarianceField;
-  IBOutlet NSPopUpButton          *adjacentsPIDFrameTypeMenu;
+  IBOutlet NSButton               *adjacentsUseInitialPIDOffsetButton;
+  
+  IBOutlet NSTextField            *adjacentsIVFrameField;
+  IBOutlet NSButton               *adjacentsRoamerButton;
   
   IBOutlet NSTableView            *adjacentsTableView;
   IBOutlet NSArrayController      *adjacentsContentArray;

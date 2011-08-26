@@ -37,14 +37,14 @@
 // quit when all windows are closed
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender
 {
-	return YES;
+  return YES;
 }
 
 // start up
 - (void)applicationDidFinishLaunching:(NSNotification*)notification
 {
-	launcherController = [[LauncherController alloc] init];
-	[launcherController showWindow:self];
+  launcherController = [[LauncherController alloc] init];
+  [launcherController showWindow:self];
 }
 
 @end

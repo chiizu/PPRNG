@@ -22,10 +22,20 @@
 #import <Cocoa/Cocoa.h>
 
 #include "BasicTypes.h"
+#include "SeedSearcher.h"
+#include <boost/date_time/gregorian/gregorian_types.hpp>
+
+extern boost::gregorian::date NSDateToBoostDate(NSDate *date);
 
 extern NSString* NatureString(pprng::Nature::Type nature);
 extern NSString* GenderString(pprng::PID pid);
 extern NSString* HeldItemString(pprng::HeldItem::Type t);
+extern NSString* SpeciesString(pprng::FemaleParent::Type t,
+                               uint32_t childSpecies);
 
 extern void SaveTableContentsToCSV(NSTableView *tableView,
                                    NSArrayController *contentArray);
+
+extern BOOL CheckExpectedResults
+  (pprng::SeedSearchCriteria &criteria, uint64_t maxResults,
+   NSString *tooManyResultsMessage, id caller, SEL alertHandler);

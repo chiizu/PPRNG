@@ -24,9 +24,7 @@
 
 #include "HashedSeed.h"
 #include "FrameGenerator.h"
-
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/lexical_cast.hpp>
+#include "Utilities.h"
 
 using namespace pprng;
 
@@ -50,10 +48,7 @@ using namespace pprng;
   using namespace boost::gregorian;
   using namespace boost::posix_time;
   
-  const char *dstr = [[[startDate objectValue] description] UTF8String];
-  date  d(boost::lexical_cast<uint32_t>(std::string(dstr, 4)),
-          boost::lexical_cast<uint32_t>(std::string(dstr + 5, 2)),
-          boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2)));
+  date  d = NSDateToBoostDate([startDate objectValue]);
   
   time_duration t
     (hours([startHour intValue]) +
@@ -76,8 +71,9 @@ using namespace pprng;
   HashedSeed  seed(d.year(), d.month(), d.day(), d.day_of_week(),
                    t.hours(), t.minutes(), t.seconds(),
                    macAddressLow, macAddressHigh,
-                   HashedSeed::NazoForVersion(version), 0, 0, 0,
-                   vcount, timer0, HashedSeed::GxStat, vframe, pressedKeys);
+                   HashedSeed::NazoForVersion(version),
+                   vcount, timer0, HashedSeed::GxStat, vframe, pressedKeys,
+                   0, 0, 0, 0, 0, 0, 0, 0x40);
   
   currentSeed = [NSData dataWithBytes: &seed length: sizeof(HashedSeed)];
   
@@ -216,9 +212,10 @@ using namespace pprng;
       HashedSeed  seed(d.year(), d.month(), d.day(), d.day_of_week(),
                        t.hours(), t.minutes(), t.seconds(),
                        targetSeed.m_macAddressLow, targetSeed.m_macAddressHigh,
-                       targetSeed.m_nazo, 0, 0, 0,
+                       targetSeed.m_nazo,
                        targetSeed.m_vcount, timer0, HashedSeed::GxStat,
-                       targetSeed.m_vframe, targetSeed.m_keyInput);
+                       targetSeed.m_vframe, targetSeed.m_keyInput,
+                       0, 0, 0, 0, 0, 0, 0, 0x40);
       
       WonderCardFrameGenerator  generator(seed, false, tid, sid);
       

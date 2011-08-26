@@ -73,6 +73,7 @@ Digest SHA1(const Message &message)
     if (i < 20)
     {
       f = (b & c) | (~b & d);
+      //f = d ^ (b & (c ^ d));
       k = 0x5A827999;
     }
     else if (i < 40)
@@ -83,6 +84,7 @@ Digest SHA1(const Message &message)
     else if (i < 60)
     {
       f = (b & c) | (b & d) | (c & d);
+      //f = (b & c) | (d & (b | c));
       k = 0x8F1BBCDC;
     }
     else
@@ -128,9 +130,14 @@ uint64_t MakeSeed(uint32_t year, uint32_t month, uint32_t day,
                   uint32_t dayOfWeek,
                   uint32_t hour, uint32_t minute, uint32_t second,
                   uint32_t macAddressLow, uint32_t macAddressHigh,
-                  uint32_t nazo, uint32_t n0, uint32_t n1, uint32_t n2,
-                  uint32_t vcount, uint32_t timer, uint32_t gxStat,
-                  uint32_t vframe, uint32_t keyInput)
+                  uint32_t nazo,
+                  uint32_t vcount, uint32_t timer0,
+                  uint32_t gxStat, uint32_t vframe,
+                  uint32_t keyInput,
+                  uint32_t n21510F8, uint32_t n21510FC,
+                  uint32_t n2FFFF90, uint32_t n2FFFF94,
+                  uint32_t n2FFFFAA, uint32_t n2FFFFAC,
+                  uint32_t n2FFFF98, uint32_t pmFlag)
 {
   Message  m;
   
@@ -138,23 +145,23 @@ uint64_t MakeSeed(uint32_t year, uint32_t month, uint32_t day,
   m.w[1] = m.w[2] = SwapEndianess(nazo + 0xfc);
   m.w[3] = m.w[4] = SwapEndianess(nazo + 0xfc + 0x4c);
   
-  m.w[5] = SwapEndianess((vcount << 16) | timer);
+  m.w[5] = SwapEndianess((vcount << 16) | timer0);
   
-  m.w[6] = (macAddressLow & 0xffff) | n2;
+  m.w[6] = (macAddressLow & 0xffff) ^ SwapEndianess(n21510F8);
   
   m.w[7] = (((macAddressLow >> 16) & 0xff) | (macAddressHigh << 8)) ^
-           SwapEndianess(gxStat ^ vframe);
+           SwapEndianess(n21510FC ^ gxStat ^ vframe);
   
   m.w[8] = ((ToBCD(year) & 0xff) << 24) | ((ToBCD(month) & 0xff) << 16) |
            ((ToBCD(day) & 0xff) << 8) | (dayOfWeek & 0xff);
   
-  m.w[9] = ((((hour >= 12) ? ToBCD(hour) + 0x40 : ToBCD(hour)) & 0xff) << 24) |
+  m.w[9] = ((((hour >= 12) ? ToBCD(hour) + pmFlag : ToBCD(hour)) & 0xff) << 24) |
            ((ToBCD(minute) & 0xff) << 16) | ((ToBCD(second) & 0xff) << 8);
   
-  m.w[10] = n0;
-  m.w[11] = n1;
+  m.w[10] = SwapEndianess(n2FFFF90 ^ (n2FFFF94 << 16));
+  m.w[11] = SwapEndianess((n2FFFFAA << 16) | n2FFFFAC);
   
-  m.w[12] = SwapEndianess(keyInput);
+  m.w[12] = SwapEndianess((n2FFFF98 << 16) | keyInput);
   
   m.w[13] = 0x80000000;
   m.w[14] = 0x00000000;
@@ -192,24 +199,79 @@ uint64_t MakeSeed(uint32_t year, uint32_t month, uint32_t day,
   return LCRNG5(preSeed).Next();
 }
 
+
+
+enum { NumTableRows = 6, NumTableColumns = 5, NumLoops = 5 };
+
+static uint32_t  PercentageTable[NumTableRows][NumTableColumns] =
+{
+  {  50,100,100,100,100 },
+  {  50, 50,100,100,100 },
+  {  30, 50,100,100,100 },
+  {  25, 30, 50,100,100 },
+  {  20, 25, 33, 50,100 },
+  { 100,100,100,100,100 }
+};
+
+static uint32_t CalculateConsumedPIDRNGFrames(uint64_t rawSeed)
+{
+  LCRNG5    rng(rawSeed);
+  uint32_t  count = 0;
+  
+  for (uint32_t i = 0; i < NumLoops; ++i)
+  {
+    for (uint32_t j = 0; j < NumTableRows; ++j)
+    {
+      for (uint32_t k = 0; k < NumTableColumns; ++k)
+      {
+        uint32_t  percent = PercentageTable[j][k];
+        if (percent == 100)
+          break;
+        
+        ++count;
+        
+        uint32_t d101 = ((rng.Next() >> 32) * 101) >> 32;
+        if (d101 <= percent)
+          break;
+      }
+    }
+  }
+  
+  return count;
+}
+
 }
 
 HashedSeed::HashedSeed(uint32_t year, uint32_t month, uint32_t day,
-                           uint32_t dayOfWeek,
-                           uint32_t hour, uint32_t minute, uint32_t second,
-                           uint32_t macAddressLow, uint32_t macAddressHigh,
-                           uint32_t nazo, uint32_t n0, uint32_t n1, uint32_t n2,
-                           uint32_t vcount, uint32_t timer, uint32_t gxStat,
-                           uint32_t vframe, uint32_t keyInput)
-  : m_year(year), m_month(month), m_day(day),
+                       uint32_t dayOfWeek,
+                       uint32_t hour, uint32_t minute, uint32_t second,
+                       uint32_t macAddressLow, uint32_t macAddressHigh,
+                       uint32_t nazo,
+                       uint32_t vcount, uint32_t timer0,
+                       uint32_t gxStat, uint32_t vframe,
+                       uint32_t keyInput,
+                       uint32_t n21510F8, uint32_t n21510FC,
+                       uint32_t n2FFFF90, uint32_t n2FFFF94,
+                       uint32_t n2FFFFAA, uint32_t n2FFFFAC,
+                       uint32_t n2FFFF98,
+                       uint32_t pmFlag)
+  : m_year(year), m_month(month), m_day(day), m_dayOfWeek(dayOfWeek),
     m_hour(hour), m_minute(minute), m_second(second),
     m_macAddressLow(macAddressLow), m_macAddressHigh(macAddressHigh),
-    m_nazo(nazo), m_vcount(vcount), m_timer0(timer), m_GxStat(gxStat),
-    m_vframe(vframe), m_keyInput(keyInput),
+    m_nazo(nazo), m_vcount(vcount), m_timer0(timer0),
+    m_GxStat(gxStat), m_vframe(vframe), m_keyInput(keyInput),
+    m_n21510F8(n21510F8), m_n21510FC(n21510FC),
+    m_n2FFFF90(n2FFFF90), m_n2FFFF94(n2FFFF94),
+    m_n2FFFFAA(n2FFFFAA), m_n2FFFFAC(n2FFFFAC),
+    m_n2FFFF98(n2FFFF98),
+    m_pmFlag(pmFlag),
     m_rawSeed(MakeSeed(year, month, day, dayOfWeek, hour, minute, second,
-                       macAddressLow, macAddressHigh, nazo, n0, n1, n2,
-                       vcount, timer,
-                       gxStat, vframe, 0x2FFF ^ keyInput))
+                       macAddressLow, macAddressHigh, nazo, vcount, timer0,
+                       gxStat, vframe, 0x2FFF ^ keyInput,
+                       n21510F8, n21510FC, n2FFFF90, n2FFFF94,
+                       n2FFFFAA, n2FFFFAC, n2FFFF98, pmFlag)),
+    m_skippedPIDFramesCalculated(false),
+    m_skippedPIDFrames(0)
 {}
 
 HashedSeed::Nazo HashedSeed::NazoForVersion(Game::Version version)
@@ -264,10 +326,30 @@ HashedSeed::Nazo HashedSeed::NazoForVersion(Game::Version version)
       return DEWhiteNazo;
       break;
       
+    case Game::BlackKorean:
+      return KRBlackNazo;
+      break;
+      
+    case Game::WhiteKorean:
+      return KRWhiteNazo;
+      break;
+      
     default:
       return static_cast<Nazo>(0);
       break;
   }
+}
+
+uint32_t HashedSeed::GetSkippedPIDFrames() const
+{
+  if (!m_skippedPIDFramesCalculated)
+  {
+    m_skippedPIDFrames = CalculateConsumedPIDRNGFrames(m_rawSeed);
+    
+    m_skippedPIDFramesCalculated = true;
+  }
+  
+  return m_skippedPIDFrames;
 }
 
 }

@@ -81,7 +81,7 @@ struct FrameGeneratorFactory
 
 }
 
-uint64_t HashedSeedSearcher::Criteria::ExpectedNumberOfResults()
+uint64_t HashedSeedSearcher::Criteria::ExpectedNumberOfResults() const
 {
   uint64_t  seconds = (toTime - fromTime).total_seconds() + 1;
   uint64_t  keyCombos = buttonPresses.size();
@@ -92,29 +92,22 @@ uint64_t HashedSeedSearcher::Criteria::ExpectedNumberOfResults()
   uint64_t  numSeeds =
     seconds * keyCombos * timer0Values * vcountValues * vframeValues;
   
-  uint64_t  numFrames = maxFrame - minFrame + 1;
-  
-  uint64_t  hpDivisor = 1;
-  if (hiddenType != Element::UNKNOWN)
-  {
-    hpDivisor = 40; // number of power levels
-    
-    if (hiddenType != Element::ANY)
-    {
-      hpDivisor *= 16;
-    }
-  }
+  uint64_t  numIVFrames = maxIVFrame - minIVFrame + 1;
   
   IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
   
-  uint32_t  numIVs = (maxIVs.hp() - minIVs.hp() + 1) *
-                     (maxIVs.at() - minIVs.at() + 1) *
-                     (maxIVs.df() - minIVs.df() + 1) *
-                     (maxIVs.sa() - minIVs.sa() + 1) *
-                     (maxIVs.sd() - minIVs.sd() + 1) *
-                     (maxIVs.sp() - minIVs.sp() + 1);
-  return numFrames * numSeeds * numIVs / 
-         (32 * 32 * 32 * 32 * 32 * 32 * hpDivisor);
+  uint64_t  numIVs = IVs::CalculateNumberOfCombinations(minIVs, maxIVs);
+  
+  uint64_t  numResults = numIVFrames * numSeeds * numIVs /
+                           (32 * 32 * 32 * 32 * 32 * 32);
+  
+  if (hiddenType != Element::UNKNOWN)
+  {
+    numResults = IVs::AdjustExpectedResultsForHiddenPower
+      (numResults, minIVs, maxIVs, hiddenType, minHiddenPower);
+  }
+  
+  return numResults;
 }
 
 void HashedSeedSearcher::Search(const Criteria &criteria,
@@ -135,13 +128,13 @@ void HashedSeedSearcher::Search(const Criteria &criteria,
                                           HashedIVFrameGenerator::Normal);
   
   FrameChecker              frameChecker(criteria);
-  SearcherType::FrameRange  frameRange(criteria.minFrame, criteria.maxFrame);
+  SearcherType::FrameRange  frameRange(criteria.minIVFrame, criteria.maxIVFrame);
   
   SearcherType              searcher;
   
-  searcher.Search(seedGenerator, frameGenFactory,
-                  frameRange, frameChecker,
-                  resultHandler, progressHandler);
+  searcher.SearchThreaded(seedGenerator, frameGenFactory,
+                          frameRange, frameChecker,
+                          resultHandler, progressHandler);
 }
 
 }

@@ -33,7 +33,7 @@ namespace pprng
 class EggSeedSearcher
 {
 public:
-  struct Criteria
+  struct Criteria : public SeedSearchCriteria
   {
     Game::Version             version;
     uint32_t                  macAddressLow, macAddressHigh;
@@ -46,15 +46,20 @@ public:
     uint32_t                  tid, sid;
     
     IVs                       femaleIVs, maleIVs;
+    FemaleParent::Type        femaleSpecies;
     bool                      usingEverstone;
     bool                      usingDitto;
     bool                      internationalParents;
     
+    bool                      searchFromInitialPIDFrame;
     uint32_t                  minPIDFrame, maxPIDFrame;
     Nature::Type              nature;
     uint32_t                  ability;
     bool                      inheritsDreamworldAbility;
     bool                      shinyOnly;
+    uint32_t                  childSpecies;
+    Gender::Type              gender;
+    Gender::Ratio             genderRatio;
     
     uint32_t                  minIVFrame, maxIVFrame;
     bool                      shouldCheckMaxIVs;
@@ -62,7 +67,7 @@ public:
     Element::Type             hiddenType;
     uint32_t                  minHiddenPower;
     
-    uint64_t ExpectedNumberOfResults();
+    uint64_t ExpectedNumberOfResults() const;
   };
   
   EggSeedSearcher() {}

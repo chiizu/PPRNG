@@ -34,6 +34,12 @@ using namespace pprng;
    setFormatWidth: 8];
 }
 
+- (IBAction)toggleUseInitialPID:(id)sender
+{
+  BOOL enabled = [useInitialPIDButton state];
+  [minPIDFrameField setEnabled: !enabled];
+}
+
 - (IBAction)generatePIDFrames:(id)sender
 {
   if ([[seedField stringValue] length] == 0)
@@ -45,7 +51,9 @@ using namespace pprng;
   
   HashedSeed  seed([[seedField objectValue] unsignedLongLongValue]);
   
-  uint32_t  minPIDFrame = [minPIDFrameField intValue];
+  uint32_t  minPIDFrame = [useInitialPIDButton state] ?
+                          (seed.GetSkippedPIDFrames() + 1) :
+                          [minPIDFrameField intValue];
   uint32_t  maxPIDFrame = [maxPIDFrameField intValue];
   uint32_t  frameNum = 0, limitFrame = minPIDFrame - 1;
   uint32_t  tid = [gen5ConfigController tid];
@@ -59,8 +67,7 @@ using namespace pprng;
                                    [useCompoundEyesCheckBox state], tid, sid);
   
   bool  generatesESV = generator.GeneratesESV();
-  bool  generatesCanFish = generator.GeneratesCanFish();
-  bool  generatesFindItem = generator.GeneratesFindItem();
+  bool  generatesIsEncounter = generator.GeneratesIsEncounter();
   
   while (frameNum < limitFrame)
   {
@@ -77,22 +84,26 @@ using namespace pprng;
     ++frameNum;
     
     Gen5PIDFrame  frame = generator.CurrentFrame();
+    uint32_t      genderValue = frame.pid.GenderValue();
     
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
 				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
+        [NSNumber numberWithUnsignedInt: frame.pid.word], @"pid",
+        (frame.pid.IsShiny(tid, sid) ? @"★" : @""), @"shiny",
         [NSString stringWithFormat: @"%s",
           Nature::ToString(frame.nature).c_str()], @"nature",
-        [NSNumber numberWithUnsignedInt: frame.pid.word], @"pid",
-        frame.pid.IsShiny(tid, sid) ? @"★" : @"", @"shiny",
         [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
+        ((genderValue < 31) ? @"♀" : @"♂"), @"gender18",
+        ((genderValue < 63) ? @"♀" : @"♂"), @"gender14",
+        ((genderValue < 127) ? @"♀" : @"♂"), @"gender12",
+        ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
+        (frame.synched ? @"Y" : @""), @"sync",
         (generatesESV ? [NSString stringWithFormat: @"%d", frame.esv] : @""),
           @"esv",
-        (frame.synched ? @"Y" : @""), @"sync",
-        ((generatesCanFish && frame.canFish) ? @"Y" : @""), @"canFish",
-        ((generatesFindItem && frame.findItem) ? @"Y" : @""), @"findItem",
-        GenderString(frame.pid), @"gender",
         HeldItemString(frame.heldItem), @"heldItem",
+        ((generatesIsEncounter && frame.isEncounter) ? @"Y" : @""),
+          @"isEncounter",
         nil];
     
     [rowArray addObject: result];

@@ -23,6 +23,7 @@
 #import "WonderCardSeedSearcherController.h"
 
 #include "WonderCardSeedSearcher.h"
+#include "Utilities.h"
 
 #import "WonderCardSeedInspectorController.h"
 
@@ -202,19 +203,11 @@ struct ProgressHandler
                                   Button::ThreeButtonCombos().end());
   }
   
-  const char *dstr = [[[fromDateField objectValue] description] UTF8String];
-  criteria.fromTime =
-    ptime(date(boost::lexical_cast<uint32_t>(std::string(dstr, 4)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 5, 2)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2))),
-          seconds(0));
+  criteria.fromTime = ptime(NSDateToBoostDate([fromDateField objectValue]),
+                            seconds(0));
   
-  dstr = [[[toDateField objectValue] description] UTF8String];
-  criteria.toTime =
-    ptime(date(boost::lexical_cast<uint32_t>(std::string(dstr, 4)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 5, 2)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2))),
-          hours(23) + minutes(59) + seconds(59));
+  criteria.toTime   = ptime(NSDateToBoostDate([toDateField objectValue]),
+                            hours(23) + minutes(59) + seconds(59));
   
   criteria.minFrame = [minFrameField intValue];
   criteria.maxFrame = [maxFrameField intValue];
@@ -235,25 +228,17 @@ struct ProgressHandler
   criteria.nature = static_cast<Nature::Type>([[natureMenu selectedItem] tag]);
   criteria.canBeShiny = false;
   
-  if (criteria.ExpectedNumberOfResults() > 10000)
+  if (CheckExpectedResults(criteria, 10000,
+                           @"The current search parameters are expected to return more than 10,000 results. Please set more specific IVs, limit the date range, use fewer held keys, or other similar settings to reduce the number of expected results.",
+                           self,
+                           @selector(alertDidEnd:returnCode:contextInfo:)))
   {
-    NSAlert *alert = [[NSAlert alloc] init];
-    
-    [alert addButtonWithTitle:@"OK"];
-    [alert setMessageText:@"Please Limit Search Parameters"];
-    [alert setInformativeText:@"The current search parameters are expected to return more than 10,000 results. Please set more specific IVs, limit the date range, use fewer held keys, or other similar settings to reduce the number of expected results."];
-    [alert setAlertStyle:NSWarningAlertStyle];
-    
-    [alert beginSheetModalForWindow:[self window] modalDelegate:self
-           didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:)
-           contextInfo:nil];
-    
-    return nil;
+    return [NSValue
+            valueWithPointer: new WonderCardSeedSearcher::Criteria(criteria)];
   }
   else
   {
-    return [NSValue
-             valueWithPointer: new WonderCardSeedSearcher::Criteria(criteria)];
+    return nil;
   }
 }
 

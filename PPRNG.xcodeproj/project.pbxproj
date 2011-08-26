@@ -31,6 +31,7 @@
 		C0821705137E1D7000B6E0E5 /* TrainerIDSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F5137E1D7000B6E0E5 /* TrainerIDSearcher.nib */; };
 		C0821706137E1D7000B6E0E5 /* WonderCardSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F7137E1D7000B6E0E5 /* WonderCardSeedInspector.nib */; };
 		C0821707137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F9137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib */; };
+		C082189F13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C082189D13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp */; };
 		C0D1A3B8136C2C3100D6E2DA /* Utilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */; };
 		C0DAED071356A9CC008D00D5 /* TrainerIDSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */; };
 		C0E3041B1346343400C56C1A /* BasicTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303F81346343400C56C1A /* BasicTypes.cpp */; };
@@ -41,7 +42,6 @@
 		C0E304201346343400C56C1A /* HashedSeed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E304051346343400C56C1A /* HashedSeed.cpp */; };
 		C0E304211346343400C56C1A /* HashedSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E304071346343400C56C1A /* HashedSeedSearcher.cpp */; };
 		C0E304221346343400C56C1A /* InitialSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E304091346343400C56C1A /* InitialSeedSearcher.cpp */; };
-		C0E304231346343400C56C1A /* MersenneTwisterRNG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E3040D1346343400C56C1A /* MersenneTwisterRNG.cpp */; };
 		C0E304241346343400C56C1A /* SeedGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E304121346343400C56C1A /* SeedGenerator.cpp */; };
 		C0E304261346343400C56C1A /* TimeSeed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E304171346343400C56C1A /* TimeSeed.cpp */; };
 		C0E304271346343400C56C1A /* WonderCardSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E304191346343400C56C1A /* WonderCardSeedSearcher.cpp */; };
@@ -104,6 +104,8 @@
 		C08216F6137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/TrainerIDSearcher.nib; sourceTree = SOURCE_ROOT; };
 		C08216F8137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/WonderCardSeedInspector.nib; sourceTree = SOURCE_ROOT; };
 		C08216FA137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/WonderCardSeedSearcher.nib; sourceTree = SOURCE_ROOT; };
+		C082189D13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MersenneTwisterRNG.cpp; path = ../PPRNG/libpprng/MersenneTwisterRNG.cpp; sourceTree = SOURCE_ROOT; };
+		C082189E13895C1D00B6E0E5 /* MersenneTwisterRNG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MersenneTwisterRNG.h; path = ../PPRNG/libpprng/MersenneTwisterRNG.h; sourceTree = SOURCE_ROOT; };
 		C0D1A3B6136C2C3100D6E2DA /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Utilities.mm; sourceTree = "<group>"; };
 		C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrainerIDSearcher.cpp; sourceTree = "<group>"; };
@@ -129,8 +131,6 @@
 		C0E3040A1346343400C56C1A /* InitialSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitialSeedSearcher.h; sourceTree = "<group>"; };
 		C0E3040B1346343400C56C1A /* IVRNG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IVRNG.h; sourceTree = "<group>"; };
 		C0E3040C1346343400C56C1A /* LinearCongruentialRNG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinearCongruentialRNG.h; sourceTree = "<group>"; };
-		C0E3040D1346343400C56C1A /* MersenneTwisterRNG.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MersenneTwisterRNG.cpp; sourceTree = "<group>"; };
-		C0E3040E1346343400C56C1A /* MersenneTwisterRNG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MersenneTwisterRNG.h; sourceTree = "<group>"; };
 		C0E3040F1346343400C56C1A /* NextPowerOf2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NextPowerOf2.h; sourceTree = "<group>"; };
 		C0E304101346343400C56C1A /* PIDRNG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PIDRNG.h; sourceTree = "<group>"; };
 		C0E304111346343400C56C1A /* RNGWrappers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGWrappers.h; sourceTree = "<group>"; };
@@ -358,9 +358,9 @@
 				C0E304091346343400C56C1A /* InitialSeedSearcher.cpp */,
 				C0E3040A1346343400C56C1A /* InitialSeedSearcher.h */,
 				C0E3040B1346343400C56C1A /* IVRNG.h */,
+				C082189D13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp */,
+				C082189E13895C1D00B6E0E5 /* MersenneTwisterRNG.h */,
 				C0E3040C1346343400C56C1A /* LinearCongruentialRNG.h */,
-				C0E3040D1346343400C56C1A /* MersenneTwisterRNG.cpp */,
-				C0E3040E1346343400C56C1A /* MersenneTwisterRNG.h */,
 				C0E3040F1346343400C56C1A /* NextPowerOf2.h */,
 				C0E304101346343400C56C1A /* PIDRNG.h */,
 				C0E304111346343400C56C1A /* RNGWrappers.h */,
@@ -463,7 +463,6 @@
 				C0E304201346343400C56C1A /* HashedSeed.cpp in Sources */,
 				C0E304211346343400C56C1A /* HashedSeedSearcher.cpp in Sources */,
 				C0E304221346343400C56C1A /* InitialSeedSearcher.cpp in Sources */,
-				C0E304231346343400C56C1A /* MersenneTwisterRNG.cpp in Sources */,
 				C0E304241346343400C56C1A /* SeedGenerator.cpp in Sources */,
 				C0E304261346343400C56C1A /* TimeSeed.cpp in Sources */,
 				C0E304271346343400C56C1A /* WonderCardSeedSearcher.cpp in Sources */,
@@ -494,6 +493,7 @@
 				C0821518136EE9F600B6E0E5 /* TrainerIDFormatter.m in Sources */,
 				C08215661372F4FF00B6E0E5 /* EggSeedSearcher.cpp in Sources */,
 				C082156D1375923500B6E0E5 /* EggSeedSearcherController.mm in Sources */,
+				C082189F13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -627,6 +627,10 @@
 				GCC_PREFIX_HEADER = PPRNG_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../3rd_party/lib\"",
+				);
 				PRODUCT_NAME = PPRNG;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -642,6 +646,10 @@
 				GCC_PREFIX_HEADER = PPRNG_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../3rd_party/lib\"",
+				);
 				PRODUCT_NAME = PPRNG;
 				WRAPPER_EXTENSION = app;
 			};
@@ -650,11 +658,14 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				GCC_ENABLE_OBJC_GC = required;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = /Users/cw/Programming/boost/;
-				LIBRARY_SEARCH_PATHS = /Users/cw/Programming/boost/stage/lib;
+				HEADER_SEARCH_PATHS = "~/Programming/3rd_party/include";
+				LIBRARY_SEARCH_PATHS = "~/Programming/3rd_party/lib";
+				OTHER_LDFLAGS = "-lboost_thread-mt-d";
 				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 			};
@@ -663,15 +674,18 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = (
 					ppc,
 					i386,
 				);
 				GCC_ENABLE_OBJC_GC = required;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = /Users/cw/Programming/boost/;
-				LIBRARY_SEARCH_PATHS = /Users/cw/Programming/boost/stage/lib;
+				HEADER_SEARCH_PATHS = "~/Programming/3rd_party/include";
+				LIBRARY_SEARCH_PATHS = "~/Programming/3rd_party/lib";
+				OTHER_LDFLAGS = "-lboost_thread-mt";
 				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 			};

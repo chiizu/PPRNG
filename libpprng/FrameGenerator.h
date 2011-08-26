@@ -78,9 +78,9 @@ typedef Gen34FrameGenerator<4> Method4FrameGenerator;
 class CGearIVFrameGenerator
 {
 public:
-  typedef CGearIVFrame           Frame;
-  typedef BufferedRNG<MTRNG, 8>  RNG;
-  typedef Gen5IVRNG<RNG>         IVRNG;
+  typedef CGearIVFrame             Frame;
+  typedef MTRNG                    RNG;
+  typedef Gen5BufferingIVRNG<RNG>  IVRNG;
   
   enum FrameType
   {
@@ -88,7 +88,8 @@ public:
     Roamer = IVRNG::Roamer
   };
   
-  CGearIVFrameGenerator(uint32_t seed, FrameType frameType);
+  CGearIVFrameGenerator(uint32_t seed, FrameType frameType,
+                        bool skipFirstTwoFrames = true);
   
   void AdvanceFrame();
   
@@ -103,9 +104,9 @@ private:
 class HashedIVFrameGenerator
 {
 public:
-  typedef HashedIVFrame          Frame;
-  typedef BufferedRNG<MTRNG, 8>  RNG;
-  typedef Gen5IVRNG<RNG>         IVRNG;
+  typedef HashedIVFrame            Frame;
+  typedef MTRNG                    RNG;
+  typedef Gen5BufferingIVRNG<RNG>  IVRNG;
   
   enum FrameType
   {
@@ -124,6 +125,7 @@ private:
   IVRNG     m_IVRNG;
   Frame     m_frame;
 };
+
 
 class Gen5PIDFrameGenerator
 {
@@ -159,8 +161,7 @@ public:
   const Frame& CurrentFrame() const { return m_frame; }
   
   bool GeneratesESV() const;
-  bool GeneratesCanFish() const;
-  bool GeneratesFindItem() const;
+  bool GeneratesIsEncounter() const;
   
 private:
   typedef void (Gen5PIDFrameGenerator::*PIDFrameGenerator)();
@@ -183,7 +184,8 @@ private:
   
   void NextWildFrame();
   void NextFishingFrame();
-  void NextDustOrShadowFrame();
+  void NextDustFrame();
+  void NextShadowFrame();
   void NextStationaryFrame();
   void NextSimpleFrame();
   
@@ -204,10 +206,10 @@ private:
 class WonderCardFrameGenerator
 {
 public:
-  typedef WonderCardFrame          Frame;
-  typedef BufferedRNG<LCRNG5, 11>  RNG;
-  typedef Gen5IVRNG<RNG>           IVRNG;
-  typedef Gen5PIDRNG<RNG>          PIDRNG;
+  typedef WonderCardFrame            Frame;
+  typedef BufferedRNG<LCRNG5, 11>    RNG;
+  typedef Gen5NonBufferingIVRNG<RNG> IVRNG;
+  typedef Gen5PIDRNG<RNG>            PIDRNG;
   
   WonderCardFrameGenerator(const HashedSeed &seed, bool canBeShiny,
                            uint32_t tid, uint32_t sid)

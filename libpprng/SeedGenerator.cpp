@@ -49,6 +49,20 @@ HashedSeedGenerator::HashedSeedGenerator
   m_keyComboIter(m_keyCombos.end() - 1)
 {}
 
+HashedSeedGenerator::HashedSeedGenerator(const HashedSeedGenerator &other)
+: m_nazo(other.m_nazo),
+  m_macAddressLow(other.m_macAddressLow),
+  m_macAddressHigh(other.m_macAddressHigh),
+  m_timer0Low(other.m_timer0Low), m_timer0High(other.m_timer0High),
+  m_vcountLow(other.m_vcountLow), m_vcountHigh(other.m_vcountHigh),
+  m_vframeLow(other.m_vframeLow), m_vframeHigh(other.m_vframeHigh),
+  m_fromTime(other.m_fromTime), m_toTime(other.m_toTime),
+  m_keyCombos(other.m_keyCombos),
+  m_time(other.m_time),
+  m_timer0(other.m_timer0), m_vcount(other.m_vcount), m_vframe(other.m_vframe),
+  m_keyComboIter(m_keyCombos.end() - 1)
+{}
+
 HashedSeedGenerator::SeedCountType HashedSeedGenerator::NumSeeds() const
 {
   SeedCountType  seconds = (m_toTime - m_fromTime).total_seconds() + 1;
@@ -89,11 +103,42 @@ HashedSeedGenerator::SeedType HashedSeedGenerator::Next()
   
   HashedSeed  seed(d.year(), d.month(), d.day(), d.day_of_week(),
                    t.hours(), t.minutes(), t.seconds(),
-                   m_macAddressLow, m_macAddressHigh, m_nazo, 0, 0, 0,
-                   m_vcount, m_timer0, HashedSeed::GxStat,
-                   m_vframe, *m_keyComboIter);
+                   m_macAddressLow, m_macAddressHigh, m_nazo,
+                   m_vcount, m_timer0,
+                   HashedSeed::GxStat, m_vframe,
+                   *m_keyComboIter,
+                   0, 0, 0, 0, 0, 0, 0);
   
   return seed;
+}
+
+
+std::list<HashedSeedGenerator> HashedSeedGenerator::Split(uint32_t parts)
+{
+  std::list<HashedSeedGenerator>  result;
+  
+  uint32_t  partSeconds = ((m_toTime - m_fromTime).total_seconds() + 1) / parts;
+  ptime     fromTime = m_fromTime, toTime = fromTime + seconds(partSeconds);
+  
+  for (uint32_t i = 0; i < parts; ++i)
+  {
+    HashedSeedGenerator  part(*this);
+    
+    part.m_fromTime = fromTime;
+    part.m_toTime = toTime - seconds(1);
+    part.m_time = fromTime - seconds(1);
+    
+    result.push_back(part);
+    
+    fromTime = toTime;
+    toTime = toTime + seconds(partSeconds);
+    if (i == (parts - 1))
+    {
+      toTime = m_toTime;
+    }
+  }
+  
+  return result;
 }
 
 }

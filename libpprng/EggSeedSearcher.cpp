@@ -144,7 +144,10 @@ struct IVFrameResultHandler
        m_criteria.usingEverstone, m_criteria.usingDitto,
        m_criteria.tid, m_criteria.sid);
     
-    uint32_t  frameNum = 0, limitFrame = m_criteria.minPIDFrame - 1;
+    uint32_t  frameNum = 0;
+    uint32_t  limitFrame = m_criteria.searchFromInitialPIDFrame ?
+      frame.seed.GetSkippedPIDFrames() + 1 :
+      m_criteria.minPIDFrame - 1;
     while (frameNum < limitFrame)
     {
       generator.AdvanceFrame();
@@ -159,7 +162,8 @@ struct IVFrameResultHandler
       Gen5BreedingFrame  breedingFrame = generator.CurrentFrame();
       
       if (CheckShiny(breedingFrame.pid) && CheckNature(breedingFrame) &&
-          CheckAbility(breedingFrame))
+          CheckAbility(breedingFrame) && CheckGender(breedingFrame) &&
+          CheckSpecies(breedingFrame))
       {
         Gen5EggFrame  eggFrame(generator.CurrentFrame(),
                                frame.number, frame.ivs,
@@ -191,6 +195,19 @@ struct IVFrameResultHandler
             (m_criteria.ability == frame.pid.Gen5Ability())) &&
            (!m_criteria.inheritsDreamworldAbility ||
             frame.dreamWorldAbilityPassed);
+  }
+  
+  bool CheckGender(const Gen5BreedingFrame &frame) const
+  {
+    return Gender::GenderValueMatches(frame.pid.GenderValue(),
+                                      m_criteria.gender,
+                                      m_criteria.genderRatio);
+  }
+  
+  bool CheckSpecies(const Gen5BreedingFrame &frame) const
+  {
+    return (m_criteria.femaleSpecies == FemaleParent::OTHER) ||
+           (frame.species == m_criteria.childSpecies);
   }
   
   bool CheckIVs(const IVs &ivs) const
@@ -231,7 +248,7 @@ struct IVFrameGeneratorFactory
 
 }
 
-uint64_t EggSeedSearcher::Criteria::ExpectedNumberOfResults()
+uint64_t EggSeedSearcher::Criteria::ExpectedNumberOfResults() const
 {
   IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
   
@@ -352,9 +369,9 @@ void EggSeedSearcher::Search(const Criteria &criteria,
   
   SearcherType              searcher;
   
-  searcher.Search(seedGenerator, ivFrameGenFactory,
-                  ivFrameRange, ivFrameChecker,
-                  ivFrameResultHandler, progressHandler);
+  searcher.SearchThreaded(seedGenerator, ivFrameGenFactory,
+                         ivFrameRange, ivFrameChecker,
+                         ivFrameResultHandler, progressHandler);
 }
 
 }

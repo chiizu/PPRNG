@@ -84,7 +84,7 @@ struct FrameGeneratorFactory
 
 }
 
-uint64_t TrainerIDSearcher::Criteria::ExpectedNumberOfResults()
+uint64_t TrainerIDSearcher::Criteria::ExpectedNumberOfResults() const
 {
   uint64_t  seconds = (toTime - fromTime).total_seconds() + 1;
   uint64_t  keyCombos = buttonPresses.size();

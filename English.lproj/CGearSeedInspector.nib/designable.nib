@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
-		<string key="IBDocument.SystemVersion">10H574</string>
-		<string key="IBDocument.InterfaceBuilderVersion">823</string>
-		<string key="IBDocument.AppKitVersion">1038.35</string>
+		<string key="IBDocument.SystemVersion">10K540</string>
+		<string key="IBDocument.InterfaceBuilderVersion">851</string>
+		<string key="IBDocument.AppKitVersion">1038.36</string>
 		<string key="IBDocument.HIToolboxVersion">461.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">823</string>
+			<string key="NS.object.0">851</string>
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -11750,7 +11750,6 @@
 					<string>1212.IBViewBoundsToFrameTransform</string>
 					<string>1213.IBPluginDependency</string>
 					<string>1213.IBViewBoundsToFrameTransform</string>
-					<string>1214.CustomClassName</string>
 					<string>1214.IBPluginDependency</string>
 					<string>1214.IBViewBoundsToFrameTransform</string>
 					<string>1215.IBPluginDependency</string>
@@ -12267,9 +12266,9 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{37, 205}, {644, 651}}</string>
+					<string>{{327, 205}, {644, 651}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{37, 205}, {644, 651}}</string>
+					<string>{{327, 205}, {644, 651}}</string>
 					<integer value="1"/>
 					<string>{196, 240}</string>
 					<string>{{357, 418}, {480, 270}}</string>
@@ -12439,7 +12438,6 @@
 					<object class="NSAffineTransform">
 						<bytes key="NSTransformStruct">AURFQABDlAAAA</bytes>
 					</object>
-					<string>SynchroScrollView</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
 						<bytes key="NSTransformStruct">P4AAAL+AAABD2wAAw3sAAA</bytes>

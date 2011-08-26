@@ -34,12 +34,15 @@ namespace
 struct ResultHandler
 {
   ResultHandler(SearcherController *c, uint32_t tid, uint32_t sid,
-                bool usingEverstone)
-    : controller(c), m_tid(tid), m_sid(sid), m_usingEverstone(usingEverstone)
+                bool usingEverstone, FemaleParent::Type femaleSpecies)
+    : controller(c), m_tid(tid), m_sid(sid), m_usingEverstone(usingEverstone),
+      m_femaleSpecies(femaleSpecies)
   {}
   
   void operator()(const Gen5EggFrame &frame)
   {
+    uint32_t  genderValue = frame.pid.GenderValue();
+    
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
         [NSNumber numberWithUnsignedLongLong: frame.seed.m_rawSeed], @"seed",
@@ -50,16 +53,25 @@ struct ResultHandler
         [NSNumber numberWithUnsignedInt: frame.seed.m_timer0], @"timer0",
 				[NSString stringWithFormat: @"%s",
           Button::ToString(frame.seed.m_keyInput).c_str()], @"keys",
+        [NSNumber numberWithUnsignedInt: frame.seed.GetSkippedPIDFrames() + 1],
+          @"startFrame",
 				[NSNumber numberWithUnsignedInt: frame.number], @"pidFrame",
+        frame.pid.IsShiny(m_tid, m_sid) ? @"★" : @"", @"shiny",
         (m_usingEverstone && frame.everstoneActivated) ?
             @"<ES>" :
             [NSString stringWithFormat: @"%s",
               Nature::ToString(frame.nature).c_str()],
           @"nature",
-        frame.pid.IsShiny(m_tid, m_sid) ? @"★" : @"", @"shiny",
         frame.dreamWorldAbilityPassed ? @"Y" : @"", @"dw",
         [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
-        GenderString(frame.pid), @"gender",
+        ((m_femaleSpecies == FemaleParent::OTHER) ?
+         ((genderValue < 31) ? @"♀" : @"♂") : @""), @"gender18",
+        ((m_femaleSpecies == FemaleParent::OTHER) ?
+         ((genderValue < 63) ? @"♀" : @"♂") : @""), @"gender14",
+        ((m_femaleSpecies == FemaleParent::OTHER) ?
+         ((genderValue < 127) ? @"♀" : @"♂") : @""), @"gender12",
+        ((m_femaleSpecies == FemaleParent::OTHER) ?
+         ((genderValue < 191) ? @"♀" : @"♂") : @""), @"gender34",
 				[NSNumber numberWithUnsignedInt: frame.ivFrameNumber], @"ivFrame",
         [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
         [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
@@ -71,6 +83,7 @@ struct ResultHandler
           Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
         [NSNumber numberWithUnsignedInt: frame.ivs.HiddenPower()],
           @"hiddenPower",
+        SpeciesString(m_femaleSpecies, frame.species), @"species",
         [NSData dataWithBytes: &frame.seed length: sizeof(HashedSeed)],
           @"fullSeed",
         nil];
@@ -83,6 +96,7 @@ struct ResultHandler
   SearcherController  *controller;
   uint32_t            m_tid, m_sid;
   bool                m_usingEverstone;
+  FemaleParent::Type  m_femaleSpecies;
 };
 
 struct ProgressHandler
@@ -121,15 +135,58 @@ struct ProgressHandler
   [searcherController setDoSearchWithCriteriaSelector:
                       @selector(doSearchWithCriteria:)];
   
-  [[[[[searcherController tableView] tableColumnWithIdentifier: @"seed"]
-    dataCell] formatter]
-   setFormatWidth: 16];
-  
   [[searcherController tableView] setDoubleAction: @selector(inspectSeed:)];
   
   NSDate  *now = [NSDate date];
   [fromDateField setObjectValue: now];
   [toDateField setObjectValue: now];
+  
+  [speciesPopUp setAutoenablesItems: NO];
+}
+
+- (IBAction)onFemaleSpeciesChange:(id)sender
+{
+  FemaleParent::Type  species =
+    FemaleParent::Type([[femaleSpeciesPopUp selectedItem] tag]);
+  
+  if (species == FemaleParent::OTHER)
+  {
+    [speciesPopUp setEnabled: NO];
+    [speciesPopUp selectItemWithTag: -1];
+    [genderPopUp setEnabled: YES];
+    [genderRatioPopUp setEnabled: YES];
+  }
+  else
+  {
+    [speciesPopUp setEnabled: YES];
+    [genderPopUp setEnabled: NO];
+    [genderPopUp selectItemWithTag: -1];
+    [genderRatioPopUp setEnabled: NO];
+    [genderRatioPopUp selectItemWithTag: -1];
+    
+    BOOL  isNidoranFemale = (species == FemaleParent::NIDORAN_FEMALE);
+    
+    [[speciesPopUp itemAtIndex: [speciesPopUp indexOfItemWithTag: 0]]
+      setEnabled: isNidoranFemale];
+    [[speciesPopUp itemAtIndex: [speciesPopUp indexOfItemWithTag: 1]]
+      setEnabled: isNidoranFemale];
+    [[speciesPopUp itemAtIndex: [speciesPopUp indexOfItemWithTag: 2]]
+      setEnabled: !isNidoranFemale];
+    [[speciesPopUp itemAtIndex: [speciesPopUp indexOfItemWithTag: 3]]
+      setEnabled: !isNidoranFemale];
+    
+    if (![[speciesPopUp selectedItem] isEnabled])
+    {
+      [speciesPopUp selectItemWithTag: -1];
+    }
+  }
+}
+
+- (IBAction)toggleSearchFromStartFrame:(id)sender
+{
+  BOOL  enabled = [sender state];
+  
+  [minPIDFrameField setEnabled: !enabled];
 }
 
 - (void)inspectSeed:(id)sender
@@ -231,22 +288,16 @@ struct ProgressHandler
                                   Button::ThreeButtonCombos().end());
   }
   
-  const char *dstr = [[[fromDateField objectValue] description] UTF8String];
-  criteria.fromTime =
-    ptime(date(boost::lexical_cast<uint32_t>(std::string(dstr, 4)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 5, 2)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2))),
-          seconds(0));
+  criteria.fromTime = ptime(NSDateToBoostDate([fromDateField objectValue]),
+                            seconds(0));
   
-  dstr = [[[toDateField objectValue] description] UTF8String];
-  criteria.toTime =
-    ptime(date(boost::lexical_cast<uint32_t>(std::string(dstr, 4)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 5, 2)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2))),
-          hours(23) + minutes(59) + seconds(59));
+  criteria.toTime   = ptime(NSDateToBoostDate([toDateField objectValue]),
+                            hours(23) + minutes(59) + seconds(59));
   
   criteria.femaleIVs = [self femaleParentIVs];
   criteria.maleIVs = [self maleParentIVs];
+  criteria.femaleSpecies =
+    FemaleParent::Type([[femaleSpeciesPopUp selectedItem] tag]);
   criteria.usingEverstone = [everstoneButton state];
   criteria.usingDitto = [dittoButton state];
   criteria.internationalParents = [internationalButton state];
@@ -270,10 +321,14 @@ struct ProgressHandler
   
   criteria.tid = [gen5ConfigController tid];
   criteria.sid = [gen5ConfigController sid];
-  criteria.shinyOnly = [shinyButton state];
   criteria.nature = Nature::Type([[naturePopUp selectedItem] tag]);
   criteria.ability = [[abilityPopUp selectedItem] tag];
   criteria.inheritsDreamworldAbility = [dreamworldButton state];
+  criteria.shinyOnly = [shinyButton state];
+  criteria.childSpecies = [[speciesPopUp selectedItem] tag] & 0x1;
+  criteria.gender = Gender::Type([[genderPopUp selectedItem] tag]);
+  criteria.genderRatio =
+    Gender::Ratio([[genderRatioPopUp selectedItem] tag]);
   
   criteria.minPIDFrame = [minPIDFrameField intValue];
   criteria.maxPIDFrame = [maxPIDFrameField intValue];
@@ -327,7 +382,8 @@ struct ProgressHandler
   searcher.Search(*criteria,
                   ResultHandler(searcherController,
                                 criteria->tid, criteria->sid,
-                                criteria->usingEverstone),
+                                criteria->usingEverstone,
+                                criteria->femaleSpecies),
                   ProgressHandler(searcherController));
 }
 

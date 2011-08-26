@@ -33,14 +33,15 @@
   
   IBOutlet NSPopUpButton                *pidFrameTypeMenu;
   IBOutlet NSButton                     *useCompoundEyesCheckBox;
+  IBOutlet NSButton                     *useInitialPIDButton;
   IBOutlet NSTextField                  *minPIDFrameField;
   IBOutlet NSTextField                  *maxPIDFrameField;
   
   IBOutlet NSTableView                  *pidFrameTableView;
   IBOutlet NSArrayController            *pidFrameContentArray;
   
-  IBOutlet NSPopUpButton                *natureMenu;
   IBOutlet NSButton                     *shinyCheckBox;
+  IBOutlet NSPopUpButton                *natureMenu;
   
   
   IBOutlet NSTextField                  *minIVFrameField;
@@ -52,6 +53,7 @@
   IBOutlet IVParameterController        *ivParameterController;
 }
 
+- (IBAction)toggleUseInitialPID:(id)sender;
 - (IBAction)generatePIDFrames:(id)sender;
 - (IBAction)generateIVFrames:(id)sender;
 

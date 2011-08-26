@@ -32,7 +32,7 @@ namespace pprng
 class WonderCardSeedSearcher
 {
 public:
-  struct Criteria
+  struct Criteria : public SeedSearchCriteria
   {
     Game::Version             version;
     uint32_t                  macAddressLow, macAddressHigh;
@@ -51,7 +51,7 @@ public:
     Element::Type             hiddenType;
     uint32_t                  minHiddenPower;
     
-    uint64_t ExpectedNumberOfResults();
+    uint64_t ExpectedNumberOfResults() const;
   };
   
   WonderCardSeedSearcher() {}

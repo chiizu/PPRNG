@@ -31,7 +31,7 @@ namespace pprng
 class CGearSeedSearcher
 {
 public:
-  struct Criteria
+  struct Criteria : public SeedSearchCriteria
   {
     uint32_t       macAddressLow;
     uint32_t       minDelay, maxDelay;
@@ -43,7 +43,7 @@ public:
     uint32_t       minHiddenPower;
     bool           isRoamer;
     
-    uint64_t ExpectedNumberOfResults();
+    uint64_t ExpectedNumberOfResults() const;
   };
   
   CGearSeedSearcher() {}

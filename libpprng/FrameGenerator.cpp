@@ -24,21 +24,23 @@
 namespace pprng
 {
 
-CGearIVFrameGenerator::CGearIVFrameGenerator(uint32_t seed, FrameType frameType)
+CGearIVFrameGenerator::CGearIVFrameGenerator(uint32_t seed, FrameType frameType,
+                                             bool skipFirstTwoFrames)
   : m_RNG(seed), m_IVRNG(m_RNG, IVRNG::FrameType(frameType))
 {
   m_frame.seed = seed;
   m_frame.number = 0;
   
-  // C-Gear starts on 'frame 3'
-  m_RNG.AdvanceBuffer();
-  m_RNG.AdvanceBuffer();
+  if (skipFirstTwoFrames)
+  {
+    // C-Gear starts on 'frame 3'
+    m_RNG.Next();
+    m_RNG.Next();
+  }
 }
 
 void CGearIVFrameGenerator::AdvanceFrame()
 {
-  m_RNG.AdvanceBuffer();
-  
   ++m_frame.number;
   m_frame.ivs = m_IVRNG.NextIVWord();
 }
@@ -54,8 +56,6 @@ HashedIVFrameGenerator::HashedIVFrameGenerator
 
 void HashedIVFrameGenerator::AdvanceFrame()
 {
-  m_RNG.AdvanceBuffer();
-  
   ++m_frame.number;
   m_frame.ivs = m_IVRNG.NextIVWord();
 }
@@ -74,8 +74,7 @@ Gen5PIDFrameGenerator::Gen5PIDFrameGenerator
   m_frame.synched = false;
   m_frame.esv = 0;
   m_frame.heldItem = HeldItem::NO_ITEM;
-  m_frame.canFish = 0;
-  m_frame.findItem = 0;
+  m_frame.isEncounter = 0;
 }
 
 void Gen5PIDFrameGenerator::AdvanceFrame()
@@ -110,11 +109,11 @@ const Gen5PIDFrameGenerator::FrameGeneratorInfo
     &Gen5PIDFrameGenerator::LandESV },
   // SwirlingDustFrame
   { PIDRNG::WildPID,
-    &Gen5PIDFrameGenerator::NextDustOrShadowFrame,
+    &Gen5PIDFrameGenerator::NextDustFrame,
     &Gen5PIDFrameGenerator::LandESV },
   // BridgeShadowFrame
   { PIDRNG::WildPID,
-    &Gen5PIDFrameGenerator::NextDustOrShadowFrame,
+    &Gen5PIDFrameGenerator::NextShadowFrame,
     &Gen5PIDFrameGenerator::LandESV },
   // WaterSpotSurfingFrame
   { PIDRNG::WildPID,
@@ -153,14 +152,11 @@ bool Gen5PIDFrameGenerator::GeneratesESV() const
          (m_PIDFrameGenerator != &Gen5PIDFrameGenerator::NextSimpleFrame);
 }
 
-bool Gen5PIDFrameGenerator::GeneratesCanFish() const
+bool Gen5PIDFrameGenerator::GeneratesIsEncounter() const
 {
-  return m_PIDFrameGenerator == &Gen5PIDFrameGenerator::NextFishingFrame;
-}
-
-bool Gen5PIDFrameGenerator::GeneratesFindItem() const
-{
-  return m_PIDFrameGenerator == &Gen5PIDFrameGenerator::NextDustOrShadowFrame;
+  return (m_PIDFrameGenerator == &Gen5PIDFrameGenerator::NextFishingFrame) ||
+         (m_PIDFrameGenerator == &Gen5PIDFrameGenerator::NextDustFrame) ||
+         (m_PIDFrameGenerator == &Gen5PIDFrameGenerator::NextShadowFrame);
 }
 
 
@@ -173,8 +169,6 @@ void Gen5PIDFrameGenerator::LandESV()
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
     6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9,10,11 };
   
-  // uint32_t  raw_esv = ((m_RNG.Next() >> 32) * 0x64) >> 32;
-  // above is wrong for 0xB34F765F546EFDAC
   uint32_t  raw_esv = (m_RNG.Next() >> 48) / 0x290;
   
   m_frame.esv = LandESVTable[raw_esv];
@@ -189,8 +183,6 @@ void Gen5PIDFrameGenerator::WaterESV()
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4 };
   
-  // uint32_t  raw_esv = ((m_RNG.Next() >> 32) * 0x64) >> 32;
-  // above is wrong for 0xB34F765F546EFDAC
   uint32_t  raw_esv = (m_RNG.Next() >> 48) / 0x290;
   
   m_frame.esv = WaterESVTable[raw_esv];
@@ -221,19 +213,25 @@ void Gen5PIDFrameGenerator::NextFishingFrame()
   if (!m_useCompoundEyes)
     NextSync();
   
-  m_frame.canFish = (m_RNG.Next() >> 63) == 0;
+  m_frame.isEncounter = ((m_RNG.Next() >> 48) / 0x290) < 50;
   WaterESV();
   
-  // unknown
+  // level
   m_RNG.Next();
   
   NextSimpleFrame();
   NextHeldItem();
 }
 
-void Gen5PIDFrameGenerator::NextDustOrShadowFrame()
+void Gen5PIDFrameGenerator::NextDustFrame()
 {
-  m_frame.findItem = (((m_RNG.Next() >> 32) * 1000) >> 32) >= 400;
+  m_frame.isEncounter = (((m_RNG.Next() >> 32) * 1000) >> 32) < 400;
+  NextWildFrame();
+}
+
+void Gen5PIDFrameGenerator::NextShadowFrame()
+{
+  m_frame.isEncounter = (((m_RNG.Next() >> 32) * 1000) >> 32) < 200;
   NextWildFrame();
 }
 
@@ -319,9 +317,11 @@ void Gen5BreedingFrameGenerator::AdvanceFrame()
 {
   m_frame.ResetInheritance();
   
-  m_RNG.AdvanceQueue();
+  m_RNG.AdvanceBuffer();
   
   ++m_frame.number;
+  
+  m_frame.species = m_RNG.Next() >> 63;
   
   m_frame.nature = static_cast<Nature::Type>(((m_RNG.Next() >> 32) * 25) >> 32);
   

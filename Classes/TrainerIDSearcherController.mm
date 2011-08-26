@@ -24,8 +24,6 @@
 #include "TrainerIDSearcher.h"
 #include "Utilities.h"
 
-#include <boost/lexical_cast.hpp>
-
 
 using namespace pprng;
 
@@ -248,8 +246,8 @@ struct IDFrameSearchProgressHandler
         (stFrame.synched ? @"Y" : @""), @"syncC",
         [NSString stringWithFormat: @"%d", gcFrame.esv], @"esvL",
         [NSString stringWithFormat: @"%d", fsFrame.esv], @"esvW",
-        (fsFrame.canFish ? @"Y" : @""), @"canFish",
-        (sdFrame.findItem ? @"" : @"Y"), @"findPoke",
+        (fsFrame.isEncounter ? @"Y" : @""), @"canFish",
+        (sdFrame.isEncounter ? @"Y" : @""), @"findPoke",
         nil];
     
     [rowArray addObject: result];
@@ -349,20 +347,12 @@ struct IDFrameSearchProgressHandler
                                   Button::ThreeButtonCombos().end());
   }
   
-  const char *dstr =
-    [[[tidSidFromDateField objectValue] description] UTF8String];
-  criteria.fromTime =
-    ptime(date(boost::lexical_cast<uint32_t>(std::string(dstr, 4)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 5, 2)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2))),
-          seconds(0));
   
-  dstr = [[[tidSidToDateField objectValue] description] UTF8String];
-  criteria.toTime =
-    ptime(date(boost::lexical_cast<uint32_t>(std::string(dstr, 4)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 5, 2)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2))),
-          hours(23) + minutes(59) + seconds(59));
+  criteria.fromTime = ptime(NSDateToBoostDate([tidSidFromDateField objectValue]),
+                            seconds(0));
+  
+  criteria.toTime   = ptime(NSDateToBoostDate([tidSidToDateField objectValue]),
+                            hours(23) + minutes(59) + seconds(59));
   
   criteria.minFrame = [tidSidMinFrameField intValue];
   criteria.maxFrame = [tidSidMaxFrameField intValue];
@@ -439,10 +429,7 @@ struct IDFrameSearchProgressHandler
   criteria.vframeLow = [gen5ConfigController vframeLow];
   criteria.vframeHigh = [gen5ConfigController vframeHigh];
   
-  const char *dstr = [[[idFrameDateField objectValue] description] UTF8String];
-  date  d(boost::lexical_cast<uint32_t>(std::string(dstr, 4)),
-          boost::lexical_cast<uint32_t>(std::string(dstr + 5, 2)),
-          boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2)));
+  date  d = NSDateToBoostDate([idFrameDateField objectValue]);
   
   time_duration  startTime, endTime;
   

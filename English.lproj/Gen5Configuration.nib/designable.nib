@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
-		<string key="IBDocument.SystemVersion">10H574</string>
-		<string key="IBDocument.InterfaceBuilderVersion">823</string>
-		<string key="IBDocument.AppKitVersion">1038.35</string>
+		<string key="IBDocument.SystemVersion">10K540</string>
+		<string key="IBDocument.InterfaceBuilderVersion">851</string>
+		<string key="IBDocument.AppKitVersion">1038.36</string>
 		<string key="IBDocument.HIToolboxVersion">461.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">823</string>
+			<string key="NS.object.0">851</string>
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1783,7 +1783,6 @@
 														</object>
 														<object class="NSMenuItem" id="235442082">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">Black (French)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -1796,7 +1795,6 @@
 														</object>
 														<object class="NSMenuItem" id="1027441478">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">Black (German)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -1809,7 +1807,6 @@
 														</object>
 														<object class="NSMenuItem" id="813154125">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">Black (Italian)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -1830,6 +1827,18 @@
 															<reference key="NSMixedImage" ref="464249196"/>
 															<string key="NSAction">_popUpItemAction:</string>
 															<int key="NSTag">10</int>
+															<reference key="NSTarget" ref="887467472"/>
+														</object>
+														<object class="NSMenuItem" id="165930872">
+															<reference key="NSMenu" ref="514636871"/>
+															<string key="NSTitle">Black (Korean)</string>
+															<string key="NSKeyEquiv"/>
+															<int key="NSKeyEquivModMask">1048576</int>
+															<int key="NSMnemonicLoc">2147483647</int>
+															<reference key="NSOnImage" ref="317631821"/>
+															<reference key="NSMixedImage" ref="464249196"/>
+															<string key="NSAction">_popUpItemAction:</string>
+															<int key="NSTag">18</int>
 															<reference key="NSTarget" ref="887467472"/>
 														</object>
 														<object class="NSMenuItem" id="266357090">
@@ -1870,7 +1879,6 @@
 														</object>
 														<object class="NSMenuItem" id="137059582">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">White (French)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -1883,7 +1891,6 @@
 														</object>
 														<object class="NSMenuItem" id="21408427">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">White (German)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -1896,7 +1903,6 @@
 														</object>
 														<object class="NSMenuItem" id="665909261">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">White (Italian)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -1917,6 +1923,18 @@
 															<reference key="NSMixedImage" ref="464249196"/>
 															<string key="NSAction">_popUpItemAction:</string>
 															<int key="NSTag">16</int>
+															<reference key="NSTarget" ref="887467472"/>
+														</object>
+														<object class="NSMenuItem" id="996039686">
+															<reference key="NSMenu" ref="514636871"/>
+															<string key="NSTitle">White (Korean)</string>
+															<string key="NSKeyEquiv"/>
+															<int key="NSKeyEquivModMask">1048576</int>
+															<int key="NSMnemonicLoc">2147483647</int>
+															<reference key="NSOnImage" ref="317631821"/>
+															<reference key="NSMixedImage" ref="464249196"/>
+															<string key="NSAction">_popUpItemAction:</string>
+															<int key="NSTag">19</int>
 															<reference key="NSTarget" ref="887467472"/>
 														</object>
 														<object class="NSMenuItem" id="511140004">
@@ -4023,6 +4041,8 @@
 							<reference ref="511140004"/>
 							<reference ref="813154125"/>
 							<reference ref="665909261"/>
+							<reference ref="165930872"/>
+							<reference ref="996039686"/>
 						</object>
 						<reference key="parent" ref="887467472"/>
 					</object>
@@ -4164,6 +4184,16 @@
 						<int key="objectID">695</int>
 						<reference key="object" ref="190720495"/>
 						<reference key="parent" ref="0"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">749</int>
+						<reference key="object" ref="165930872"/>
+						<reference key="parent" ref="514636871"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">750</int>
+						<reference key="object" ref="996039686"/>
+						<reference key="parent" ref="514636871"/>
 					</object>
 				</object>
 			</object>
@@ -4377,7 +4407,9 @@
 					<string>601.IBPluginDependency</string>
 					<string>74.IBPluginDependency</string>
 					<string>74.IBViewBoundsToFrameTransform</string>
+					<string>749.IBPluginDependency</string>
 					<string>75.IBPluginDependency</string>
+					<string>750.IBPluginDependency</string>
 					<string>76.IBPluginDependency</string>
 					<string>77.IBPluginDependency</string>
 					<string>78.IBPluginDependency</string>
@@ -4635,7 +4667,7 @@
 						<bytes key="NSTransformStruct">P4AAAL+AAABCkgAAwhAAAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{396, 428}, {178, 283}}</string>
+					<string>{{396, 388}, {178, 323}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -4676,6 +4708,8 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="unlocalizedProperties">
@@ -4694,7 +4728,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">748</int>
+			<int key="maxID">750</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

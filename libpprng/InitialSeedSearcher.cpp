@@ -100,7 +100,7 @@ void TIDSeedSearcher::Search(const Criteria &criteria,
   }
 }
 
-uint64_t InitialIVSeedSearcher::Criteria::ExpectedNumberOfResults()
+uint64_t InitialIVSeedSearcher::Criteria::ExpectedNumberOfResults() const
 {
   uint64_t  seconds = 11;
   uint64_t  keyCombos = 1;
@@ -111,12 +111,8 @@ uint64_t InitialIVSeedSearcher::Criteria::ExpectedNumberOfResults()
   uint64_t  numSeeds =
     seconds * keyCombos * timer0Values * vcountValues * vframeValues;
   
-  uint32_t  numIVs = (maxIVs.hp() - minIVs.hp() + 1) *
-                     (maxIVs.at() - minIVs.at() + 1) *
-                     (maxIVs.df() - minIVs.df() + 1) *
-                     (maxIVs.sa() - minIVs.sa() + 1) *
-                     (maxIVs.sd() - minIVs.sd() + 1) *
-                     (maxIVs.sp() - minIVs.sp() + 1);
+  uint64_t  numIVs = IVs::CalculateNumberOfCombinations(minIVs, maxIVs);
+  
   return numSeeds * numIVs / (32 * 32 * 32 * 32 * 32 * 32);
 }
 
@@ -140,8 +136,8 @@ void InitialIVSeedSearcher::Search(const Criteria &criteria,
   c.buttonPresses.push_back(criteria.pressedButtons);
   c.fromTime = criteria.startTime - seconds(5);
   c.toTime = criteria.startTime + seconds(10);
-  c.minFrame = 1;
-  c.maxFrame = 1;
+  c.minIVFrame = 1;
+  c.maxIVFrame = 1;
   c.maxResults = 1;
   c.minIVs = criteria.minIVs;
   c.shouldCheckMaxIVs = true;
@@ -179,18 +175,52 @@ uint64_t InitialSeedSearcher::Search(const Criteria &criteria)
   std::cout << std::hex << std::setfill('0');
   std::cout << "Step 1: " << std::setw(16) << result << std::endl;
   
-  uint64_t  i;
-  for (i = 0; i <= 0xffffffffULL; ++i)
+  LCRNG5    rng(0);
+  uint64_t  i = 0;
+  while (i <= 0xffffffffULL)
   {
-    uint64_t  seed1 = tid1 + i;
-    LCRNG5    rng(seed1);
+    rng.Seed(tid1 + i);
     
-    if (((rng.Next() & 0xffff00000000ULL) == tid2) &&
-        ((rng.Next() & 0xffff00000000ULL) == tid3) &&
-        ((rng.Next() & 0xffff00000000ULL) == tid4))
-    {
-      result = seed1;
+    if ((rng.Next() & 0xffff00000000ULL) == tid2)
       break;
+    
+    ++i;
+  }
+  
+  while (i <= 0xffffffffULL)
+  {
+    if ((rng.Next() & 0xffff00000000ULL) == tid3)
+    {
+      std::cout << "Step 2: " << std::setw(16) << tid1 + i << std::endl;
+      uint64_t  next = rng.Next();
+      std::cout << std::dec << "  Next = " << ((((next >> 32) * 0xFFFFFFFF) >> 32) & 0xffff) << std::hex << std::endl;
+      if ((next & 0xffff00000000ULL) == tid4)
+      {
+        result = tid1 + i;
+        break;
+      }
+      else
+      {
+        std::cout << "Step 2.5: Failed" << std::endl;
+      }
+    }
+    
+    uint32_t  j;
+    for (j = 0; j < 3; ++j)
+    {
+      rng.Seed(tid1 + i + TID2SeedStep[j]);
+      if ((rng.Next() & 0xffff00000000ULL) == tid2)
+      {
+        i += TID2SeedStep[j];
+        break;
+      }
+    }
+    
+    if (j == 3)
+    {
+      // some strange error...
+      std::cerr << "OMG!" << std::endl;
+      return 0;
     }
   }
   
@@ -199,7 +229,30 @@ uint64_t InitialSeedSearcher::Search(const Criteria &criteria)
     return 0;
   }
   
-  std::cout << "Step 2: seed1 = " << std::setw(16) << result << std::endl;
+/*
+  for (i = 0; i <= 0xffffffffULL; ++i)
+  {
+    uint64_t  seed1 = tid1 + i;
+    LCRNG5    rng(seed1);
+    
+    if (((rng.Next() & 0xffff00000000ULL) == tid2) &&
+        ((rng.Next() & 0xffff00000000ULL) == tid3))
+    {
+      uint64_t  next = rng.Next();
+      std::cout << "Matched 2, last would be: " << std::setw(16) << next << std::endl;
+      if ((next & 0xffff00000000ULL) == tid4)
+      {
+        result = seed1;
+        break;
+      }
+    }
+  }
+*/
+  
+  std::cout << "Step 3: seed1 = " << std::setw(16) << result
+            << " Next ID = " << std::dec
+            << ((((rng.Next() >> 32) * 0xFFFFFFFF) >> 32) & 0xffff) << std::hex
+            << std::endl;
   
   uint32_t  skippedFrames;
   
@@ -212,21 +265,28 @@ uint64_t InitialSeedSearcher::Search(const Criteria &criteria)
     {
       uint32_t               mtSeed = (rRNG.Next() >> 32) & 0xffffffff;
       CGearIVFrameGenerator  ivFrameGenerator(mtSeed,
-                                              CGearIVFrameGenerator::Normal);
+                                              CGearIVFrameGenerator::Normal,
+                                              false);
       
-      ivFrameGenerator.AdvanceFrame();
-      
-      IVs  ivs = ivFrameGenerator.CurrentFrame().ivs;
-      
-      if (ivs.betterThanOrEqual(criteria.minIVs) &&
-          ivs.worseThanOrEqual(criteria.maxIVs))
+      for (uint32_t j = 0; j < 50; ++j)
       {
-        std::cout << "\nStep 3: seed2 = "
-          << std::setw(16) << fullSeed << std::endl;
-        result = rRNG.Seed();
-  
-  std::cout << "\nInitial Seed = " << std::setw(16) << result << std::endl;
-  std::cout << "Skipped Frames = " << std::dec << skippedFrames << std::endl;
+        ivFrameGenerator.AdvanceFrame();
+        
+        IVs  ivs = ivFrameGenerator.CurrentFrame().ivs;
+        
+        if (ivs.betterThanOrEqual(criteria.minIVs) &&
+            ivs.worseThanOrEqual(criteria.maxIVs))
+        {
+          std::cout << "\nStep 4: seed2 = "
+            << std::setw(16) << fullSeed << std::endl;
+          std::cout << std::dec << j << ": "
+                    << ivs.hp() << '/' << ivs.at() << '/' << ivs.df() << '/'
+                    << ivs.sa() << '/' << ivs.sd() << '/' << ivs.sp()
+                    << std::hex << std::endl;
+    
+    std::cout << "\nInitial Seed = " << std::setw(16) << rRNG.Seed() << std::endl;
+    std::cout << "Skipped Frames = " << std::dec << skippedFrames << std::endl;
+        }
       }
     }
     

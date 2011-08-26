@@ -53,20 +53,25 @@ using namespace pprng;
   
   uint32_t  tid = [gen5ConfigController tid];
   uint32_t  sid = [gen5ConfigController sid];
-  uint32_t  timer0Low = [gen5ConfigController timer0Low];
-  uint32_t  timer0High = [gen5ConfigController timer0High];
+  uint32_t  timer0Low = targetSeed.m_timer0 - 1;
+  uint32_t  timer0High = targetSeed.m_timer0 + 1;
   
-  if ((targetSeed.m_timer0 < timer0Low) || (targetSeed.m_timer0 > timer0High))
+  if (targetSeed.m_timer0 == 0)
   {
-    timer0Low = targetSeed.m_timer0 - 1;
-    timer0High = targetSeed.m_timer0 + 1;
+    timer0Low = 0;
+  }
+  if (targetSeed.m_timer0 == 0xffffffff)
+  {
+    timer0High = 0xffffffff;
   }
   
   uint32_t  secondVariance = [adjacentsTimeVarianceField intValue];
   
-  ptime     dt(date(targetSeed.m_year, targetSeed.m_month, targetSeed.m_day),
-               hours(targetSeed.m_hour) + minutes(targetSeed.m_minute) +
-               seconds(targetSeed.m_second));
+  ptime     seedTime(date(targetSeed.m_year, targetSeed.m_month,
+                          targetSeed.m_day),
+                     hours(targetSeed.m_hour) + minutes(targetSeed.m_minute) +
+                     seconds(targetSeed.m_second));
+  ptime     dt = seedTime;
   ptime     endTime = dt + seconds(secondVariance);
   dt = dt - seconds(secondVariance);
   
@@ -74,6 +79,9 @@ using namespace pprng;
   bool      isRoamer = [adjacentsRoamerButton state];
   
   uint32_t  pidFrameNum = [adjacentsPIDFrameField intValue];
+  BOOL      useInitialPIDOffset = [adjacentsUseInitialPIDOffsetButton state];
+  uint32_t  pidFrameOffset = useInitialPIDOffset ?
+       (pidFrameNum - targetSeed.GetSkippedPIDFrames() - 1) : pidFrameNum;
   uint32_t  pidFrameVariance = [adjacentsPIDFrameVarianceField intValue];
   uint32_t  pidStartFrameNum;
   if (pidFrameNum < pidFrameVariance)
@@ -99,20 +107,20 @@ using namespace pprng;
     date           d = dt.date();
     time_duration  t = dt.time_of_day();
     
-    NSString  *dateStr =
-      [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
-                uint32_t(d.year()), uint32_t(d.month()), uint32_t(d.day())];
-    NSString  *timeStr = [NSString stringWithFormat:@"%.2d:%.2d:%.2d",
-                           t.hours(), t.minutes(), t.seconds()];
+    NSString  *timeStr = (dt == seedTime) ?
+      [NSString stringWithFormat:@"%.2d:%.2d:%.2d",
+                                 t.hours(), t.minutes(), t.seconds()] :
+      [NSString stringWithFormat:@"%+ds", (dt - seedTime).total_seconds()];
     
     for (uint32_t timer0 = timer0Low; timer0 <= timer0High; ++timer0)
     {
       HashedSeed  seed(d.year(), d.month(), d.day(), d.day_of_week(),
                        t.hours(), t.minutes(), t.seconds(),
                        targetSeed.m_macAddressLow, targetSeed.m_macAddressHigh,
-                       targetSeed.m_nazo, 0, 0, 0,
+                       targetSeed.m_nazo,
                        targetSeed.m_vcount, timer0, HashedSeed::GxStat,
-                       targetSeed.m_vframe, targetSeed.m_keyInput);
+                       targetSeed.m_vframe, targetSeed.m_keyInput,
+                       0, 0, 0, 0, 0, 0, 0, 0x40);
       
       HashedIVFrameGenerator  ivGenerator(seed,
                                           (isRoamer ?
@@ -124,7 +132,16 @@ using namespace pprng;
       
       IVs  ivs = ivGenerator.CurrentFrame().ivs;
       
+      uint32_t  adjacentPIDStartFrameNum = useInitialPIDOffset ?
+        (seed.GetSkippedPIDFrames() + 1 + pidFrameOffset - pidFrameVariance) :
+        pidFrameNum;
+      uint32_t  pidStartFrameNum =
+        (adjacentPIDStartFrameNum < pidFrameVariance) ?
+          1 : (adjacentPIDStartFrameNum - pidFrameVariance);
+      
       Gen5PIDFrameGenerator  pidGenerator(seed, frameType, false, tid, sid);
+      bool  generatesESV = pidGenerator.GeneratesESV();
+      bool  generatesIsEncounter = pidGenerator.GeneratesIsEncounter();
       
       for (uint32_t j = 0; j < pidStartFrameNum; ++j)
         pidGenerator.AdvanceFrame();
@@ -134,23 +151,37 @@ using namespace pprng;
            ++pidFrameNum)
       {
         Gen5PIDFrame  frame = pidGenerator.CurrentFrame();
+        uint32_t      genderValue = frame.pid.GenderValue();
         
         [rowArray addObject:
         [NSMutableDictionary dictionaryWithObjectsAndKeys:
-          dateStr, @"date",
           timeStr, @"time",
           [NSNumber numberWithUnsignedInt: timer0], @"timer0",
+          [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1],
+            @"startFrame",
           [NSNumber numberWithUnsignedInt: pidFrameNum], @"pidFrame",
+          (frame.pid.IsShiny(tid, sid) ? @"★" : @""), @"shiny",
           [NSString stringWithFormat: @"%s",
             Nature::ToString(frame.nature).c_str()], @"nature",
           [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
-          GenderString(frame.pid), @"gender",
+          ((genderValue < 31) ? @"♀" : @"♂"), @"gender18",
+          ((genderValue < 63) ? @"♀" : @"♂"), @"gender14",
+          ((genderValue < 127) ? @"♀" : @"♂"), @"gender12",
+          ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
+          (frame.synched ? @"Y" : @""), @"sync",
+          (generatesESV ? [NSString stringWithFormat: @"%d", frame.esv] : @""),
+            @"esv",
+          HeldItemString(frame.heldItem), @"heldItem",
+          ((generatesIsEncounter && frame.isEncounter) ? @"Y" : @""),
+            @"isEncounter",
           [NSNumber numberWithUnsignedInt: ivs.hp()], @"hp",
           [NSNumber numberWithUnsignedInt: ivs.at()], @"atk",
           [NSNumber numberWithUnsignedInt: ivs.df()], @"def",
           [NSNumber numberWithUnsignedInt: ivs.sa()], @"spa",
           [NSNumber numberWithUnsignedInt: ivs.sd()], @"spd",
           [NSNumber numberWithUnsignedInt: ivs.sp()], @"spe",
+          [NSString stringWithFormat: @"%s",
+            Element::ToString(ivs.HiddenType()).c_str()], @"hiddenType",
           [NSString stringWithFormat: @"%s",
               Characteristic::ToString
                 (Characteristic::Get(frame.pid, ivs)).c_str()],

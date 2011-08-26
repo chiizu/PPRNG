@@ -32,7 +32,7 @@ namespace pprng
 class TrainerIDSearcher
 {
 public:
-  struct Criteria
+  struct Criteria : public SeedSearchCriteria
   {
     Game::Version             version;
     uint32_t                  macAddressLow, macAddressHigh;
@@ -50,7 +50,7 @@ public:
     bool                      giftShiny;
     bool                      eggShiny;
     
-    uint64_t ExpectedNumberOfResults();
+    uint64_t ExpectedNumberOfResults() const;
   };
   
   TrainerIDSearcher() {}

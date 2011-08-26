@@ -64,14 +64,15 @@
    email: m-mat @ math.sci.hiroshima-u.ac.jp (remove space)
 */
 
-#ifndef MERSENNE_TWISTER_RNG_H
-#define MERSENNE_TWISTER_RNG_H
+#ifndef LAZY_MERSENNE_TWISTER_RNG_H
+#define LAZY_MERSENNE_TWISTER_RNG_H
 
 #include "BasicTypes.h"
 
 namespace pprng
 {
 
+// the original Mersenne Twister in C++ class form
 class MersenneTwisterRNG
 {
 public:
@@ -112,7 +113,57 @@ private:
   void InitByArray(uint32_t initKey[], uint32_t keyLength);
 };
 
-typedef MersenneTwisterRNG MTRNG;
+
+// This is a lazy version of the Mersenne Twister, doing only the minimum work
+// required to generate each seed, since most searches won't be looking beyond
+// the first 50 IV frames.  It assumes it will be called at least once, however,
+// so if there is a situation where it would be instantiated, but not actually
+// called, it could be made even more lazy.
+class LazyMersenneTwisterRNG
+{
+public:
+  // some templates expect these typedefs
+  typedef uint32_t  SeedType;
+  typedef uint32_t  ReturnType;
+  
+  LazyMersenneTwisterRNG(uint32_t seed);
+  ~LazyMersenneTwisterRNG();
+  
+  LazyMersenneTwisterRNG(const LazyMersenneTwisterRNG&);
+  LazyMersenneTwisterRNG& operator=(const LazyMersenneTwisterRNG&);
+  
+  ReturnType Next() { return NextUInt32(); }
+
+  /* generates a random number on [0,0xffffffff]-interval */
+  uint32_t NextUInt32()
+  { return (this->*m_nextUInt32Generator)(); }
+
+private:
+  LazyMersenneTwisterRNG();
+  
+  enum PeriodParameters
+  {
+    N = 624,
+    M = 397,
+    L = N - M
+  };
+  
+  uint32_t m_mt[N]; /* the array for the state vector  */
+  uint32_t m_mti; /* mti==N+1 means mt[N] is not initialized */
+  
+  typedef uint32_t (LazyMersenneTwisterRNG::*NextUInt32Generator)();
+  
+  NextUInt32Generator  m_nextUInt32Generator;
+  
+  uint32_t FirstSectionLNextUInt32();
+  uint32_t SectionLNextUInt32();
+  uint32_t SectionMNextUInt32();
+
+  /* initializes mt[N] with a seed */
+  void InitGenRand(uint32_t seed);
+};
+
+typedef LazyMersenneTwisterRNG MTRNG;
 
 }
 

@@ -125,29 +125,25 @@ struct Game
     
     FifthGenStart = FourthGenEnd,
     
-    BlackStart = FifthGenStart,
-    
-    BlackEnglish = BlackStart,
+    BlackEnglish = FifthGenStart,
     BlackFrench,
     BlackGerman,
     BlackItalian,
     BlackJapanese,
     BlackSpanish,
     
-    BlackEnd = BlackSpanish + 1,
-    
-    WhiteStart = BlackEnd,
-    
-    WhiteEnglish = WhiteStart,
+    WhiteEnglish,
     WhiteFrench,
     WhiteGerman,
     WhiteItalian,
     WhiteJapanese,
     WhiteSpanish,
     
-    WhiteEnd = WhiteSpanish + 1,
+    // add after the fact...
+    BlackKorean,
+    WhiteKorean,
     
-    FifthGenEnd = WhiteEnd,
+    FifthGenEnd = WhiteKorean + 1,
     
     UnknownVersion = FifthGenEnd,
     
@@ -199,6 +195,62 @@ struct Nature
   
   static const std::string& ToString(Type t);
   static Type FromString(const std::string &name);
+};
+
+
+struct Gender
+{
+  enum Type
+  {
+    FEMALE = 0,
+    MALE,
+    NEUTRAL,
+    
+    ANY = -1
+  };
+  
+  enum Ratio
+  {
+    ONE_EIGHTH_FEMALE = 0,
+    ONE_FOURTH_FEMALE,
+    ONE_HALF_FEMALE,
+    THREE_FOURTHS_FEMALE,
+    FEMALE_ONLY,
+    MALE_ONLY,
+    
+    UNSPECIFIED = -1
+  };
+  
+  static bool GenderValueMatches(uint32_t value, Type t, Ratio r)
+  {
+    uint32_t  dividingPoint;
+    
+    if ((t == ANY) || (r == UNSPECIFIED))
+      return true;
+    
+    switch (r)
+    {
+    case ONE_EIGHTH_FEMALE:
+      dividingPoint = 31;
+      break;
+    case ONE_FOURTH_FEMALE:
+      dividingPoint = 63;
+      break;
+    case ONE_HALF_FEMALE:
+      dividingPoint = 127;
+      break;
+    case THREE_FOURTHS_FEMALE:
+      dividingPoint = 191;
+      break;
+    case UNSPECIFIED:
+      return true;
+    default:
+      return false;
+      break;
+    }
+    
+    return (t == FEMALE) ? (value < dividingPoint) : (value >= dividingPoint);
+  }
 };
 
 
@@ -310,20 +362,31 @@ struct IndividualValues
   
   enum Mask
   {
-    HP_MASK = 0x1f << HP_SHIFT,
-    AT_MASK = 0x1f << AT_SHIFT,
-    DF_MASK = 0x1f << DF_SHIFT,
-    SA_MASK = 0x1f << SA_SHIFT,
-    SD_MASK = 0x1f << SD_SHIFT,
-    SP_MASK = 0x1f << SP_SHIFT
+    IV_MASK = 0x1f,
+    
+    HP_MASK = IV_MASK << HP_SHIFT,
+    AT_MASK = IV_MASK << AT_SHIFT,
+    DF_MASK = IV_MASK << DF_SHIFT,
+    SA_MASK = IV_MASK << SA_SHIFT,
+    SD_MASK = IV_MASK << SD_SHIFT,
+    SP_MASK = IV_MASK << SP_SHIFT,
+    
+    ALL_IVS_MASK = HP_MASK | AT_MASK | DF_MASK | SA_MASK | SD_MASK | SP_MASK
   };
   
   static const Mask  IVMask[NUM_IVS];
   
   IndividualValues() : word(0) {}
   
+  // this does not check value ranges - assumes user passes valid IV values
+  IndividualValues(uint32_t hp, uint32_t at, uint32_t df,
+                   uint32_t sa, uint32_t sd, uint32_t sp)
+    : word((hp << HP_SHIFT) | (at << AT_SHIFT) | (df << DF_SHIFT) |
+           (sa << SA_SHIFT) | (sd << SD_SHIFT) | (sp << SP_SHIFT))
+  {}
+  
   IndividualValues(const IndividualValues &ivs) : word(ivs.word) {}
-  IndividualValues(uint32_t ivWord) : word(ivWord & 0x7fff7fff) {}
+  IndividualValues(uint32_t ivWord) : word(ivWord & ALL_IVS_MASK) {}
   
   IndividualValues& operator=(const IndividualValues &ivs)
   {
@@ -333,7 +396,7 @@ struct IndividualValues
   
   IndividualValues& operator=(uint32_t ivWord)
   {
-    word = ivWord & 0x7fff7fff;
+    word = ivWord & ALL_IVS_MASK;
     return *this;
   }
   
@@ -346,29 +409,29 @@ struct IndividualValues
   bool worseThanOrEqual(const IndividualValues &ivs) const
   { return ivs.betterThanOrEqual(*this); }
   
-  uint32_t hp() const { return (word >> HP_SHIFT) & 0x1f; }
+  uint32_t hp() const { return (word & HP_MASK) >> HP_SHIFT; }
   void hp(uint32_t iv)
-  { word = (word & ~HP_MASK) | ((iv & 0x1f) << HP_SHIFT); }
+  { word = (word & ~HP_MASK) | ((iv << HP_SHIFT) & HP_MASK); }
   
-  uint32_t at() const { return (word >> AT_SHIFT) & 0x1f; }
+  uint32_t at() const { return (word & AT_MASK) >> AT_SHIFT; }
   void at(uint32_t iv)
-  { word = (word & ~AT_MASK) | ((iv & 0x1f) << AT_SHIFT); }
+  { word = (word & ~AT_MASK) | ((iv << AT_SHIFT) & AT_MASK); }
   
-  uint32_t df() const { return (word >> DF_SHIFT) & 0x1f; }
+  uint32_t df() const { return (word & DF_MASK) >> DF_SHIFT; }
   void df(uint32_t iv)
-  { word = (word & ~DF_MASK) | ((iv & 0x1f) << DF_SHIFT); }
+  { word = (word & ~DF_MASK) | ((iv << DF_SHIFT) & DF_MASK); }
   
-  uint32_t sa() const { return (word >> SA_SHIFT) & 0x1f; }
+  uint32_t sa() const { return (word & SA_MASK) >> SA_SHIFT; }
   void sa(uint32_t iv)
-  { word = (word & ~SA_MASK) | ((iv & 0x1f) << SA_SHIFT); }
+  { word = (word & ~SA_MASK) | ((iv << SA_SHIFT) & SA_MASK); }
   
-  uint32_t sd() const { return (word >> SD_SHIFT) & 0x1f; }
+  uint32_t sd() const { return (word & SD_MASK) >> SD_SHIFT; }
   void sd(uint32_t iv)
-  { word = (word & ~SD_MASK) | ((iv & 0x1f) << SD_SHIFT); }
+  { word = (word & ~SD_MASK) | ((iv << SD_SHIFT) & SD_MASK); }
   
-  uint32_t sp() const { return (word >> SP_SHIFT) & 0x1f; }
+  uint32_t sp() const { return (word & SP_MASK) >> SP_SHIFT; }
   void sp(uint32_t iv)
-  { word = (word & ~SP_MASK) | ((iv & 0x1f) << SP_SHIFT); }
+  { word = (word & ~SP_MASK) | ((iv << SP_SHIFT) & SP_MASK); }
   
   
   class BadIVIndexException : public Exception
@@ -381,42 +444,99 @@ struct IndividualValues
   {
     if ((i < HP) || (i > SP)) throw BadIVIndexException(i);
     
-    return (word >> IVShift[i]) & 0x1f;
+    return (word >> IVShift[i]) & IV_MASK;
   }
   
   void setIV(int i, uint32_t iv) throw (BadIVIndexException)
   {
     if ((i < HP) || (i > SP)) throw BadIVIndexException(i);
     
-    word = (word & ~(0x1f << IVShift[i])) | ((iv & 0x1f) << IVShift[i]);
+    word = (word & ~(IV_MASK << IVShift[i])) | ((iv & IV_MASK) << IVShift[i]);
   }
   
   uint32_t Sum() const { return hp() + at() + df() + sa() + sd() + sp(); }
   
-  void ShiftDown(uint32_t iv)
+  void ShiftDownNormal(uint32_t iv)
   {
-    word = ((word & AT_MASK) >> (AT_SHIFT - HP_SHIFT)) |
-           ((word & DF_MASK) >> (DF_SHIFT - AT_SHIFT)) |
+    word = ((word & (AT_MASK | DF_MASK)) >> (AT_SHIFT - HP_SHIFT)) |
            ((word & SA_MASK) >> (SA_SHIFT - DF_SHIFT)) |
            ((word & SD_MASK) >> (SD_SHIFT - SA_SHIFT)) |
            ((word & SP_MASK) << (SD_SHIFT - SP_SHIFT)) |
-           ((iv & 0x1f) << SP_SHIFT);
+           ((iv & IV_MASK) << SP_SHIFT);
   }
   
-  void ShiftUp(uint32_t iv)
+  void ShiftUpNormal(uint32_t iv)
   {
-    word = ((iv & 0x1f) << HP_SHIFT) |
-           ((word & HP_MASK) << (AT_SHIFT - HP_SHIFT)) |
-           ((word & AT_MASK) << (DF_SHIFT - AT_SHIFT)) |
+    word = ((iv & IV_MASK) << HP_SHIFT) |
+           ((word & (HP_MASK | AT_MASK)) << (AT_SHIFT - HP_SHIFT)) |
            ((word & DF_MASK) << (SA_SHIFT - DF_SHIFT)) |
            ((word & SA_MASK) << (SD_SHIFT - SA_SHIFT)) |
            ((word & SD_MASK) >> (SD_SHIFT - SP_SHIFT));
+  }
+  
+  void ShiftDownRoamer(uint32_t iv)
+  {
+    word = ((word & (AT_MASK | DF_MASK)) >> (AT_SHIFT - HP_SHIFT)) |
+           ((word & SD_MASK) >> (SD_SHIFT - DF_SHIFT)) |
+           ((word & SP_MASK) << (SD_SHIFT - SP_SHIFT)) |
+           ((word & SA_MASK) >> (SA_SHIFT - SP_SHIFT)) |
+           ((iv & IV_MASK) << SA_SHIFT);
+  }
+  
+  void ShiftUpRoamer(uint32_t iv)
+  {
+    word = ((iv & IV_MASK) << HP_SHIFT) |
+           ((word & (HP_MASK | AT_MASK)) << (AT_SHIFT - HP_SHIFT)) |
+           ((word & DF_MASK) << (SD_SHIFT - DF_SHIFT)) |
+           ((word & SD_MASK) >> (SD_SHIFT - SP_SHIFT)) |
+           ((word & SP_MASK) << (SA_SHIFT - SP_SHIFT));
   }
   
   Element::Type HiddenType() const;
   uint32_t      HiddenPower() const;
   
   uint32_t  word;
+  
+  class ImpossibleMinMaxIVRangeException : public Exception
+  {
+  public:
+    ImpossibleMinMaxIVRangeException
+      (IndividualValues minIVs, IndividualValues maxIVs);
+  };
+  
+  static uint32_t CalculateNumberOfCombinations
+    (IndividualValues minIVs, IndividualValues maxIVs)
+    throw (ImpossibleMinMaxIVRangeException)
+  {
+    if (!minIVs.worseThanOrEqual(maxIVs))
+      throw ImpossibleMinMaxIVRangeException(minIVs, maxIVs);
+  
+    return (maxIVs.hp() - minIVs.hp() + 1) *
+           (maxIVs.at() - minIVs.at() + 1) *
+           (maxIVs.df() - minIVs.df() + 1) *
+           (maxIVs.sa() - minIVs.sa() + 1) *
+           (maxIVs.sd() - minIVs.sd() + 1) *
+           (maxIVs.sp() - minIVs.sp() + 1);
+  }
+  
+  class ImpossibleHiddenTypeException : public Exception
+  {
+  public:
+    ImpossibleHiddenTypeException
+      (IndividualValues minIVs, IndividualValues maxIVs, Element::Type t);
+  };
+  
+  class ImpossibleMinHiddenPowerException : public Exception
+  {
+  public:
+    ImpossibleMinHiddenPowerException
+      (IndividualValues minIVs, IndividualValues maxIVs, uint32_t minPower);
+  };
+  
+  static uint64_t AdjustExpectedResultsForHiddenPower
+    (uint64_t numResults, IndividualValues minIVs, IndividualValues maxIVs,
+     Element::Type type, uint32_t minPower)
+    throw (ImpossibleHiddenTypeException, ImpossibleMinHiddenPowerException);
 };
 
 typedef IndividualValues  IVs;
@@ -496,6 +616,19 @@ struct HeldItem
     FIFTY_PERCENT_ITEM,
     FIVE_PERCENT_ITEM,
     ONE_PERCENT_ITEM
+  };
+};
+
+
+// special parents when breeding
+struct FemaleParent
+{
+  enum Type
+  {
+    NIDORAN_FEMALE = 0,
+    ILLUMISE,
+    
+    OTHER = -1
   };
 };
 

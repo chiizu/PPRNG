@@ -22,8 +22,7 @@
 #import "DSParameterSearcherController.h"
 #include "InitialSeedSearcher.h"
 #include "LinearCongruentialRNG.h"
-#include <boost/date_time/gregorian/gregorian_types.hpp>
-#include <boost/lexical_cast.hpp>
+#include "Utilities.h"
 
 using namespace pprng;
 
@@ -130,14 +129,10 @@ struct ProgressHandler
   criteria.maxIVs = [ivParameterController maxIVs];
   criteria.maxSkippedFrames = 50;
   
-  const char *dstr = [[[startDate objectValue] description] UTF8String];
-  criteria.startTime =
-    ptime(date(boost::lexical_cast<uint32_t>(std::string(dstr, 4)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 5, 2)),
-               boost::lexical_cast<uint32_t>(std::string(dstr + 8, 2))),
-          hours([startHour intValue]) +
-          minutes([startMinute intValue]) +
-          seconds([startSecond intValue]));
+  criteria.startTime = ptime(NSDateToBoostDate([startDate objectValue]),
+                             hours([startHour intValue]) +
+                             minutes([startMinute intValue]) +
+                             seconds([startSecond intValue]));
   
   criteria.pressedButtons = [[keyOnePopUp selectedItem] tag] |
                             [[keyTwoPopUp selectedItem] tag] |

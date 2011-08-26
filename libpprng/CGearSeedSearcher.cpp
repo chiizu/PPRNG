@@ -81,7 +81,7 @@ struct FrameGeneratorFactory
 
 }
 
-uint64_t CGearSeedSearcher::Criteria::ExpectedNumberOfResults()
+uint64_t CGearSeedSearcher::Criteria::ExpectedNumberOfResults() const
 {
   uint64_t  delays = maxDelay - minDelay + 1;
   

@@ -33,10 +33,11 @@ public:
   {
     JPBlackNazo = 0x02215f10,
     JPWhiteNazo = 0x02215f30,
-    //JPWhiteNazo = 0x02737eb0,
+    JPDSiWhiteNazo = 0x02737ed0,
+    //JPDSiWhiteNazo = 0x02214bf0,
     ENBlackNazo = 0x022160B0,
     ENWhiteNazo = 0x022160D0,
-    //ENWhiteNazo = 0x02738050,
+    ENDSiWhiteNazo = 0x02738050,
     SPBlackNazo = 0x02216050,
     SPWhiteNazo = 0x02216070,
     FRBlackNazo = 0x02216030,
@@ -44,66 +45,60 @@ public:
     DEBlackNazo = 0x02215FF0,
     DEWhiteNazo = 0x02216010,
     ITBlackNazo = 0x02215FB0,
-    ITWhiteNazo = 0x02215FD0
+    ITWhiteNazo = 0x02215FD0,
+    KRBlackNazo = 0x02216790,
+    KRWhiteNazo = 0x022167B0
   };
   
   static Nazo NazoForVersion(Game::Version version);
   
-  enum VCount
-  {
-    BlackVCount = 0x60,
-    WhiteVCount = 0x5f
-  };
-  
-  enum Timer0
-  {
-    BlackTimer0_1 = 0x0c79,
-    BlackTimer0_2 = 0x0c7a,
-    WhiteTimer0_1 = 0x0c68,
-    WhiteTimer0_2 = 0x0c69
-  };
-  
   enum
   {
     GxStat = 0x06000000,
-    DSiGxStat = 0x86000000
+    SRGxStat = 0x86000000
   };
   
-  enum Frame
-  {
-    DSPhat = 8,
-    DSLite = 6
-  };
-  
-  enum KeyInput
-  {
-    NoInput = 0x2fff
-  };
-    
   HashedSeed(uint32_t year, uint32_t month, uint32_t day, uint32_t dayOfWeek,
-               uint32_t hour, uint32_t minute, uint32_t second,
-               uint32_t macAddressLow, uint32_t macAddressHigh,
-               uint32_t nazo, uint32_t n0, uint32_t n1, uint32_t n2,
-               uint32_t vcount, uint32_t timer, uint32_t gxStat,
-               uint32_t vframe, uint32_t keyInput);
+             uint32_t hour, uint32_t minute, uint32_t second,
+             uint32_t macAddressLow, uint32_t macAddressHigh,
+             uint32_t nazo,
+             uint32_t vcount, uint32_t timer0,
+             uint32_t gxStat, uint32_t vframe,
+             uint32_t keyInput,
+             uint32_t n21510F8, uint32_t n21510FC,
+             uint32_t n2FFFF90, uint32_t n2FFFF94,
+             uint32_t n2FFFFAA, uint32_t n2FFFFAC,
+             uint32_t n2FFFF98,
+             uint32_t pmFlag = 0x40);
   
   // sometimes you just want to work with the raw seed value
   HashedSeed(uint64_t rawSeed)
-    : m_year(0), m_month(0), m_day(0), m_hour(0), m_minute(0), m_second(0),
+    : m_year(0), m_month(0), m_day(0), m_dayOfWeek(0),
+      m_hour(0), m_minute(0), m_second(0),
       m_macAddressLow(0), m_macAddressHigh(0), m_nazo(0), m_vcount(0),
-      m_timer0(0), m_GxStat(0), m_vframe(0), m_keyInput(0), m_rawSeed(rawSeed)
+      m_timer0(0), m_GxStat(0), m_vframe(0), m_keyInput(0),
+      m_n21510F8(0), m_n21510FC(0), m_n2FFFF90(0), m_n2FFFF94(0),
+      m_n2FFFFAA(0), m_n2FFFFAC(0), m_n2FFFF98(0), m_pmFlag(0x40),
+      m_rawSeed(rawSeed), m_skippedPIDFramesCalculated(false),
+      m_skippedPIDFrames(0)
   {}
   
   // this is needed to decode a HashedSeed from a byte array
   HashedSeed()
-    : m_year(0), m_month(0), m_day(0), m_hour(0), m_minute(0), m_second(0),
+    : m_year(0), m_month(0), m_day(0), m_dayOfWeek(0),
+      m_hour(0), m_minute(0), m_second(0),
       m_macAddressLow(0), m_macAddressHigh(0), m_nazo(0), m_vcount(0),
-      m_timer0(0), m_GxStat(0), m_vframe(0), m_keyInput(0), m_rawSeed(0)
+      m_timer0(0), m_GxStat(0), m_vframe(0), m_keyInput(0),
+      m_n21510F8(0), m_n21510FC(0), m_n2FFFF90(0), m_n2FFFF94(0),
+      m_n2FFFFAA(0), m_n2FFFFAC(0), m_n2FFFF98(0), m_pmFlag(0x40),
+      m_rawSeed(0), m_skippedPIDFramesCalculated(false),
+      m_skippedPIDFrames(0)
   {}
   
   const uint32_t m_year;
   const uint32_t m_month;
   const uint32_t m_day;
+  const uint32_t m_dayOfWeek;
   const uint32_t m_hour;
   const uint32_t m_minute;
   const uint32_t m_second;
@@ -115,8 +110,23 @@ public:
   const uint32_t m_GxStat;
   const uint32_t m_vframe;
   const uint32_t m_keyInput;
+  const uint32_t m_n21510F8;
+  const uint32_t m_n21510FC;
+  const uint32_t m_n2FFFF90;
+  const uint32_t m_n2FFFF94;
+  const uint32_t m_n2FFFFAA;
+  const uint32_t m_n2FFFFAC;
+  const uint32_t m_n2FFFF98;
+  const uint32_t m_pmFlag;
   
   const uint64_t m_rawSeed;
+  
+  uint32_t GetSkippedPIDFrames() const;
+  
+private:
+  // skipped frames calculated lazily and cached
+  mutable bool      m_skippedPIDFramesCalculated;
+  mutable uint32_t  m_skippedPIDFrames;
 };
 
 }

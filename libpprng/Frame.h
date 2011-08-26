@@ -59,15 +59,13 @@ struct Gen5PIDFrame
   Gen5PIDFrame(const HashedSeed &s) : seed(s) {}
   
   const HashedSeed  seed;
-  uint32_t          number;
-  
+  uint32_t          number;  
   PID               pid;
   Nature::Type      nature;
   bool              synched;
   uint32_t          esv;
   HeldItem::Type    heldItem;
-  bool              canFish;
-  bool              findItem;
+  bool              isEncounter;
 };
 
 struct CGearIVFrame
@@ -117,9 +115,9 @@ struct Gen5BreedingFrame
   
   const HashedSeed  seed;
   uint32_t          number;
-  
   bool              everstoneActivated;
   bool              dreamWorldAbilityPassed;
+  uint32_t          species;
   Nature::Type      nature;
   PID               pid;
   

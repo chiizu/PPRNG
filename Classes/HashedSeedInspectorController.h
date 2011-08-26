@@ -45,6 +45,7 @@
   IBOutlet NSPopUpButton          *key3Menu;
   
   IBOutlet NSTextField            *seedField;
+  IBOutlet NSTextField            *initialPIDFrameField;
   
   IBOutlet HashedSeedInspectorFramesTabController     *framesTabController;
   
@@ -59,5 +60,8 @@
 
 // take HashedSeed from NSData pointer
 - (void)setSeed:(NSData*)seedData;
+
+// for updating initial PID frame when user types a new seed value
+- (void)controlTextDidEndEditing:(NSNotification*)notification;
 
 @end

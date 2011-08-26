@@ -124,7 +124,7 @@ public:
     return *m_Position++;
   }
   
-  void AdvanceQueue()
+  void AdvanceBuffer()
   {
     if (m_Queue.size() > 0)
     {

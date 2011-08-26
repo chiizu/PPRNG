@@ -24,9 +24,7 @@
 
 #include "HashedSeed.h"
 #include "FrameGenerator.h"
-
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/lexical_cast.hpp>
+#include "Utilities.h"
 
 using namespace pprng;
 
@@ -43,9 +41,8 @@ using namespace pprng;
   
   [[seedField formatter] setFormatWidth: 8];
   
-  const char *dstr = [[[NSDate date] description] UTF8String];
   [timeFinderYearField
-   setIntValue: boost::lexical_cast<uint32_t>(std::string(dstr, 4))];
+   setIntValue: NSDateToBoostDate([NSDate date]).year()];
   
   [timeFinderSecondField setIntValue: 0];
 }

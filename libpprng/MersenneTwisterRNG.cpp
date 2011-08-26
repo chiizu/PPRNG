@@ -81,6 +81,9 @@
 namespace pprng
 {
 
+
+// ----------------- Original Mersenne Twister ------------------------------
+
 /// <summary>
 /// Creates a new pseudo-random number generator with a given seed.
 /// </summary>
@@ -214,6 +217,149 @@ void MersenneTwisterRNG::InitByArray(uint32_t initKey[], uint32_t keyLength)
   }
 
   m_mt[0] = 0x80000000U; // MSB is 1; assuring non-zero initial array
+}
+
+
+// ----------------- Lazy Mersenne Twister ------------------------------
+
+/// <summary>
+/// Creates a new pseudo-random number generator with a given seed.
+/// </summary>
+/// <param name="seed">A value to use as a seed.</param>
+LazyMersenneTwisterRNG::LazyMersenneTwisterRNG(uint32_t seed)
+  : m_mti(0),
+    m_nextUInt32Generator(&LazyMersenneTwisterRNG::FirstSectionLNextUInt32)
+{
+  InitGenRand(seed);
+}
+
+LazyMersenneTwisterRNG::~LazyMersenneTwisterRNG()
+{}
+
+LazyMersenneTwisterRNG::LazyMersenneTwisterRNG(const LazyMersenneTwisterRNG &c)
+  : m_mti(c.m_mti), m_nextUInt32Generator(c.m_nextUInt32Generator)
+{
+  ::memcpy(m_mt, c.m_mt, sizeof(uint32_t[N]));
+}
+
+LazyMersenneTwisterRNG&
+LazyMersenneTwisterRNG::operator=(const LazyMersenneTwisterRNG &c)
+{
+  m_mti = c.m_mti;
+  m_nextUInt32Generator = c.m_nextUInt32Generator;
+  ::memcpy(m_mt, c.m_mt, sizeof(uint32_t[N]));
+  return *this;
+}
+
+/* initializes first M members of mt[N] with a seed (minimum initialization) */
+void LazyMersenneTwisterRNG::InitGenRand(uint32_t seed)
+{
+  uint32_t  mti;
+  uint32_t  prevMt = seed;
+
+  m_mt[0] = seed;
+  for (mti = 1; mti < M; ++mti)
+  {
+    m_mt[mti] = prevMt = (1812433253UL * (prevMt ^ (prevMt >> 30))) + mti;
+    /* See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier. */
+    /* In the previous versions, MSBs of the seed affect   */
+    /* only MSBs of the array mt[].                        */
+    /* 2002/01/09 modified by Makoto Matsumoto             */           
+    
+    // m_mt[mti] &= 0xffffffffUL;
+    /* for >32 bit machines */
+  }
+}
+
+// initializes the remaining elements of mt JIT,
+// which means the least amount of work is done
+uint32_t LazyMersenneTwisterRNG::FirstSectionLNextUInt32()
+{
+  uint32_t  y;
+  
+  y = (m_mt[m_mti] & UPPER_MASK) | (m_mt[m_mti + 1] & LOWER_MASK);
+  
+  if (m_mti < L)
+  {
+    uint32_t  offset = m_mti + M;
+    uint32_t  prevMt = m_mt[offset - 1];
+    m_mt[offset] = (1812433253UL * (prevMt ^ (prevMt >> 30))) + offset;
+  
+    y = m_mt[m_mti++] = m_mt[m_mti + M] ^ (y >> 1) ^ ((y & 0x1) * MATRIX_A);
+  }
+  else
+  {
+    // finished section L
+    y = m_mt[m_mti++] = m_mt[m_mti - L] ^ (y >> 1) ^ ((y & 0x1) * MATRIX_A);
+    
+    m_nextUInt32Generator = &LazyMersenneTwisterRNG::SectionMNextUInt32;
+  }
+  
+  y ^= y >> 11;
+  y ^= (y << 7) & 0x9d2c5680UL;
+  y ^= (y << 15) & 0xefc60000UL;
+  y ^= y >> 10;
+  
+  return y;
+}
+
+// handles generating from the first L = N - M elements of mt
+// assumes mt is initialized appropriately
+uint32_t LazyMersenneTwisterRNG::SectionLNextUInt32()
+{
+  uint32_t  y;
+  
+  y = (m_mt[m_mti] & UPPER_MASK) | (m_mt[m_mti + 1] & LOWER_MASK);
+  
+  if (m_mti < L)
+  {
+    y = m_mt[m_mti++] = m_mt[m_mti + M] ^ (y >> 1) ^ ((y & 0x1) * MATRIX_A);
+  }
+  else
+  {
+    // finished section L
+    y = m_mt[m_mti++] = m_mt[m_mti - L] ^ (y >> 1) ^ ((y & 0x1) * MATRIX_A);
+    
+    m_nextUInt32Generator = &LazyMersenneTwisterRNG::SectionMNextUInt32;
+  }
+  
+  y ^= y >> 11;
+  y ^= (y << 7) & 0x9d2c5680UL;
+  y ^= (y << 15) & 0xefc60000UL;
+  y ^= y >> 10;
+  
+  return y;
+}
+
+// handles generating from the remaining M elements of mt
+uint32_t LazyMersenneTwisterRNG::SectionMNextUInt32()
+{
+  uint32_t  y;
+  
+  if (m_mti < (N - 1))
+  {
+    y = (m_mt[m_mti] & UPPER_MASK) | (m_mt[m_mti + 1] & LOWER_MASK);
+    
+    y = m_mt[m_mti++] = m_mt[m_mti - L] ^ (y >> 1) ^ ((y & 0x1) * MATRIX_A);
+  }
+  else
+  {
+    // last element of section M has special handling
+    y = (m_mt[m_mti] & UPPER_MASK) | (m_mt[0] & LOWER_MASK);
+    
+    y = m_mt[N - 1] = m_mt[M - 1] ^ (y >> 1) ^ ((y & 0x1) * MATRIX_A);
+    
+    // go back to section L
+    m_mti = 0;
+    m_nextUInt32Generator = &LazyMersenneTwisterRNG::SectionLNextUInt32;
+  }
+  
+  y ^= y >> 11;
+  y ^= (y << 7) & 0x9d2c5680UL;
+  y ^= (y << 15) & 0xefc60000UL;
+  y ^= y >> 10;
+  
+  return y;
 }
 
 }

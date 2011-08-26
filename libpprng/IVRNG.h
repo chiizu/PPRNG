@@ -22,6 +22,7 @@
 #define IV_RNG_H
 
 #include "BasicTypes.h"
+#include "RNGWrappers.h"
 
 namespace pprng
 {
@@ -67,8 +68,10 @@ private:
 };
 
 
+// standard IVRNG for 5th gen
+// uses the shifting functionality of the IVs class to do its own buffering
 template <class RNG>
-class Gen5IVRNG
+class Gen5BufferingIVRNG
 {
 public:
   enum { LowBitOffset = (sizeof(typename RNG::ReturnType) * 8) - 5 };
@@ -79,9 +82,81 @@ public:
     Roamer
   };
   
-  Gen5IVRNG(RNG &rng, FrameType frameType)
+  Gen5BufferingIVRNG(RNG &rng, FrameType frameType)
+    : m_RNG(rng), m_IVs(),
+      m_IVWordGenerator((frameType == Normal) ?
+                        &Gen5BufferingIVRNG::NextNormalIVWord :
+                        &Gen5BufferingIVRNG::NextRoamerIVWord)
+  {
+    if (frameType == Normal)
+    {
+      m_IVs.word = ((m_RNG.Next() >> LowBitOffset) << IVs::AT_SHIFT) |
+                   ((m_RNG.Next() >> LowBitOffset) << IVs::DF_SHIFT) |
+                   ((m_RNG.Next() >> LowBitOffset) << IVs::SA_SHIFT) |
+                   ((m_RNG.Next() >> LowBitOffset) << IVs::SD_SHIFT) |
+                   ((m_RNG.Next() >> LowBitOffset) << IVs::SP_SHIFT);
+    }
+    else
+    {
+      // unknown call
+      m_RNG.Next();
+      
+      m_IVs.word = ((m_RNG.Next() >> LowBitOffset) << IVs::AT_SHIFT) |
+                   ((m_RNG.Next() >> LowBitOffset) << IVs::DF_SHIFT) |
+                   ((m_RNG.Next() >> LowBitOffset) << IVs::SD_SHIFT) |
+                   ((m_RNG.Next() >> LowBitOffset) << IVs::SP_SHIFT) |
+                   ((m_RNG.Next() >> LowBitOffset) << IVs::SA_SHIFT);
+    }
+  }
+  
+  uint32_t NextIVWord()
+  {
+    return (this->*m_IVWordGenerator)();
+  }
+  
+private:
+  typedef uint32_t (Gen5BufferingIVRNG::*IVWordGenerator)();
+  
+  const IVWordGenerator  m_IVWordGenerator;
+  
+  uint32_t NextNormalIVWord()
+  {
+    m_IVs.ShiftDownNormal(m_RNG.Next() >> LowBitOffset);
+    
+    return m_IVs.word;
+  }
+  
+  uint32_t NextRoamerIVWord()
+  {
+    m_IVs.ShiftDownRoamer(m_RNG.Next() >> LowBitOffset);
+    
+    return m_IVs.word;
+  }
+  
+  RNG  &m_RNG;
+  IVs  m_IVs;
+};
+
+// for use in cases when the RNG passed in will handle any buffering needed
+// - generally used in cases where IV generation is part of a larger sequence
+//   of RNG class (in particular, WonderCards)
+template <class RNG>
+class Gen5NonBufferingIVRNG
+{
+public:
+  enum { LowBitOffset = (sizeof(typename RNG::ReturnType) * 8) - 5 };
+  
+  enum FrameType
+  {
+    Normal = 0,
+    Roamer
+  };
+  
+  Gen5NonBufferingIVRNG(RNG &rng, FrameType frameType)
     : m_RNG(rng),
-    m_IVWordGenerator((frameType == Normal) ? &Gen5IVRNG::NextNormalIVWord : &Gen5IVRNG::NextRoamerIVWord)
+      m_IVWordGenerator((frameType == Normal) ?
+                        &Gen5NonBufferingIVRNG::NextNormalIVWord :
+                        &Gen5NonBufferingIVRNG::NextRoamerIVWord)
   {}
   
   uint32_t NextIVWord()
@@ -90,42 +165,34 @@ public:
   }
   
 private:
-  typedef uint32_t (Gen5IVRNG::*IVWordGenerator)();
+  typedef uint32_t (Gen5NonBufferingIVRNG::*IVWordGenerator)();
   
   const IVWordGenerator  m_IVWordGenerator;
   
   uint32_t NextNormalIVWord()
   {
-    IVs  result;
-    
-    result.hp(m_RNG.Next() >> LowBitOffset);
-    result.at(m_RNG.Next() >> LowBitOffset);
-    result.df(m_RNG.Next() >> LowBitOffset);
-    result.sa(m_RNG.Next() >> LowBitOffset);
-    result.sd(m_RNG.Next() >> LowBitOffset);
-    result.sp(m_RNG.Next() >> LowBitOffset);
-    
-    return result.word;
+    return ((m_RNG.Next() >> LowBitOffset) << IVs::HP_SHIFT) |
+           ((m_RNG.Next() >> LowBitOffset) << IVs::AT_SHIFT) |
+           ((m_RNG.Next() >> LowBitOffset) << IVs::DF_SHIFT) |
+           ((m_RNG.Next() >> LowBitOffset) << IVs::SA_SHIFT) |
+           ((m_RNG.Next() >> LowBitOffset) << IVs::SD_SHIFT) |
+           ((m_RNG.Next() >> LowBitOffset) << IVs::SP_SHIFT);
   }
   
   uint32_t NextRoamerIVWord()
   {
-    IVs  result;
-    
     // unknown call
     m_RNG.Next();
     
-    result.hp(m_RNG.Next() >> LowBitOffset);
-    result.at(m_RNG.Next() >> LowBitOffset);
-    result.df(m_RNG.Next() >> LowBitOffset);
-    result.sd(m_RNG.Next() >> LowBitOffset);
-    result.sp(m_RNG.Next() >> LowBitOffset);
-    result.sa(m_RNG.Next() >> LowBitOffset);
-    
-    return result.word;
+    return ((m_RNG.Next() >> LowBitOffset) << IVs::HP_SHIFT) |
+           ((m_RNG.Next() >> LowBitOffset) << IVs::AT_SHIFT) |
+           ((m_RNG.Next() >> LowBitOffset) << IVs::DF_SHIFT) |
+           ((m_RNG.Next() >> LowBitOffset) << IVs::SD_SHIFT) |
+           ((m_RNG.Next() >> LowBitOffset) << IVs::SP_SHIFT) |
+           ((m_RNG.Next() >> LowBitOffset) << IVs::SA_SHIFT);
   }
   
-  RNG                  &m_RNG;
+  RNG  &m_RNG;
 };
 
 }
