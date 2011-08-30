@@ -99,6 +99,12 @@ struct ProgressHandler
    setFormatWidth: 16];
 }
 
+- (void)windowWillClose:(NSNotification *)notification
+{
+  if ([searcherController isSearching])
+    [searcherController startStop: self];
+}
+
 // dummy method for error panel
 - (void)alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode
         contextInfo:(void *)contextInfo

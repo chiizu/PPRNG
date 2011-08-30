@@ -40,10 +40,28 @@
   IBOutlet NSButton       *twoKeysHeldButton;
   IBOutlet NSButton       *threeKeysHeldButton;
   
-  IBOutlet NSPopUpButton  *natureMenu;
+  IBOutlet NSPopUpButton  *typePopUp;
+  IBOutlet NSTextField    *ivSkipField;
+  IBOutlet NSTextField    *pidSkipField;
+  IBOutlet NSTextField    *natureSkipField;
+  IBOutlet NSButton       *fixedNatureCheckBox;
+  IBOutlet NSButton       *fixedAbilityCheckBox;
+  IBOutlet NSButton       *fixedGenderCheckBox;
   
+  IBOutlet NSPopUpButton  *naturePopUp;
+  IBOutlet NSPopUpButton  *abilityPopUp;
+  IBOutlet NSPopUpButton  *genderPopUp;
+  IBOutlet NSPopUpButton  *genderRatioPopUp;
+  
+  IBOutlet NSButton       *useInitialPIDButton;
   IBOutlet NSTextField    *minFrameField;
   IBOutlet NSTextField    *maxFrameField;
 }
+
+- (IBAction)onTypeChange:(id)sender;
+- (IBAction)toggleFixedNature:(id)sender;
+- (IBAction)toggleFixedAbility:(id)sender;
+- (IBAction)toggleFixedGender:(id)sender;
+- (IBAction)toggleUseInitialPID:(id)sender;
 
 @end

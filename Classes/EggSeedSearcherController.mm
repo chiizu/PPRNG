@@ -144,6 +144,12 @@ struct ProgressHandler
   [speciesPopUp setAutoenablesItems: NO];
 }
 
+- (void)windowWillClose:(NSNotification *)notification
+{
+  if ([searcherController isSearching])
+    [searcherController startStop: self];
+}
+
 - (IBAction)onFemaleSpeciesChange:(id)sender
 {
   FemaleParent::Type  species =

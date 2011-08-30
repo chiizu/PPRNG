@@ -41,10 +41,19 @@
   IBOutlet NSPopUpButton          *key2Menu;
   IBOutlet NSPopUpButton          *key3Menu;
   
-  
   IBOutlet NSTextField            *seedField;
+  IBOutlet NSTextField            *initialPIDFrameField;
+  
+  IBOutlet NSPopUpButton          *typePopUp;
+  IBOutlet NSTextField            *ivSkipField;
+  IBOutlet NSTextField            *pidSkipField;
+  IBOutlet NSTextField            *natureSkipField;
+  IBOutlet NSButton               *fixedNatureCheckBox;
+  IBOutlet NSButton               *fixedAbilityCheckBox;
+  IBOutlet NSButton               *fixedGenderCheckBox;
   
   
+  IBOutlet NSButton               *useInitialPIDButton;
   IBOutlet NSTextField            *minFrameField;
   IBOutlet NSTextField            *maxFrameField;
   
@@ -52,12 +61,17 @@
   IBOutlet NSArrayController      *frameContentArray;
   
   IBOutlet IVParameterController  *ivParameterController;
-  IBOutlet NSPopUpButton          *natureMenu;
+  IBOutlet NSPopUpButton          *naturePopUp;
+  IBOutlet NSPopUpButton          *abilityPopUp;
+  IBOutlet NSPopUpButton          *genderPopUp;
+  IBOutlet NSPopUpButton          *genderRatioPopUp;
+  IBOutlet NSPopUpButton          *characteristicPopUp;
   
   
   IBOutlet NSTextField            *adjacentsTimeVarianceField;
   IBOutlet NSTextField            *adjacentsFrameVarianceField;
   IBOutlet NSTextField            *adjacentsFrameField;
+  IBOutlet NSButton               *adjacentsUseInitialPIDOffsetButton;
   
   IBOutlet NSTableView            *adjacentsTableView;
   IBOutlet NSArrayController      *adjacentsContentArray;
@@ -66,10 +80,18 @@
 }
 
 - (IBAction)calculateSeed:(id)sender;
+- (IBAction)onTypeChange:(id)sender;
+- (IBAction)toggleFixedNature:(id)sender;
+- (IBAction)toggleFixedAbility:(id)sender;
+- (IBAction)toggleFixedGender:(id)sender;
+- (IBAction)toggleUseInitialPID:(id)sender;
 - (IBAction)generateFrames:(id)sender;
 - (IBAction)generateAdjacents:(id)sender;
 
 // take HashedSeed from NSData pointer
 - (void)setSeed:(NSData*)seedData;
+
+// for updating initial PID frame when user types a new seed value
+- (void)controlTextDidEndEditing:(NSNotification*)notification;
 
 @end

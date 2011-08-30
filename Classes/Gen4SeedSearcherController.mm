@@ -134,6 +134,12 @@ struct ProgressHandler
    setFormatWidth: 8];
 }
 
+- (void)windowWillClose:(NSNotification *)notification
+{
+  if ([searcherController isSearching])
+    [searcherController startStop: self];
+}
+
 - (IBAction)switchSearchType:(id)sender
 {}
 

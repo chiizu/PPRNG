@@ -9062,7 +9062,7 @@
 											<object class="NSPopUpButton" id="574545673">
 												<reference key="NSNextResponder" ref="144233657"/>
 												<int key="NSvFlags">268</int>
-												<string key="NSFrame">{{98, 414}, {244, 26}}</string>
+												<string key="NSFrame">{{98, 413}, {244, 26}}</string>
 												<reference key="NSSuperview" ref="144233657"/>
 												<bool key="NSEnabled">YES</bool>
 												<object class="NSPopUpButtonCell" key="NSCell" id="306872732">
@@ -35865,11 +35865,11 @@
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
-						<bytes key="NSTransformStruct">P4AAAL+AAABDCgAAw7iAAA</bytes>
+						<bytes key="NSTransformStruct">P4AAAL+AAABDCgAAw7qAAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
-						<bytes key="NSTransformStruct">P4AAAL+AAABCqgAAw7cAAA</bytes>
+						<bytes key="NSTransformStruct">P4AAAL+AAABCqgAAw7kAAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">

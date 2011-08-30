@@ -211,19 +211,30 @@ public:
   typedef Gen5NonBufferingIVRNG<RNG> IVRNG;
   typedef Gen5PIDRNG<RNG>            PIDRNG;
   
-  WonderCardFrameGenerator(const HashedSeed &seed, bool canBeShiny,
-                           uint32_t tid, uint32_t sid)
+  WonderCardFrameGenerator(const HashedSeed &seed, bool startFromLowestFrame,
+                           uint32_t ivSkip, uint32_t pidSkip, uint32_t natureSkip,
+                           bool canBeShiny, uint32_t tid, uint32_t sid)
     : m_RNG(seed.m_rawSeed), m_IVRNG(m_RNG, IVRNG::Normal),
       m_PIDRNG(m_RNG, (canBeShiny ? PIDRNG::GiftPID : PIDRNG::GiftNoShinyPID),
                tid, sid),
-      m_frame(seed)
+      m_frame(seed), m_pidSkip(pidSkip), m_natureSkip(natureSkip)
   {
     // skip over 'unused' frames
-    for (uint32_t i = 0; i < 22; ++i)
+    for (uint32_t i = 0; i < ivSkip; ++i)
     {
       m_RNG.AdvanceBuffer();
     }
     m_frame.number = 0;
+    
+    if (startFromLowestFrame)
+    {
+      uint32_t  skippedFrames = seed.GetSkippedPIDFrames();
+      while (skippedFrames-- > 0)
+      {
+        m_RNG.AdvanceBuffer();
+        ++m_frame.number;
+      }
+    }
   }
   
   void AdvanceFrame()
@@ -233,14 +244,17 @@ public:
     ++m_frame.number;
     m_frame.ivs = m_IVRNG.NextIVWord();
     
-    // skip 2 'unused' frames
-    m_RNG.Next();
-    m_RNG.Next();
+    // 'unused' frames
+    uint32_t  i = m_pidSkip;
+    while (i-- > 0)
+      m_RNG.Next();
     
     m_frame.pid = m_PIDRNG.NextPIDWord();
     
-    // skip 1 'unused' frame
-    m_RNG.Next();
+    // skip 'unused' frames
+    i = m_natureSkip;
+    while (i-- > 0)
+      m_RNG.Next();
     
     m_frame.nature =
       static_cast<Nature::Type>(((m_RNG.Next() >> 32) * 25) >> 32);
@@ -249,10 +263,12 @@ public:
   const Frame& CurrentFrame() { return m_frame; }
   
 private:
-  RNG       m_RNG;
-  IVRNG     m_IVRNG;
-  PIDRNG    m_PIDRNG;
-  Frame     m_frame;
+  RNG             m_RNG;
+  IVRNG           m_IVRNG;
+  PIDRNG          m_PIDRNG;
+  Frame           m_frame;
+  const uint32_t  m_pidSkip;
+  const uint32_t  m_natureSkip;
 };
 
 class Gen5TrainerIDFrameGenerator

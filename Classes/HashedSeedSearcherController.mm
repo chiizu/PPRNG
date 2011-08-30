@@ -333,15 +333,17 @@ struct ProgressHandler
   [searcherController setDoSearchWithCriteriaSelector:
                       @selector(doSearchWithCriteria:)];
   
-  [[[[[searcherController tableView] tableColumnWithIdentifier: @"seed"]
-    dataCell] formatter]
-   setFormatWidth: 16];
-  
   [[searcherController tableView] setDoubleAction: @selector(inspectSeed:)];
   
   NSDate  *now = [NSDate date];
   [fromDateField setObjectValue: now];
   [toDateField setObjectValue: now];
+}
+
+- (void)windowWillClose:(NSNotification *)notification
+{
+  if ([searcherController isSearching])
+    [searcherController startStop: self];
 }
 
 - (IBAction)toggleSearchFromStartFrame:(id)sender

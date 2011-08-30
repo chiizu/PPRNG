@@ -107,6 +107,12 @@ struct ProgressHandler
   [[searcherController tableView] setDoubleAction: @selector(inspectSeed:)];
 }
 
+- (void)windowWillClose:(NSNotification *)notification
+{
+  if ([searcherController isSearching])
+    [searcherController startStop: self];
+}
+
 - (void)inspectSeed:(id)sender
 {
   NSInteger  rowNum = [sender clickedRow];

@@ -41,36 +41,31 @@ public:
   };
   
   FrameSearcher(FrameGenerator &frameGenerator)
-    : m_FrameGenerator(frameGenerator), m_frameNum(0)
+    : m_FrameGenerator(frameGenerator)
   {}
   
-  uint32_t FrameNum() const { return m_frameNum; }
+  uint32_t FrameNum() const { return m_FrameGenerator.CurrentFrame().number; }
   
   template <class FrameChecker, class ResultCallback>
   bool Search(const FrameRange &frameRange,
               FrameChecker checker, ResultCallback callback)
   {
-    uint32_t  frameNum = m_frameNum;
     uint32_t  limitFrame;
     bool      found = false;
     
     limitFrame = frameRange.min - 1;
-    while (frameNum < limitFrame)
+    while (m_FrameGenerator.CurrentFrame().number < limitFrame)
     {
       m_FrameGenerator.AdvanceFrame();
-      ++frameNum;
     }
     
     limitFrame = frameRange.max;
-    while ((frameNum < limitFrame) && !found)
+    while ((m_FrameGenerator.CurrentFrame().number < limitFrame) && !found)
     {
       m_FrameGenerator.AdvanceFrame();
-      ++frameNum;
       
       found = checker(m_FrameGenerator.CurrentFrame());
     }
-    
-    m_frameNum = frameNum;
     
     if (found)
     {
@@ -83,7 +78,6 @@ public:
   
 private:
   FrameGenerator  &m_FrameGenerator;
-  uint32_t        m_frameNum;
 };
 
 }

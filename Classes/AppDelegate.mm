@@ -40,11 +40,84 @@
   return YES;
 }
 
+// check for a newer version - should be called on background thread
+- (void)checkVersion
+{
+  NSString       *urlString = @"";
+  NSURLRequest   *request =
+    [NSURLRequest requestWithURL:[NSURL URLWithString: urlString]
+                  cachePolicy: NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                  timeoutInterval: 60.0];
+  NSURLResponse  *response;
+  NSError        *error;
+  
+  NSData  *result =
+    [NSURLConnection sendSynchronousRequest:request
+                     returningResponse:&response error:&error];
+  if (result == nil)
+  {
+    NSLog(@"Unable to perform version check.  Error %@",
+          [error localizedDescription]);
+    return;
+  }
+  
+  NSString  *latestVersion = [[NSString alloc] initWithBytes: [result bytes]
+                              length: [result length]
+                              encoding:NSISOLatin1StringEncoding];
+  NSString  *currentVersion = [[[NSBundle mainBundle] infoDictionary]
+                               objectForKey:(NSString*)kCFBundleVersionKey];
+  
+  NSArray  *latestVersionElements =
+    [latestVersion componentsSeparatedByString: @"."];
+  NSArray  *currentVersionElements =
+    [currentVersion componentsSeparatedByString: @"."];
+  
+  int   i = 0;
+  BOOL  reportNewVersion = NO;
+  while ((i < [latestVersionElements count]) &&
+         (i < [currentVersionElements count]))
+  {
+    int  latest = [[latestVersionElements objectAtIndex: i] intValue];
+    int  current = [[currentVersionElements objectAtIndex: i] intValue];
+    
+    if (current < latest)
+    {
+      reportNewVersion = YES;
+      break;
+    }
+    ++i;
+  }
+  if (!reportNewVersion &&
+      ([latestVersionElements count] > [currentVersionElements count]))
+  {
+    reportNewVersion = YES;
+  }
+  
+  if (reportNewVersion)
+  {
+    [self performSelectorOnMainThread:@selector(notifyNewVersion:)
+          withObject:latestVersion waitUntilDone:NO];
+  }
+}
+
+- (void)notifyNewVersion:(NSString*)version
+{
+  NSAlert *alert = [[NSAlert alloc] init];
+  
+  [alert addButtonWithTitle:@"OK"];
+  [alert setMessageText: [NSString stringWithFormat: @"Version %@ of PPRNG is now available", version]];
+  [alert setInformativeText: [NSString stringWithFormat: @"Please update to get the latest features and bug fixes."]];
+  [alert setAlertStyle:NSInformationalAlertStyle];
+  
+  [alert runModal];
+}
+
 // start up
 - (void)applicationDidFinishLaunching:(NSNotification*)notification
 {
   launcherController = [[LauncherController alloc] init];
   [launcherController showWindow:self];
+  [self performSelectorInBackground:@selector(checkVersion) withObject:nil];
 }
 
 @end

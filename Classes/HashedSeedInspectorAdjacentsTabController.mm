@@ -83,16 +83,6 @@ using namespace pprng;
   uint32_t  pidFrameOffset = useInitialPIDOffset ?
        (pidFrameNum - targetSeed.GetSkippedPIDFrames() - 1) : pidFrameNum;
   uint32_t  pidFrameVariance = [adjacentsPIDFrameVarianceField intValue];
-  uint32_t  pidStartFrameNum;
-  if (pidFrameNum < pidFrameVariance)
-  {
-    pidStartFrameNum = 1;
-  }
-  else
-  {
-    pidStartFrameNum = pidFrameNum - pidFrameVariance;
-  }
-  uint32_t  pidEndFrameNum = pidFrameNum + pidFrameVariance;
   
   Gen5PIDFrameGenerator::FrameType  frameType =
     static_cast<Gen5PIDFrameGenerator::FrameType>
@@ -110,7 +100,7 @@ using namespace pprng;
     NSString  *timeStr = (dt == seedTime) ?
       [NSString stringWithFormat:@"%.2d:%.2d:%.2d",
                                  t.hours(), t.minutes(), t.seconds()] :
-      [NSString stringWithFormat:@"%+ds", (dt - seedTime).total_seconds()];
+      [NSString stringWithFormat:@"%+dsec", (dt - seedTime).total_seconds()];
     
     for (uint32_t timer0 = timer0Low; timer0 <= timer0High; ++timer0)
     {
@@ -119,8 +109,7 @@ using namespace pprng;
                        targetSeed.m_macAddressLow, targetSeed.m_macAddressHigh,
                        targetSeed.m_nazo,
                        targetSeed.m_vcount, timer0, HashedSeed::GxStat,
-                       targetSeed.m_vframe, targetSeed.m_keyInput,
-                       0, 0, 0, 0, 0, 0, 0, 0x40);
+                       targetSeed.m_vframe, targetSeed.m_keyInput);
       
       HashedIVFrameGenerator  ivGenerator(seed,
                                           (isRoamer ?
@@ -132,24 +121,27 @@ using namespace pprng;
       
       IVs  ivs = ivGenerator.CurrentFrame().ivs;
       
-      uint32_t  adjacentPIDStartFrameNum = useInitialPIDOffset ?
-        (seed.GetSkippedPIDFrames() + 1 + pidFrameOffset - pidFrameVariance) :
+      uint32_t  adjacentPIDFrameNum = useInitialPIDOffset ?
+        (seed.GetSkippedPIDFrames() + 1 + pidFrameOffset) :
         pidFrameNum;
       uint32_t  pidStartFrameNum =
-        (adjacentPIDStartFrameNum < pidFrameVariance) ?
-          1 : (adjacentPIDStartFrameNum - pidFrameVariance);
+        (adjacentPIDFrameNum < (pidFrameVariance + 1)) ?
+          1 : (adjacentPIDFrameNum - pidFrameVariance);
+      uint32_t  pidEndFrameNum = adjacentPIDFrameNum + pidFrameVariance;
       
       Gen5PIDFrameGenerator  pidGenerator(seed, frameType, false, tid, sid);
       bool  generatesESV = pidGenerator.GeneratesESV();
       bool  generatesIsEncounter = pidGenerator.GeneratesIsEncounter();
       
-      for (uint32_t j = 0; j < pidStartFrameNum; ++j)
+      for (uint32_t j = 0; j < (pidStartFrameNum - 1); ++j)
         pidGenerator.AdvanceFrame();
       
       for (pidFrameNum = pidStartFrameNum;
            pidFrameNum <= pidEndFrameNum;
            ++pidFrameNum)
       {
+        pidGenerator.AdvanceFrame();
+        
         Gen5PIDFrame  frame = pidGenerator.CurrentFrame();
         uint32_t      genderValue = frame.pid.GenderValue();
         
@@ -159,7 +151,7 @@ using namespace pprng;
           [NSNumber numberWithUnsignedInt: timer0], @"timer0",
           [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1],
             @"startFrame",
-          [NSNumber numberWithUnsignedInt: pidFrameNum], @"pidFrame",
+          [NSNumber numberWithUnsignedInt: frame.number], @"pidFrame",
           (frame.pid.IsShiny(tid, sid) ? @"★" : @""), @"shiny",
           [NSString stringWithFormat: @"%s",
             Nature::ToString(frame.nature).c_str()], @"nature",
@@ -187,8 +179,6 @@ using namespace pprng;
                 (Characteristic::Get(frame.pid, ivs)).c_str()],
             @"characteristic",
           nil]];
-        
-        pidGenerator.AdvanceFrame();
       }
     }
   }

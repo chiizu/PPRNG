@@ -172,6 +172,14 @@ struct IDFrameSearchProgressHandler
   [idFrameDateField setObjectValue: now];
 }
 
+- (void)windowWillClose:(NSNotification *)notification
+{
+  if ([tidSidSearcherController isSearching])
+    [tidSidSearcherController startStop: self];
+  if ([idFrameSearcherController isSearching])
+    [idFrameSearcherController startStop: self];
+}
+
 - (IBAction) generatePIDFrames:(id)sender
 {
   if ([[pidSeedField stringValue] length] == 0)
@@ -191,6 +199,7 @@ struct IDFrameSearchProgressHandler
     gcGenerator(seed, Gen5PIDFrameGenerator::GrassCaveFrame, false, 0, 0),
     fsGenerator(seed, Gen5PIDFrameGenerator::FishingFrame, false, 0, 0),
     sdGenerator(seed, Gen5PIDFrameGenerator::SwirlingDustFrame, false, 0, 0),
+    bsGenerator(seed, Gen5PIDFrameGenerator::BridgeShadowFrame, false, 0, 0),
     stGenerator(seed, Gen5PIDFrameGenerator::StationaryFrame, false, 0, 0),
     pidGenerator(seed, Gen5PIDFrameGenerator::StarterFossilGiftFrame,
                  false, 0, 0);
@@ -210,6 +219,7 @@ struct IDFrameSearchProgressHandler
     gcGenerator.AdvanceFrame();
     fsGenerator.AdvanceFrame();
     sdGenerator.AdvanceFrame();
+    bsGenerator.AdvanceFrame();
     stGenerator.AdvanceFrame();
     pidGenerator.AdvanceFrame();
     ++frameNum;
@@ -223,6 +233,7 @@ struct IDFrameSearchProgressHandler
     gcGenerator.AdvanceFrame();
     fsGenerator.AdvanceFrame();
     sdGenerator.AdvanceFrame();
+    bsGenerator.AdvanceFrame();
     stGenerator.AdvanceFrame();
     pidGenerator.AdvanceFrame();
     ++frameNum;
@@ -230,8 +241,11 @@ struct IDFrameSearchProgressHandler
     Gen5PIDFrame  gcFrame = gcGenerator.CurrentFrame();
     Gen5PIDFrame  fsFrame = fsGenerator.CurrentFrame();
     Gen5PIDFrame  sdFrame = sdGenerator.CurrentFrame();
+    Gen5PIDFrame  bsFrame = bsGenerator.CurrentFrame();
     Gen5PIDFrame  stFrame = stGenerator.CurrentFrame();
     Gen5PIDFrame  pidFrame = pidGenerator.CurrentFrame();
+    
+    uint32_t  genderValue = pidFrame.pid.GenderValue();
     
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -239,15 +253,20 @@ struct IDFrameSearchProgressHandler
         [NSString stringWithFormat: @"%s",
           Nature::ToString(pidFrame.nature).c_str()], @"nature",
         [NSNumber numberWithUnsignedInt: pidFrame.pid.word], @"pid",
-        [NSNumber numberWithUnsignedInt: pidFrame.pid.Gen5Ability()], @"ability",
-        GenderString(pidFrame.pid), @"gender",
+        [NSNumber numberWithUnsignedInt: pidFrame.pid.Gen5Ability()],
+          @"ability",
+        ((genderValue < 31) ? @"♀" : @"♂"), @"gender18",
+        ((genderValue < 63) ? @"♀" : @"♂"), @"gender14",
+        ((genderValue < 127) ? @"♀" : @"♂"), @"gender12",
+        ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
         (gcFrame.synched ? @"Y" : @""), @"syncA",
         (fsFrame.synched ? @"Y" : @""), @"syncB",
         (stFrame.synched ? @"Y" : @""), @"syncC",
         [NSString stringWithFormat: @"%d", gcFrame.esv], @"esvL",
         [NSString stringWithFormat: @"%d", fsFrame.esv], @"esvW",
         (fsFrame.isEncounter ? @"Y" : @""), @"canFish",
-        (sdFrame.isEncounter ? @"Y" : @""), @"findPoke",
+        (sdFrame.isEncounter ? @"Y" : @""), @"dustIsPoke",
+        (bsFrame.isEncounter ? @"" : @"Y"), @"shadowIsPoke",
         nil];
     
     [rowArray addObject: result];

@@ -34,17 +34,25 @@ using namespace pprng;
 namespace
 {
 
+struct GUICriteria : public WonderCardSeedSearcher::Criteria
+{
+  bool  showNature;
+  bool  showAbility;
+  bool  showGender;
+};
+
 struct ResultHandler
 {
-  ResultHandler(SearcherController *c)
-    : controller(c)
+  ResultHandler(SearcherController *c, const GUICriteria &criteria)
+    : m_controller(c), m_criteria(criteria)
   {}
   
   void operator()(const WonderCardFrame &frame)
   {
+    uint32_t  genderValue = frame.pid.GenderValue();
+    
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedLongLong: frame.seed.m_rawSeed], @"seed",
         [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
           frame.seed.m_year, frame.seed.m_month, frame.seed.m_day], @"date",
         [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
@@ -52,11 +60,24 @@ struct ResultHandler
         [NSNumber numberWithUnsignedInt: frame.seed.m_timer0], @"timer0",
 				[NSString stringWithFormat: @"%s",
           Button::ToString(frame.seed.m_keyInput).c_str()], @"keys",
+        [NSNumber numberWithUnsignedInt: frame.seed.GetSkippedPIDFrames() + 1],
+          @"startFrame",
 				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        [NSNumber numberWithUnsignedInt: frame.pid.word], @"pid",
-        [NSString stringWithFormat: @"%s",
-          Nature::ToString(frame.nature).c_str()], @"nature",
-        [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
+        (m_criteria.showNature ?
+            [NSString stringWithFormat: @"%s",
+             Nature::ToString(frame.nature).c_str()] : @""),
+          @"nature",
+        (m_criteria.showAbility ?
+         [NSString stringWithFormat: @"%d", frame.pid.Gen5Ability()] : @""),
+          @"ability",
+        (m_criteria.showGender ? ((genderValue < 31) ? @"♀" : @"♂") : @""),
+          @"gender18",
+        (m_criteria.showGender ? ((genderValue < 63) ? @"♀" : @"♂") : @""),
+          @"gender14",
+        (m_criteria.showGender ? ((genderValue < 127) ? @"♀" : @"♂") : @""),
+          @"gender12",
+        (m_criteria.showGender ? ((genderValue < 191) ? @"♀" : @"♂") : @""),
+          @"gender34",
         [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
         [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
         [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
@@ -67,18 +88,17 @@ struct ResultHandler
           Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
         [NSNumber numberWithUnsignedInt: frame.ivs.HiddenPower()],
           @"hiddenPower",
-        [NSNumber numberWithUnsignedInt: frame.seed.m_vcount], @"vcount",
-        [NSNumber numberWithUnsignedInt: frame.seed.m_vframe], @"vframe",
         [NSData dataWithBytes: &frame.seed length: sizeof(HashedSeed)],
           @"fullSeed",
         nil];
     
-    [controller performSelectorOnMainThread: @selector(addResult:)
-                withObject: result
-                waitUntilDone: NO];
+    [m_controller performSelectorOnMainThread: @selector(addResult:)
+                  withObject: result
+                  waitUntilDone: NO];
   }
   
-  SearcherController  *controller;
+  SearcherController  *m_controller;
+  const               GUICriteria &m_criteria;
 };
 
 struct ProgressHandler
@@ -118,18 +138,86 @@ struct ProgressHandler
   [searcherController setDoSearchWithCriteriaSelector:
                       @selector(doSearchWithCriteria:)];
   
-  [[[[[searcherController tableView] tableColumnWithIdentifier: @"seed"]
-    dataCell] formatter]
-   setFormatWidth: 16];
-  [[[[[searcherController tableView] tableColumnWithIdentifier: @"pid"]
-    dataCell] formatter]
-   setFormatWidth: 8];
-  
   [[searcherController tableView] setDoubleAction: @selector(inspectSeed:)];
   
   NSDate  *now = [NSDate date];
   [fromDateField setObjectValue: now];
   [toDateField setObjectValue: now];
+}
+
+- (void)windowWillClose:(NSNotification *)notification
+{
+  if ([searcherController isSearching])
+    [searcherController startStop: self];
+}
+
+- (IBAction)onTypeChange:(id)sender
+{
+  NSInteger  selection = [[sender selectedItem] tag];
+  
+  if (selection == -1)
+  {
+    [ivSkipField setEnabled: YES];
+    [pidSkipField setEnabled: YES];
+    [natureSkipField setEnabled: YES];
+  }
+  else
+  {
+    [ivSkipField setEnabled: NO];
+    [pidSkipField setEnabled: NO];
+    [natureSkipField setEnabled: NO];
+    
+    if (selection == 0)
+    {
+      [ivSkipField setIntValue: 22];
+      [pidSkipField setIntValue: 2];
+      [natureSkipField setIntValue: 1];
+    }
+    else
+    {
+      [ivSkipField setIntValue: 24];
+      [pidSkipField setIntValue: 2];
+      [natureSkipField setIntValue: 3];
+    }
+  }
+}
+
+- (IBAction)toggleFixedNature:(id)sender
+{
+  BOOL  checked = [fixedNatureCheckBox state];
+  [naturePopUp setEnabled: !checked];
+  if (checked)
+  {
+    [naturePopUp selectItemWithTag: -1];
+  }
+}
+
+- (IBAction)toggleFixedAbility:(id)sender
+{
+  BOOL  checked = [fixedAbilityCheckBox state];
+  [abilityPopUp setEnabled: !checked];
+  if (checked)
+  {
+    [abilityPopUp selectItemWithTag: -1];
+  }
+}
+
+- (IBAction)toggleFixedGender:(id)sender
+{
+  BOOL  checked = [fixedGenderCheckBox state];
+  [genderPopUp setEnabled: !checked];
+  [genderRatioPopUp setEnabled: !checked];
+  if (checked)
+  {
+    [genderPopUp selectItemWithTag: -1];
+    [genderRatioPopUp selectItemWithTag: -1];
+  }
+}
+
+- (IBAction)toggleUseInitialPID:(id)sender
+{
+  BOOL enabled = [useInitialPIDButton state];
+  [minFrameField setEnabled: !enabled];
 }
 
 - (void)inspectSeed:(id)sender
@@ -164,7 +252,7 @@ struct ProgressHandler
   using namespace boost::gregorian;
   using namespace boost::posix_time;
   
-  WonderCardSeedSearcher::Criteria  criteria;
+  GUICriteria  criteria;
   
   criteria.macAddressLow = [gen5ConfigController macAddressLow];
   criteria.macAddressHigh = [gen5ConfigController macAddressHigh];
@@ -209,8 +297,13 @@ struct ProgressHandler
   criteria.toTime   = ptime(NSDateToBoostDate([toDateField objectValue]),
                             hours(23) + minutes(59) + seconds(59));
   
+  criteria.startFromLowestFrame = [useInitialPIDButton state];
   criteria.minFrame = [minFrameField intValue];
   criteria.maxFrame = [maxFrameField intValue];
+  
+  criteria.ivSkip = [ivSkipField intValue];
+  criteria.pidSkip = [pidSkipField intValue];
+  criteria.natureSkip = [natureSkipField intValue];
   
   criteria.minIVs = [ivParameterController minIVs];
   criteria.shouldCheckMaxIVs = [ivParameterController shouldCheckMaxIVs];
@@ -225,16 +318,23 @@ struct ProgressHandler
   {
     criteria.hiddenType = Element::UNKNOWN;
   }
-  criteria.nature = static_cast<Nature::Type>([[natureMenu selectedItem] tag]);
+  criteria.nature = static_cast<Nature::Type>([[naturePopUp selectedItem] tag]);
+  criteria.ability = [[abilityPopUp selectedItem] tag];
+  criteria.gender = Gender::Type([[genderPopUp selectedItem] tag]);
+  criteria.genderRatio =
+    Gender::Ratio([[genderRatioPopUp selectedItem] tag]);
   criteria.canBeShiny = false;
+  
+  criteria.showNature = ![fixedNatureCheckBox state];
+  criteria.showAbility = ![fixedAbilityCheckBox state];
+  criteria.showGender = ![fixedGenderCheckBox state];
   
   if (CheckExpectedResults(criteria, 10000,
                            @"The current search parameters are expected to return more than 10,000 results. Please set more specific IVs, limit the date range, use fewer held keys, or other similar settings to reduce the number of expected results.",
                            self,
                            @selector(alertDidEnd:returnCode:contextInfo:)))
   {
-    return [NSValue
-            valueWithPointer: new WonderCardSeedSearcher::Criteria(criteria)];
+    return [NSValue valueWithPointer: new GUICriteria(criteria)];
   }
   else
   {
@@ -244,14 +344,13 @@ struct ProgressHandler
 
 - (void)doSearchWithCriteria:(NSValue*)criteriaPtr
 {
-  std::auto_ptr<WonderCardSeedSearcher::Criteria> 
-    criteria(static_cast<WonderCardSeedSearcher::Criteria*>
-               ([criteriaPtr pointerValue]));
+  std::auto_ptr<GUICriteria>
+    criteria(static_cast<GUICriteria*>([criteriaPtr pointerValue]));
   
   WonderCardSeedSearcher  searcher;
   
   searcher.Search(*criteria,
-                  ResultHandler(searcherController),
+                  ResultHandler(searcherController, *criteria),
                   ProgressHandler(searcherController));
 }
 

@@ -502,6 +502,7 @@
 													<int key="NSResizingMask">1</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="18469957"/>
+													<string key="NSHeaderToolTip">Hit Points IV</string>
 												</object>
 												<object class="NSTableColumn" id="448380430">
 													<string key="NSIdentifier">atk</string>
@@ -576,6 +577,7 @@
 													<int key="NSResizingMask">1</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="18469957"/>
+													<string key="NSHeaderToolTip">Attack IV</string>
 												</object>
 												<object class="NSTableColumn" id="580116241">
 													<string key="NSIdentifier">def</string>
@@ -650,6 +652,7 @@
 													<int key="NSResizingMask">1</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="18469957"/>
+													<string key="NSHeaderToolTip">Defense IV</string>
 												</object>
 												<object class="NSTableColumn" id="672331807">
 													<string key="NSIdentifier">spa</string>
@@ -724,6 +727,7 @@
 													<int key="NSResizingMask">1</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="18469957"/>
+													<string key="NSHeaderToolTip">Special Attack IV</string>
 												</object>
 												<object class="NSTableColumn" id="1053009554">
 													<string key="NSIdentifier">spd</string>
@@ -798,6 +802,7 @@
 													<int key="NSResizingMask">1</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="18469957"/>
+													<string key="NSHeaderToolTip">Special Defense IV</string>
 												</object>
 												<object class="NSTableColumn" id="889077040">
 													<string key="NSIdentifier">spe</string>
@@ -872,6 +877,7 @@
 													<int key="NSResizingMask">1</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="18469957"/>
+													<string key="NSHeaderToolTip">Speed IV</string>
 												</object>
 												<object class="NSTableColumn" id="578045443">
 													<string key="NSIdentifier">hiddenType</string>
@@ -13913,9 +13919,9 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1261, 321}, {1210, 560}}</string>
+					<string>{{-1210, 442}, {1210, 560}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1261, 321}, {1210, 560}}</string>
+					<string>{{-1210, 442}, {1210, 560}}</string>
 					<integer value="1"/>
 					<string>{196, 240}</string>
 					<string>{{357, 418}, {480, 270}}</string>

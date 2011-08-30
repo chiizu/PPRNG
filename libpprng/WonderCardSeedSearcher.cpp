@@ -36,8 +36,9 @@ struct FrameChecker
   
   bool operator()(const WonderCardFrame &frame) const
   {
-    return CheckNature(frame.nature) &&
-           CheckIVs(frame.ivs) && CheckHiddenPower(frame.ivs);
+    return CheckNature(frame.nature) && CheckAbility(frame.pid.Gen5Ability()) &&
+           CheckGender(frame.pid.GenderValue()) && CheckIVs(frame.ivs) &&
+           CheckHiddenPower(frame.ivs);
   }
   
   bool CheckNature(Nature::Type nature) const
@@ -45,6 +46,18 @@ struct FrameChecker
     return (m_criteria.nature == Nature::ANY) ||
            (m_criteria.nature == Nature::UNKNOWN) ||
            (m_criteria.nature == nature);
+  }
+  
+  bool CheckAbility(uint32_t ability) const
+  {
+    return (m_criteria.ability > 1) || (m_criteria.ability == ability);
+  }
+  
+  bool CheckGender(uint32_t genderValue) const
+  {
+    return Gender::GenderValueMatches(genderValue,
+                                      m_criteria.gender,
+                                      m_criteria.genderRatio);
   }
   
   bool CheckIVs(const IVs &ivs) const
@@ -81,7 +94,10 @@ struct FrameGeneratorFactory
   
   WonderCardFrameGenerator operator()(const HashedSeed &seed) const
   {
-    return WonderCardFrameGenerator(seed, m_criteria.canBeShiny,
+    return WonderCardFrameGenerator(seed, m_criteria.startFromLowestFrame,
+                                    m_criteria.ivSkip, m_criteria.pidSkip,
+                                    m_criteria.natureSkip,
+                                    m_criteria.canBeShiny,
                                     m_criteria.tid, m_criteria.sid);
   }
   
@@ -108,9 +124,11 @@ uint64_t WonderCardSeedSearcher::Criteria::ExpectedNumberOfResults() const
   uint64_t  numIVs = IVs::CalculateNumberOfCombinations(minIVs, maxIVs);
   
   uint64_t  natureDivisor = (nature != Nature::ANY) ? 25 : 1;
+  uint64_t  abilityDivisor = (ability > 1) ? 1 : 2;
   
   uint64_t  numResults = numSeeds * numFrames * numIVs /
-                         (32 * 32 * 32 * 32 * 32 * 32 * natureDivisor);
+                         (32 * 32 * 32 * 32 * 32 * 32 *
+                          natureDivisor * abilityDivisor);
   
   if (hiddenType != Element::UNKNOWN)
   {
@@ -135,7 +153,11 @@ void WonderCardSeedSearcher::Search(const Criteria &criteria,
                                       criteria.buttonPresses);
   
   FrameChecker              frameChecker(criteria);
-  SearcherType::FrameRange  frameRange(criteria.minFrame, criteria.maxFrame);
+  
+  // slightly hacky...
+  SearcherType::FrameRange  frameRange(criteria.startFromLowestFrame ? 1 :
+                                       criteria.minFrame,
+                                       criteria.maxFrame);
   
   SearcherType              searcher;
   

@@ -65,10 +65,10 @@ public:
              uint32_t vcount, uint32_t timer0,
              uint32_t gxStat, uint32_t vframe,
              uint32_t keyInput,
-             uint32_t n21510F8, uint32_t n21510FC,
-             uint32_t n2FFFF90, uint32_t n2FFFF94,
-             uint32_t n2FFFFAA, uint32_t n2FFFFAC,
-             uint32_t n2FFFF98,
+             uint32_t n21510F8 = 0, uint32_t n21510FC = 0,
+             uint32_t n2FFFF90 = 0, uint32_t n2FFFF94 = 0,
+             uint32_t n2FFFFAA = 0, uint32_t n2FFFFAC = 0,
+             uint32_t n2FFFF98 = 0,
              uint32_t pmFlag = 0x40);
   
   // sometimes you just want to work with the raw seed value

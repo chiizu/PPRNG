@@ -73,8 +73,7 @@ using namespace pprng;
                    t.hours(), t.minutes(), t.seconds(),
                    macAddressLow, macAddressHigh,
                    HashedSeed::NazoForVersion(version),
-                   vcount, timer0, HashedSeed::GxStat, vframe, pressedKeys,
-                   0, 0, 0, 0, 0, 0, 0, 0x40);
+                   vcount, timer0, HashedSeed::GxStat, vframe, pressedKeys);
   
   currentSeed = [NSData dataWithBytes: &seed length: sizeof(HashedSeed)];
   [adjacentsTabController setSeed: currentSeed];

@@ -40,10 +40,15 @@ public:
     uint32_t                  vcountLow, vcountHigh;
     uint32_t                  vframeLow, vframeHigh;
     boost::posix_time::ptime  fromTime, toTime;
-    uint32_t                  minFrame, maxFrame;
     Button::List              buttonPresses;
+    bool                      startFromLowestFrame;
+    uint32_t                  minFrame, maxFrame;
+    uint32_t                  ivSkip, pidSkip, natureSkip;
     uint32_t                  maxResults;
     Nature::Type              nature;
+    uint32_t                  ability;
+    Gender::Type              gender;
+    Gender::Ratio             genderRatio;
     bool                      canBeShiny;
     uint32_t                  tid, sid;
     bool                      shouldCheckMaxIVs;

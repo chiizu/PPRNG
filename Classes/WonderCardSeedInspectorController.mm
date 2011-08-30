@@ -43,6 +43,81 @@ using namespace pprng;
   [startDate setObjectValue: [NSDate date]];
 }
 
+- (IBAction)onTypeChange:(id)sender
+{
+  NSInteger  selection = [[sender selectedItem] tag];
+  
+  if (selection == -1)
+  {
+    [ivSkipField setEnabled: YES];
+    [pidSkipField setEnabled: YES];
+    [natureSkipField setEnabled: YES];
+  }
+  else
+  {
+    [ivSkipField setEnabled: NO];
+    [pidSkipField setEnabled: NO];
+    [natureSkipField setEnabled: NO];
+    
+    if (selection == 0)
+    {
+      [ivSkipField setIntValue: 22];
+      [pidSkipField setIntValue: 2];
+      [natureSkipField setIntValue: 1];
+    }
+    else
+    {
+      [ivSkipField setIntValue: 24];
+      [pidSkipField setIntValue: 2];
+      [natureSkipField setIntValue: 3];
+    }
+  }
+}
+
+- (IBAction)toggleFixedNature:(id)sender
+{
+  /*
+  BOOL  checked = [fixedNatureCheckBox state];
+  [naturePopUp setEnabled: !checked];
+  if (checked)
+  {
+    [naturePopUp selectItemWithTag: -1];
+  }
+  */
+}
+
+- (IBAction)toggleFixedAbility:(id)sender
+{
+  /*
+  BOOL  checked = [fixedAbilityCheckBox state];
+  [abilityPopUp setEnabled: !checked];
+  if (checked)
+  {
+    [abilityPopUp selectItemWithTag: -1];
+  }
+  */
+}
+
+- (IBAction)toggleFixedGender:(id)sender
+{
+  /*
+  BOOL  checked = [fixedGenderCheckBox state];
+  [genderPopUp setEnabled: !checked];
+  [genderRatioPopUp setEnabled: !checked];
+  if (checked)
+  {
+    [genderPopUp selectItemWithTag: -1];
+    [genderRatioPopUp selectItemWithTag: -1];
+  }
+  */
+}
+
+- (IBAction)toggleUseInitialPID:(id)sender
+{
+  BOOL enabled = [useInitialPIDButton state];
+  [minFrameField setEnabled: !enabled];
+}
+
 - (IBAction)calculateSeed:(id)sender
 {
   using namespace boost::gregorian;
@@ -72,13 +147,14 @@ using namespace pprng;
                    t.hours(), t.minutes(), t.seconds(),
                    macAddressLow, macAddressHigh,
                    HashedSeed::NazoForVersion(version),
-                   vcount, timer0, HashedSeed::GxStat, vframe, pressedKeys,
-                   0, 0, 0, 0, 0, 0, 0, 0x40);
+                   vcount, timer0, HashedSeed::GxStat, vframe, pressedKeys);
   
   currentSeed = [NSData dataWithBytes: &seed length: sizeof(HashedSeed)];
   
   [seedField setObjectValue:
     [NSNumber numberWithUnsignedLongLong: seed.m_rawSeed]];
+  [initialPIDFrameField setObjectValue:
+    [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
 }
 
 
@@ -93,22 +169,40 @@ using namespace pprng;
   
   HashedSeed  seed([[seedField objectValue] unsignedLongLongValue]);
   
+  BOOL      useInitialPIDOffset = [useInitialPIDButton state];
   uint32_t  minFrame = [minFrameField intValue];
   uint32_t  maxFrame = [maxFrameField intValue];
-  uint32_t  frameNum = 0, limitFrame = minFrame - 1;
+  uint32_t  frameNum = 0;
   uint32_t  tid = [gen5ConfigController tid];
   uint32_t  sid = [gen5ConfigController sid];
   
-  WonderCardFrameGenerator  generator(seed, false, tid, sid);
+  WonderCardFrameGenerator  generator(seed, useInitialPIDOffset,
+                                      [ivSkipField intValue],
+                                      [pidSkipField intValue],
+                                      [natureSkipField intValue], false,
+                                      tid, sid);
   
-  while (frameNum < limitFrame)
+  if (!useInitialPIDOffset)
   {
-    generator.AdvanceFrame();
-    ++frameNum;
+    uint32_t  limitFrame = minFrame - 1;
+    
+    while (frameNum < limitFrame)
+    {
+      generator.AdvanceFrame();
+      ++frameNum;
+    }
+  }
+  else
+  {
+    frameNum = generator.CurrentFrame().number;
   }
   
   NSMutableArray  *rowArray =
     [NSMutableArray arrayWithCapacity: maxFrame - minFrame + 1];
+  
+  BOOL  showNature = ![fixedNatureCheckBox state];
+  BOOL  showAbility = ![fixedAbilityCheckBox state];
+  BOOL  showGender = ![fixedGenderCheckBox state];
   
   while (frameNum < maxFrame)
   {
@@ -116,14 +210,21 @@ using namespace pprng;
     ++frameNum;
     
     WonderCardFrame  frame = generator.CurrentFrame();
+    uint32_t         genderValue = frame.pid.GenderValue();
     
     [rowArray addObject:
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
 				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        [NSNumber numberWithUnsignedInt: frame.pid.word], @"pid",
-        [NSString stringWithFormat: @"%s",
-          Nature::ToString(frame.nature).c_str()], @"nature",
-        [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
+        (showNature ? [NSString stringWithFormat: @"%s",
+                       Nature::ToString(frame.nature).c_str()] : @""),
+          @"nature",
+        (showAbility ?
+         [NSString stringWithFormat: @"%d", frame.pid.Gen5Ability()] : @""),
+          @"ability",
+        (showGender ? ((genderValue < 31) ? @"♀" : @"♂") : @""), @"gender18",
+        (showGender ? ((genderValue < 63) ? @"♀" : @"♂") : @""), @"gender14",
+        (showGender ? ((genderValue < 127) ? @"♀" : @"♂") : @""), @"gender12",
+        (showGender ? ((genderValue < 191) ? @"♀" : @"♂") : @""), @"gender34",
         [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
         [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
         [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
@@ -134,6 +235,10 @@ using namespace pprng;
           Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
         [NSNumber numberWithUnsignedInt: frame.ivs.HiddenPower()],
           @"hiddenPower",
+        [NSString stringWithFormat: @"%s",
+            Characteristic::ToString
+              (Characteristic::Get(frame.pid, frame.ivs)).c_str()],
+          @"characteristic",
         nil]];
   }
   
@@ -163,32 +268,30 @@ using namespace pprng;
   
   uint32_t  tid = [gen5ConfigController tid];
   uint32_t  sid = [gen5ConfigController sid];
-  uint32_t  timer0Low = [gen5ConfigController timer0Low];
-  uint32_t  timer0High = [gen5ConfigController timer0High];
+  uint32_t  timer0Low = targetSeed.m_timer0 - 1;
+  uint32_t  timer0High = targetSeed.m_timer0 + 1;
   
-  if ((targetSeed.m_timer0 < timer0Low) || (targetSeed.m_timer0 > timer0High))
+  if (targetSeed.m_timer0 == 0)
   {
-    timer0Low = targetSeed.m_timer0 - 1;
-    timer0High = targetSeed.m_timer0 + 1;
+    timer0Low = 0;
+  }
+  if (targetSeed.m_timer0 == 0xffffffff)
+  {
+    timer0High = 0xffffffff;
   }
   
   uint32_t  secondVariance = [adjacentsTimeVarianceField intValue];
-  uint32_t  frameNum = [adjacentsFrameField intValue];
+  uint32_t  targetFrameNum = [adjacentsFrameField intValue];
+  BOOL      useInitialPIDOffset = [adjacentsUseInitialPIDOffsetButton state];
+  uint32_t  frameOffset = useInitialPIDOffset ?
+       (targetFrameNum - targetSeed.GetSkippedPIDFrames() - 1) :
+       targetFrameNum - 1;
   uint32_t  frameVariance = [adjacentsFrameVarianceField intValue];
-  uint32_t  startFrameNum;
-  if (frameNum < frameVariance)
-  {
-    startFrameNum = 1;
-  }
-  else
-  {
-    startFrameNum = frameNum - frameVariance;
-  }
-  uint32_t  endFrameNum = frameNum + frameVariance;
   
-  ptime  dt(date(targetSeed.m_year, targetSeed.m_month, targetSeed.m_day),
-            hours(targetSeed.m_hour) + minutes(targetSeed.m_minute) +
-            seconds(targetSeed.m_second));
+  ptime  seedTime(date(targetSeed.m_year, targetSeed.m_month, targetSeed.m_day),
+                  hours(targetSeed.m_hour) + minutes(targetSeed.m_minute) +
+                  seconds(targetSeed.m_second));
+  ptime  dt = seedTime;
   ptime  endTime = dt + seconds(secondVariance);
   dt = dt - seconds(secondVariance);
   
@@ -196,16 +299,23 @@ using namespace pprng;
     [NSMutableArray arrayWithCapacity:
       (timer0High - timer0Low + 1) * ((2 * secondVariance) + 1)];
   
+  uint32_t  ivSkip = [ivSkipField intValue];
+  uint32_t  pidSkip = [pidSkipField intValue];
+  uint32_t  natureSkip = [natureSkipField intValue];
+  
+  BOOL  showNature = ![fixedNatureCheckBox state];
+  BOOL  showAbility = ![fixedAbilityCheckBox state];
+  BOOL  showGender = ![fixedGenderCheckBox state];
+  
   for (; dt <= endTime; dt = dt + seconds(1))
   {
     date           d = dt.date();
     time_duration  t = dt.time_of_day();
     
-    NSString  *dateStr =
-      [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
-                uint32_t(d.year()), uint32_t(d.month()), uint32_t(d.day())];
-    NSString  *timeStr = [NSString stringWithFormat:@"%.2d:%.2d:%.2d",
-                           t.hours(), t.minutes(), t.seconds()];
+    NSString  *timeStr = (dt == seedTime) ?
+      [NSString stringWithFormat:@"%.2d:%.2d:%.2d",
+                                 t.hours(), t.minutes(), t.seconds()] :
+      [NSString stringWithFormat:@"%+dsec", (dt - seedTime).total_seconds()];
     
     for (uint32_t timer0 = timer0Low; timer0 <= timer0High; ++timer0)
     {
@@ -214,39 +324,66 @@ using namespace pprng;
                        targetSeed.m_macAddressLow, targetSeed.m_macAddressHigh,
                        targetSeed.m_nazo,
                        targetSeed.m_vcount, timer0, HashedSeed::GxStat,
-                       targetSeed.m_vframe, targetSeed.m_keyInput,
-                       0, 0, 0, 0, 0, 0, 0, 0x40);
+                       targetSeed.m_vframe, targetSeed.m_keyInput);
       
-      WonderCardFrameGenerator  generator(seed, false, tid, sid);
+      uint32_t  adjacentFrameNum = useInitialPIDOffset ?
+        (seed.GetSkippedPIDFrames() + 1 + frameOffset) :
+        targetFrameNum;
+      uint32_t  startFrameNum =
+        (adjacentFrameNum < (frameVariance + 1)) ?
+          1 : (adjacentFrameNum - frameVariance);
+      uint32_t  endFrameNum = adjacentFrameNum + frameVariance;
+      uint32_t  initialFrame = seed.GetSkippedPIDFrames() + 1;
       
-      for (uint32_t j = 0; j < startFrameNum; ++j)
+      if (startFrameNum < initialFrame)
+        startFrameNum = initialFrame;
+      
+      WonderCardFrameGenerator  generator(seed, useInitialPIDOffset,
+                                          ivSkip, pidSkip, natureSkip, false,
+                                          tid, sid);
+      
+      uint32_t  limit = (startFrameNum - 1);
+      while (generator.CurrentFrame().number < limit)
         generator.AdvanceFrame();
       
-      for (frameNum = startFrameNum;
+      for (uint32_t frameNum = startFrameNum;
            frameNum <= endFrameNum;
            ++frameNum)
       {
+        generator.AdvanceFrame();
         WonderCardFrame  frame = generator.CurrentFrame();
+        uint32_t         genderValue = frame.pid.GenderValue();
         
         [rowArray addObject:
         [NSMutableDictionary dictionaryWithObjectsAndKeys:
-          dateStr, @"date",
           timeStr, @"time",
           [NSNumber numberWithUnsignedInt: timer0], @"timer0",
-          [NSNumber numberWithUnsignedInt: frameNum], @"frame",
-          [NSNumber numberWithUnsignedInt: frame.pid.word], @"pid",
-          [NSString stringWithFormat: @"%s",
-            Nature::ToString(frame.nature).c_str()], @"nature",
-          [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
+          [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1],
+            @"startFrame",
+          [NSNumber numberWithUnsignedInt: frame.number], @"frame",
+          (showNature ? [NSString stringWithFormat: @"%s",
+                         Nature::ToString(frame.nature).c_str()] : @""),
+            @"nature",
+          (showAbility ?
+           [NSString stringWithFormat: @"%d", frame.pid.Gen5Ability()] : @""),
+            @"ability",
+          (showGender ? ((genderValue < 31) ? @"♀" : @"♂") : @""), @"gender18",
+          (showGender ? ((genderValue < 63) ? @"♀" : @"♂") : @""), @"gender14",
+          (showGender ? ((genderValue < 127) ? @"♀" : @"♂") : @""), @"gender12",
+          (showGender ? ((genderValue < 191) ? @"♀" : @"♂") : @""), @"gender34",
           [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
           [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
           [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
           [NSNumber numberWithUnsignedInt: frame.ivs.sa()], @"spa",
           [NSNumber numberWithUnsignedInt: frame.ivs.sd()], @"spd",
           [NSNumber numberWithUnsignedInt: frame.ivs.sp()], @"spe",
+          [NSString stringWithFormat: @"%s",
+            Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
+          [NSString stringWithFormat: @"%s",
+              Characteristic::ToString
+                (Characteristic::Get(frame.pid, frame.ivs)).c_str()],
+            @"characteristic",
           nil]];
-        
-        generator.AdvanceFrame();
       }
     }
   }
@@ -308,6 +445,22 @@ using namespace pprng;
     
     [seedField setObjectValue:
       [NSNumber numberWithUnsignedLongLong: seed.m_rawSeed]];
+    [initialPIDFrameField setObjectValue:
+      [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
+  }
+}
+
+- (void)controlTextDidEndEditing:(NSNotification*)notification
+{
+  if ([[seedField stringValue] length] == 0)
+  {
+    [initialPIDFrameField setObjectValue: nil];
+  }
+  else
+  {
+    HashedSeed  seed([[seedField objectValue] unsignedLongLongValue]);
+    [initialPIDFrameField setObjectValue:
+        [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
   }
 }
 

@@ -106,8 +106,7 @@ HashedSeedGenerator::SeedType HashedSeedGenerator::Next()
                    m_macAddressLow, m_macAddressHigh, m_nazo,
                    m_vcount, m_timer0,
                    HashedSeed::GxStat, m_vframe,
-                   *m_keyComboIter,
-                   0, 0, 0, 0, 0, 0, 0);
+                   *m_keyComboIter);
   
   return seed;
 }
