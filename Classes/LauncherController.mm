@@ -32,6 +32,8 @@
 #import "DSParameterSearcherController.h"
 #import "Gen5ConfigurationEditController.h"
 #import "Gen4SeedSearcherController.h"
+#import "Gen4SeedInspectorController.h"
+#import "Gen4ConfigurationEditController.h"
 
 
 @implementation LauncherController
@@ -43,6 +45,13 @@
 
 - (void)awakeFromNib
 {
+  NSString  *title = [[self window] title];
+  NSString  *version = [[[NSBundle mainBundle] infoDictionary]
+                        objectForKey:(NSString*)kCFBundleVersionKey];
+  NSString  *newTitle = [NSString stringWithFormat: @"%@ %@", title, version];
+  
+  [[self window] setTitle: newTitle];
+  
   buttonToClassMap =
     [NSDictionary dictionaryWithObjectsAndKeys:
       [HashedSeedSearcherController class],
@@ -62,6 +71,9 @@
       [Gen5ConfigurationEditController class],
         [launchGen5ConfigurationEdit title],
       [Gen4SeedSearcherController class], [launchGen4SeedSearcher title],
+      [Gen4SeedInspectorController class], [launchGen4SeedInspector title],
+      [Gen4ConfigurationEditController class],
+        [launchGen4ConfigurationEdit title],
       nil];
 }
 
@@ -71,6 +83,12 @@
   {
     Gen5ConfigurationEditController  *configController =
       [[Gen5ConfigurationEditController alloc] init];
+    [configController runModal];
+  }
+  else if (sender == launchGen4ConfigurationEdit)
+  {
+    Gen4ConfigurationEditController  *configController =
+      [[Gen4ConfigurationEditController alloc] init];
     [configController runModal];
   }
   else

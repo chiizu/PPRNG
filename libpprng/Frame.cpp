@@ -21,62 +21,135 @@
 
 #include "BasicTypes.h"
 #include "Frame.h"
+#include "FrameGenerator.h"
 #include "LinearCongruentialRNG.h"
 
 namespace pprng
 {
 
+namespace
+{
+
+template <class Method>
+static void UpdateESVs(uint32_t percentage1, uint32_t percentage2,
+                       uint32_t percentage3, uint32_t frameNumber,
+                       Gen4Frame::EncounterData::FrameType frameType,
+                       Gen4Frame::EncounterData &encData)
+{
+  ESV::Value  value = ESV::Gen4Land(percentage1);
+  encData.landESVs |= 0x1 << ESV::Slot(value);
+  encData.esvFrames[value].number[frameType] = frameNumber;
+  
+  value = ESV::Gen4Surfing(percentage2);
+  encData.surfESVs |= 0x1 << ESV::Slot(value);
+  encData.esvFrames[value].number[frameType] = frameNumber;
+  
+  if (percentage3 < Method::OldRodThreshold)
+  {
+    value = Method::OldRodESV(percentage2);
+    encData.oldRodESVs |= ESV::Slot(value);
+    encData.esvFrames[value].number[frameType] = frameNumber;
+  }
+  
+  if (percentage3 < Method::GoodRodThreshold)
+  {
+    value = Method::GoodRodESV(percentage2);
+    encData.goodRodESVs |= ESV::Slot(value);
+    encData.esvFrames[value].number[frameType] = frameNumber;
+  }
+  
+  if (percentage3 < Method::SuperRodThreshold)
+  {
+    value = Method::SuperRodESV(percentage2);
+    encData.superRodESVs |= ESV::Slot(value);
+    encData.esvFrames[value].number[frameType] = frameNumber;
+  }
+}
+
+template <class Method>
+static void UpdateEncounterData(Gen4Frame::EncounterData &encData,
+                                Nature::Type nature,  uint32_t frameNumber,
+                                uint32_t randomValue1, uint32_t randomValue2,
+                                uint32_t randomValue3, uint32_t randomValue4,
+                                uint32_t randomValue5)
+{
+  // check non-sync Method frame
+  if (Method::DetermineNature(randomValue1) == nature)
+  {
+    encData.lowestFrames.number[Gen4Frame::EncounterData::NoSync] = frameNumber;
+    uint32_t  percentage2 = Method::CalculatePercentage(randomValue2);
+    uint32_t  percentage3 = Method::CalculatePercentage(randomValue3);
+    uint32_t  percentage4 = Method::CalculatePercentage(randomValue4);
+    
+    UpdateESVs<Method>(percentage2, percentage3, percentage4,
+                       frameNumber, Gen4Frame::EncounterData::NoSync,
+                       encData);
+    
+    // check failed synchronize
+    if (!Method::DetermineSync(randomValue2))
+    {
+      encData.lowestFrames.number[Gen4Frame::EncounterData::FailedSync] =
+        frameNumber - 1;
+      uint32_t  percentage5 = Method::CalculatePercentage(randomValue5);
+      
+      UpdateESVs<Method>(percentage3, percentage4, percentage5,
+                         frameNumber - 1, Gen4Frame::EncounterData::FailedSync,
+                         encData);
+    }
+    
+    // avoid percentage recalc by checking synchronize here
+    if (Method::DetermineSync(randomValue1))
+    {
+      encData.lowestFrames.number[Gen4Frame::EncounterData::Sync] = frameNumber;
+      UpdateESVs<Method>(percentage2, percentage3, percentage4,
+                         frameNumber, Gen4Frame::EncounterData::Sync, encData);
+    }
+  }
+  // check Method synchronize
+  else if (Method::DetermineSync(randomValue1))
+  {
+    encData.lowestFrames.number[Gen4Frame::EncounterData::Sync] = frameNumber;
+    uint32_t  percentage2 = Method::CalculatePercentage(randomValue2);
+    uint32_t  percentage3 = Method::CalculatePercentage(randomValue3);
+    uint32_t  percentage4 = Method::CalculatePercentage(randomValue4);
+    
+    UpdateESVs<Method>(percentage2, percentage3, percentage4,
+                       frameNumber, Gen4Frame::EncounterData::Sync, encData);
+  }
+}
+
+}
+
 Gen4Frame::Gen4Frame(const Gen34Frame &baseFrame)
   : seed(baseFrame.seed), number(baseFrame.number),
     pid(baseFrame.pid), ivs(baseFrame.ivs),
-    methodJNumber(0), methodJSyncNumber(0), methodJFailedSyncNumber(0),
-    methodKNumber(0), methodKSyncNumber(0), methodKFailedSyncNumber(0)
+    methodJ(), methodK()
 {
   Nature::Type  nature = baseFrame.pid.Gen34Nature();
   LCRNG34_R     rng(baseFrame.frameSeed);
-  uint32_t      candidateFrameNumber = baseFrame.number - 1;
+  int32_t       candidateFrameNumber = baseFrame.number - 1;
+  uint32_t      randomValue3 = rng.Next();
+  uint32_t      randomValue4 = rng.Next();
+  uint32_t      randomValue5 = rng.Next();
   
   while (candidateFrameNumber > 0)
   {
-    uint32_t  randomValue1 = rng.Next();
-    uint32_t  randomValue2 = rng.Next();
-    PID       randomPID((randomValue1 & 0xffff0000) | (randomValue2 >> 16));
+    uint32_t  randomValue1 = randomValue3;
+    uint32_t  randomValue2 = randomValue4;
     
-    // check normal Method J frame
-    if (((randomValue1 >> 16) / 0xa3e) == nature)
-    {
-      methodJNumber = candidateFrameNumber;
-      
-      // check failed synchronize
-      if ((randomValue2 & 0x80000000) == 0)
-      {
-        methodJFailedSyncNumber = candidateFrameNumber - 1;
-      }
-    }
+    randomValue3 = randomValue5;
+    randomValue4 = rng.Next();
+    randomValue5 = rng.Next();
     
-    // check Method J synchronize
-    if ((randomValue1 & 0x80000000) == 0)
-    {
-      methodJSyncNumber = candidateFrameNumber;
-    }
+    UpdateEncounterData<MethodJ>(methodJ, nature, candidateFrameNumber,
+                                 randomValue1, randomValue2, randomValue3,
+                                 randomValue4, randomValue5);
     
-    // check normal Method K frame
-    if (((randomValue1 >> 16) % 25) == nature)
-    {
-      methodKNumber = candidateFrameNumber;
-      
-      // check failed synchronize
-      if ((randomValue2 & 0x00010000) == 0)
-      {
-        methodKFailedSyncNumber = candidateFrameNumber - 1;
-      }
-    }
+    UpdateEncounterData<MethodK>(methodK, nature, candidateFrameNumber,
+                                 randomValue1, randomValue2, randomValue3,
+                                 randomValue4, randomValue5);
     
-    // check Method K synchronize
-    if ((randomValue1 & 0x00010000) == 0)
-    {
-      methodKSyncNumber = candidateFrameNumber;
-    }
+    PID  randomPID((randomValue1 & 0xffff0000) | (randomValue2 >> 16));
     
     if ((randomPID.Gen34Nature() == nature) || (candidateFrameNumber == 1))
     {

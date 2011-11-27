@@ -102,14 +102,7 @@ void TIDSeedSearcher::Search(const Criteria &criteria,
 
 uint64_t InitialIVSeedSearcher::Criteria::ExpectedNumberOfResults() const
 {
-  uint64_t  seconds = 11;
-  uint64_t  keyCombos = 1;
-  uint64_t  timer0Values = (timer0High - timer0Low) + 1;
-  uint64_t  vcountValues = (vcountHigh - vcountLow) + 1;
-  uint64_t  vframeValues = (vframeHigh - vframeLow) + 1;
-  
-  uint64_t  numSeeds =
-    seconds * keyCombos * timer0Values * vcountValues * vframeValues;
+  uint64_t  numSeeds = seedParameters.NumberOfSeeds();
   
   uint64_t  numIVs = IVs::CalculateNumberOfCombinations(minIVs, maxIVs);
   
@@ -124,27 +117,15 @@ void InitialIVSeedSearcher::Search(const Criteria &criteria,
   
   HashedSeedSearcher::Criteria  c;
   
-  c.version = criteria.version;
-  c.macAddressLow = criteria.macAddressLow;
-  c.macAddressHigh = criteria.macAddressHigh;
-  c.timer0Low = criteria.timer0Low;
-  c.timer0High = criteria.timer0High;
-  c.vcountLow = criteria.vcountLow;
-  c.vcountHigh = criteria.vcountHigh;
-  c.vframeLow = criteria.vframeLow;
-  c.vframeHigh = criteria.vframeHigh;
-  c.buttonPresses.push_back(criteria.pressedButtons);
-  c.fromTime = criteria.startTime - seconds(5);
-  c.toTime = criteria.startTime + seconds(10);
-  c.minIVFrame = 1;
-  c.maxIVFrame = 1;
-  c.maxResults = 1;
-  c.minIVs = criteria.minIVs;
-  c.shouldCheckMaxIVs = true;
-  c.maxIVs = criteria.maxIVs;
-  c.hiddenType = Element::UNKNOWN;
-  c.minHiddenPower = 30;
-  c.isRoamer = false;
+  c.seedParameters = criteria.seedParameters;
+  c.ivFrame.min = 1;
+  c.ivFrame.max = 1;
+  c.ivs.shouldCheckMax = true;
+  c.ivs.min = criteria.minIVs;
+  c.ivs.max = criteria.maxIVs;
+  c.ivs.hiddenType = Element::UNKNOWN;
+  c.ivs.minHiddenPower = 30;
+  c.ivs.isRoamer = false;
   
   HashedSeedSearcher  searcher;
   

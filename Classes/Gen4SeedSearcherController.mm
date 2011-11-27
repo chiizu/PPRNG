@@ -21,12 +21,43 @@
 
 #import "Gen4SeedSearcherController.h"
 
-#include "Gen34SeedSearcher.h"
+#include "Gen4QuickSeedSearcher.h"
+#import "Gen4SeedInspectorController.h"
 
 using namespace pprng;
 
 namespace
 {
+
+uint32_t GetESVBitmaskForTypeMask(uint32_t typeMask, NSPopUpButton *esvMenu)
+{
+  uint32_t   mask = 0;
+  NSInteger  numItems = [esvMenu numberOfItems];
+  NSInteger  i;
+  
+  for (i = 0; i < numItems; ++i)
+  {
+    NSMenuItem  *item = [esvMenu itemAtIndex: i];
+    NSInteger   tag = [item tag];
+    
+    if ((tag >= 0) && ((tag & 0xf0) == typeMask) && ([item state] == NSOnState))
+    {
+      mask |= 0x1 << (tag & 0xf);
+    }
+  }
+  
+  return mask;
+}
+
+NSString* GetFrameTypeResult(const Gen4Frame::EncounterData &data,
+                             Gen4Frame::EncounterData::FrameType frameType)
+{
+  uint32_t  frameNumber = data.lowestFrames.number[frameType];
+  
+  return (frameNumber > 0) ?
+    [NSString stringWithFormat: @"%d", frameNumber] :
+    @"None";
+}
 
 struct ResultHandler
 {
@@ -34,50 +65,47 @@ struct ResultHandler
     : controller(c), tid(tid), sid(sid)
   {}
   
-  void operator()(const Gen34SeedSearcher::Frame &frame)
+  void operator()(const Gen4QuickSeedSearcher::Frame &frame)
   {
-    Gen4Frame  fullFrame(frame);
-    TimeSeed   seed(fullFrame.seed);
+    TimeSeed  seed(frame.seed);
+    uint32_t  genderValue = frame.pid.GenderValue();
     
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
         [NSNumber numberWithUnsignedInt: seed.m_seed], @"seed",
 				[NSNumber numberWithUnsignedInt: seed.BaseDelay()], @"delay",
-        [NSNumber numberWithUnsignedInt: fullFrame.pid.word], @"pid",
+        [NSNumber numberWithUnsignedInt: frame.pid.word], @"pid",
+        frame.pid.IsShiny(tid, sid) ? @"★" : @"", @"shiny",
         [NSString stringWithFormat: @"%s",
-          Nature::ToString(fullFrame.pid.Gen34Nature()).c_str()], @"nature",
-        [NSNumber numberWithUnsignedInt: fullFrame.pid.Gen34Ability()],
-          @"ability",
-        frame.pid.IsShiny(tid, sid) ? @"!!!" : @"", @"shiny",
-        [NSNumber numberWithUnsignedInt: fullFrame.ivs.hp()], @"hp",
-        [NSNumber numberWithUnsignedInt: fullFrame.ivs.at()], @"atk",
-        [NSNumber numberWithUnsignedInt: fullFrame.ivs.df()], @"def",
-        [NSNumber numberWithUnsignedInt: fullFrame.ivs.sa()], @"spa",
-        [NSNumber numberWithUnsignedInt: fullFrame.ivs.sd()], @"spd",
-        [NSNumber numberWithUnsignedInt: fullFrame.ivs.sp()], @"spe",
+          Nature::ToString(frame.pid.Gen34Nature()).c_str()], @"nature",
+        [NSNumber numberWithUnsignedInt: frame.pid.Gen34Ability()], @"ability",
+        ((genderValue < 31) ? @"♀" : @"♂"), @"gender18",
+        ((genderValue < 63) ? @"♀" : @"♂"), @"gender14",
+        ((genderValue < 127) ? @"♀" : @"♂"), @"gender12",
+        ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
+        [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
+        [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
+        [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
+        [NSNumber numberWithUnsignedInt: frame.ivs.sa()], @"spa",
+        [NSNumber numberWithUnsignedInt: frame.ivs.sd()], @"spd",
+        [NSNumber numberWithUnsignedInt: frame.ivs.sp()], @"spe",
         [NSString stringWithFormat: @"%s",
-          Element::ToString(fullFrame.ivs.HiddenType()).c_str()], @"hiddenType",
-        [NSNumber numberWithUnsignedInt: fullFrame.ivs.HiddenPower()],
+          Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
+        [NSNumber numberWithUnsignedInt: frame.ivs.HiddenPower()],
           @"hiddenPower",
-				[NSNumber numberWithUnsignedInt: fullFrame.number], @"frame",
-        (fullFrame.methodJNumber > 0) ?
-          [NSString stringWithFormat: @"%d", fullFrame.methodJNumber] :
-          @"None", @"frameJ",
-        (fullFrame.methodJSyncNumber > 0) ?
-          [NSString stringWithFormat: @"%d", fullFrame.methodJSyncNumber] :
-          @"None", @"frameJSync",
-        (fullFrame.methodJFailedSyncNumber > 0) ?
-          [NSString stringWithFormat: @"%d", fullFrame.methodJFailedSyncNumber] :
-          @"None", @"frameJSyncFail",
-        (fullFrame.methodJNumber > 0) ?
-          [NSString stringWithFormat: @"%d", fullFrame.methodKNumber] :
-          @"None", @"frameK",
-        (fullFrame.methodJSyncNumber > 0) ?
-          [NSString stringWithFormat: @"%d", fullFrame.methodKSyncNumber] :
-          @"None", @"frameKSync",
-        (fullFrame.methodJFailedSyncNumber > 0) ?
-          [NSString stringWithFormat: @"%d", fullFrame.methodKFailedSyncNumber] :
-          @"None", @"frameKSyncFail",
+				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
+        GetFrameTypeResult(frame.methodJ, Gen4Frame::EncounterData::NoSync),
+          @"frameJ",
+        GetFrameTypeResult(frame.methodJ, Gen4Frame::EncounterData::Sync),
+          @"frameJSync",
+        GetFrameTypeResult(frame.methodJ, Gen4Frame::EncounterData::FailedSync),
+          @"frameJSyncFail",
+        GetFrameTypeResult(frame.methodK, Gen4Frame::EncounterData::NoSync),
+          @"frameK",
+        GetFrameTypeResult(frame.methodK, Gen4Frame::EncounterData::Sync),
+          @"frameKSync",
+        GetFrameTypeResult(frame.methodK, Gen4Frame::EncounterData::FailedSync),
+          @"frameKSyncFail",
         nil];
     
     [controller performSelectorOnMainThread: @selector(addResult:)
@@ -112,6 +140,17 @@ struct ProgressHandler
 
 @implementation Gen4SeedSearcherController
 
+@synthesize  mode;
+@synthesize  shinyOnly;
+@synthesize  nature;
+@synthesize  ability;
+@synthesize  gender;
+@synthesize  genderRatio;
+@synthesize  minFrame;
+@synthesize  maxFrame;
+@synthesize  minDelay;
+@synthesize  maxDelay;
+
 - (NSString *)windowNibName
 {
 	return @"Gen4SeedSearcher";
@@ -126,12 +165,64 @@ struct ProgressHandler
   [searcherController setDoSearchWithCriteriaSelector:
                       @selector(doSearchWithCriteria:)];
   
-  [[[[[searcherController tableView] tableColumnWithIdentifier: @"seed"]
-    dataCell] formatter]
+  NSTableView  *resultsTableView = [searcherController tableView];
+  [resultsTableView setDoubleAction: @selector(inspectSeed:)];
+  
+  [[[[resultsTableView tableColumnWithIdentifier: @"seed"] dataCell] formatter]
    setFormatWidth: 8];
-  [[[[[searcherController tableView] tableColumnWithIdentifier: @"pid"]
-    dataCell] formatter]
+  [[[[resultsTableView tableColumnWithIdentifier: @"pid"] dataCell] formatter]
    setFormatWidth: 8];
+  
+  [[resultsTableView tableColumnWithIdentifier:@"frameJ"]
+    setHidden: NO];
+  [[resultsTableView tableColumnWithIdentifier:@"frameJSync"]
+    setHidden: NO];
+  [[resultsTableView tableColumnWithIdentifier:@"frameJSyncFail"]
+    setHidden: NO];
+  [[resultsTableView tableColumnWithIdentifier:@"frameK"]
+    setHidden: YES];
+  [[resultsTableView tableColumnWithIdentifier:@"frameKSync"]
+    setHidden: YES];
+  [[resultsTableView tableColumnWithIdentifier:@"frameKSyncFail"]
+    setHidden: YES];
+  
+  Game::Version  version = [gen4ConfigController version];
+  BOOL           isDPPt = (version != Game::HeartGold) &&
+                          (version != Game::SoulSilver);
+  self.mode = isDPPt ? 0 : 1;
+  self.shinyOnly = NO;
+  self.nature = Nature::ANY;
+  self.ability = -1;
+  self.gender = Gender::ANY;
+  self.genderRatio = Gender::UNSPECIFIED;
+  self.minFrame = 1;
+  self.maxFrame = 120;
+  self.minDelay = 600;
+  self.maxDelay = 750;
+}
+
+- (void)setMode:(int)newMode
+{
+  if (newMode != mode)
+  {
+    mode = newMode;
+    
+    // change which table columns are displayed
+    NSTableView  *resultsTableView = [searcherController tableView];
+    
+    [[resultsTableView tableColumnWithIdentifier:@"frameJ"]
+      setHidden: newMode];
+    [[resultsTableView tableColumnWithIdentifier:@"frameJSync"]
+      setHidden: newMode];
+    [[resultsTableView tableColumnWithIdentifier:@"frameJSyncFail"]
+      setHidden: newMode];
+    [[resultsTableView tableColumnWithIdentifier:@"frameK"]
+      setHidden: !newMode];
+    [[resultsTableView tableColumnWithIdentifier:@"frameKSync"]
+      setHidden: !newMode];
+    [[resultsTableView tableColumnWithIdentifier:@"frameKSyncFail"]
+      setHidden: !newMode];
+  }
 }
 
 - (void)windowWillClose:(NSNotification *)notification
@@ -140,8 +231,67 @@ struct ProgressHandler
     [searcherController startStop: self];
 }
 
-- (IBAction)switchSearchType:(id)sender
-{}
+- (IBAction)toggleESVChoice:(id)sender
+{
+  NSMenuItem  *selectedItem = [sender selectedItem];
+  
+  if ([selectedItem tag] >= 0)
+  {
+    [selectedItem setState: ![selectedItem state]];
+  }
+  else if ([selectedItem tag] != -5)
+  {
+    NSInteger  action = [selectedItem tag];
+    NSInteger  numItems = [sender numberOfItems];
+    NSInteger  i;
+    
+    for (i = 0; i < numItems; ++i)
+    {
+      NSMenuItem  *item = [sender itemAtIndex: i];
+      NSInteger   tag = [item tag];
+      
+      if (tag >= 0)
+      {
+        switch (action)
+        {
+        case -1:
+          [item setState: NSOnState];
+          break;
+        case -4:
+          [item setState: NSOffState];
+          break;
+        default:
+          break;
+        }
+      }
+    }
+  }
+}
+
+- (void)inspectSeed:(id)sender
+{
+  NSInteger  rowNum = [sender clickedRow];
+  
+  if (rowNum >= 0)
+  {
+    NSDictionary  *row =
+      [[[searcherController arrayController] arrangedObjects]
+        objectAtIndex: rowNum];
+    
+    if (row != nil)
+    {
+      NSNumber  *seed = [row objectForKey: @"seed"];
+      NSNumber  *frame = [row objectForKey: @"frame"];
+      
+      Gen4SeedInspectorController  *inspector =
+        [[Gen4SeedInspectorController alloc] init];
+      [inspector showWindow: self];
+      [inspector setMode: mode];
+      [inspector setSeed: [seed unsignedIntValue]];
+      [inspector setFrame: [frame unsignedIntValue]];
+    }
+  }
+}
 
 // dummy method for error panel
 - (void)alertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode
@@ -150,17 +300,28 @@ struct ProgressHandler
 
 - (NSValue*)getValidatedSearchCriteria
 {
-  Gen34SeedSearcher::Criteria  criteria;
+  Gen4QuickSeedSearcher::Criteria  criteria;
   
-  criteria.tid = [tidField intValue];
-  criteria.sid = [sidField intValue];
+  criteria.version = [gen4ConfigController version];
+  criteria.tid = [gen4ConfigController tid];
+  criteria.sid = [gen4ConfigController sid];
   
-  criteria.minDelay = [minDelayField intValue];
-  criteria.maxDelay = [maxDelayField intValue];
-  criteria.minFrame = [minFrameField intValue];
-  criteria.maxFrame = [maxFrameField intValue];
+  criteria.minDelay = minDelay;
+  criteria.maxDelay = maxDelay;
+  criteria.minFrame = minFrame;
+  criteria.maxFrame = maxFrame;
   
-  criteria.nature = static_cast<Nature::Type>([[natureMenu selectedItem] tag]);
+  criteria.nature = Nature::Type([[naturePopup selectedItem] tag]);
+  criteria.ability = [[abilityPopUp selectedItem] tag];
+  criteria.gender = Gender::Type([[genderPopUp selectedItem] tag]);
+  criteria.genderRatio =
+    Gender::Ratio([[genderRatioPopUp selectedItem] tag]);
+  criteria.shinyOnly = shinyOnly;
+  criteria.landESVs = GetESVBitmaskForTypeMask(0x00, esvPopUp);
+  criteria.surfESVs = GetESVBitmaskForTypeMask(0x10, esvPopUp);
+  criteria.oldRodESVs = GetESVBitmaskForTypeMask(0x20, esvPopUp);
+  criteria.goodRodESVs = GetESVBitmaskForTypeMask(0x30, esvPopUp);
+  criteria.superRodESVs = GetESVBitmaskForTypeMask(0x40, esvPopUp);
   
   criteria.minIVs = [ivParameterController minIVs];
   criteria.shouldCheckMaxIVs = [ivParameterController shouldCheckMaxIVs];
@@ -195,21 +356,21 @@ struct ProgressHandler
   else
   {
     return [NSValue
-             valueWithPointer: new Gen34SeedSearcher::Criteria(criteria)];
+             valueWithPointer: new Gen4QuickSeedSearcher::Criteria(criteria)];
   }
 }
 
 - (void)doSearchWithCriteria:(NSValue*)criteriaPtr
 {
-  std::auto_ptr<Gen34SeedSearcher::Criteria> 
-    criteria(static_cast<Gen34SeedSearcher::Criteria*>
+  std::auto_ptr<Gen4QuickSeedSearcher::Criteria> 
+    criteria(static_cast<Gen4QuickSeedSearcher::Criteria*>
                ([criteriaPtr pointerValue]));
   
-  Gen34SeedSearcher  searcher;
+  Gen4QuickSeedSearcher  searcher;
   
   searcher.Search(*criteria,
                   ResultHandler(searcherController,
-                                [tidField intValue], [sidField intValue]),
+                                criteria->tid, criteria->sid),
                   ProgressHandler(searcherController));
 }
 

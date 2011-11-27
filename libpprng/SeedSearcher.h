@@ -23,6 +23,7 @@
 
 #include "BasicTypes.h"
 #include "FrameSearcher.h"
+#include <boost/lexical_cast.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <functional>
@@ -33,22 +34,45 @@ namespace pprng
 
 struct SeedSearchCriteria
 {
+  struct PIDCriteria
+  {
+    Nature::Type   nature;
+    uint32_t       ability;
+    Gender::Type   gender;
+    Gender::Ratio  genderRatio;
+    bool           searchFromInitialFrame;
+    
+    PIDCriteria()
+      : nature(Nature::ANY), ability(0xffffffff),
+        gender(Gender::ANY), genderRatio(Gender::UNSPECIFIED),
+        searchFromInitialFrame(false)
+    {}
+  };
+  
+  struct IVCriteria
+  {
+    bool           shouldCheckMax;
+    IVs            min, max;
+    Element::Type  hiddenType;
+    uint32_t       minHiddenPower;
+    bool           isRoamer;
+    
+    IVCriteria()
+      : shouldCheckMax(true), min(), max(),
+        hiddenType(Element::UNKNOWN), minHiddenPower(30), isRoamer(false)
+    {}
+  };
+  
   class ImpossibleMinMaxFrameRangeException : public Exception
   {
-  private:
-    static std::string MakeExceptionText
-      (uint32_t minFrame, uint32_t maxFrame, const std::string &frameType)
-    {
-      std::ostringstream  os;
-      os << "Minimum " << frameType << " frame " << minFrame
-         << " is not less than or equal to maximum " << frameType << " frame "
-         << maxFrame;
-      return os.str();
-    }
   public:
     ImpossibleMinMaxFrameRangeException
       (uint32_t minFrame, uint32_t maxFrame, const std::string &frameType)
-      : Exception(MakeExceptionText(minFrame, maxFrame, frameType))
+      : Exception
+        ("Minimum " + frameType + " frame " +
+         boost::lexical_cast<std::string>(minFrame) +
+         " is not less than or equal to maximum " + frameType + " frame " +
+         boost::lexical_cast<std::string>(maxFrame))
     {}
   };
   
@@ -76,7 +100,8 @@ public:
               const ProgressCallback &progressHandler,
               uint32_t numSplits = 1)
   {
-    typename SeedGenerator::SeedCountType  numSeeds = seedGenerator.NumSeeds();
+    typename SeedGenerator::SeedCountType  numSeeds =
+      seedGenerator.NumberOfSeeds();
     
     double  seedPercent = double(SeedGenerator::SeedsPerChunk) /
                             (numSeeds * numSplits);

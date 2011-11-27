@@ -42,16 +42,25 @@ struct DS
 {
   enum Type
   {
-    Phat,
-    Lite,
-    i,
-    i_XL,
+    DSPhat = 0,
+    DSLite,
+    DSi,
+    DSi_XL,
     _3DS,
     
-    UnknownDSType
+    UnknownDSType = -1
   };
   
   static std::string ToString(Type v);
+};
+
+
+struct MACAddress
+{
+  MACAddress() : high(0), low(0) {}
+  MACAddress(uint32_t h, uint32_t l) : high(h), low(l) {}
+  
+  uint32_t  high, low; // high 3 bytes and low 3 bytes
 };
 
 
@@ -259,7 +268,7 @@ struct PersonalityValue
   PersonalityValue() : word(0) {}
   
   PersonalityValue(const PersonalityValue &pid) : word(pid.word) {}
-  PersonalityValue(uint32_t pidWord) : word(pidWord) {}
+  explicit PersonalityValue(uint32_t pidWord) : word(pidWord) {}
   
   PersonalityValue& operator=(const PersonalityValue &pid)
   {
@@ -386,7 +395,7 @@ struct IndividualValues
   {}
   
   IndividualValues(const IndividualValues &ivs) : word(ivs.word) {}
-  IndividualValues(uint32_t ivWord) : word(ivWord & ALL_IVS_MASK) {}
+  explicit IndividualValues(uint32_t ivWord) : word(ivWord & ALL_IVS_MASK) {}
   
   IndividualValues& operator=(const IndividualValues &ivs)
   {
@@ -607,6 +616,84 @@ struct Characteristic
 };
 
 
+// encounter slots
+struct EncounterSlot
+{
+  enum Value
+  {
+    TYPE_MASK = 0xf0,
+    SLOT_MASK = 0x0f,
+    
+    LAND_TYPE = 0x00,
+    LAND_0 = LAND_TYPE,
+    LAND_1,
+    LAND_2,
+    LAND_3,
+    LAND_4,
+    LAND_5,
+    LAND_6,
+    LAND_7,
+    LAND_8,
+    LAND_9,
+    LAND_10,
+    LAND_11,
+    
+    SURF_TYPE = 0x10,
+    SURF_0 = SURF_TYPE,
+    SURF_1,
+    SURF_2,
+    SURF_3,
+    SURF_4,
+    
+    OLD_ROD_TYPE = 0x20,
+    OLD_ROD_0 = OLD_ROD_TYPE,
+    OLD_ROD_1,
+    OLD_ROD_2,
+    OLD_ROD_3,
+    OLD_ROD_4,
+    
+    GOOD_ROD_TYPE = 0x30,
+    GOOD_ROD_0 = GOOD_ROD_TYPE,
+    GOOD_ROD_1,
+    GOOD_ROD_2,
+    GOOD_ROD_3,
+    GOOD_ROD_4,
+    
+    SUPER_ROD_TYPE = 0x40,
+    SUPER_ROD_0 = SUPER_ROD_TYPE,
+    SUPER_ROD_1,
+    SUPER_ROD_2,
+    SUPER_ROD_3,
+    SUPER_ROD_4
+  };
+  
+  static Value MakeESV(Value type, uint32_t slot)
+  { return Value(type | slot); }
+  
+  static Value Type(Value esv)
+  { return Value(esv & TYPE_MASK); }
+  
+  static uint32_t Slot(Value esv)
+  { return esv & SLOT_MASK; }
+  
+  static std::string ToString(Value v);
+  
+  static Value Gen4Land(uint32_t percent);
+  static Value Gen4Surfing(uint32_t percent);
+  static Value Gen4OldRod(uint32_t percent);
+  static Value Gen4GoodRodJ(uint32_t percent);
+  static Value Gen4GoodRodK(uint32_t percent);
+  static Value Gen4SuperRodJ(uint32_t percent);
+  static Value Gen4SuperRodK(uint32_t percent);
+  
+  static Value Gen5Land(uint32_t percent);
+  static Value Gen5Surfing(uint32_t percent);
+  static Value Gen5Fishing(uint32_t percent);
+  static Value Gen5WaterSpot(uint32_t percent);
+};
+
+typedef EncounterSlot  ESV;
+
 // type of item a wild pokemon might hold
 struct HeldItem
 {
@@ -632,6 +719,142 @@ struct FemaleParent
   };
 };
 
+struct CoinFlips
+{
+  uint32_t  word;
+  
+  enum Result
+  {
+    HEADS = 1,
+    TAILS = 0
+  };
+  
+  static Result CalcResult(uint32_t rawRNG)
+  { return Result(rawRNG & 0x1); }
+  
+  enum
+  {
+    FLIP_COUNT_SHIFT = 28,
+    FLIP_BITS_MASK = 0x0FFFFFFF
+  };
+  
+  CoinFlips() : word(0) {}
+  CoinFlips(uint32_t seed, uint32_t numFlips);
+  explicit CoinFlips(uint32_t w) : word(w) {}
+  
+  uint32_t NumFlips() const
+  { return (word >> FLIP_COUNT_SHIFT); }
+  
+  Result FlipResult(uint32_t flipNum) const
+  { return Result((word >> flipNum) & 0x1); }
+  
+  void AddFlipResult(Result r)
+  {
+    word = ((NumFlips() + 1) << FLIP_COUNT_SHIFT) |
+           (word & FLIP_BITS_MASK) | (r << NumFlips());
+  }
+  
+  void RemoveFlipResult()
+  {
+    word = ((NumFlips() - 1) << FLIP_COUNT_SHIFT) |
+           (word & ((0x1 << (NumFlips() - 1)) - 1));
+  }
+  
+  bool Contains(const CoinFlips &subFlips) const
+  {
+    uint32_t  searchMask = (0x1 << subFlips.NumFlips()) - 1;
+    uint32_t  searchValue = subFlips.word & searchMask;
+    
+    return (subFlips.NumFlips() <= NumFlips()) &&
+      ((word & searchMask) == searchValue);
+  }
+};
+
+struct ProfElmResponses
+{
+  uint64_t  word;
+  
+  enum Response
+  {
+    EVOLUTION = 0,
+    KANTO = 1,
+    POKERUS = 2
+  };
+  
+  static Response CalcResponse(uint32_t rawRNG)
+  { return Response((rawRNG >> 16) % 3); }
+  
+  enum
+  {
+    RESPONSE_COUNT_SHIFT = 56,
+    RESPONSE_BITS_MASK = 0x00FFFFFFFFFFFFFFULL
+  };
+  
+  ProfElmResponses() : word(0) {}
+  ProfElmResponses(uint32_t seed, uint32_t numResponses);
+  explicit ProfElmResponses(uint64_t w) : word(w) {}
+  
+  uint32_t NumResponses() const
+  { return (word >> RESPONSE_COUNT_SHIFT); }
+  
+  Response GetResponse(uint32_t responseNum) const
+  { return Response((word >> (responseNum << 1)) & 0x3); }
+  
+  void AddResponse(Response r)
+  {
+    uint64_t  numResponses = NumResponses();
+    
+    word = ((numResponses + 1) << RESPONSE_COUNT_SHIFT) |
+           (word & RESPONSE_BITS_MASK) | (r << (numResponses << 1));
+  }
+  
+  void RemoveResponse()
+  {
+    uint64_t  numResponses = NumResponses();
+    word = ((numResponses - 1) << RESPONSE_COUNT_SHIFT) |
+           (word & ((0x1 << ((numResponses - 1) << 1)) - 1));
+  }
+  
+  bool Contains(const ProfElmResponses &subResponses) const
+  {
+    uint64_t  searchMask = (0x1 << (subResponses.NumResponses() << 1)) - 1;
+    uint64_t  searchValue = subResponses.word & searchMask;
+    
+    return (subResponses.NumResponses() <= NumResponses()) &&
+      ((word & searchMask) == searchValue);
+  }
+};
+
+
+struct HGSSRoamers
+{
+  uint32_t  word;
+  
+  enum Roamer
+  {
+    RAIKOU = 0,
+    ENTEI,
+    LATI
+  };
+  
+  enum
+  {
+    LOCATION_BITS = 6,
+    LOCATION_MASK = (0x1 << LOCATION_BITS) - 1,
+    CONSUMED_FRAMES_SHIFT = LOCATION_BITS * 3
+  };
+  
+  HGSSRoamers() : word(0) {}
+  HGSSRoamers(uint32_t seed, uint32_t raikouLocation, uint32_t enteiLocation,
+              uint32_t latiLocation);
+  explicit HGSSRoamers(uint32_t w) : word(w) {}
+  
+  uint32_t ConsumedFrames() const
+  { return word >> CONSUMED_FRAMES_SHIFT; }
+  
+  uint32_t Location(Roamer r) const
+  { return (word >> (LOCATION_BITS * r)) & LOCATION_MASK; }
+};
 
 }
 

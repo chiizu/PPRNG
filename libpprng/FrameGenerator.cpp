@@ -48,7 +48,7 @@ void CGearIVFrameGenerator::AdvanceFrame()
 
 HashedIVFrameGenerator::HashedIVFrameGenerator
     (const HashedSeed &seed, FrameType frameType)
-  : m_RNG(seed.m_rawSeed >> 32), m_IVRNG(m_RNG, IVRNG::FrameType(frameType)),
+  : m_RNG(seed.rawSeed >> 32), m_IVRNG(m_RNG, IVRNG::FrameType(frameType)),
     m_frame(seed)
 {
   m_frame.number = 0;
@@ -62,17 +62,18 @@ void HashedIVFrameGenerator::AdvanceFrame()
 
 
 Gen5PIDFrameGenerator::Gen5PIDFrameGenerator
-    (const HashedSeed &seed, FrameType frameType, bool useCompoundEyes,
-     uint32_t tid, uint32_t sid)
-  : m_PIDFrameGenerator(s_FrameGeneratorInfo[frameType].pidFrameGenerator),
-    m_ESVGenerator(s_FrameGeneratorInfo[frameType].esvGenerator),
-    m_RNG(seed.m_rawSeed),
-    m_PIDRNG(m_RNG, s_FrameGeneratorInfo[frameType].pidType, tid, sid),
-    m_frame(seed), m_useCompoundEyes(useCompoundEyes)
+  (const HashedSeed &seed, const Gen5PIDFrameGenerator::Parameters &parameters)
+  : m_PIDFrameGenerator
+      (s_FrameGeneratorInfo[parameters.frameType].pidFrameGenerator),
+    m_ESVGenerator(s_FrameGeneratorInfo[parameters.frameType].esvGenerator),
+    m_RNG(seed.rawSeed),
+    m_PIDRNG(m_RNG, s_FrameGeneratorInfo[parameters.frameType].pidType,
+             parameters.tid, parameters.sid),
+    m_frame(seed), m_useCompoundEyes(parameters.useCompoundEyes)
 {
   m_frame.number = 0;
   m_frame.synched = false;
-  m_frame.esv = 0;
+  m_frame.esv = ESV::Value(0);
   m_frame.heldItem = HeldItem::NO_ITEM;
   m_frame.isEncounter = 0;
 }
@@ -159,38 +160,23 @@ bool Gen5PIDFrameGenerator::GeneratesIsEncounter() const
          (m_PIDFrameGenerator == &Gen5PIDFrameGenerator::NextShadowFrame);
 }
 
-
 void Gen5PIDFrameGenerator::LandESV()
 {
-  static const uint32_t  LandESVTable[100] =
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-    6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9,10,11 };
-  
   uint32_t  raw_esv = (m_RNG.Next() >> 48) / 0x290;
   
-  m_frame.esv = LandESVTable[raw_esv];
+  m_frame.esv = ESV::Gen5Land(raw_esv);
 }
 
 void Gen5PIDFrameGenerator::WaterESV()
 {
-  static const uint32_t  WaterESVTable[100] =
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4 };
-  
   uint32_t  raw_esv = (m_RNG.Next() >> 48) / 0x290;
   
-  m_frame.esv = WaterESVTable[raw_esv];
+  m_frame.esv = ESV::Gen5Surfing(raw_esv);
 }
 
 void Gen5PIDFrameGenerator::NoESV()
 {
-  m_frame.esv = 0;
+  m_frame.esv = ESV::Value(0);
 }
 
 
@@ -301,13 +287,10 @@ void Gen5PIDFrameGenerator::NextHeldItem()
 
 
 Gen5BreedingFrameGenerator::Gen5BreedingFrameGenerator
-    (const HashedSeed &seed, bool isInternational,
-     bool hasEverstone, bool hasDitto,
-     uint32_t tid, uint32_t sid)
-  : m_hasDitto(hasDitto), m_hasEverstone(hasEverstone),
-    m_isInternational(isInternational), m_tid(tid), m_sid(sid),
-    m_RNG(seed.m_rawSeed),
-    m_PIDRNG(m_RNG, PIDRNG::EggPID, tid, sid),
+    (const HashedSeed &seed, const Parameters &parameters)
+  : m_parameters(parameters),
+    m_RNG(seed.rawSeed),
+    m_PIDRNG(m_RNG, PIDRNG::EggPID, parameters.tid, parameters.sid),
     m_frame(seed)
 {
   m_frame.number = 0;
@@ -325,12 +308,12 @@ void Gen5BreedingFrameGenerator::AdvanceFrame()
   
   m_frame.nature = static_cast<Nature::Type>(((m_RNG.Next() >> 32) * 25) >> 32);
   
-  if (m_hasEverstone)
+  if (m_parameters.usingEverstone)
     m_frame.everstoneActivated = (m_RNG.Next() >> 63) == 1;
   
-  m_frame.dreamWorldAbilityPassed = (((m_RNG.Next() >> 32) * 5) >> 32) >= 2;
+  m_frame.inheritsHiddenAbility = (((m_RNG.Next() >> 32) * 5) >> 32) >= 2;
   
-  if (m_hasDitto)
+  if (m_parameters.usingDitto)
     m_RNG.Next();
   
   uint32_t  numInherited = 0;
@@ -350,10 +333,11 @@ void Gen5BreedingFrameGenerator::AdvanceFrame()
   }
   
   m_frame.pid = m_PIDRNG.NextPIDWord();
-  if (m_isInternational)
+  if (m_parameters.internationalParents)
   {
     uint32_t  shinyChecks = 0;
-    while (!m_frame.pid.IsShiny(m_tid, m_sid) && (++shinyChecks < 6))
+    while (!m_frame.pid.IsShiny(m_parameters.tid, m_parameters.sid) &&
+           (++shinyChecks < 6))
     {
       m_frame.pid = m_PIDRNG.NextPIDWord();
     }

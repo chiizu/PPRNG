@@ -40,14 +40,14 @@ struct TrainerIDSearchResultHandler
   {
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedLongLong: frame.seed.m_rawSeed], @"seed",
+        [NSNumber numberWithUnsignedLongLong: frame.seed.rawSeed], @"seed",
         [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
-          frame.seed.m_year, frame.seed.m_month, frame.seed.m_day], @"date",
+          frame.seed.year(), frame.seed.month(), frame.seed.day()], @"date",
         [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
-          frame.seed.m_hour, frame.seed.m_minute, frame.seed.m_second], @"time",
-        [NSNumber numberWithUnsignedInt: frame.seed.m_timer0], @"timer0",
+          frame.seed.hour, frame.seed.minute, frame.seed.second], @"time",
+        [NSNumber numberWithUnsignedInt: frame.seed.timer0], @"timer0",
 				[NSString stringWithFormat: @"%s",
-          Button::ToString(frame.seed.m_keyInput).c_str()], @"keys",
+          Button::ToString(frame.seed.heldButtons).c_str()], @"keys",
 				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
         [NSNumber numberWithUnsignedInt: frame.tid], @"tid",
         [NSNumber numberWithUnsignedInt: frame.sid], @"sid",
@@ -89,14 +89,14 @@ struct IDFrameSearchResultHandler
   {
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedLongLong: frame.seed.m_rawSeed], @"seed",
+        [NSNumber numberWithUnsignedLongLong: frame.seed.rawSeed], @"seed",
         [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
-          frame.seed.m_year, frame.seed.m_month, frame.seed.m_day], @"date",
+          frame.seed.year(), frame.seed.month(), frame.seed.day()], @"date",
         [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
-          frame.seed.m_hour, frame.seed.m_minute, frame.seed.m_second], @"time",
-        [NSNumber numberWithUnsignedInt: frame.seed.m_timer0], @"timer0",
+          frame.seed.hour, frame.seed.minute, frame.seed.second], @"time",
+        [NSNumber numberWithUnsignedInt: frame.seed.timer0], @"timer0",
 				[NSString stringWithFormat: @"%s",
-          Button::ToString(frame.seed.m_keyInput).c_str()], @"keys",
+          Button::ToString(frame.seed.heldButtons).c_str()], @"keys",
 				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
         [NSNumber numberWithUnsignedInt: frame.tid], @"tid",
         [NSNumber numberWithUnsignedInt: frame.sid], @"sid",
@@ -195,14 +195,29 @@ struct IDFrameSearchProgressHandler
   uint32_t  maxPIDFrame = [pidMaxFrameField intValue];
   uint32_t  frameNum = 0, limitFrame = minPIDFrame - 1;
   
-  Gen5PIDFrameGenerator
-    gcGenerator(seed, Gen5PIDFrameGenerator::GrassCaveFrame, false, 0, 0),
-    fsGenerator(seed, Gen5PIDFrameGenerator::FishingFrame, false, 0, 0),
-    sdGenerator(seed, Gen5PIDFrameGenerator::SwirlingDustFrame, false, 0, 0),
-    bsGenerator(seed, Gen5PIDFrameGenerator::BridgeShadowFrame, false, 0, 0),
-    stGenerator(seed, Gen5PIDFrameGenerator::StationaryFrame, false, 0, 0),
-    pidGenerator(seed, Gen5PIDFrameGenerator::StarterFossilGiftFrame,
-                 false, 0, 0);
+  Gen5PIDFrameGenerator::Parameters  frameParameters;
+  
+  frameParameters.useCompoundEyes = false;
+  frameParameters.tid = 0;
+  frameParameters.sid = 0;
+  
+  frameParameters.frameType = Gen5PIDFrameGenerator::GrassCaveFrame;
+  Gen5PIDFrameGenerator  gcGenerator(seed, frameParameters);
+  
+  frameParameters.frameType = Gen5PIDFrameGenerator::FishingFrame;
+  Gen5PIDFrameGenerator  fsGenerator(seed, frameParameters);
+  
+  frameParameters.frameType = Gen5PIDFrameGenerator::SwirlingDustFrame;
+  Gen5PIDFrameGenerator  sdGenerator(seed, frameParameters);
+  
+  frameParameters.frameType = Gen5PIDFrameGenerator::BridgeShadowFrame;
+  Gen5PIDFrameGenerator  bsGenerator(seed, frameParameters);
+  
+  frameParameters.frameType = Gen5PIDFrameGenerator::StationaryFrame;
+  Gen5PIDFrameGenerator  stGenerator(seed, frameParameters);
+  
+  frameParameters.frameType = Gen5PIDFrameGenerator::StarterFossilGiftFrame;
+  Gen5PIDFrameGenerator  pidGenerator(seed, frameParameters);
   
   // get the PIDs in sync
   gcGenerator.AdvanceFrame();
@@ -329,52 +344,55 @@ struct IDFrameSearchProgressHandler
   
   TrainerIDSearcher::Criteria  criteria;
   
-  criteria.macAddressLow = [gen5ConfigController macAddressLow];
-  criteria.macAddressHigh = [gen5ConfigController macAddressHigh];
+  criteria.seedParameters.macAddress = [gen5ConfigController macAddress];
   
-  criteria.version = [gen5ConfigController version];
+  criteria.seedParameters.version = [gen5ConfigController version];
+  criteria.seedParameters.dsType = [gen5ConfigController dsType];
   
-  criteria.timer0Low = [gen5ConfigController timer0Low];
-  criteria.timer0High = [gen5ConfigController timer0High];
+  criteria.seedParameters.timer0Low = [gen5ConfigController timer0Low];
+  criteria.seedParameters.timer0High = [gen5ConfigController timer0High];
   
-  criteria.vcountLow = [gen5ConfigController vcountLow];
-  criteria.vcountHigh = [gen5ConfigController vcountHigh];
+  criteria.seedParameters.vcountLow = [gen5ConfigController vcountLow];
+  criteria.seedParameters.vcountHigh = [gen5ConfigController vcountHigh];
   
-  criteria.vframeLow = [gen5ConfigController vframeLow];
-  criteria.vframeHigh = [gen5ConfigController vframeHigh];
+  criteria.seedParameters.vframeLow = [gen5ConfigController vframeLow];
+  criteria.seedParameters.vframeHigh = [gen5ConfigController vframeHigh];
   
   if ([tidSidNoKeyHeldButton state])
   {
-    criteria.buttonPresses.push_back(0);  // no keys
+    criteria.seedParameters.heldButtons.push_back(0);  // no keys
   }
   if ([tidSidOneKeyHeldButton state])
   {
-    criteria.buttonPresses.insert(criteria.buttonPresses.end(),
-                                  Button::SingleButtons().begin(),
-                                  Button::SingleButtons().end());
+    criteria.seedParameters.heldButtons.insert
+      (criteria.seedParameters.heldButtons.end(),
+       Button::SingleButtons().begin(),
+       Button::SingleButtons().end());
   }
   if ([tidSidTwoKeysHeldButton state])
   {
-    criteria.buttonPresses.insert(criteria.buttonPresses.end(),
-                                  Button::TwoButtonCombos().begin(),
-                                  Button::TwoButtonCombos().end());
+    criteria.seedParameters.heldButtons.insert
+      (criteria.seedParameters.heldButtons.end(),
+       Button::TwoButtonCombos().begin(),
+       Button::TwoButtonCombos().end());
   }
   if ([tidSidThreeKeysHeldButton state])
   {
-    criteria.buttonPresses.insert(criteria.buttonPresses.end(),
-                                  Button::ThreeButtonCombos().begin(),
-                                  Button::ThreeButtonCombos().end());
+    criteria.seedParameters.heldButtons.insert
+      (criteria.seedParameters.heldButtons.end(),
+       Button::ThreeButtonCombos().begin(),
+       Button::ThreeButtonCombos().end());
   }
   
+  criteria.seedParameters.fromTime =
+    ptime(NSDateToBoostDate([tidSidFromDateField objectValue]), seconds(0));
   
-  criteria.fromTime = ptime(NSDateToBoostDate([tidSidFromDateField objectValue]),
-                            seconds(0));
-  
-  criteria.toTime   = ptime(NSDateToBoostDate([tidSidToDateField objectValue]),
+  criteria.seedParameters.toTime =
+    ptime(NSDateToBoostDate([tidSidToDateField objectValue]),
                             hours(23) + minutes(59) + seconds(59));
   
-  criteria.minFrame = [tidSidMinFrameField intValue];
-  criteria.maxFrame = [tidSidMaxFrameField intValue];
+  criteria.frame.min = [tidSidMinFrameField intValue];
+  criteria.frame.max = [tidSidMaxFrameField intValue];
   
   criteria.hasTID = [tidSidEnableDesiredTidButton state];
   if (criteria.hasTID)
@@ -434,19 +452,19 @@ struct IDFrameSearchProgressHandler
 
   TrainerIDSearcher::Criteria  criteria;
   
-  criteria.macAddressLow = [gen5ConfigController macAddressLow];
-  criteria.macAddressHigh = [gen5ConfigController macAddressHigh];
+  criteria.seedParameters.macAddress = [gen5ConfigController macAddress];
   
-  criteria.version = [gen5ConfigController version];
+  criteria.seedParameters.version = [gen5ConfigController version];
+  criteria.seedParameters.dsType = [gen5ConfigController dsType];
   
-  criteria.timer0Low = [gen5ConfigController timer0Low];
-  criteria.timer0High = [gen5ConfigController timer0High];
+  criteria.seedParameters.timer0Low = [gen5ConfigController timer0Low];
+  criteria.seedParameters.timer0High = [gen5ConfigController timer0High];
   
-  criteria.vcountLow = [gen5ConfigController vcountLow];
-  criteria.vcountHigh = [gen5ConfigController vcountHigh];
+  criteria.seedParameters.vcountLow = [gen5ConfigController vcountLow];
+  criteria.seedParameters.vcountHigh = [gen5ConfigController vcountHigh];
   
-  criteria.vframeLow = [gen5ConfigController vframeLow];
-  criteria.vframeHigh = [gen5ConfigController vframeHigh];
+  criteria.seedParameters.vframeLow = [gen5ConfigController vframeLow];
+  criteria.seedParameters.vframeHigh = [gen5ConfigController vframeHigh];
   
   date  d = NSDateToBoostDate([idFrameDateField objectValue]);
   
@@ -483,15 +501,16 @@ struct IDFrameSearchProgressHandler
     endTime = hours(23) + minutes(59) + seconds(59);
   }
   
-  criteria.fromTime = ptime(d, startTime);
-  criteria.toTime = ptime(d, endTime);
+  criteria.seedParameters.fromTime = ptime(d, startTime);
+  criteria.seedParameters.toTime = ptime(d, endTime);
   
-  criteria.buttonPresses.push_back([[idFrameKeyOnePopUp selectedItem] tag] |
-                                   [[idFrameKeyTwoPopUp selectedItem] tag] |
-                                   [[idFrameKeyThreePopUp selectedItem] tag]);
+  criteria.seedParameters.heldButtons.push_back
+    ([[idFrameKeyOnePopUp selectedItem] tag] |
+     [[idFrameKeyTwoPopUp selectedItem] tag] |
+     [[idFrameKeyThreePopUp selectedItem] tag]);
   
-  criteria.minFrame = [idFrameMinFrameField intValue];
-  criteria.maxFrame = [idFrameMaxFrameField intValue];
+  criteria.frame.min = [idFrameMinFrameField intValue];
+  criteria.frame.max = [idFrameMaxFrameField intValue];
   
   criteria.hasTID = true;
   criteria.tid = [idFrameTrainerIDField intValue];

@@ -43,41 +43,41 @@ struct FrameChecker
   
   bool CheckNature(Nature::Type nature) const
   {
-    return (m_criteria.nature == Nature::ANY) ||
-           (m_criteria.nature == Nature::UNKNOWN) ||
-           (m_criteria.nature == nature);
+    return (m_criteria.pid.nature == Nature::ANY) ||
+           (m_criteria.pid.nature == Nature::UNKNOWN) ||
+           (m_criteria.pid.nature == nature);
   }
   
   bool CheckAbility(uint32_t ability) const
   {
-    return (m_criteria.ability > 1) || (m_criteria.ability == ability);
+    return (m_criteria.pid.ability > 1) || (m_criteria.pid.ability == ability);
   }
   
   bool CheckGender(uint32_t genderValue) const
   {
     return Gender::GenderValueMatches(genderValue,
-                                      m_criteria.gender,
-                                      m_criteria.genderRatio);
+                                      m_criteria.pid.gender,
+                                      m_criteria.pid.genderRatio);
   }
   
   bool CheckIVs(const IVs &ivs) const
   {
-    return ivs.betterThanOrEqual(m_criteria.minIVs) &&
-           (!m_criteria.shouldCheckMaxIVs ||
-            ivs.worseThanOrEqual(m_criteria.maxIVs));
+    return ivs.betterThanOrEqual(m_criteria.ivs.min) &&
+           (!m_criteria.ivs.shouldCheckMax ||
+            ivs.worseThanOrEqual(m_criteria.ivs.max));
   }
 
   bool CheckHiddenPower(const IVs &ivs) const
   {
-    if (m_criteria.hiddenType == Element::UNKNOWN)
+    if (m_criteria.ivs.hiddenType == Element::UNKNOWN)
     {
       return true;
     }
     
-    if ((m_criteria.hiddenType == Element::ANY) ||
-        (m_criteria.hiddenType == ivs.HiddenType()))
+    if ((m_criteria.ivs.hiddenType == Element::ANY) ||
+        (m_criteria.ivs.hiddenType == ivs.HiddenType()))
     {
-      return ivs.HiddenPower() >= m_criteria.minHiddenPower;
+      return ivs.HiddenPower() >= m_criteria.ivs.minHiddenPower;
     }
     
     return false;
@@ -94,11 +94,7 @@ struct FrameGeneratorFactory
   
   WonderCardFrameGenerator operator()(const HashedSeed &seed) const
   {
-    return WonderCardFrameGenerator(seed, m_criteria.startFromLowestFrame,
-                                    m_criteria.ivSkip, m_criteria.pidSkip,
-                                    m_criteria.natureSkip,
-                                    m_criteria.canBeShiny,
-                                    m_criteria.tid, m_criteria.sid);
+    return WonderCardFrameGenerator(seed, m_criteria.frameParameters);
   }
   
   const WonderCardSeedSearcher::Criteria  &m_criteria;
@@ -108,32 +104,25 @@ struct FrameGeneratorFactory
 
 uint64_t WonderCardSeedSearcher::Criteria::ExpectedNumberOfResults() const
 {
-  uint64_t  seconds = (toTime - fromTime).total_seconds() + 1;
-  uint64_t  keyCombos = buttonPresses.size();
-  uint64_t  timer0Values = (timer0High - timer0Low) + 1;
-  uint64_t  vcountValues = (vcountHigh - vcountLow) + 1;
-  uint64_t  vframeValues = (vframeHigh - vframeLow) + 1;
+  uint64_t  numSeeds = seedParameters.NumberOfSeeds();
   
-  uint64_t  numSeeds =
-    seconds * keyCombos * timer0Values * vcountValues * vframeValues;
+  uint64_t  numFrames = frame.max - frame.min + 1;
   
-  uint64_t  numFrames = maxFrame - minFrame + 1;
+  IVs  maxIVs = ivs.shouldCheckMax ? ivs.max : IVs(0x7FFF7FFF);
   
-  IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
+  uint64_t  numIVs = IVs::CalculateNumberOfCombinations(ivs.min, ivs.max);
   
-  uint64_t  numIVs = IVs::CalculateNumberOfCombinations(minIVs, maxIVs);
-  
-  uint64_t  natureDivisor = (nature != Nature::ANY) ? 25 : 1;
-  uint64_t  abilityDivisor = (ability > 1) ? 1 : 2;
+  uint64_t  natureDivisor = (pid.nature != Nature::ANY) ? 25 : 1;
+  uint64_t  abilityDivisor = (pid.ability > 1) ? 1 : 2;
   
   uint64_t  numResults = numSeeds * numFrames * numIVs /
                          (32 * 32 * 32 * 32 * 32 * 32 *
                           natureDivisor * abilityDivisor);
   
-  if (hiddenType != Element::UNKNOWN)
+  if (ivs.hiddenType != Element::UNKNOWN)
   {
     numResults = IVs::AdjustExpectedResultsForHiddenPower
-      (numResults, minIVs, maxIVs, hiddenType, minHiddenPower);
+      (numResults, ivs.min, ivs.max, ivs.hiddenType, ivs.minHiddenPower);
   }
   
   return numResults;
@@ -143,23 +132,16 @@ void WonderCardSeedSearcher::Search(const Criteria &criteria,
                                     const ResultCallback &resultHandler,
                                     const ProgressCallback &progressHandler)
 {
-  HashedSeedGenerator   seedGenerator(criteria.version,
-                                      criteria.macAddressLow,
-                                      criteria.macAddressHigh,
-                                      criteria.timer0Low, criteria.timer0High,
-                                      criteria.vcountLow, criteria.vcountHigh,
-                                      criteria.vframeLow, criteria.vframeHigh,
-                                      criteria.fromTime, criteria.toTime,
-                                      criteria.buttonPresses);
+  HashedSeedGenerator           seedGenerator(criteria.seedParameters);
   
-  FrameChecker              frameChecker(criteria);
+  FrameChecker                  frameChecker(criteria);
   
   // slightly hacky...
-  SearcherType::FrameRange  frameRange(criteria.startFromLowestFrame ? 1 :
-                                       criteria.minFrame,
-                                       criteria.maxFrame);
+  SeedSearcherType::FrameRange  frameRange
+    (criteria.frameParameters.startFromLowestFrame ? 1 : criteria.frame.min,
+     criteria.frame.max);
   
-  SearcherType              searcher;
+  SeedSearcherType              searcher;
   
   searcher.SearchThreaded(seedGenerator, FrameGeneratorFactory(criteria),
                           frameRange, frameChecker,

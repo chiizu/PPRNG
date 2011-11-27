@@ -22,31 +22,46 @@
 #import <Cocoa/Cocoa.h>
 #import "VertResizeOnlyWindowController.h"
 #import "SearcherController.h"
+#import "Gen4ConfigurationController.h"
 #import "IVParameterController.h"
 
 @interface Gen4SeedSearcherController : VertResizeOnlyWindowController
 {
-  IBOutlet IVParameterController  *ivParameterController;
-  IBOutlet SearcherController     *searcherController;
+  IBOutlet Gen4ConfigurationController  *gen4ConfigController;
+  IBOutlet IVParameterController        *ivParameterController;
+  IBOutlet SearcherController           *searcherController;
   
-  IBOutlet NSPopUpButton  *searchTypeMenu;
+  IBOutlet NSPopUpButton  *naturePopup;
+  IBOutlet NSPopUpButton  *abilityPopUp;
+  IBOutlet NSPopUpButton  *genderPopUp;
+  IBOutlet NSPopUpButton  *genderRatioPopUp;
+  IBOutlet NSPopUpButton  *esvPopUp;
   
-  IBOutlet NSTextField    *tidField;
-  IBOutlet NSTextField    *sidField;
+  int                     mode;
   
-  IBOutlet NSTextField    *minFrameField;
-  IBOutlet NSTextField    *maxFrameField;
+  BOOL                    shinyOnly;
+  int                     nature;
+  int                     ability;
+  int                     gender;
+  int                     genderRatio;
   
-  IBOutlet NSTextField    *minDelayField;
-  IBOutlet NSTextField    *maxDelayField;
-  
-  IBOutlet NSPopUpButton  *natureMenu;
-  
-  IBOutlet NSButton       *shinyOnlyButton;
+  uint32_t                minFrame;
+  uint32_t                maxFrame;
+  uint32_t                minDelay;
+  uint32_t                maxDelay;
 }
 
-- (IBAction)switchSearchType:(id)sender;
+@property int       mode;
+@property BOOL      shinyOnly;
+@property int       nature;
+@property int       ability;
+@property int       gender;
+@property int       genderRatio;
+@property uint32_t  minFrame;
+@property uint32_t  maxFrame;
+@property uint32_t  minDelay;
+@property uint32_t  maxDelay;
 
-//- (void)inspect:(NSArray *)selectedObjects;
+- (IBAction)toggleESVChoice:(id)sender;
 
 @end

@@ -45,7 +45,7 @@ public:
   
   ReturnType Next()
   {
-    IntegerType  result = (m_seed * Mux) + Inc;
+    IntegerType  result = NextForSeed(m_seed);
     m_seed = result;
     return result;
   }

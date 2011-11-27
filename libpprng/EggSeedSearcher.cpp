@@ -104,9 +104,9 @@ struct IVFrameChecker
 {
   IVFrameChecker(const EggSeedSearcher::Criteria &criteria)
     : m_possibleIVs(GenerateIVRanges(criteria.femaleIVs, criteria.maleIVs,
-                                     criteria.minIVs,
-                                     criteria.shouldCheckMaxIVs ?
-                                       criteria.maxIVs : IVs(0x7fff7fff)))
+                                     criteria.ivs.min,
+                                     criteria.ivs.shouldCheckMax ?
+                                       criteria.ivs.max : IVs(0x7fff7fff)))
   {}
   
   bool operator()(const HashedIVFrame &frame) const
@@ -140,21 +140,19 @@ struct IVFrameResultHandler
   void operator()(const HashedIVFrame &frame) const
   {
     Gen5BreedingFrameGenerator  generator
-      (frame.seed, m_criteria.internationalParents,
-       m_criteria.usingEverstone, m_criteria.usingDitto,
-       m_criteria.tid, m_criteria.sid);
+      (frame.seed, m_criteria.frameParameters);
     
     uint32_t  frameNum = 0;
-    uint32_t  limitFrame = m_criteria.searchFromInitialPIDFrame ?
+    uint32_t  limitFrame = m_criteria.pid.searchFromInitialFrame ?
       frame.seed.GetSkippedPIDFrames() + 1 :
-      m_criteria.minPIDFrame - 1;
+      m_criteria.pidFrame.min - 1;
     while (frameNum < limitFrame)
     {
       generator.AdvanceFrame();
       ++frameNum;
     }
     
-    while (frameNum < m_criteria.maxPIDFrame)
+    while (frameNum < m_criteria.pidFrame.max)
     {
       generator.AdvanceFrame();
       ++frameNum;
@@ -179,29 +177,32 @@ struct IVFrameResultHandler
   
   bool CheckShiny(PID pid) const
   {
-    return !m_criteria.shinyOnly || pid.IsShiny(m_criteria.tid, m_criteria.sid);
+    return !m_criteria.shinyOnly ||
+           pid.IsShiny(m_criteria.frameParameters.tid,
+                       m_criteria.frameParameters.sid);
   }
   
   bool CheckNature(const Gen5BreedingFrame &frame) const
   {
-    return (m_criteria.nature == Nature::ANY) ||
-           (m_criteria.usingEverstone && frame.everstoneActivated) ||
-           (m_criteria.nature == frame.nature);
+    return (m_criteria.pid.nature == Nature::ANY) ||
+           (m_criteria.frameParameters.usingEverstone &&
+            frame.everstoneActivated) ||
+           (m_criteria.pid.nature == frame.nature);
   }
   
   bool CheckAbility(const Gen5BreedingFrame &frame) const
   {
-    return ((m_criteria.ability > 1) ||
-            (m_criteria.ability == frame.pid.Gen5Ability())) &&
-           (!m_criteria.inheritsDreamworldAbility ||
-            frame.dreamWorldAbilityPassed);
+    return ((m_criteria.pid.ability > 1) ||
+            (m_criteria.pid.ability == frame.pid.Gen5Ability())) &&
+           (!m_criteria.inheritsHiddenAbility ||
+            frame.inheritsHiddenAbility);
   }
   
   bool CheckGender(const Gen5BreedingFrame &frame) const
   {
     return Gender::GenderValueMatches(frame.pid.GenderValue(),
-                                      m_criteria.gender,
-                                      m_criteria.genderRatio);
+                                      m_criteria.pid.gender,
+                                      m_criteria.pid.genderRatio);
   }
   
   bool CheckSpecies(const Gen5BreedingFrame &frame) const
@@ -212,22 +213,22 @@ struct IVFrameResultHandler
   
   bool CheckIVs(const IVs &ivs) const
   {
-    return ivs.betterThanOrEqual(m_criteria.minIVs) &&
-           (!m_criteria.shouldCheckMaxIVs ||
-            ivs.worseThanOrEqual(m_criteria.maxIVs));
+    return ivs.betterThanOrEqual(m_criteria.ivs.min) &&
+           (!m_criteria.ivs.shouldCheckMax ||
+            ivs.worseThanOrEqual(m_criteria.ivs.max));
   }
 
   bool CheckHiddenPower(const IVs &ivs) const
   {
-    if (m_criteria.hiddenType == Element::UNKNOWN)
+    if (m_criteria.ivs.hiddenType == Element::UNKNOWN)
     {
       return true;
     }
     
-    if ((m_criteria.hiddenType == Element::ANY) ||
-        (m_criteria.hiddenType == ivs.HiddenType()))
+    if ((m_criteria.ivs.hiddenType == Element::ANY) ||
+        (m_criteria.ivs.hiddenType == ivs.HiddenType()))
     {
-      return ivs.HiddenPower() >= m_criteria.minHiddenPower;
+      return ivs.HiddenPower() >= m_criteria.ivs.minHiddenPower;
     }
     
     return false;
@@ -250,41 +251,33 @@ struct IVFrameGeneratorFactory
 
 uint64_t EggSeedSearcher::Criteria::ExpectedNumberOfResults() const
 {
-  IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
+  IVs  maxIVs = ivs.shouldCheckMax ? ivs.max : IVs(0x7FFF7FFF);
   
   std::vector<IVRange>  ivRanges =
-    GenerateIVRanges(femaleIVs, maleIVs, minIVs, maxIVs);
+    GenerateIVRanges(femaleIVs, maleIVs, ivs.min, maxIVs);
   
   if (ivRanges.size() == 0)
     return 0;
   
+  uint64_t  numSeeds = seedParameters.NumberOfSeeds();
   
-  uint64_t  seconds = (toTime - fromTime).total_seconds() + 1;
-  uint64_t  keyCombos = buttonPresses.size();
-  uint64_t  timer0Values = (timer0High - timer0Low) + 1;
-  uint64_t  vcountValues = (vcountHigh - vcountLow) + 1;
-  uint64_t  vframeValues = (vframeHigh - vframeLow) + 1;
-  
-  uint64_t  numSeeds =
-    seconds * keyCombos * timer0Values * vcountValues * vframeValues;
-  
-  uint64_t  numIVFrames = maxIVFrame - minIVFrame + 1;
+  uint64_t  numIVFrames = ivFrame.max - ivFrame.min + 1;
   
   uint64_t  hpDivisor = 1;
-  if (hiddenType != Element::UNKNOWN)
+  if (ivs.hiddenType != Element::UNKNOWN)
   {
     hpDivisor = 1; // number of power levels is 40, but...
     
-    if (hiddenType != Element::ANY)
+    if (ivs.hiddenType != Element::ANY)
     {
       hpDivisor *= 16;
     }
   }
   
   uint64_t  natureMultiplier, natureDivisor;
-  if (nature != Nature::ANY)
+  if (pid.nature != Nature::ANY)
   {
-    natureMultiplier = usingEverstone ? 13 : 1;
+    natureMultiplier = frameParameters.usingEverstone ? 13 : 1;
     natureDivisor = 25;
   }
   else
@@ -292,9 +285,9 @@ uint64_t EggSeedSearcher::Criteria::ExpectedNumberOfResults() const
     natureMultiplier = natureDivisor = 1;
   }
   
-  uint64_t  abilityDivisor = (ability < 2) ? 2 : 1;
+  uint64_t  abilityDivisor = (pid.ability < 2) ? 2 : 1;
   uint64_t  dwMultiplier, dwDivisor;
-  if (inheritsDreamworldAbility && !usingDitto)
+  if (inheritsHiddenAbility && !frameParameters.usingDitto)
   {
     dwMultiplier = 3;
     dwDivisor = 5;
@@ -306,7 +299,7 @@ uint64_t EggSeedSearcher::Criteria::ExpectedNumberOfResults() const
   uint64_t  shinyMultiplier, shinyDivisor;
   if (shinyOnly)
   {
-    shinyMultiplier = internationalParents ? 6 : 1;
+    shinyMultiplier = frameParameters.internationalParents ? 6 : 1;
     shinyDivisor = 8192;
   }
   else
@@ -314,7 +307,7 @@ uint64_t EggSeedSearcher::Criteria::ExpectedNumberOfResults() const
     shinyMultiplier = shinyDivisor = 1;
   }
   
-  uint64_t  numPIDFrames = maxPIDFrame - minPIDFrame + 1;
+  uint64_t  numPIDFrames = pidFrame.max - pidFrame.min + 1;
   
   uint64_t  multiplier = numIVFrames * numSeeds * numPIDFrames *
                          natureMultiplier * dwMultiplier * shinyMultiplier;
@@ -347,14 +340,7 @@ void EggSeedSearcher::Search(const Criteria &criteria,
                              const ResultCallback &resultHandler,
                              const ProgressCallback &progressHandler)
 {
-  HashedSeedGenerator   seedGenerator(criteria.version,
-                                      criteria.macAddressLow,
-                                      criteria.macAddressHigh,
-                                      criteria.timer0Low, criteria.timer0High,
-                                      criteria.vcountLow, criteria.vcountHigh,
-                                      criteria.vframeLow, criteria.vframeHigh,
-                                      criteria.fromTime, criteria.toTime,
-                                      criteria.buttonPresses);
+  HashedSeedGenerator   seedGenerator(criteria.seedParameters);
   
   IVFrameGeneratorFactory   ivFrameGenFactory;
   
@@ -362,15 +348,10 @@ void EggSeedSearcher::Search(const Criteria &criteria,
   
   IVFrameResultHandler      ivFrameResultHandler(criteria, resultHandler);
   
-  typedef SeedSearcher<HashedIVFrameGenerator>  SearcherType;
-  
-  SearcherType::FrameRange  ivFrameRange
-                              (criteria.minIVFrame, criteria.maxIVFrame);
-  
-  SearcherType              searcher;
+  SeedSearcherType              searcher;
   
   searcher.SearchThreaded(seedGenerator, ivFrameGenFactory,
-                         ivFrameRange, ivFrameChecker,
+                         criteria.ivFrame, ivFrameChecker,
                          ivFrameResultHandler, progressHandler);
 }
 

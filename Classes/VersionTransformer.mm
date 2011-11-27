@@ -45,7 +45,7 @@ using namespace pprng;
   if (![value respondsToSelector: @selector(intValue)])
   {
     [NSException raise: NSInternalInconsistencyException
-                 format: @"Value (%@) does not respond to -floatValue.",
+                 format: @"Value (%@) does not respond to -intValue.",
                          [value class]];
   }
   

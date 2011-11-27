@@ -133,6 +133,11 @@ using namespace pprng;
   return static_cast<DS::Type>([dsTypeNum intValue]);
 }
 
+- (MACAddress)macAddress
+{
+  return MACAddress([self macAddressHigh], [self macAddressLow]);
+}
+
 - (uint32_t)macAddressLow
 {
   return [macAddressField0 intValue] |

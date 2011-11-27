@@ -34,6 +34,7 @@ public:
   
   struct FrameRange
   {
+    FrameRange() : min(0), max(0) {}
     FrameRange(uint32_t mi, uint32_t ma) : min(mi), max(ma) {}
     
     uint32_t  min;

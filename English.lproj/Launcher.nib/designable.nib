@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
-		<string key="IBDocument.SystemVersion">10H574</string>
-		<string key="IBDocument.InterfaceBuilderVersion">823</string>
-		<string key="IBDocument.AppKitVersion">1038.35</string>
+		<string key="IBDocument.SystemVersion">10K549</string>
+		<string key="IBDocument.InterfaceBuilderVersion">851</string>
+		<string key="IBDocument.AppKitVersion">1038.36</string>
 		<string key="IBDocument.HIToolboxVersion">461.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">823</string>
+			<string key="NS.object.0">851</string>
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -41,7 +41,7 @@
 			<object class="NSWindowTemplate" id="1005">
 				<int key="NSWindowStyleMask">5</int>
 				<int key="NSWindowBacking">2</int>
-				<string key="NSWindowRect">{{0, 315}, {265, 541}}</string>
+				<string key="NSWindowRect">{{0, 255}, {265, 601}}</string>
 				<int key="NSWTFlags">544735232</int>
 				<string key="NSWindowTitle">PPRNG</string>
 				<string key="NSWindowClass">NSWindow</string>
@@ -271,7 +271,7 @@
 									<reference key="NSSuperview" ref="891522476"/>
 								</object>
 							</object>
-							<string key="NSFrame">{{17, 82}, {231, 452}}</string>
+							<string key="NSFrame">{{17, 142}, {231, 452}}</string>
 							<reference key="NSSuperview" ref="1006"/>
 							<string key="NSOffsets">{0, 0}</string>
 							<object class="NSTextFieldCell" key="NSTitleCell">
@@ -316,7 +316,7 @@
 										<object class="NSButton" id="39231531">
 											<reference key="NSNextResponder" ref="41873618"/>
 											<int key="NSvFlags">268</int>
-											<string key="NSFrame">{{18, 12}, {193, 25}}</string>
+											<string key="NSFrame">{{18, 72}, {193, 25}}</string>
 											<reference key="NSSuperview" ref="41873618"/>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSButtonCell" key="NSCell" id="342993094">
@@ -333,12 +333,52 @@
 												<int key="NSPeriodicInterval">75</int>
 											</object>
 										</object>
+										<object class="NSButton" id="765056736">
+											<reference key="NSNextResponder" ref="41873618"/>
+											<int key="NSvFlags">268</int>
+											<string key="NSFrame">{{18, 42}, {193, 25}}</string>
+											<reference key="NSSuperview" ref="41873618"/>
+											<bool key="NSEnabled">YES</bool>
+											<object class="NSButtonCell" key="NSCell" id="763795780">
+												<int key="NSCellFlags">-2080244224</int>
+												<int key="NSCellFlags2">134217728</int>
+												<string key="NSContents">Seed Inspector</string>
+												<reference key="NSSupport" ref="634247281"/>
+												<reference key="NSControlView" ref="765056736"/>
+												<int key="NSButtonFlags">-2038152961</int>
+												<int key="NSButtonFlags2">163</int>
+												<string key="NSAlternateContents"/>
+												<string key="NSKeyEquivalent"/>
+												<int key="NSPeriodicDelay">400</int>
+												<int key="NSPeriodicInterval">75</int>
+											</object>
+										</object>
+										<object class="NSButton" id="797043062">
+											<reference key="NSNextResponder" ref="41873618"/>
+											<int key="NSvFlags">268</int>
+											<string key="NSFrame">{{18, 12}, {193, 25}}</string>
+											<reference key="NSSuperview" ref="41873618"/>
+											<bool key="NSEnabled">YES</bool>
+											<object class="NSButtonCell" key="NSCell" id="248483210">
+												<int key="NSCellFlags">67239424</int>
+												<int key="NSCellFlags2">134217728</int>
+												<string key="NSContents">Game Config</string>
+												<reference key="NSSupport" ref="634247281"/>
+												<reference key="NSControlView" ref="797043062"/>
+												<int key="NSButtonFlags">-2038152961</int>
+												<int key="NSButtonFlags2">163</int>
+												<string key="NSAlternateContents"/>
+												<string key="NSKeyEquivalent"/>
+												<int key="NSPeriodicDelay">400</int>
+												<int key="NSPeriodicInterval">75</int>
+											</object>
+										</object>
 									</object>
-									<string key="NSFrame">{{1, 1}, {229, 46}}</string>
+									<string key="NSFrame">{{1, 1}, {229, 106}}</string>
 									<reference key="NSSuperview" ref="964121309"/>
 								</object>
 							</object>
-							<string key="NSFrame">{{17, 16}, {231, 62}}</string>
+							<string key="NSFrame">{{17, 16}, {231, 122}}</string>
 							<reference key="NSSuperview" ref="1006"/>
 							<string key="NSOffsets">{0, 0}</string>
 							<object class="NSTextFieldCell" key="NSTitleCell">
@@ -359,7 +399,7 @@
 							<bool key="NSTransparent">NO</bool>
 						</object>
 					</object>
-					<string key="NSFrameSize">{265, 541}</string>
+					<string key="NSFrameSize">{265, 601}</string>
 					<reference key="NSSuperview"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1440, 878}}</string>
@@ -561,6 +601,38 @@
 					</object>
 					<int key="connectionID">63</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">launch:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="765056736"/>
+					</object>
+					<int key="connectionID">66</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">launchGen4SeedInspector</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="765056736"/>
+					</object>
+					<int key="connectionID">67</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">launch:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="797043062"/>
+					</object>
+					<int key="connectionID">70</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">launchGen4ConfigurationEdit</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="797043062"/>
+					</object>
+					<int key="connectionID">71</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -730,6 +802,8 @@
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="39231531"/>
+							<reference ref="765056736"/>
+							<reference ref="797043062"/>
 						</object>
 						<reference key="parent" ref="1006"/>
 					</object>
@@ -789,6 +863,34 @@
 						<reference key="object" ref="830326195"/>
 						<reference key="parent" ref="465438494"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">64</int>
+						<reference key="object" ref="765056736"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<reference ref="763795780"/>
+						</object>
+						<reference key="parent" ref="964121309"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">65</int>
+						<reference key="object" ref="763795780"/>
+						<reference key="parent" ref="765056736"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">68</int>
+						<reference key="object" ref="797043062"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<reference ref="248483210"/>
+						</object>
+						<reference key="parent" ref="964121309"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">69</int>
+						<reference key="object" ref="248483210"/>
+						<reference key="parent" ref="797043062"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -822,6 +924,7 @@
 					<string>21.IBPluginDependency</string>
 					<string>22.IBPluginDependency</string>
 					<string>23.IBPluginDependency</string>
+					<string>23.IBViewBoundsToFrameTransform</string>
 					<string>24.IBPluginDependency</string>
 					<string>47.IBPluginDependency</string>
 					<string>47.IBViewBoundsToFrameTransform</string>
@@ -835,6 +938,11 @@
 					<string>60.IBPluginDependency</string>
 					<string>60.IBViewBoundsToFrameTransform</string>
 					<string>61.IBPluginDependency</string>
+					<string>64.IBPluginDependency</string>
+					<string>65.IBPluginDependency</string>
+					<string>68.IBPluginDependency</string>
+					<string>68.IBViewBoundsToFrameTransform</string>
+					<string>69.IBPluginDependency</string>
 					<string>7.IBPluginDependency</string>
 					<string>8.IBPluginDependency</string>
 					<string>8.IBViewBoundsToFrameTransform</string>
@@ -845,9 +953,9 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{0, 315}, {265, 541}}</string>
+					<string>{{327, 255}, {265, 601}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{0, 315}, {265, 541}}</string>
+					<string>{{327, 255}, {265, 601}}</string>
 					<integer value="1"/>
 					<string>{196, 240}</string>
 					<string>{{357, 418}, {480, 270}}</string>
@@ -879,6 +987,9 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<object class="NSAffineTransform">
+						<bytes key="NSTransformStruct">P4AAAL+AAABBkAAAwq4AAA</bytes>
+					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
@@ -898,6 +1009,13 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
 						<bytes key="NSTransformStruct">P4AAAL+AAABBUAAAw68AAA</bytes>
+					</object>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<object class="NSAffineTransform">
+						<bytes key="NSTransformStruct">P4AAAL+AAABBkAAAwgwAAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -924,7 +1042,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">63</int>
+			<int key="maxID">71</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -950,6 +1068,9 @@
 							<string>launchCGearSeedInspector</string>
 							<string>launchCGearSeedSearcher</string>
 							<string>launchDSParameterSearcher</string>
+							<string>launchEggSeedSearcher</string>
+							<string>launchGen4ConfigurationEdit</string>
+							<string>launchGen4SeedInspector</string>
 							<string>launchGen4SeedSearcher</string>
 							<string>launchGen5ConfigurationEdit</string>
 							<string>launchHashedSeedInspector</string>
@@ -970,6 +1091,9 @@
 							<string>NSButton</string>
 							<string>NSButton</string>
 							<string>NSButton</string>
+							<string>NSButton</string>
+							<string>NSButton</string>
+							<string>NSButton</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -979,6 +1103,9 @@
 							<string>launchCGearSeedInspector</string>
 							<string>launchCGearSeedSearcher</string>
 							<string>launchDSParameterSearcher</string>
+							<string>launchEggSeedSearcher</string>
+							<string>launchGen4ConfigurationEdit</string>
+							<string>launchGen4SeedInspector</string>
 							<string>launchGen4SeedSearcher</string>
 							<string>launchGen5ConfigurationEdit</string>
 							<string>launchHashedSeedInspector</string>
@@ -999,6 +1126,18 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">launchDSParameterSearcher</string>
+								<string key="candidateClassName">NSButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">launchEggSeedSearcher</string>
+								<string key="candidateClassName">NSButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">launchGen4ConfigurationEdit</string>
+								<string key="candidateClassName">NSButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">launchGen4SeedInspector</string>
 								<string key="candidateClassName">NSButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -1061,6 +1200,7 @@
 							<string>launchCGearSeedSearcher</string>
 							<string>launchDSParameterSearcher</string>
 							<string>launchEggSeedSearcher</string>
+							<string>launchGen4SeedInspector</string>
 							<string>launchGen4SeedSearcher</string>
 							<string>launchGen5ConfigurationEdit</string>
 							<string>launchHashedSeedInspector</string>
@@ -1082,6 +1222,7 @@
 							<string>NSButton</string>
 							<string>NSButton</string>
 							<string>NSButton</string>
+							<string>NSButton</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -1092,6 +1233,7 @@
 							<string>launchCGearSeedSearcher</string>
 							<string>launchDSParameterSearcher</string>
 							<string>launchEggSeedSearcher</string>
+							<string>launchGen4SeedInspector</string>
 							<string>launchGen4SeedSearcher</string>
 							<string>launchGen5ConfigurationEdit</string>
 							<string>launchHashedSeedInspector</string>
@@ -1116,6 +1258,10 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">launchEggSeedSearcher</string>
+								<string key="candidateClassName">NSButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">launchGen4SeedInspector</string>
 								<string key="candidateClassName">NSButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -1167,21 +1313,21 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">NSApplication</string>
 					<string key="superclassName">NSResponder</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="621393280">
+					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="508884723">
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">AppKit.framework/Headers/NSApplication.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NSApplication</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="687694867">
+					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="952406368">
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">AppKit.framework/Headers/NSApplicationScripting.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NSApplication</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="775026479">
+					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="108509375">
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">AppKit.framework/Headers/NSColorPanel.h</string>
 					</object>
@@ -1242,7 +1388,7 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">NSControl</string>
 					<string key="superclassName">NSView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="1016710962">
+					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="320914859">
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">AppKit.framework/Headers/NSControl.h</string>
 					</object>
@@ -1258,7 +1404,7 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">NSMenu</string>
 					<string key="superclassName">NSObject</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="1008403128">
+					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="649936102">
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">AppKit.framework/Headers/NSMenu.h</string>
 					</object>
@@ -1272,19 +1418,19 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NSObject</string>
-					<reference key="sourceIdentifier" ref="621393280"/>
+					<reference key="sourceIdentifier" ref="508884723"/>
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NSObject</string>
-					<reference key="sourceIdentifier" ref="687694867"/>
+					<reference key="sourceIdentifier" ref="952406368"/>
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NSObject</string>
-					<reference key="sourceIdentifier" ref="775026479"/>
+					<reference key="sourceIdentifier" ref="108509375"/>
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NSObject</string>
-					<reference key="sourceIdentifier" ref="1016710962"/>
+					<reference key="sourceIdentifier" ref="320914859"/>
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NSObject</string>
@@ -1323,7 +1469,7 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NSObject</string>
-					<reference key="sourceIdentifier" ref="1008403128"/>
+					<reference key="sourceIdentifier" ref="649936102"/>
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NSObject</string>
@@ -1369,7 +1515,7 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NSObject</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="510014374">
+					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="95144323">
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">AppKit.framework/Headers/NSView.h</string>
 					</object>
@@ -1546,7 +1692,7 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">NSView</string>
 					<string key="superclassName">NSResponder</string>
-					<reference key="sourceIdentifier" ref="510014374"/>
+					<reference key="sourceIdentifier" ref="95144323"/>
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NSWindow</string>
@@ -1602,7 +1748,7 @@
 			<integer value="3000" key="NS.object.0"/>
 		</object>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
-		<string key="IBDocument.LastKnownRelativeProjectPath">../PPRNG.xcodeproj</string>
+		<string key="IBDocument.LastKnownRelativeProjectPath">../../pprng/pprng.xcodeproj</string>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 	</data>
 </archive>

@@ -22,6 +22,7 @@
 #define WONDER_CARD_SEED_SEARCHER_H
 
 #include "BasicTypes.h"
+#include "SeedGenerator.h"
 #include "SeedSearcher.h"
 #include "FrameGenerator.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -32,39 +33,28 @@ namespace pprng
 class WonderCardSeedSearcher
 {
 public:
+  typedef SeedSearcher<WonderCardFrameGenerator>  SeedSearcherType;
+  typedef SeedSearcherType::Frame                 Frame;
+  typedef SeedSearcherType::ResultCallback        ResultCallback;
+  typedef SeedSearcherType::ProgressCallback      ProgressCallback;
+  
   struct Criteria : public SeedSearchCriteria
   {
-    Game::Version             version;
-    uint32_t                  macAddressLow, macAddressHigh;
-    uint32_t                  timer0Low, timer0High;
-    uint32_t                  vcountLow, vcountHigh;
-    uint32_t                  vframeLow, vframeHigh;
-    boost::posix_time::ptime  fromTime, toTime;
-    Button::List              buttonPresses;
-    bool                      startFromLowestFrame;
-    uint32_t                  minFrame, maxFrame;
-    uint32_t                  ivSkip, pidSkip, natureSkip;
-    uint32_t                  maxResults;
-    Nature::Type              nature;
-    uint32_t                  ability;
-    Gender::Type              gender;
-    Gender::Ratio             genderRatio;
-    bool                      canBeShiny;
-    uint32_t                  tid, sid;
-    bool                      shouldCheckMaxIVs;
-    IVs                       minIVs, maxIVs;
-    Element::Type             hiddenType;
-    uint32_t                  minHiddenPower;
+    HashedSeedGenerator::Parameters       seedParameters;
+    WonderCardFrameGenerator::Parameters  frameParameters;
+    SeedSearchCriteria::IVCriteria        ivs;
+    SeedSearchCriteria::PIDCriteria       pid;
+    SeedSearcherType::FrameRange          frame;
+    
+    Criteria()
+      : SeedSearchCriteria(), seedParameters(), frameParameters(),
+        ivs(), pid(), frame()
+    {}
     
     uint64_t ExpectedNumberOfResults() const;
   };
   
   WonderCardSeedSearcher() {}
-  
-  typedef SeedSearcher<WonderCardFrameGenerator>  SearcherType;
-  typedef SearcherType::Frame                     Frame;
-  typedef SearcherType::ResultCallback            ResultCallback;
-  typedef SearcherType::ProgressCallback          ProgressCallback;
   
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
               const ProgressCallback &progressHandler);

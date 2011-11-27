@@ -20,7 +20,6 @@
 
 
 #include "HashedSeedSearcher.h"
-#include "SeedGenerator.h"
 
 namespace pprng
 {
@@ -41,22 +40,22 @@ struct FrameChecker
   
   bool CheckIVs(const IVs &ivs) const
   {
-    return ivs.betterThanOrEqual(m_criteria.minIVs) &&
-           (!m_criteria.shouldCheckMaxIVs ||
-            ivs.worseThanOrEqual(m_criteria.maxIVs));
+    return ivs.betterThanOrEqual(m_criteria.ivs.min) &&
+           (!m_criteria.ivs.shouldCheckMax ||
+            ivs.worseThanOrEqual(m_criteria.ivs.max));
   }
 
   bool CheckHiddenPower(const IVs &ivs) const
   {
-    if (m_criteria.hiddenType == Element::UNKNOWN)
+    if (m_criteria.ivs.hiddenType == Element::UNKNOWN)
     {
       return true;
     }
     
-    if ((m_criteria.hiddenType == Element::ANY) ||
-        (m_criteria.hiddenType == ivs.HiddenType()))
+    if ((m_criteria.ivs.hiddenType == Element::ANY) ||
+        (m_criteria.ivs.hiddenType == ivs.HiddenType()))
     {
-      return ivs.HiddenPower() >= m_criteria.minHiddenPower;
+      return ivs.HiddenPower() >= m_criteria.ivs.minHiddenPower;
     }
     
     return false;
@@ -83,57 +82,39 @@ struct FrameGeneratorFactory
 
 uint64_t HashedSeedSearcher::Criteria::ExpectedNumberOfResults() const
 {
-  uint64_t  seconds = (toTime - fromTime).total_seconds() + 1;
-  uint64_t  keyCombos = buttonPresses.size();
-  uint64_t  timer0Values = (timer0High - timer0Low) + 1;
-  uint64_t  vcountValues = (vcountHigh - vcountLow) + 1;
-  uint64_t  vframeValues = (vframeHigh - vframeLow) + 1;
+  uint64_t  numSeeds = seedParameters.NumberOfSeeds();
   
-  uint64_t  numSeeds =
-    seconds * keyCombos * timer0Values * vcountValues * vframeValues;
+  uint64_t  numIVFrames = ivFrame.max - ivFrame.min + 1;
   
-  uint64_t  numIVFrames = maxIVFrame - minIVFrame + 1;
+  IVs  maxIVs = ivs.shouldCheckMax ? ivs.max : IVs(0x7FFF7FFF);
   
-  IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
-  
-  uint64_t  numIVs = IVs::CalculateNumberOfCombinations(minIVs, maxIVs);
+  uint64_t  numIVs = IVs::CalculateNumberOfCombinations(ivs.min, ivs.max);
   
   uint64_t  numResults = numIVFrames * numSeeds * numIVs /
                            (32 * 32 * 32 * 32 * 32 * 32);
   
-  if (hiddenType != Element::UNKNOWN)
+  if (ivs.hiddenType != Element::UNKNOWN)
   {
     numResults = IVs::AdjustExpectedResultsForHiddenPower
-      (numResults, minIVs, maxIVs, hiddenType, minHiddenPower);
+      (numResults, ivs.min, ivs.max, ivs.hiddenType, ivs.minHiddenPower);
   }
   
   return numResults;
 }
 
 void HashedSeedSearcher::Search(const Criteria &criteria,
-                                  const ResultCallback &resultHandler,
-                                  const ProgressCallback &progressHandler)
+                                const ResultCallback &resultHandler,
+                                const ProgressCallback &progressHandler)
 {
-  HashedSeedGenerator   seedGenerator(criteria.version,
-                                      criteria.macAddressLow,
-                                      criteria.macAddressHigh,
-                                      criteria.timer0Low, criteria.timer0High,
-                                      criteria.vcountLow, criteria.vcountHigh,
-                                      criteria.vframeLow, criteria.vframeHigh,
-                                      criteria.fromTime, criteria.toTime,
-                                      criteria.buttonPresses);
-  
-  FrameGeneratorFactory   frameGenFactory(criteria.isRoamer ?
-                                          HashedIVFrameGenerator::Roamer :
-                                          HashedIVFrameGenerator::Normal);
-  
-  FrameChecker              frameChecker(criteria);
-  SearcherType::FrameRange  frameRange(criteria.minIVFrame, criteria.maxIVFrame);
-  
-  SearcherType              searcher;
+  UnhashedSeedGenerator  seedGenerator(criteria.seedParameters);
+  FrameGeneratorFactory  frameGenFactory(criteria.ivs.isRoamer ?
+                                         HashedIVFrameGenerator::Roamer :
+                                         HashedIVFrameGenerator::Normal);
+  FrameChecker           frameChecker(criteria);
+  SeedSearcherType       searcher;
   
   searcher.SearchThreaded(seedGenerator, frameGenFactory,
-                          frameRange, frameChecker,
+                          criteria.ivFrame, frameChecker,
                           resultHandler, progressHandler);
 }
 

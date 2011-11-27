@@ -36,6 +36,8 @@
   IBOutlet NSButton  *launchGen5ConfigurationEdit;
   
   IBOutlet NSButton  *launchGen4SeedSearcher;
+  IBOutlet NSButton  *launchGen4SeedInspector;
+  IBOutlet NSButton  *launchGen4ConfigurationEdit;
   
   NSDictionary    *buttonToClassMap;
 }

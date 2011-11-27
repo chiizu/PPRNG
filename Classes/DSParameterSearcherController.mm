@@ -39,12 +39,12 @@ struct ResultHandler
   {
     NSMutableDictionary  *row =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedLongLong: frame.seed.m_rawSeed], @"seed",
+        [NSNumber numberWithUnsignedLongLong: frame.seed.rawSeed], @"seed",
         [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
-          frame.seed.m_hour, frame.seed.m_minute, frame.seed.m_second], @"time",
-				[NSNumber numberWithUnsignedInt: frame.seed.m_timer0], @"timer0",
-				[NSNumber numberWithUnsignedInt: frame.seed.m_vcount], @"vcount",
-				[NSNumber numberWithUnsignedInt: frame.seed.m_vframe], @"vframe",
+          frame.seed.hour, frame.seed.minute, frame.seed.second], @"time",
+				[NSNumber numberWithUnsignedInt: frame.seed.timer0], @"timer0",
+				[NSNumber numberWithUnsignedInt: frame.seed.vcount], @"vcount",
+				[NSNumber numberWithUnsignedInt: frame.seed.vframe], @"vframe",
         [NSData dataWithBytes: &frame.seed length: sizeof(HashedSeed)],
           @"fullSeed",
         nil];
@@ -80,6 +80,8 @@ struct ProgressHandler
 
 @implementation DSParameterSearcherController
 
+@synthesize useStandardParameterRanges;
+
 - (NSString *)windowNibName
 {
 	return @"DSParameterSearcher";
@@ -94,9 +96,13 @@ struct ProgressHandler
   [searcherController setDoSearchWithCriteriaSelector:
                       @selector(doSearchWithCriteria:)];
   
+  [startDate setObjectValue: [NSDate date]];
+  
   [[[[[searcherController tableView] tableColumnWithIdentifier: @"seed"]
     dataCell] formatter]
    setFormatWidth: 16];
+  
+  self.useStandardParameterRanges = YES;
 }
 
 - (void)windowWillClose:(NSNotification *)notification
@@ -117,40 +123,74 @@ struct ProgressHandler
   
   InitialIVSeedSearcher::Criteria  criteria;
   
-  criteria.macAddressLow = [gen5ConfigController macAddressLow];
-  criteria.macAddressHigh = [gen5ConfigController macAddressHigh];
+  criteria.seedParameters.macAddress.low = [gen5ConfigController macAddressLow];
+  criteria.seedParameters.macAddress.high = [gen5ConfigController macAddressHigh];
   
-  criteria.version = [gen5ConfigController version];
+  criteria.seedParameters.version = [gen5ConfigController version];
+  criteria.seedParameters.dsType = [gen5ConfigController dsType];
   
-  criteria.timer0Low = [timer0LowField intValue];
-  criteria.timer0High = [timer0HighField intValue];
+  if (useStandardParameterRanges)
+  {
+    if ((criteria.seedParameters.dsType == DS::DSPhat) ||
+        (criteria.seedParameters.dsType == DS::DSLite))
+    {
+      criteria.seedParameters.timer0Low = 0xC00;
+      criteria.seedParameters.timer0High = 0xCFF;
+      
+      criteria.seedParameters.vcountLow = 0x50;
+      criteria.seedParameters.vcountHigh = 0x6F;
+      
+      criteria.seedParameters.vframeLow = 0x0;
+      criteria.seedParameters.vframeHigh = 0xF;
+    }
+    else
+    {
+      criteria.seedParameters.timer0Low = 0x1200;
+      criteria.seedParameters.timer0High = 0x1300;
+      
+      criteria.seedParameters.vcountLow = 0x80;
+      criteria.seedParameters.vcountHigh = 0x9F;
+      
+      criteria.seedParameters.vframeLow = 0x0;
+      criteria.seedParameters.vframeHigh = 0xF;
+    }
+  }
+  else
+  {
+    criteria.seedParameters.timer0Low = [timer0LowField intValue];
+    criteria.seedParameters.timer0High = [timer0HighField intValue];
+    
+    criteria.seedParameters.vcountLow = [vcountLowField intValue];
+    criteria.seedParameters.vcountHigh = [vcountHighField intValue];
+    
+    criteria.seedParameters.vframeLow = [frameLowField intValue];
+    criteria.seedParameters.vframeHigh = [frameHighField intValue];
+  }
   
-  criteria.vcountLow = [vcountLowField intValue];
-  criteria.vcountHigh = [vcountHighField intValue];
+  ptime  startTime = ptime(NSDateToBoostDate([startDate objectValue]),
+                           hours([startHour intValue]) +
+                           minutes([startMinute intValue]) +
+                           seconds([startSecond intValue]));
+
+  criteria.seedParameters.fromTime = startTime - seconds(5);
+  criteria.seedParameters.toTime = startTime + seconds(10);
   
-  criteria.vframeLow = [frameLowField intValue];
-  criteria.vframeHigh = [frameHighField intValue];
+  criteria.seedParameters.heldButtons.push_back
+    ([[keyOnePopUp selectedItem] tag] |
+     [[keyTwoPopUp selectedItem] tag] |
+     [[keyThreePopUp selectedItem] tag]);
   
   criteria.minIVs = [ivParameterController minIVs];
   criteria.maxIVs = [ivParameterController maxIVs];
   criteria.maxSkippedFrames = 50;
   
-  criteria.startTime = ptime(NSDateToBoostDate([startDate objectValue]),
-                             hours([startHour intValue]) +
-                             minutes([startMinute intValue]) +
-                             seconds([startSecond intValue]));
-  
-  criteria.pressedButtons = [[keyOnePopUp selectedItem] tag] |
-                            [[keyTwoPopUp selectedItem] tag] |
-                            [[keyThreePopUp selectedItem] tag];
-  
-  if (criteria.ExpectedNumberOfResults() > 100)
+  if (criteria.ExpectedNumberOfResults() > 1000)
   {
     NSAlert *alert = [[NSAlert alloc] init];
     
     [alert addButtonWithTitle:@"OK"];
     [alert setMessageText:@"Please Limit Search Parameters"];
-    [alert setInformativeText:@"The current search parameters are expected to return more than 100 results. Please catch a higher level Pokémon, use rare candies to determine more specific IVs, or limit the search ranges of the various DS parameters in order to reduce the number of expected results."];
+    [alert setInformativeText:@"The current search parameters are expected to return more than 1000 results. Please catch a higher level Pokémon, use rare candies to determine more specific IVs, or limit the search ranges of the various DS parameters in order to reduce the number of expected results."];
     [alert setAlertStyle:NSWarningAlertStyle];
     
     [alert beginSheetModalForWindow:[self window] modalDelegate:self

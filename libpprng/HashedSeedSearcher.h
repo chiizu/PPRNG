@@ -23,6 +23,7 @@
 
 
 #include "BasicTypes.h"
+#include "SeedGenerator.h"
 #include "SeedSearcher.h"
 #include "FrameGenerator.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -33,32 +34,25 @@ namespace pprng
 class HashedSeedSearcher
 {
 public:
+  typedef SeedSearcher<HashedIVFrameGenerator>  SeedSearcherType;
+  typedef SeedSearcherType::Frame               Frame;
+  typedef SeedSearcherType::ResultCallback      ResultCallback;
+  typedef SeedSearcherType::ProgressCallback    ProgressCallback;
+  
   struct Criteria : public SeedSearchCriteria
   {
-    Game::Version             version;
-    uint32_t                  macAddressLow, macAddressHigh;
-    uint32_t                  timer0Low, timer0High;
-    uint32_t                  vcountLow, vcountHigh;
-    uint32_t                  vframeLow, vframeHigh;
-    boost::posix_time::ptime  fromTime, toTime;
-    Button::List              buttonPresses;
-    uint32_t                  minIVFrame, maxIVFrame;
-    uint32_t                  maxResults;
-    bool                      shouldCheckMaxIVs;
-    IVs                       minIVs, maxIVs;
-    Element::Type             hiddenType;
-    uint32_t                  minHiddenPower;
-    bool                      isRoamer;
+    HashedSeedGenerator::Parameters  seedParameters;
+    SeedSearchCriteria::IVCriteria   ivs;
+    SeedSearcherType::FrameRange     ivFrame;
+    
+    Criteria()
+      : SeedSearchCriteria(), seedParameters(), ivs(), ivFrame()
+    {}
     
     uint64_t ExpectedNumberOfResults() const;
   };
   
   HashedSeedSearcher() {}
-  
-  typedef SeedSearcher<HashedIVFrameGenerator>  SearcherType;
-  typedef SearcherType::Frame                   Frame;
-  typedef SearcherType::ResultCallback          ResultCallback;
-  typedef SearcherType::ProgressCallback        ProgressCallback;
   
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
               const ProgressCallback &progressHandler);

@@ -22,6 +22,7 @@
 #define NON_C_GEAR_SEED_H
 
 #include "BasicTypes.h"
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 namespace pprng
 {
@@ -33,93 +34,93 @@ public:
   {
     JPBlackNazo = 0x02215f10,
     JPWhiteNazo = 0x02215f30,
-    JPDSiWhiteNazo = 0x02737ed0,
-    //JPDSiWhiteNazo = 0x02214bf0,
+    JPBlackDSiNazo = 0x02761150,
+    JPWhiteDSiNazo = 0x02761150,
+    
     ENBlackNazo = 0x022160B0,
     ENWhiteNazo = 0x022160D0,
-    ENDSiWhiteNazo = 0x02738050,
+    ENBlackDSiNazo = 0x02760190,
+    ENWhiteDSiNazo = 0x027601B0,
+    
     SPBlackNazo = 0x02216050,
     SPWhiteNazo = 0x02216070,
+    
     FRBlackNazo = 0x02216030,
     FRWhiteNazo = 0x02216050,
+    
     DEBlackNazo = 0x02215FF0,
     DEWhiteNazo = 0x02216010,
+    
     ITBlackNazo = 0x02215FB0,
     ITWhiteNazo = 0x02215FD0,
+    
     KRBlackNazo = 0x02216790,
     KRWhiteNazo = 0x022167B0
   };
   
-  static Nazo NazoForVersion(Game::Version version);
+  static Nazo NazoForVersionAndDS(Game::Version version, DS::Type dsType);
   
-  enum
+  enum GxStat
   {
-    GxStat = 0x06000000,
-    SRGxStat = 0x86000000
+    HardResetGxStat = 0x06000000
   };
   
-  HashedSeed(uint32_t year, uint32_t month, uint32_t day, uint32_t dayOfWeek,
-             uint32_t hour, uint32_t minute, uint32_t second,
-             uint32_t macAddressLow, uint32_t macAddressHigh,
-             uint32_t nazo,
-             uint32_t vcount, uint32_t timer0,
-             uint32_t gxStat, uint32_t vframe,
-             uint32_t keyInput,
-             uint32_t n21510F8 = 0, uint32_t n21510FC = 0,
-             uint32_t n2FFFF90 = 0, uint32_t n2FFFF94 = 0,
-             uint32_t n2FFFFAA = 0, uint32_t n2FFFFAC = 0,
-             uint32_t n2FFFF98 = 0,
-             uint32_t pmFlag = 0x40);
+  struct Parameters
+  {
+    Game::Version           version;
+    DS::Type                dsType;
+    MACAddress              macAddress;
+    GxStat                  gxStat;
+    uint32_t                vcount, vframe, timer0;
+    boost::gregorian::date  date;
+    uint32_t                hour, minute, second;
+    uint32_t                heldButtons;
+    
+    Parameters()
+      : version(Game::Version(0)), dsType(DS::Type(0)), macAddress(),
+        gxStat(HardResetGxStat), vcount(0), vframe(0), timer0(0),
+        date(), hour(0), minute(0), second(0), heldButtons(0)
+    {}
+  };
+  
+  HashedSeed(const Parameters &parameters);
+  
+  // to be used when raw seed is already calculated (see UnhashedSeed)
+  HashedSeed(const Parameters &parameters, uint64_t rawSeed);
   
   // sometimes you just want to work with the raw seed value
   HashedSeed(uint64_t rawSeed)
-    : m_year(0), m_month(0), m_day(0), m_dayOfWeek(0),
-      m_hour(0), m_minute(0), m_second(0),
-      m_macAddressLow(0), m_macAddressHigh(0), m_nazo(0), m_vcount(0),
-      m_timer0(0), m_GxStat(0), m_vframe(0), m_keyInput(0),
-      m_n21510F8(0), m_n21510FC(0), m_n2FFFF90(0), m_n2FFFF94(0),
-      m_n2FFFFAA(0), m_n2FFFFAC(0), m_n2FFFF98(0), m_pmFlag(0x40),
-      m_rawSeed(rawSeed), m_skippedPIDFramesCalculated(false),
-      m_skippedPIDFrames(0)
+    : version(Game::Version(0)), dsType(DS::Type(0)), macAddress(),
+      gxStat(HardResetGxStat), vcount(0), vframe(0), timer0(0),
+      date(), hour(0), minute(0), second(0), heldButtons(0),
+      rawSeed(rawSeed),
+      m_skippedPIDFramesCalculated(false), m_skippedPIDFrames(0)
   {}
   
   // this is needed to decode a HashedSeed from a byte array
   HashedSeed()
-    : m_year(0), m_month(0), m_day(0), m_dayOfWeek(0),
-      m_hour(0), m_minute(0), m_second(0),
-      m_macAddressLow(0), m_macAddressHigh(0), m_nazo(0), m_vcount(0),
-      m_timer0(0), m_GxStat(0), m_vframe(0), m_keyInput(0),
-      m_n21510F8(0), m_n21510FC(0), m_n2FFFF90(0), m_n2FFFF94(0),
-      m_n2FFFFAA(0), m_n2FFFFAC(0), m_n2FFFF98(0), m_pmFlag(0x40),
-      m_rawSeed(0), m_skippedPIDFramesCalculated(false),
-      m_skippedPIDFrames(0)
+    : version(Game::Version(0)), dsType(DS::Type(0)), macAddress(),
+      gxStat(HardResetGxStat), vcount(0), vframe(0), timer0(0),
+      date(), hour(0), minute(0), second(0), heldButtons(0),
+      rawSeed(rawSeed),
+      m_skippedPIDFramesCalculated(false), m_skippedPIDFrames(0)
   {}
   
-  const uint32_t m_year;
-  const uint32_t m_month;
-  const uint32_t m_day;
-  const uint32_t m_dayOfWeek;
-  const uint32_t m_hour;
-  const uint32_t m_minute;
-  const uint32_t m_second;
-  const uint32_t m_macAddressLow;
-  const uint32_t m_macAddressHigh;
-  const uint32_t m_nazo;
-  const uint32_t m_vcount;
-  const uint32_t m_timer0;
-  const uint32_t m_GxStat;
-  const uint32_t m_vframe;
-  const uint32_t m_keyInput;
-  const uint32_t m_n21510F8;
-  const uint32_t m_n21510FC;
-  const uint32_t m_n2FFFF90;
-  const uint32_t m_n2FFFF94;
-  const uint32_t m_n2FFFFAA;
-  const uint32_t m_n2FFFFAC;
-  const uint32_t m_n2FFFF98;
-  const uint32_t m_pmFlag;
+  const Game::Version           version;
+  const DS::Type                dsType;
+  const MACAddress              macAddress;
+  const GxStat                  gxStat;
+  const uint32_t                vcount, vframe, timer0;
+  const boost::gregorian::date  date;
+  const uint32_t                hour, minute, second;
+  const uint32_t                heldButtons;
   
-  const uint64_t m_rawSeed;
+  uint32_t year() const { return date.year(); }
+  uint32_t month() const { return date.month(); }
+  uint32_t day() const { return date.day(); }
+  
+  // calculated raw seed
+  const uint64_t    rawSeed;
   
   uint32_t GetSkippedPIDFrames() const;
   

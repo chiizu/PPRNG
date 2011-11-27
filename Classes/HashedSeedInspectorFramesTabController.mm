@@ -56,15 +56,16 @@ using namespace pprng;
                           [minPIDFrameField intValue];
   uint32_t  maxPIDFrame = [maxPIDFrameField intValue];
   uint32_t  frameNum = 0, limitFrame = minPIDFrame - 1;
-  uint32_t  tid = [gen5ConfigController tid];
-  uint32_t  sid = [gen5ConfigController sid];
   
-  Gen5PIDFrameGenerator::FrameType  frameType =
-    static_cast<Gen5PIDFrameGenerator::FrameType>
-      ([[pidFrameTypeMenu selectedItem] tag]);
+  Gen5PIDFrameGenerator::Parameters  p;
   
-  Gen5PIDFrameGenerator  generator(seed, frameType,
-                                   [useCompoundEyesCheckBox state], tid, sid);
+  p.frameType = 
+    Gen5PIDFrameGenerator::FrameType([[pidFrameTypeMenu selectedItem] tag]);
+  p.useCompoundEyes = [useCompoundEyesCheckBox state];
+  p.tid = [gen5ConfigController tid];
+  p.sid = [gen5ConfigController sid];
+  
+  Gen5PIDFrameGenerator  generator(seed, p);
   
   bool  generatesESV = generator.GeneratesESV();
   bool  generatesIsEncounter = generator.GeneratesIsEncounter();
@@ -90,7 +91,7 @@ using namespace pprng;
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
 				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
         [NSNumber numberWithUnsignedInt: frame.pid.word], @"pid",
-        (frame.pid.IsShiny(tid, sid) ? @"★" : @""), @"shiny",
+        (frame.pid.IsShiny(p.tid, p.sid) ? @"★" : @""), @"shiny",
         [NSString stringWithFormat: @"%s",
           Nature::ToString(frame.nature).c_str()], @"nature",
         [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
@@ -99,7 +100,8 @@ using namespace pprng;
         ((genderValue < 127) ? @"♀" : @"♂"), @"gender12",
         ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
         (frame.synched ? @"Y" : @""), @"sync",
-        (generatesESV ? [NSString stringWithFormat: @"%d", frame.esv] : @""),
+        (generatesESV ?
+          [NSString stringWithFormat: @"%d", ESV::Slot(frame.esv)] : @""),
           @"esv",
         HeldItemString(frame.heldItem), @"heldItem",
         ((generatesIsEncounter && frame.isEncounter) ? @"Y" : @""),

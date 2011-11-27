@@ -46,12 +46,49 @@ struct Gen4Frame
   uint32_t  number;
   PID       pid;
   IVs       ivs;
-  uint32_t  methodJNumber;
-  uint32_t  methodJSyncNumber;
-  uint32_t  methodJFailedSyncNumber;
-  uint32_t  methodKNumber;
-  uint32_t  methodKSyncNumber;
-  uint32_t  methodKFailedSyncNumber;
+  
+  struct EncounterData
+  {
+    EncounterData()
+      : lowestFrames(), landESVs(0), surfESVs(0),
+        oldRodESVs(0), goodRodESVs(0), superRodESVs(0), esvFrames()
+    {}
+    
+    enum FrameType
+    { NoSync = 0, Sync, FailedSync, NumFrameTypes };
+    
+    struct Frames
+    {
+      Frames() { number[NoSync] = number[Sync] = number[FailedSync] = 0; }
+      
+      uint32_t  number[NumFrameTypes];
+    };
+    
+    Frames    lowestFrames;
+    uint32_t  landESVs;
+    uint32_t  surfESVs;
+    uint32_t  oldRodESVs;
+    uint32_t  goodRodESVs;
+    uint32_t  superRodESVs;
+    
+    std::map<ESV::Value, Frames>  esvFrames;
+  };
+  
+  EncounterData  methodJ;
+  EncounterData  methodK;
+};
+
+struct Gen4EncounterFrame
+{
+  uint32_t                    seed;
+  uint32_t                    number;
+  uint32_t                    method1Number;
+  ProfElmResponses::Response  profElmResponse;
+  bool                        isEncounter;
+  ESV::Value                  esv;
+  bool                        synched;
+  PID                         pid;
+  IVs                         ivs;
 };
 
 struct Gen5PIDFrame
@@ -63,7 +100,7 @@ struct Gen5PIDFrame
   PID               pid;
   Nature::Type      nature;
   bool              synched;
-  uint32_t          esv;
+  ESV::Value        esv;
   HeldItem::Type    heldItem;
   bool              isEncounter;
 };
@@ -116,7 +153,7 @@ struct Gen5BreedingFrame
   const HashedSeed  seed;
   uint32_t          number;
   bool              everstoneActivated;
-  bool              dreamWorldAbilityPassed;
+  bool              inheritsHiddenAbility;
   uint32_t          species;
   Nature::Type      nature;
   PID               pid;

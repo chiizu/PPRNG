@@ -12,6 +12,8 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		C02E0A0213515E1A00855098 /* README in Resources */ = {isa = PBXBuildFile; fileRef = C02E0A0113515E1A00855098 /* README */; };
 		C02E0A0413515E2300855098 /* COPYING in Resources */ = {isa = PBXBuildFile; fileRef = C02E0A0313515E2300855098 /* COPYING */; };
+		C03B40FE1463D21100AD59B0 /* Gen4ConfigurationController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */; };
+		C05B870114626E42009166E0 /* UnhashedSeed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05B86FF14626E42009166E0 /* UnhashedSeed.cpp */; };
 		C0821492136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0821491136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm */; };
 		C08214B5136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C08214B4136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.mm */; };
 		C08214C4136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C08214C3136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.mm */; };
@@ -32,6 +34,12 @@
 		C0821706137E1D7000B6E0E5 /* WonderCardSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F7137E1D7000B6E0E5 /* WonderCardSeedInspector.nib */; };
 		C0821707137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F9137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib */; };
 		C082189F13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C082189D13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp */; };
+		C0A0ACEF141C7CF2008C67F0 /* Gen4SeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0A0ACED141C7CF1008C67F0 /* Gen4SeedInspector.nib */; };
+		C0A0AD1B1423B9AB008C67F0 /* Gen4SeedInspectorController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0A0AD1A1423B9AB008C67F0 /* Gen4SeedInspectorController.mm */; };
+		C0B3528C1428C22400935815 /* CoinFlipsTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0B3528B1428C22400935815 /* CoinFlipsTransformer.mm */; };
+		C0B352A31428C76800935815 /* ProfElmResponsesTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0B352A21428C76800935815 /* ProfElmResponsesTransformer.mm */; };
+		C0B353051428DFF600935815 /* HGSSRoamerLocationsTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B353041428DFF600935815 /* HGSSRoamerLocationsTransformer.m */; };
+		C0B53D011451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */; };
 		C0D1A3B8136C2C3100D6E2DA /* Utilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */; };
 		C0DAED071356A9CC008D00D5 /* TrainerIDSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */; };
 		C0E3041B1346343400C56C1A /* BasicTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303F81346343400C56C1A /* BasicTypes.cpp */; };
@@ -65,6 +73,8 @@
 		C0E304631346349900C56C1A /* WonderCardSeedInspectorController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E3044E1346349900C56C1A /* WonderCardSeedInspectorController.mm */; };
 		C0E304641346349900C56C1A /* WonderCardSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */; };
 		C0E30466134634BF00C56C1A /* Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = C0E30465134634BF00C56C1A /* Icon.icns */; };
+		C0FA492714432C7A004DA9A3 /* Gen4Configuration.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0FA492514432C7A004DA9A3 /* Gen4Configuration.nib */; };
+		C0FA492C14433018004DA9A3 /* Gen4ConfigurationEditController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0FA492B14433018004DA9A3 /* Gen4ConfigurationEditController.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -79,6 +89,10 @@
 		8D1107320486CEB800E47090 /* PPRNG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PPRNG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C02E0A0113515E1A00855098 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		C02E0A0313515E2300855098 /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		C03B40FC1463D21100AD59B0 /* Gen4ConfigurationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gen4ConfigurationController.h; path = ../PPRNG/Classes/Gen4ConfigurationController.h; sourceTree = SOURCE_ROOT; };
+		C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Gen4ConfigurationController.mm; path = ../PPRNG/Classes/Gen4ConfigurationController.mm; sourceTree = SOURCE_ROOT; };
+		C05B86FF14626E42009166E0 /* UnhashedSeed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UnhashedSeed.cpp; path = ../PPRNG/libpprng/UnhashedSeed.cpp; sourceTree = SOURCE_ROOT; };
+		C05B870014626E42009166E0 /* UnhashedSeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnhashedSeed.h; path = ../PPRNG/libpprng/UnhashedSeed.h; sourceTree = SOURCE_ROOT; };
 		C0821490136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashedSeedInspectorFramesTabController.h; sourceTree = "<group>"; };
 		C0821491136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HashedSeedInspectorFramesTabController.mm; sourceTree = "<group>"; };
 		C08214B3136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashedSeedInspectorAdjacentsTabController.h; sourceTree = "<group>"; };
@@ -106,6 +120,17 @@
 		C08216FA137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/WonderCardSeedSearcher.nib; sourceTree = SOURCE_ROOT; };
 		C082189D13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MersenneTwisterRNG.cpp; path = ../PPRNG/libpprng/MersenneTwisterRNG.cpp; sourceTree = SOURCE_ROOT; };
 		C082189E13895C1D00B6E0E5 /* MersenneTwisterRNG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MersenneTwisterRNG.h; path = ../PPRNG/libpprng/MersenneTwisterRNG.h; sourceTree = SOURCE_ROOT; };
+		C0A0ACEE141C7CF1008C67F0 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/Gen4SeedInspector.nib; sourceTree = SOURCE_ROOT; };
+		C0A0AD191423B9AB008C67F0 /* Gen4SeedInspectorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4SeedInspectorController.h; sourceTree = "<group>"; };
+		C0A0AD1A1423B9AB008C67F0 /* Gen4SeedInspectorController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Gen4SeedInspectorController.mm; sourceTree = "<group>"; };
+		C0B3528A1428C22400935815 /* CoinFlipsTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoinFlipsTransformer.h; path = ../PPRNG/Classes/CoinFlipsTransformer.h; sourceTree = SOURCE_ROOT; };
+		C0B3528B1428C22400935815 /* CoinFlipsTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoinFlipsTransformer.mm; path = ../PPRNG/Classes/CoinFlipsTransformer.mm; sourceTree = SOURCE_ROOT; };
+		C0B352A11428C76800935815 /* ProfElmResponsesTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProfElmResponsesTransformer.h; path = ../PPRNG/Classes/ProfElmResponsesTransformer.h; sourceTree = SOURCE_ROOT; };
+		C0B352A21428C76800935815 /* ProfElmResponsesTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ProfElmResponsesTransformer.mm; path = ../PPRNG/Classes/ProfElmResponsesTransformer.mm; sourceTree = SOURCE_ROOT; };
+		C0B353031428DFF600935815 /* HGSSRoamerLocationsTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HGSSRoamerLocationsTransformer.h; path = ../PPRNG/Classes/HGSSRoamerLocationsTransformer.h; sourceTree = SOURCE_ROOT; };
+		C0B353041428DFF600935815 /* HGSSRoamerLocationsTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HGSSRoamerLocationsTransformer.m; path = ../PPRNG/Classes/HGSSRoamerLocationsTransformer.m; sourceTree = SOURCE_ROOT; };
+		C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Gen4QuickSeedSearcher.cpp; path = ../PPRNG/libpprng/Gen4QuickSeedSearcher.cpp; sourceTree = SOURCE_ROOT; };
+		C0B53D001451CEBC00C62866 /* Gen4QuickSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gen4QuickSeedSearcher.h; path = ../PPRNG/libpprng/Gen4QuickSeedSearcher.h; sourceTree = SOURCE_ROOT; };
 		C0D1A3B6136C2C3100D6E2DA /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Utilities.mm; sourceTree = "<group>"; };
 		C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrainerIDSearcher.cpp; sourceTree = "<group>"; };
@@ -180,6 +205,9 @@
 		C0E3044F1346349900C56C1A /* WonderCardSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderCardSeedSearcherController.h; sourceTree = "<group>"; };
 		C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WonderCardSeedSearcherController.mm; sourceTree = "<group>"; };
 		C0E30465134634BF00C56C1A /* Icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Icon.icns; sourceTree = "<group>"; };
+		C0FA492614432C7A004DA9A3 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/Gen4Configuration.nib; sourceTree = SOURCE_ROOT; };
+		C0FA492A14433018004DA9A3 /* Gen4ConfigurationEditController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gen4ConfigurationEditController.h; path = ../PPRNG/Classes/Gen4ConfigurationEditController.h; sourceTree = SOURCE_ROOT; };
+		C0FA492B14433018004DA9A3 /* Gen4ConfigurationEditController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Gen4ConfigurationEditController.mm; path = ../PPRNG/Classes/Gen4ConfigurationEditController.mm; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -203,12 +231,20 @@
 				C0E3042C1346349900C56C1A /* CGearSeedInspectorController.mm */,
 				C0E3042D1346349900C56C1A /* CGearSeedSearcherController.h */,
 				C0E3042E1346349900C56C1A /* CGearSeedSearcherController.mm */,
+				C0B3528A1428C22400935815 /* CoinFlipsTransformer.h */,
+				C0B3528B1428C22400935815 /* CoinFlipsTransformer.mm */,
 				C0E3042F1346349900C56C1A /* DSParameterSearcherController.h */,
 				C0E304301346349900C56C1A /* DSParameterSearcherController.mm */,
 				C0E304311346349900C56C1A /* DSTypeTransformer.h */,
 				C0E304321346349900C56C1A /* DSTypeTransformer.mm */,
 				C082156B1375923500B6E0E5 /* EggSeedSearcherController.h */,
 				C082156C1375923500B6E0E5 /* EggSeedSearcherController.mm */,
+				C03B40FC1463D21100AD59B0 /* Gen4ConfigurationController.h */,
+				C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */,
+				C0FA492A14433018004DA9A3 /* Gen4ConfigurationEditController.h */,
+				C0FA492B14433018004DA9A3 /* Gen4ConfigurationEditController.mm */,
+				C0A0AD191423B9AB008C67F0 /* Gen4SeedInspectorController.h */,
+				C0A0AD1A1423B9AB008C67F0 /* Gen4SeedInspectorController.mm */,
 				C0E304331346349900C56C1A /* Gen4SeedSearcherController.h */,
 				C0E304341346349900C56C1A /* Gen4SeedSearcherController.mm */,
 				C0E304351346349900C56C1A /* Gen5ConfigurationController.h */,
@@ -227,10 +263,14 @@
 				C0E3043C1346349900C56C1A /* HashedSeedSearcherController.mm */,
 				C0E3043D1346349900C56C1A /* HexadecimalFormatter.h */,
 				C0E3043E1346349900C56C1A /* HexadecimalFormatter.m */,
+				C0B353031428DFF600935815 /* HGSSRoamerLocationsTransformer.h */,
+				C0B353041428DFF600935815 /* HGSSRoamerLocationsTransformer.m */,
 				C0E3043F1346349900C56C1A /* IVParameterController.h */,
 				C0E304401346349900C56C1A /* IVParameterController.mm */,
 				C0E304411346349900C56C1A /* LauncherController.h */,
 				C0E304421346349900C56C1A /* LauncherController.mm */,
+				C0B352A11428C76800935815 /* ProfElmResponsesTransformer.h */,
+				C0B352A21428C76800935815 /* ProfElmResponsesTransformer.mm */,
 				C0E304431346349900C56C1A /* SearcherController.h */,
 				C0E304441346349900C56C1A /* SearcherController.mm */,
 				C0821516136EE9F600B6E0E5 /* TrainerIDFormatter.h */,
@@ -306,6 +346,8 @@
 				C08216E3137E1D7000B6E0E5 /* CGearSeedSearcher.nib */,
 				C08216E5137E1D7000B6E0E5 /* DSParameterSearcher.nib */,
 				C08216E7137E1D7000B6E0E5 /* EggSeedSearcher.nib */,
+				C0FA492514432C7A004DA9A3 /* Gen4Configuration.nib */,
+				C0A0ACED141C7CF1008C67F0 /* Gen4SeedInspector.nib */,
 				C08216E9137E1D7000B6E0E5 /* Gen4SeedSearcher.nib */,
 				C08216EB137E1D7000B6E0E5 /* Gen5Configuration.nib */,
 				C08216ED137E1D7000B6E0E5 /* HashedSeedInspector.nib */,
@@ -349,6 +391,8 @@
 				C0E304001346343400C56C1A /* FrameGenerator.cpp */,
 				C0E304011346343400C56C1A /* FrameGenerator.h */,
 				C0E304021346343400C56C1A /* FrameSearcher.h */,
+				C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */,
+				C0B53D001451CEBC00C62866 /* Gen4QuickSeedSearcher.h */,
 				C0E304031346343400C56C1A /* Gen34SeedSearcher.cpp */,
 				C0E304041346343400C56C1A /* Gen34SeedSearcher.h */,
 				C0E304051346343400C56C1A /* HashedSeed.cpp */,
@@ -371,6 +415,8 @@
 				C0E304181346343400C56C1A /* TimeSeed.h */,
 				C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */,
 				C0DAED061356A9CC008D00D5 /* TrainerIDSearcher.h */,
+				C05B86FF14626E42009166E0 /* UnhashedSeed.cpp */,
+				C05B870014626E42009166E0 /* UnhashedSeed.h */,
 				C0E304191346343400C56C1A /* WonderCardSeedSearcher.cpp */,
 				C0E3041A1346343400C56C1A /* WonderCardSeedSearcher.h */,
 			);
@@ -444,6 +490,8 @@
 				C0821705137E1D7000B6E0E5 /* TrainerIDSearcher.nib in Resources */,
 				C0821706137E1D7000B6E0E5 /* WonderCardSeedInspector.nib in Resources */,
 				C0821707137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib in Resources */,
+				C0A0ACEF141C7CF2008C67F0 /* Gen4SeedInspector.nib in Resources */,
+				C0FA492714432C7A004DA9A3 /* Gen4Configuration.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -494,6 +542,14 @@
 				C08215661372F4FF00B6E0E5 /* EggSeedSearcher.cpp in Sources */,
 				C082156D1375923500B6E0E5 /* EggSeedSearcherController.mm in Sources */,
 				C082189F13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp in Sources */,
+				C0A0AD1B1423B9AB008C67F0 /* Gen4SeedInspectorController.mm in Sources */,
+				C0B3528C1428C22400935815 /* CoinFlipsTransformer.mm in Sources */,
+				C0B352A31428C76800935815 /* ProfElmResponsesTransformer.mm in Sources */,
+				C0B353051428DFF600935815 /* HGSSRoamerLocationsTransformer.m in Sources */,
+				C0FA492C14433018004DA9A3 /* Gen4ConfigurationEditController.mm in Sources */,
+				C0B53D011451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp in Sources */,
+				C05B870114626E42009166E0 /* UnhashedSeed.cpp in Sources */,
+				C03B40FE1463D21100AD59B0 /* Gen4ConfigurationController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -610,6 +666,22 @@
 				C08216FA137E1D7000B6E0E5 /* English */,
 			);
 			name = WonderCardSeedSearcher.nib;
+			sourceTree = "<group>";
+		};
+		C0A0ACED141C7CF1008C67F0 /* Gen4SeedInspector.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0A0ACEE141C7CF1008C67F0 /* English */,
+			);
+			name = Gen4SeedInspector.nib;
+			sourceTree = "<group>";
+		};
+		C0FA492514432C7A004DA9A3 /* Gen4Configuration.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0FA492614432C7A004DA9A3 /* English */,
+			);
+			name = Gen4Configuration.nib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

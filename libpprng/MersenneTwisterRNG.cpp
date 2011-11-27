@@ -152,7 +152,7 @@ uint32_t MersenneTwisterRNG::NextUInt32()
   y ^= y >> 11;
   y ^= (y << 7) & 0x9d2c5680UL;
   y ^= (y << 15) & 0xefc60000UL;
-  y ^= y >> 10;
+  y ^= y >> 18;
 
   return y;
 }
@@ -298,7 +298,7 @@ uint32_t LazyMersenneTwisterRNG::FirstSectionLNextUInt32()
   y ^= y >> 11;
   y ^= (y << 7) & 0x9d2c5680UL;
   y ^= (y << 15) & 0xefc60000UL;
-  y ^= y >> 10;
+  y ^= y >> 18;
   
   return y;
 }
@@ -326,7 +326,7 @@ uint32_t LazyMersenneTwisterRNG::SectionLNextUInt32()
   y ^= y >> 11;
   y ^= (y << 7) & 0x9d2c5680UL;
   y ^= (y << 15) & 0xefc60000UL;
-  y ^= y >> 10;
+  y ^= y >> 18;
   
   return y;
 }
@@ -357,7 +357,7 @@ uint32_t LazyMersenneTwisterRNG::SectionMNextUInt32()
   y ^= y >> 11;
   y ^= (y << 7) & 0x9d2c5680UL;
   y ^= (y << 15) & 0xefc60000UL;
-  y ^= y >> 10;
+  y ^= y >> 18;
   
   return y;
 }

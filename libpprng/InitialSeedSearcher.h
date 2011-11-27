@@ -24,6 +24,7 @@
 #include "BasicTypes.h"
 #include "HashedSeed.h"
 #include "HashedSeedSearcher.h"
+#include "SeedGenerator.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace pprng
@@ -56,16 +57,15 @@ class InitialIVSeedSearcher
 public:
   struct Criteria : public SeedSearchCriteria
   {
-    Game::Version             version;
-    uint32_t                  macAddressLow, macAddressHigh;
-    uint32_t                  timer0Low, timer0High;
-    uint32_t                  vcountLow, vcountHigh;
-    uint32_t                  vframeLow, vframeHigh;
+    HashedSeedGenerator::Parameters  seedParameters;
+    
     IVs                       minIVs;
     IVs                       maxIVs;
     uint32_t                  maxSkippedFrames;
-    boost::posix_time::ptime  startTime;
-    uint32_t                  pressedButtons;
+    
+    Criteria()
+      : seedParameters(), minIVs(), maxIVs(), maxSkippedFrames(0)
+    {}
     
     uint64_t ExpectedNumberOfResults() const;
   };

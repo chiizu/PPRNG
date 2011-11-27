@@ -115,20 +115,31 @@ struct ResultHandler
   {
     NSMutableDictionary  *pidResult = nil;
     
-    Gen5PIDFrameGenerator
-      gcGenerator(frame.seed, Gen5PIDFrameGenerator::GrassCaveFrame,
-                  false, m_criteria.tid, m_criteria.sid),
-      fsGenerator(frame.seed, Gen5PIDFrameGenerator::FishingFrame,
-                  false, m_criteria.tid, m_criteria.sid),
-      sdGenerator(frame.seed, Gen5PIDFrameGenerator::SwirlingDustFrame,
-                  false, m_criteria.tid, m_criteria.sid),
-      bsGenerator(frame.seed, Gen5PIDFrameGenerator::BridgeShadowFrame,
-                  false, m_criteria.tid, m_criteria.sid),
-      stGenerator(frame.seed, Gen5PIDFrameGenerator::StationaryFrame,
-                  false, m_criteria.tid, m_criteria.sid),
-      pidGenerator(frame.seed, Gen5PIDFrameGenerator::StarterFossilGiftFrame,
-                   false, m_criteria.tid, m_criteria.sid);
+    Gen5PIDFrameGenerator::Parameters  frameParameters;
     
+    frameParameters.useCompoundEyes = false;
+    frameParameters.tid = m_criteria.tid;
+    frameParameters.sid = m_criteria.sid;
+    
+    frameParameters.frameType = Gen5PIDFrameGenerator::GrassCaveFrame;
+    Gen5PIDFrameGenerator  gcGenerator(frame.seed, frameParameters);
+    
+    frameParameters.frameType = Gen5PIDFrameGenerator::FishingFrame;
+    Gen5PIDFrameGenerator  fsGenerator(frame.seed, frameParameters);
+    
+    frameParameters.frameType = Gen5PIDFrameGenerator::SwirlingDustFrame;
+    Gen5PIDFrameGenerator  sdGenerator(frame.seed, frameParameters);
+    
+    frameParameters.frameType = Gen5PIDFrameGenerator::BridgeShadowFrame;
+    Gen5PIDFrameGenerator  bsGenerator(frame.seed, frameParameters);
+    
+    frameParameters.frameType = Gen5PIDFrameGenerator::StationaryFrame;
+    Gen5PIDFrameGenerator  stGenerator(frame.seed, frameParameters);
+    
+    frameParameters.frameType = Gen5PIDFrameGenerator::StarterFossilGiftFrame;
+    Gen5PIDFrameGenerator  pidGenerator(frame.seed, frameParameters);
+    
+        
     // get the PIDs in sync
     gcGenerator.AdvanceFrame();
     stGenerator.AdvanceFrame();
@@ -208,8 +219,8 @@ struct ResultHandler
           (!m_criteria.syncA || gcFrame.synched) &&
           (!m_criteria.syncB || fsFrame.synched) &&
           (!m_criteria.syncC || stFrame.synched) &&
-          ((m_criteria.esvMaskLand & (0x1 << gcFrame.esv)) != 0) &&
-          ((m_criteria.esvMaskWater & (0x1 << fsFrame.esv)) != 0) &&
+          ((m_criteria.esvMaskLand & (0x1 << ESV::Slot(gcFrame.esv))) != 0) &&
+          ((m_criteria.esvMaskWater & (0x1 << ESV::Slot(fsFrame.esv))) != 0) &&
           (!m_criteria.canFish || fsFrame.isEncounter) &&
           (!m_criteria.dustIsPoke || !sdFrame.isEncounter) &&
           (!m_criteria.shadowIsPoke || !bsFrame.isEncounter))
@@ -244,8 +255,10 @@ struct ResultHandler
         (gcFrame.synched ? @"Y" : @""), @"shinySyncA",
         (fsFrame.synched ? @"Y" : @""), @"shinySyncB",
         (stFrame.synched ? @"Y" : @""), @"shinySyncC",
-        [NSString stringWithFormat: @"%d", gcFrame.esv], @"shinyLandESV",
-        [NSString stringWithFormat: @"%d", fsFrame.esv], @"shinyWaterESV",
+        [NSString stringWithFormat: @"%d", ESV::Slot(gcFrame.esv)],
+          @"shinyLandESV",
+        [NSString stringWithFormat: @"%d", ESV::Slot(fsFrame.esv)],
+          @"shinyWaterESV",
         (fsFrame.isEncounter ? @"Y" : @""), @"canFish",
         (sdFrame.isEncounter ? @"" : @"Y"), @"dustIsPoke",
         (bsFrame.isEncounter ? @"" : @"Y"), @"shadowIsPoke",
@@ -259,12 +272,12 @@ struct ResultHandler
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
         [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
-          frame.seed.m_year, frame.seed.m_month, frame.seed.m_day], @"date",
+          frame.seed.year(), frame.seed.month(), frame.seed.day()], @"date",
         [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
-          frame.seed.m_hour, frame.seed.m_minute, frame.seed.m_second], @"time",
-        [NSNumber numberWithUnsignedInt: frame.seed.m_timer0], @"timer0",
+          frame.seed.hour, frame.seed.minute, frame.seed.second], @"time",
+        [NSNumber numberWithUnsignedInt: frame.seed.timer0], @"timer0",
 				[NSString stringWithFormat: @"%s",
-          Button::ToString(frame.seed.m_keyInput).c_str()], @"keys",
+          Button::ToString(frame.seed.heldButtons).c_str()], @"keys",
 				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
         [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
         [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
@@ -436,65 +449,69 @@ struct ProgressHandler
 
   GUICriteria  criteria;
   
-  criteria.macAddressLow = [gen5ConfigController macAddressLow];
-  criteria.macAddressHigh = [gen5ConfigController macAddressHigh];
+  criteria.seedParameters.macAddress = [gen5ConfigController macAddress];
   
-  criteria.version = [gen5ConfigController version];
+  criteria.seedParameters.version = [gen5ConfigController version];
+  criteria.seedParameters.dsType = [gen5ConfigController dsType];
   
-  criteria.timer0Low = [gen5ConfigController timer0Low];
-  criteria.timer0High = [gen5ConfigController timer0High];
+  criteria.seedParameters.timer0Low = [gen5ConfigController timer0Low];
+  criteria.seedParameters.timer0High = [gen5ConfigController timer0High];
   
-  criteria.vcountLow = [gen5ConfigController vcountLow];
-  criteria.vcountHigh = [gen5ConfigController vcountHigh];
+  criteria.seedParameters.vcountLow = [gen5ConfigController vcountLow];
+  criteria.seedParameters.vcountHigh = [gen5ConfigController vcountHigh];
   
-  criteria.vframeLow = [gen5ConfigController vframeLow];
-  criteria.vframeHigh = [gen5ConfigController vframeHigh];
+  criteria.seedParameters.vframeLow = [gen5ConfigController vframeLow];
+  criteria.seedParameters.vframeHigh = [gen5ConfigController vframeHigh];
   
   if ([noKeyHeldButton state])
   {
-    criteria.buttonPresses.push_back(0);  // no keys
+    criteria.seedParameters.heldButtons.push_back(0);  // no keys
   }
   if ([oneKeyHeldButton state])
   {
-    criteria.buttonPresses.insert(criteria.buttonPresses.end(),
-                                  Button::SingleButtons().begin(),
-                                  Button::SingleButtons().end());
+    criteria.seedParameters.heldButtons.insert
+      (criteria.seedParameters.heldButtons.end(),
+       Button::SingleButtons().begin(),
+       Button::SingleButtons().end());
   }
   if ([twoKeysHeldButton state])
   {
-    criteria.buttonPresses.insert(criteria.buttonPresses.end(),
-                                  Button::TwoButtonCombos().begin(),
-                                  Button::TwoButtonCombos().end());
+    criteria.seedParameters.heldButtons.insert
+      (criteria.seedParameters.heldButtons.end(),
+       Button::TwoButtonCombos().begin(),
+       Button::TwoButtonCombos().end());
   }
   if ([threeKeysHeldButton state])
   {
-    criteria.buttonPresses.insert(criteria.buttonPresses.end(),
-                                  Button::ThreeButtonCombos().begin(),
-                                  Button::ThreeButtonCombos().end());
+    criteria.seedParameters.heldButtons.insert
+      (criteria.seedParameters.heldButtons.end(),
+       Button::ThreeButtonCombos().begin(),
+       Button::ThreeButtonCombos().end());
   }
   
-  criteria.fromTime = ptime(NSDateToBoostDate([fromDateField objectValue]),
-                            seconds(0));
+  criteria.seedParameters.fromTime =
+    ptime(NSDateToBoostDate([fromDateField objectValue]), seconds(0));
   
-  criteria.toTime   = ptime(NSDateToBoostDate([toDateField objectValue]),
+  criteria.seedParameters.toTime =
+    ptime(NSDateToBoostDate([toDateField objectValue]),
                             hours(23) + minutes(59) + seconds(59));
   
-  criteria.minIVFrame = [minIVFrameField intValue];
-  criteria.maxIVFrame = [maxIVFrameField intValue];
+  criteria.ivFrame.min = [minIVFrameField intValue];
+  criteria.ivFrame.max = [maxIVFrameField intValue];
   
-  criteria.minIVs = [ivParameterController minIVs];
-  criteria.shouldCheckMaxIVs = [ivParameterController shouldCheckMaxIVs];
-  criteria.maxIVs = [ivParameterController maxIVs];
-  criteria.isRoamer = [ivParameterController isRoamer];
+  criteria.ivs.min = [ivParameterController minIVs];
+  criteria.ivs.shouldCheckMax = [ivParameterController shouldCheckMaxIVs];
+  criteria.ivs.max = [ivParameterController maxIVs];
+  criteria.ivs.isRoamer = [ivParameterController isRoamer];
   
   if ([ivParameterController shouldCheckHiddenPower])
   {
-    criteria.hiddenType = [ivParameterController hiddenType];
-    criteria.minHiddenPower = [ivParameterController minHiddenPower];
+    criteria.ivs.hiddenType = [ivParameterController hiddenType];
+    criteria.ivs.minHiddenPower = [ivParameterController minHiddenPower];
   }
   else
   {
-    criteria.hiddenType = Element::UNKNOWN;
+    criteria.ivs.hiddenType = Element::UNKNOWN;
   }
   
   criteria.tid = [gen5ConfigController tid];

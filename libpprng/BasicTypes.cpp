@@ -27,6 +27,8 @@
 #include <iomanip>
 #include <ctype.h>
 
+#include "LinearCongruentialRNG.h"
+#include "MersenneTwisterRNG.h"
 
 namespace pprng
 {
@@ -130,7 +132,7 @@ static std::string MakeBadIVIndexExceptionString(int i)
 
 std::string DS::ToString(DS::Type t)
 {
-  if ((t >= DS::Phat) && (t <= DS::_3DS))
+  if ((t >= DS::DSPhat) && (t <= DS::_3DS))
   {
     return DSTypeName[t];
   }
@@ -707,6 +709,237 @@ const std::string& Characteristic::ToString(Characteristic::Type c)
   {
     return CharacteristicName[UNKNOWN];
   }
+}
+
+namespace
+{
+
+typedef std::map<EncounterSlot::Value, std::string>  ESVNameMap;
+
+static ESVNameMap::value_type ESVNameData[] =
+{
+  ESVNameMap::value_type(ESV::LAND_0, "Land 0"),
+  ESVNameMap::value_type(ESV::LAND_1, "Land 1"),
+  ESVNameMap::value_type(ESV::LAND_2, "Land 2"),
+  ESVNameMap::value_type(ESV::LAND_3, "Land 3"),
+  ESVNameMap::value_type(ESV::LAND_4, "Land 4"),
+  ESVNameMap::value_type(ESV::LAND_5, "Land 5"),
+  ESVNameMap::value_type(ESV::LAND_6, "Land 6"),
+  ESVNameMap::value_type(ESV::LAND_7, "Land 7"),
+  ESVNameMap::value_type(ESV::LAND_8, "Land 8"),
+  ESVNameMap::value_type(ESV::LAND_9, "Land 9"),
+  ESVNameMap::value_type(ESV::LAND_10, "Land 10"),
+  ESVNameMap::value_type(ESV::LAND_11, "Land 11"),
+  ESVNameMap::value_type(ESV::SURF_0, "Surf 0"),
+  ESVNameMap::value_type(ESV::SURF_1, "Surf 1"),
+  ESVNameMap::value_type(ESV::SURF_2, "Surf 2"),
+  ESVNameMap::value_type(ESV::SURF_3, "Surf 3"),
+  ESVNameMap::value_type(ESV::SURF_4, "Surf 4"),
+  ESVNameMap::value_type(ESV::OLD_ROD_0, "Old Rod 0"),
+  ESVNameMap::value_type(ESV::OLD_ROD_1, "Old Rod 1"),
+  ESVNameMap::value_type(ESV::OLD_ROD_2, "Old Rod 2"),
+  ESVNameMap::value_type(ESV::OLD_ROD_3, "Old Rod 3"),
+  ESVNameMap::value_type(ESV::OLD_ROD_4, "Old Rod 4"),
+  ESVNameMap::value_type(ESV::GOOD_ROD_0, "Good Rod 0"),
+  ESVNameMap::value_type(ESV::GOOD_ROD_1, "Good Rod 1"),
+  ESVNameMap::value_type(ESV::GOOD_ROD_2, "Good Rod 2"),
+  ESVNameMap::value_type(ESV::GOOD_ROD_3, "Good Rod 3"),
+  ESVNameMap::value_type(ESV::GOOD_ROD_4, "Good Rod 4"),
+  ESVNameMap::value_type(ESV::SUPER_ROD_0, "Super Rod 0"),
+  ESVNameMap::value_type(ESV::SUPER_ROD_1, "Super Rod 1"),
+  ESVNameMap::value_type(ESV::SUPER_ROD_2, "Super Rod 2"),
+  ESVNameMap::value_type(ESV::SUPER_ROD_3, "Super Rod 3"),
+  ESVNameMap::value_type(ESV::SUPER_ROD_4, "Super Rod 4")
+};
+
+static const ESVNameMap ESVName
+  (ESVNameData, ESVNameData +
+                    (sizeof(ESVNameData) / sizeof(ESVNameMap::value_type)));
+
+// J, K, Gen 5 Land ESV
+static const uint32_t LandESVThreshold[] =
+{ 19, 39, 49, 59, 69, 79, 84, 89, 93, 97, 98, 99 };
+
+// J, K, Gen5 Surf ESV
+static const uint32_t SurfESVThreshold[] =
+{ 59, 89, 94, 98, 99 };
+
+// J Good/Super Fishing, Gen 5 Fishing (?)
+static const uint32_t GoodSuperFishingESVThresholdJ[] =
+{ 39, 79, 94, 98, 99 };
+
+// K Good/Super Fishing, Gen 5 Water Spot (?)
+static const uint32_t GoodSuperFishingESVThresholdK[] =
+{ 39, 69, 84, 94, 99 };
+
+static const uint32_t BugContestESVThreshold[] =
+{ 19, 39, 49, 59, 69, 79, 84, 89, 94, 99 };
+
+static const uint32_t SafariZoneESVThreshold[] =
+{ 9, 19, 29, 39, 49, 59, 69, 79, 89, 99 };
+
+static uint32_t GetESV(uint32_t value, const uint32_t esvThreshold[])
+{
+  uint32_t  slot = 0;
+  while (value > esvThreshold[slot])
+    ++slot;
+  
+  return slot;
+}
+
+}
+
+
+std::string EncounterSlot::ToString(EncounterSlot::Value v)
+{
+  ESVNameMap::const_iterator  i = ESVName.find(v);
+  if (i != ESVName.end())
+    return i->second;
+  
+  return "Unknown Slot";
+}
+
+
+EncounterSlot::Value EncounterSlot::Gen4Land(uint32_t percent)
+{
+  return Value(GetESV(percent, LandESVThreshold) | LAND_TYPE);
+}
+
+EncounterSlot::Value EncounterSlot::Gen4Surfing(uint32_t percent)
+{
+  return Value(GetESV(percent, SurfESVThreshold) | SURF_TYPE);
+}
+
+EncounterSlot::Value EncounterSlot::Gen4OldRod(uint32_t percent)
+{
+  return Value(GetESV(percent, SurfESVThreshold) | OLD_ROD_TYPE);
+}
+
+EncounterSlot::Value EncounterSlot::Gen4GoodRodJ(uint32_t percent)
+{
+  return Value(GetESV(percent, GoodSuperFishingESVThresholdJ) | GOOD_ROD_TYPE);
+}
+
+EncounterSlot::Value EncounterSlot::Gen4GoodRodK(uint32_t percent)
+{
+  return Value(GetESV(percent, GoodSuperFishingESVThresholdK) | GOOD_ROD_TYPE);
+}
+
+EncounterSlot::Value EncounterSlot::Gen4SuperRodJ(uint32_t percent)
+{
+  return Value(GetESV(percent, GoodSuperFishingESVThresholdJ) | SUPER_ROD_TYPE);
+}
+
+EncounterSlot::Value EncounterSlot::Gen4SuperRodK(uint32_t percent)
+{
+  return Value(GetESV(percent, GoodSuperFishingESVThresholdK) | SUPER_ROD_TYPE);
+}
+
+
+EncounterSlot::Value EncounterSlot::Gen5Land(uint32_t percent)
+{
+  return Value(GetESV(percent, LandESVThreshold) | LAND_TYPE);
+}
+
+EncounterSlot::Value EncounterSlot::Gen5Surfing(uint32_t percent)
+{
+  return Value(GetESV(percent, SurfESVThreshold) | SURF_TYPE);
+}
+
+EncounterSlot::Value EncounterSlot::Gen5Fishing(uint32_t percent)
+{
+  return Value(GetESV(percent, GoodSuperFishingESVThresholdJ) | GOOD_ROD_TYPE);
+}
+
+EncounterSlot::Value EncounterSlot::Gen5WaterSpot(uint32_t percent)
+{
+  return Value(GetESV(percent, GoodSuperFishingESVThresholdK) | GOOD_ROD_TYPE);
+}
+
+
+CoinFlips::CoinFlips(uint32_t seed, uint32_t numFlips)
+  : word(0)
+{
+  MTRNG     rng(seed);
+  
+  for (int i = 0; i < numFlips; ++i)
+    word = word | (CalcResult(rng.Next()) << i);
+  
+  word = word | (numFlips << FLIP_COUNT_SHIFT);
+}
+
+
+ProfElmResponses::ProfElmResponses(uint32_t seed, uint32_t numResponses)
+  : word(0)
+{
+  LCRNG34  rng(seed);
+  
+  for (int i = 0; i < numResponses; ++i)
+    word = word | (CalcResponse(rng.Next()) << (i << 1));
+  
+  word = word | (uint64_t(numResponses) << RESPONSE_COUNT_SHIFT);
+}
+
+uint32_t GetJohtoRoamerLocation(LCRNG34 &rng)
+{
+  uint32_t  result = (rng.Next() >> 16) % 16;
+  return (result < 11) ? (result + 29) : (result + 31);
+}
+
+uint32_t GetKantoRoamerLocation(LCRNG34 &rng)
+{
+  uint32_t  result = (rng.Next() >> 16) % 25;
+  return (result < 22) ? (result + 1) : (24 + ((result - 22) * 2));
+}
+
+HGSSRoamers::HGSSRoamers(uint32_t seed, uint32_t raikouLocation,
+                         uint32_t enteiLocation, uint32_t latiLocation)
+  : word(0)
+{
+  LCRNG34   rng(seed);
+  uint32_t  result = 0;
+  uint32_t  consumed = 0;
+  
+  if (raikouLocation > 0)
+  {
+    uint32_t  newLocation;
+    do
+    {
+      newLocation = GetJohtoRoamerLocation(rng);
+      ++consumed;
+    }
+    while (newLocation == raikouLocation);
+    
+    result = newLocation << (LOCATION_BITS * RAIKOU);
+  }
+  
+  if (enteiLocation > 0)
+  {
+    uint32_t  newLocation;
+    do
+    {
+      newLocation = GetJohtoRoamerLocation(rng);
+      ++consumed;
+    }
+    while (newLocation == enteiLocation);
+    
+    result = result | (newLocation << (LOCATION_BITS * ENTEI));
+  }
+  
+  if (latiLocation > 0)
+  {
+    uint32_t  newLocation;
+    do
+    {
+      newLocation = GetKantoRoamerLocation(rng);
+      ++consumed;
+    }
+    while (newLocation == latiLocation);
+    
+    result = result | (newLocation << (LOCATION_BITS * LATI));
+  }
+  
+  word = result | (consumed << CONSUMED_FRAMES_SHIFT);
 }
 
 }

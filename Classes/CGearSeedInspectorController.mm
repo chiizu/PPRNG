@@ -194,6 +194,8 @@ using namespace pprng;
   
   uint32_t  targetDelay = timeElement.delay;
   uint32_t  endDelay = targetDelay + delayVariance;
+  uint32_t  startDelay = (targetDelay > delayVariance) ? 0 :
+                           targetDelay - delayVariance;
   
   ptime  targetTime(date(timeElement.year, timeElement.month, timeElement.day),
                     hours(timeElement.hour) + minutes(timeElement.minute) +
@@ -217,9 +219,7 @@ using namespace pprng;
     NSString  *timeStr = [NSString stringWithFormat:@"%.2d:%.2d:%.2d",
                            t.hours(), t.minutes(), t.seconds()];
     
-    for (uint32_t delay = targetDelay - delayVariance;
-         delay <= endDelay;
-         ++delay)
+    for (uint32_t delay = startDelay; delay <= endDelay; ++delay)
     {
       CGearSeed  s(d.year(), d.month(), d.day(),
                    t.hours(), t.minutes(), t.seconds(),

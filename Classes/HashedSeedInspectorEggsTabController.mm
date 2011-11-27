@@ -236,11 +236,6 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
     maleIVs.sp([eggsMaleSpeField intValue]);
   }
   
-  uint32_t  tid = [gen5ConfigController tid];
-  uint32_t  sid = [gen5ConfigController sid];
-  bool      isInternational = [eggsInternationalButton state];
-  bool      hasDitto = [eggsUseDittoButton state];
-  bool      hasEverstone = [eggsUseEverstoneButton state];
   FemaleParent::Type femaleSpecies =
     FemaleParent::Type([[eggsFemaleSpeciesPopup selectedItem] tag]);
   uint32_t  minPIDFrame = [eggsUseInitialPIDButton state] ?
@@ -249,8 +244,13 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
   uint32_t  maxPIDFrame = [eggsMaxPIDFrameField intValue];
   uint32_t  limitFrame = minPIDFrame - 1;
   
-  Gen5BreedingFrameGenerator  generator
-      (seed, isInternational, hasEverstone, hasDitto, tid, sid);
+  Gen5BreedingFrameGenerator::Parameters  p;
+  p.usingEverstone = [eggsUseEverstoneButton state];
+  p.usingDitto = [eggsUseDittoButton state];
+  p.internationalParents = [eggsInternationalButton state];
+  p.tid = [gen5ConfigController tid];
+  p.sid = [gen5ConfigController sid];
+  Gen5BreedingFrameGenerator  generator(seed, p);
   
   frameNum = 0;
   while (frameNum < limitFrame)
@@ -289,12 +289,12 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
 				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        ((hasEverstone && frame.everstoneActivated) ? @"<ES>" :
+        ((p.usingEverstone && frame.everstoneActivated) ? @"<ES>" :
           [NSString stringWithFormat: @"%s",
             Nature::ToString(frame.nature).c_str()]), @"nature",
         [NSNumber numberWithUnsignedInt: frame.pid.word], @"pid",
-        (frame.pid.IsShiny(tid, sid) ? @"★" : @""), @"shiny",
-        ((!hasDitto && frame.dreamWorldAbilityPassed) ? @"Y" : @""),
+        (frame.pid.IsShiny(p.tid, p.sid) ? @"★" : @""), @"shiny",
+        ((!p.usingDitto && frame.inheritsHiddenAbility) ? @"Y" : @""),
           @"dreamWorld",
         [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
         ((genderValue < 31) ? @"♀" : @"♂"), @"gender18",

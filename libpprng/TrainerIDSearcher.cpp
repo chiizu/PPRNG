@@ -20,7 +20,6 @@
 
 
 #include "TrainerIDSearcher.h"
-#include "SeedGenerator.h"
 
 namespace pprng
 {
@@ -86,16 +85,9 @@ struct FrameGeneratorFactory
 
 uint64_t TrainerIDSearcher::Criteria::ExpectedNumberOfResults() const
 {
-  uint64_t  seconds = (toTime - fromTime).total_seconds() + 1;
-  uint64_t  keyCombos = buttonPresses.size();
-  uint64_t  timer0Values = (timer0High - timer0Low) + 1;
-  uint64_t  vcountValues = (vcountHigh - vcountLow) + 1;
-  uint64_t  vframeValues = (vframeHigh - vframeLow) + 1;
+  uint64_t  numSeeds = seedParameters.NumberOfSeeds();
   
-  uint64_t  numSeeds =
-    seconds * keyCombos * timer0Values * vcountValues * vframeValues;
-  
-  uint64_t  numFrames = maxFrame - minFrame + 1;
+  uint64_t  numFrames = frame.max - frame.min + 1;
   
   uint64_t  tidDivisor = hasTID ? 65536 : 1;
   uint64_t  shinyDivisor =
@@ -108,22 +100,14 @@ void TrainerIDSearcher::Search(const Criteria &criteria,
                                const ResultCallback &resultHandler,
                                const ProgressCallback &progressHandler)
 {
-  HashedSeedGenerator   seedGenerator(criteria.version,
-                                      criteria.macAddressLow,
-                                      criteria.macAddressHigh,
-                                      criteria.timer0Low, criteria.timer0High,
-                                      criteria.vcountLow, criteria.vcountHigh,
-                                      criteria.vframeLow, criteria.vframeHigh,
-                                      criteria.fromTime, criteria.toTime,
-                                      criteria.buttonPresses);
+  HashedSeedGenerator   seedGenerator(criteria.seedParameters);
   
-  FrameChecker              frameChecker(criteria);
-  SearcherType::FrameRange  frameRange(criteria.minFrame, criteria.maxFrame);
+  FrameChecker          frameChecker(criteria);
   
-  SearcherType              searcher;
+  SeedSearcherType      searcher;
   
   searcher.Search(seedGenerator, FrameGeneratorFactory(),
-                  frameRange, frameChecker,
+                  criteria.frame, frameChecker,
                   resultHandler, progressHandler);
 }
 

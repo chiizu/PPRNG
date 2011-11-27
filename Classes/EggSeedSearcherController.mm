@@ -45,14 +45,14 @@ struct ResultHandler
     
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedLongLong: frame.seed.m_rawSeed], @"seed",
+        [NSNumber numberWithUnsignedLongLong: frame.seed.rawSeed], @"seed",
         [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
-          frame.seed.m_year, frame.seed.m_month, frame.seed.m_day], @"date",
+          frame.seed.year(), frame.seed.month(), frame.seed.day()], @"date",
         [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
-          frame.seed.m_hour, frame.seed.m_minute, frame.seed.m_second], @"time",
-        [NSNumber numberWithUnsignedInt: frame.seed.m_timer0], @"timer0",
+          frame.seed.hour, frame.seed.minute, frame.seed.second], @"time",
+        [NSNumber numberWithUnsignedInt: frame.seed.timer0], @"timer0",
 				[NSString stringWithFormat: @"%s",
-          Button::ToString(frame.seed.m_keyInput).c_str()], @"keys",
+          Button::ToString(frame.seed.heldButtons).c_str()], @"keys",
         [NSNumber numberWithUnsignedInt: frame.seed.GetSkippedPIDFrames() + 1],
           @"startFrame",
 				[NSNumber numberWithUnsignedInt: frame.number], @"pidFrame",
@@ -62,7 +62,7 @@ struct ResultHandler
             [NSString stringWithFormat: @"%s",
               Nature::ToString(frame.nature).c_str()],
           @"nature",
-        frame.dreamWorldAbilityPassed ? @"Y" : @"", @"dw",
+        frame.inheritsHiddenAbility ? @"Y" : @"", @"dw",
         [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
         ((m_femaleSpecies == FemaleParent::OTHER) ?
          ((genderValue < 31) ? @"♀" : @"♂") : @""), @"gender18",
@@ -257,87 +257,95 @@ struct ProgressHandler
 
   EggSeedSearcher::Criteria  criteria;
   
-  criteria.macAddressLow = [gen5ConfigController macAddressLow];
-  criteria.macAddressHigh = [gen5ConfigController macAddressHigh];
+  criteria.seedParameters.macAddress = [gen5ConfigController macAddress];
   
-  criteria.version = [gen5ConfigController version];
+  criteria.seedParameters.version = [gen5ConfigController version];
+  criteria.seedParameters.dsType = [gen5ConfigController dsType];
   
-  criteria.timer0Low = [gen5ConfigController timer0Low];
-  criteria.timer0High = [gen5ConfigController timer0High];
+  criteria.seedParameters.timer0Low = [gen5ConfigController timer0Low];
+  criteria.seedParameters.timer0High = [gen5ConfigController timer0High];
   
-  criteria.vcountLow = [gen5ConfigController vcountLow];
-  criteria.vcountHigh = [gen5ConfigController vcountHigh];
+  criteria.seedParameters.vcountLow = [gen5ConfigController vcountLow];
+  criteria.seedParameters.vcountHigh = [gen5ConfigController vcountHigh];
   
-  criteria.vframeLow = [gen5ConfigController vframeLow];
-  criteria.vframeHigh = [gen5ConfigController vframeHigh];
+  criteria.seedParameters.vframeLow = [gen5ConfigController vframeLow];
+  criteria.seedParameters.vframeHigh = [gen5ConfigController vframeHigh];
   
   if ([noKeyHeldButton state])
   {
-    criteria.buttonPresses.push_back(0);  // no keys
+    criteria.seedParameters.heldButtons.push_back(0);  // no keys
   }
   if ([oneKeyHeldButton state])
   {
-    criteria.buttonPresses.insert(criteria.buttonPresses.end(),
-                                  Button::SingleButtons().begin(),
-                                  Button::SingleButtons().end());
+    criteria.seedParameters.heldButtons.insert
+      (criteria.seedParameters.heldButtons.end(),
+       Button::SingleButtons().begin(),
+       Button::SingleButtons().end());
   }
   if ([twoKeysHeldButton state])
   {
-    criteria.buttonPresses.insert(criteria.buttonPresses.end(),
-                                  Button::TwoButtonCombos().begin(),
-                                  Button::TwoButtonCombos().end());
+    criteria.seedParameters.heldButtons.insert
+      (criteria.seedParameters.heldButtons.end(),
+       Button::TwoButtonCombos().begin(),
+       Button::TwoButtonCombos().end());
   }
   if ([threeKeysHeldButton state])
   {
-    criteria.buttonPresses.insert(criteria.buttonPresses.end(),
-                                  Button::ThreeButtonCombos().begin(),
-                                  Button::ThreeButtonCombos().end());
+    criteria.seedParameters.heldButtons.insert
+      (criteria.seedParameters.heldButtons.end(),
+       Button::ThreeButtonCombos().begin(),
+       Button::ThreeButtonCombos().end());
   }
   
-  criteria.fromTime = ptime(NSDateToBoostDate([fromDateField objectValue]),
-                            seconds(0));
+  criteria.seedParameters.fromTime =
+    ptime(NSDateToBoostDate([fromDateField objectValue]), seconds(0));
   
-  criteria.toTime   = ptime(NSDateToBoostDate([toDateField objectValue]),
+  criteria.seedParameters.toTime =
+    ptime(NSDateToBoostDate([toDateField objectValue]),
                             hours(23) + minutes(59) + seconds(59));
+  
+  criteria.frameParameters.usingEverstone = [everstoneButton state];
+  criteria.frameParameters.usingDitto = [dittoButton state];
+  criteria.frameParameters.internationalParents = [internationalButton state];
+  criteria.frameParameters.tid = [gen5ConfigController tid];
+  criteria.frameParameters.sid = [gen5ConfigController sid];
+  
+  criteria.ivFrame.min = [minIVFrameField intValue];
+  criteria.ivFrame.max = [maxIVFrameField intValue];
+  
+  criteria.ivs.min = [ivParameterController minIVs];
+  criteria.ivs.shouldCheckMax = [ivParameterController shouldCheckMaxIVs];
+  criteria.ivs.max = [ivParameterController maxIVs];
+  criteria.ivs.isRoamer = false;
+  
+  if ([ivParameterController shouldCheckHiddenPower])
+  {
+    criteria.ivs.hiddenType = [ivParameterController hiddenType];
+    criteria.ivs.minHiddenPower = [ivParameterController minHiddenPower];
+  }
+  else
+  {
+    criteria.ivs.hiddenType = Element::UNKNOWN;
+  }
   
   criteria.femaleIVs = [self femaleParentIVs];
   criteria.maleIVs = [self maleParentIVs];
   criteria.femaleSpecies =
     FemaleParent::Type([[femaleSpeciesPopUp selectedItem] tag]);
-  criteria.usingEverstone = [everstoneButton state];
-  criteria.usingDitto = [dittoButton state];
-  criteria.internationalParents = [internationalButton state];
   
-  criteria.minIVFrame = [minIVFrameField intValue];
-  criteria.maxIVFrame = [maxIVFrameField intValue];
+  criteria.pid.nature = Nature::Type([[naturePopUp selectedItem] tag]);
+  criteria.pid.ability = [[abilityPopUp selectedItem] tag];
+  criteria.pid.gender = Gender::Type([[genderPopUp selectedItem] tag]);
+  criteria.pid.genderRatio =
+    Gender::Ratio([[genderRatioPopUp selectedItem] tag]);
+  criteria.pid.searchFromInitialFrame = [useInitialPIDFrameCheckBox state];
   
-  criteria.minIVs = [ivParameterController minIVs];
-  criteria.shouldCheckMaxIVs = [ivParameterController shouldCheckMaxIVs];
-  criteria.maxIVs = [ivParameterController maxIVs];
-  
-  if ([ivParameterController shouldCheckHiddenPower])
-  {
-    criteria.hiddenType = [ivParameterController hiddenType];
-    criteria.minHiddenPower = [ivParameterController minHiddenPower];
-  }
-  else
-  {
-    criteria.hiddenType = Element::UNKNOWN;
-  }
-  
-  criteria.tid = [gen5ConfigController tid];
-  criteria.sid = [gen5ConfigController sid];
-  criteria.nature = Nature::Type([[naturePopUp selectedItem] tag]);
-  criteria.ability = [[abilityPopUp selectedItem] tag];
-  criteria.inheritsDreamworldAbility = [dreamworldButton state];
+  criteria.inheritsHiddenAbility = [dreamworldButton state];
   criteria.shinyOnly = [shinyButton state];
   criteria.childSpecies = [[speciesPopUp selectedItem] tag] & 0x1;
-  criteria.gender = Gender::Type([[genderPopUp selectedItem] tag]);
-  criteria.genderRatio =
-    Gender::Ratio([[genderRatioPopUp selectedItem] tag]);
   
-  criteria.minPIDFrame = [minPIDFrameField intValue];
-  criteria.maxPIDFrame = [maxPIDFrameField intValue];
+  criteria.pidFrame.min = [minPIDFrameField intValue];
+  criteria.pidFrame.max = [maxPIDFrameField intValue];
   
   uint64_t  numResults = criteria.ExpectedNumberOfResults();
   
@@ -387,8 +395,9 @@ struct ProgressHandler
   
   searcher.Search(*criteria,
                   ResultHandler(searcherController,
-                                criteria->tid, criteria->sid,
-                                criteria->usingEverstone,
+                                criteria->frameParameters.tid,
+                                criteria->frameParameters.sid,
+                                criteria->frameParameters.usingEverstone,
                                 criteria->femaleSpecies),
                   ProgressHandler(searcherController));
 }

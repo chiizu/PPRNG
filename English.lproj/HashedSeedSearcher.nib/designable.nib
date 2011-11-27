@@ -2,7 +2,7 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
-		<string key="IBDocument.SystemVersion">10K540</string>
+		<string key="IBDocument.SystemVersion">10K549</string>
 		<string key="IBDocument.InterfaceBuilderVersion">851</string>
 		<string key="IBDocument.AppKitVersion">1038.36</string>
 		<string key="IBDocument.HIToolboxVersion">461.00</string>
@@ -5050,7 +5050,7 @@
 											<object class="NSTextFieldCell" key="NSCell" id="43639475">
 												<int key="NSCellFlags">-1804468671</int>
 												<int key="NSCellFlags2">4195328</int>
-												<real value="5" key="NSContents"/>
+												<real value="6" key="NSContents"/>
 												<reference key="NSSupport" ref="747006787"/>
 												<object class="NSNumberFormatter" key="NSFormatter" id="507297051">
 													<object class="NSMutableDictionary" key="NS.attributes">
@@ -13919,9 +13919,9 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1210, 442}, {1210, 560}}</string>
+					<string>{{0, 296}, {1210, 560}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1210, 442}, {1210, 560}}</string>
+					<string>{{0, 296}, {1210, 560}}</string>
 					<integer value="1"/>
 					<string>{196, 240}</string>
 					<string>{{357, 418}, {480, 270}}</string>

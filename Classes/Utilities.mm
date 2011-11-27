@@ -25,10 +25,8 @@ using namespace pprng;
 
 boost::gregorian::date NSDateToBoostDate(NSDate *date)
 {
-  NSCalendar *calendar = [[NSCalendar alloc]
-                          initWithCalendarIdentifier:NSGregorianCalendar];
   NSDateComponents *components =
-    [calendar
+    [[NSCalendar currentCalendar]
      components: (NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit)
      fromDate: date];
   

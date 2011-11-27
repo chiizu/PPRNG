@@ -123,36 +123,29 @@ using namespace pprng;
   using namespace boost::gregorian;
   using namespace boost::posix_time;
   
-  date  d = NSDateToBoostDate([startDate objectValue]);
+  HashedSeed::Parameters  p;
   
-  time_duration t
-    (hours([startHour intValue]) +
-     minutes([startMinute intValue]) +
-     seconds([startSecond intValue]));
+  p.version = [gen5ConfigController version];
+  p.dsType = [gen5ConfigController dsType];
+  p.macAddress = [gen5ConfigController macAddress];
+  p.gxStat = HashedSeed::HardResetGxStat;
+  p.vcount = [vcountField intValue];
+  p.vframe = [vframeField intValue];
+  p.timer0 = [timer0Field intValue];
+  p.date = NSDateToBoostDate([startDate objectValue]);
+  p.hour = [startHour intValue];
+  p.minute = [startMinute intValue];
+  p.second = [startSecond intValue];
+  p.heldButtons = [[key1Menu selectedItem] tag] |
+                  [[key2Menu selectedItem] tag] |
+                  [[key3Menu selectedItem] tag];
   
-  uint32_t  macAddressLow = [gen5ConfigController macAddressLow];
-  uint32_t  macAddressHigh = [gen5ConfigController macAddressHigh];
-  
-  Game::Version  version = [gen5ConfigController version];
-  
-  uint32_t  timer0 = [timer0Field intValue];
-  uint32_t  vcount = [vcountField intValue];
-  uint32_t  vframe = [vframeField intValue];
-  
-  uint32_t  pressedKeys = [[key1Menu selectedItem] tag] |
-                          [[key2Menu selectedItem] tag] |
-                          [[key3Menu selectedItem] tag];
-  
-  HashedSeed  seed(d.year(), d.month(), d.day(), d.day_of_week(),
-                   t.hours(), t.minutes(), t.seconds(),
-                   macAddressLow, macAddressHigh,
-                   HashedSeed::NazoForVersion(version),
-                   vcount, timer0, HashedSeed::GxStat, vframe, pressedKeys);
+  HashedSeed  seed(p);
   
   currentSeed = [NSData dataWithBytes: &seed length: sizeof(HashedSeed)];
   
   [seedField setObjectValue:
-    [NSNumber numberWithUnsignedLongLong: seed.m_rawSeed]];
+    [NSNumber numberWithUnsignedLongLong: seed.rawSeed]];
   [initialPIDFrameField setObjectValue:
     [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
 }
@@ -169,20 +162,23 @@ using namespace pprng;
   
   HashedSeed  seed([[seedField objectValue] unsignedLongLongValue]);
   
-  BOOL      useInitialPIDOffset = [useInitialPIDButton state];
   uint32_t  minFrame = [minFrameField intValue];
   uint32_t  maxFrame = [maxFrameField intValue];
   uint32_t  frameNum = 0;
-  uint32_t  tid = [gen5ConfigController tid];
-  uint32_t  sid = [gen5ConfigController sid];
   
-  WonderCardFrameGenerator  generator(seed, useInitialPIDOffset,
-                                      [ivSkipField intValue],
-                                      [pidSkipField intValue],
-                                      [natureSkipField intValue], false,
-                                      tid, sid);
+  WonderCardFrameGenerator::Parameters  p;
   
-  if (!useInitialPIDOffset)
+  p.startFromLowestFrame = [useInitialPIDButton state];
+  p.ivSkip = [ivSkipField intValue];
+  p.pidSkip = [pidSkipField intValue];
+  p.natureSkip = [natureSkipField intValue];
+  p.canBeShiny = false;
+  p.tid = [gen5ConfigController tid];
+  p.sid = [gen5ConfigController sid];
+  
+  WonderCardFrameGenerator  generator(seed, p);
+  
+  if (!p.startFromLowestFrame)
   {
     uint32_t  limitFrame = minFrame - 1;
     
@@ -259,28 +255,34 @@ using namespace pprng;
   HashedSeed  targetSeed;
   [currentSeed getBytes: &targetSeed length: sizeof(HashedSeed)];
   
-  if (targetSeed.m_rawSeed != [[seedField objectValue] unsignedLongLongValue])
+  if (targetSeed.rawSeed != [[seedField objectValue] unsignedLongLongValue])
   {
     return;
   }
   
   [adjacentsContentArray setContent: [NSMutableArray array]];
   
-  uint32_t  tid = [gen5ConfigController tid];
-  uint32_t  sid = [gen5ConfigController sid];
-  uint32_t  timer0Low = targetSeed.m_timer0 - 1;
-  uint32_t  timer0High = targetSeed.m_timer0 + 1;
+  uint32_t  timer0Low = targetSeed.timer0 - 1;
+  uint32_t  timer0High = targetSeed.timer0 + 1;
   
-  if (targetSeed.m_timer0 == 0)
+  if (targetSeed.timer0 == 0)
   {
     timer0Low = 0;
   }
-  if (targetSeed.m_timer0 == 0xffffffff)
+  if (targetSeed.timer0 == 0xffffffff)
   {
     timer0High = 0xffffffff;
   }
   
   uint32_t  secondVariance = [adjacentsTimeVarianceField intValue];
+  
+  ptime  seedTime(date(targetSeed.year(), targetSeed.month(), targetSeed.day()),
+                  hours(targetSeed.hour) + minutes(targetSeed.minute) +
+                  seconds(targetSeed.second));
+  ptime  dt = seedTime;
+  ptime  endTime = dt + seconds(secondVariance);
+  dt = dt - seconds(secondVariance);
+  
   uint32_t  targetFrameNum = [adjacentsFrameField intValue];
   BOOL      useInitialPIDOffset = [adjacentsUseInitialPIDOffsetButton state];
   uint32_t  frameOffset = useInitialPIDOffset ?
@@ -288,20 +290,27 @@ using namespace pprng;
        targetFrameNum - 1;
   uint32_t  frameVariance = [adjacentsFrameVarianceField intValue];
   
-  ptime  seedTime(date(targetSeed.m_year, targetSeed.m_month, targetSeed.m_day),
-                  hours(targetSeed.m_hour) + minutes(targetSeed.m_minute) +
-                  seconds(targetSeed.m_second));
-  ptime  dt = seedTime;
-  ptime  endTime = dt + seconds(secondVariance);
-  dt = dt - seconds(secondVariance);
+  HashedSeed::Parameters  seedParams;
+  seedParams.macAddress = targetSeed.macAddress;
+  seedParams.version = targetSeed.version;
+  seedParams.dsType = targetSeed.dsType;
+  seedParams.gxStat = targetSeed.gxStat;
+  seedParams.vcount = targetSeed.vcount;
+  seedParams.vframe = targetSeed.vframe;
+  seedParams.heldButtons = targetSeed.heldButtons;
+  
+  WonderCardFrameGenerator::Parameters  frameParams;
+  frameParams.startFromLowestFrame = useInitialPIDOffset;
+  frameParams.ivSkip = [ivSkipField intValue];
+  frameParams.pidSkip = [pidSkipField intValue];
+  frameParams.natureSkip = [natureSkipField intValue];
+  frameParams.canBeShiny = false;
+  frameParams.tid = [gen5ConfigController tid];
+  frameParams.sid = [gen5ConfigController sid];
   
   NSMutableArray  *rowArray =
     [NSMutableArray arrayWithCapacity:
       (timer0High - timer0Low + 1) * ((2 * secondVariance) + 1)];
-  
-  uint32_t  ivSkip = [ivSkipField intValue];
-  uint32_t  pidSkip = [pidSkipField intValue];
-  uint32_t  natureSkip = [natureSkipField intValue];
   
   BOOL  showNature = ![fixedNatureCheckBox state];
   BOOL  showAbility = ![fixedAbilityCheckBox state];
@@ -309,7 +318,8 @@ using namespace pprng;
   
   for (; dt <= endTime; dt = dt + seconds(1))
   {
-    date           d = dt.date();
+    seedParams.date = dt.date();
+    
     time_duration  t = dt.time_of_day();
     
     NSString  *timeStr = (dt == seedTime) ?
@@ -317,14 +327,15 @@ using namespace pprng;
                                  t.hours(), t.minutes(), t.seconds()] :
       [NSString stringWithFormat:@"%+dsec", (dt - seedTime).total_seconds()];
     
+    seedParams.hour = t.hours();
+    seedParams.minute = t.minutes();
+    seedParams.second = t.seconds();
+    
     for (uint32_t timer0 = timer0Low; timer0 <= timer0High; ++timer0)
     {
-      HashedSeed  seed(d.year(), d.month(), d.day(), d.day_of_week(),
-                       t.hours(), t.minutes(), t.seconds(),
-                       targetSeed.m_macAddressLow, targetSeed.m_macAddressHigh,
-                       targetSeed.m_nazo,
-                       targetSeed.m_vcount, timer0, HashedSeed::GxStat,
-                       targetSeed.m_vframe, targetSeed.m_keyInput);
+      seedParams.timer0 = timer0;
+      
+      HashedSeed  seed(seedParams);
       
       uint32_t  adjacentFrameNum = useInitialPIDOffset ?
         (seed.GetSkippedPIDFrames() + 1 + frameOffset) :
@@ -338,9 +349,7 @@ using namespace pprng;
       if (startFrameNum < initialFrame)
         startFrameNum = initialFrame;
       
-      WonderCardFrameGenerator  generator(seed, useInitialPIDOffset,
-                                          ivSkip, pidSkip, natureSkip, false,
-                                          tid, sid);
+      WonderCardFrameGenerator  generator(seed, frameParams);
       
       uint32_t  limit = (startFrameNum - 1);
       while (generator.CurrentFrame().number < limit)
@@ -407,23 +416,23 @@ using namespace pprng;
     timeZoneOffsetRange.length = 5;
     NSString  *dateTime =
       [NSString stringWithFormat: @"%.4d-%.2d-%.2d %.2d:%.2d:%.2d %@",
-        seed.m_year, seed.m_month, seed.m_day,
-        seed.m_hour, seed.m_minute, seed.m_second,
+        seed.year(), seed.month(), seed.day(),
+        seed.hour, seed.minute, seed.second,
         [[now description] substringWithRange: timeZoneOffsetRange]];
     
     [startDate setObjectValue: [NSDate dateWithString: dateTime]];
-    [startHour setIntValue: seed.m_hour];
-    [startMinute setIntValue: seed.m_minute];
-    [startSecond setIntValue: seed.m_second];
+    [startHour setIntValue: seed.hour];
+    [startMinute setIntValue: seed.minute];
+    [startSecond setIntValue: seed.second];
     
-    [timer0Field setIntValue: seed.m_timer0];
-    [vcountField setIntValue: seed.m_vcount];
-    [vframeField setIntValue: seed.m_vframe];
+    [timer0Field setIntValue: seed.timer0];
+    [vcountField setIntValue: seed.vcount];
+    [vframeField setIntValue: seed.vframe];
     
     NSPopUpButton  *keyMenu[3] = { key1Menu, key2Menu, key3Menu };
     uint32_t  i = 0;
-    uint32_t  dpadPress = seed.m_keyInput & Button::DPAD_MASK;
-    uint32_t  buttonPress = seed.m_keyInput & Button::SINGLE_BUTTON_MASK;
+    uint32_t  dpadPress = seed.heldButtons & Button::DPAD_MASK;
+    uint32_t  buttonPress = seed.heldButtons & Button::SINGLE_BUTTON_MASK;
     
     if (dpadPress != 0)
     {
@@ -444,7 +453,7 @@ using namespace pprng;
     }
     
     [seedField setObjectValue:
-      [NSNumber numberWithUnsignedLongLong: seed.m_rawSeed]];
+      [NSNumber numberWithUnsignedLongLong: seed.rawSeed]];
     [initialPIDFrameField setObjectValue:
       [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
   }

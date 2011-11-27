@@ -23,6 +23,7 @@
 
 
 #include "BasicTypes.h"
+#include "SeedGenerator.h"
 #include "SeedSearcher.h"
 #include "FrameGenerator.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -33,48 +34,41 @@ namespace pprng
 class EggSeedSearcher
 {
 public:
+  typedef SeedSearcher<HashedIVFrameGenerator>    SeedSearcherType;
+  typedef Gen5EggFrame                            Frame;
+  typedef boost::function<void (const Frame&)>    ResultCallback;
+  typedef boost::function<bool (double percent)>  ProgressCallback;
+  
   struct Criteria : public SeedSearchCriteria
   {
-    Game::Version             version;
-    uint32_t                  macAddressLow, macAddressHigh;
-    uint32_t                  timer0Low, timer0High;
-    uint32_t                  vcountLow, vcountHigh;
-    uint32_t                  vframeLow, vframeHigh;
-    boost::posix_time::ptime  fromTime, toTime;
-    Button::List              buttonPresses;
+    HashedSeedGenerator::Parameters         seedParameters;
+    Gen5BreedingFrameGenerator::Parameters  frameParameters;
     
-    uint32_t                  tid, sid;
+    SeedSearchCriteria::IVCriteria   ivs;
+    SeedSearcherType::FrameRange     ivFrame;
+    IVs                              femaleIVs, maleIVs;
     
-    IVs                       femaleIVs, maleIVs;
-    FemaleParent::Type        femaleSpecies;
-    bool                      usingEverstone;
-    bool                      usingDitto;
-    bool                      internationalParents;
+    FemaleParent::Type               femaleSpecies;
     
-    bool                      searchFromInitialPIDFrame;
-    uint32_t                  minPIDFrame, maxPIDFrame;
-    Nature::Type              nature;
-    uint32_t                  ability;
-    bool                      inheritsDreamworldAbility;
-    bool                      shinyOnly;
-    uint32_t                  childSpecies;
-    Gender::Type              gender;
-    Gender::Ratio             genderRatio;
+    SeedSearchCriteria::PIDCriteria  pid;
+    SeedSearcherType::FrameRange     pidFrame;
+    bool                             inheritsHiddenAbility;
+    bool                             shinyOnly;
+    uint32_t                         childSpecies;
     
-    uint32_t                  minIVFrame, maxIVFrame;
-    bool                      shouldCheckMaxIVs;
-    IVs                       minIVs, maxIVs;
-    Element::Type             hiddenType;
-    uint32_t                  minHiddenPower;
+    Criteria()
+      : seedParameters(), frameParameters(),
+        ivs(), ivFrame(), femaleIVs(), maleIVs(),
+        femaleSpecies(FemaleParent::OTHER),
+        pid(), pidFrame(),
+        inheritsHiddenAbility(false), shinyOnly(false),
+        childSpecies(0xFFFFFFFF)
+    {}
     
     uint64_t ExpectedNumberOfResults() const;
   };
   
   EggSeedSearcher() {}
-  
-  typedef Gen5EggFrame                            Frame;
-  typedef boost::function<void (const Frame&)>    ResultCallback;
-  typedef boost::function<bool (double percent)>  ProgressCallback;
   
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
               const ProgressCallback &progressHandler);

@@ -1,17 +1,15 @@
-PPRNG 1.5.0
+PPRNG 1.8.0
 
 Mac Requirements: Intel Mac with OS X 10.5 or greater.
 
-DS Requirements: DS or DS Lite. If you have DSi / XL / 3DS, only C-Gear is
-supported at this time. Researchers are working hard to figure this out, but
-it's not a simple task.
-
-
+DS Requirements: All DS types now supported for English and Japanese language
+games. We still need to figure out details for the other languages, so in the
+meantime they are still stuck on the original DS or DS Lite only.
 
 Quick Start:
 1. First, before doing anything else, open the DS / Game Config screen.
 2. Enter what you know about your game and DS (at minimum, that would be game
-   version and MAC address).
+   version, DS type, and MAC address).
 3. Click OK to save the config.
 4. If you don't know your DS Parameters, go to the DS Parameter Searcher to find
    your parameters.  Once you have found your parameters, go back to the
@@ -23,7 +21,55 @@ In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
 on a result row to bring up the seed inspector for that specific seed.
 
 
-New in 1.5.0
+New in 1.8.0
+
+* DSi, DSi XL, and 3DS users can now do Standard Seed RNG on English and
+  Japanese language games.  We hope to get other languages soon.  Make sure you
+  set your DS model correctly in your configuration.
+* Added the 4th Generation Seed Inspector, and rewrote the 4th Generation Seed
+  Searcher to use Wichu's instant search algorithm.  There are now also
+  separate configurations for 4th Generation games.
+* Searches based on Standard Seeds (including Wonder Cards and Breeding) have
+  received another speed increase.  For example, on my 2008 Mac Book Pro (2
+  cores), searching all key combinations took 1 minute 37 seconds for a single
+  date, and about 48 minutes for a full month.  With this update running on the
+  same machine, it now takes 1 minute 10 seconds for a single day, or 35 minutes
+  for a whole month, which is more than 25% less than version 1.5.0.  Users with
+  better machines than mine will see less drastic improvement, but it will still
+  be faster.
+* Numerous tweaks have been done behind the scenes.
+
+While the above list appears short, a lot has changed under the hood, so it's
+possible that I've broken something that used to work.
+
+
+Known Issues in this version:
+
+* Aside from the C-Gear Seed Inspector, none of the 'Find' or 'Save' buttons in
+  the seed inspectors work. For now, you'll just have to scroll through
+  manually. 'Save' buttons in the searcher windows should properly save CSV
+  files of the results.
+* Copy / Paste will work on specific fields that you can type in, but at the
+  moment you can't copy other things such as result rows.
+* There is not much in the way of argument checking. If you set a minimum IV
+  that is greater than the corresponding maximum IV, it will try very hard to
+  find that impossible IV spread.
+* There is some funny behavior when editing the DS / Game Config with multiple
+  windows open. The selected config in other windows appears to change. It is a
+  minor annoyance, but for now just set your config again in the other window
+  from it's drop down menu. Down the line there will be a bit of an interface
+  change to deal with this.
+
+
+Upcoming Features:
+
+* Generation 4 Support - Breeding (maybe some day...)
+
+
+Previous Releases:
+
+
+1.5.0
 General
 * Searching for Standard Seeds, Wonder Card Seeds, and Egg Seeds is now multi-
   threaded.  One thread for each processor on the machine will be created,
@@ -82,33 +128,7 @@ C-Gear Seeds
 
 There are probably some other changes that I have forgotten in this big update.
 
-
-Known Issues in this version:
-
-* Aside from the C-Gear Seed Inspector, none of the 'Find' or 'Save' buttons in
-  the seed inspectors work. For now, you'll just have to scroll through
-  manually. 'Save' buttons in the searcher windows should properly save CSV
-  files of the results.
-* Copy / Paste will work on specific fields that you can type in, but at the
-  moment you can't copy other things such as result rows.
-* There is not much in the way of argument checking. If you set a minimum IV
-  that is greater than the corresponding maximum IV, it will try very hard to
-  find that impossible IV spread.
-* There is some funny behavior when editing the DS / Game Config with multiple
-  windows open. The selected config in other windows appears to change. It is a
-  minor annoyance, but for now just set your config again in the other window
-  from it's drop down menu. Down the line there will be a bit of an interface
-  change to deal with this.
-
-
-Upcoming Features:
-
-* Generation 4 Support - Seed Inspection (maybe some day...)
-
-
-Previous Releases:
-
-New in 1.2.0
+1.2.0
 * Initial Egg Seed Searcher added.  It isn't always accurate when calculating
   how many expected results there will be, but it shouldn't prevent you from
   running reasonable searches.  In some cases you can run searches that will

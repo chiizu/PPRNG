@@ -115,13 +115,16 @@ public:
   
   ReturnType Next()
   {
-    if (m_Position == m_Queue.end())
-    {
-      m_Queue.push_back(m_RNG.Next());
-      m_Position = m_Queue.end() - 1;
-    }
+    MaybeAddNext();
     
     return *m_Position++;
+  }
+  
+  ReturnType PeekNext()
+  {
+    MaybeAddNext();
+    
+    return *m_Position;
   }
   
   void AdvanceBuffer()
@@ -134,6 +137,15 @@ public:
   }
   
 private:
+  void MaybeAddNext()
+  {
+    if (m_Position == m_Queue.end())
+    {
+      m_Queue.push_back(m_RNG.Next());
+      m_Position = m_Queue.end() - 1;
+    }
+  }
+  
   typedef std::deque<ReturnType>              QueueType;
   typedef typename QueueType::const_iterator  QueueIterator;
   

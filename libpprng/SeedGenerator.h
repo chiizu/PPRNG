@@ -23,12 +23,37 @@
 
 #include "BasicTypes.h"
 #include "HashedSeed.h"
+#include "UnhashedSeed.h"
 #include <list>
 #include <vector>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace pprng
 {
+
+class Gen34IVSeedGenerator
+{
+public:
+  typedef uint32_t  SeedType;
+  typedef uint32_t  SeedCountType;
+  
+  enum { SeedsPerChunk = 20000 };
+  
+  Gen34IVSeedGenerator(IVs minIVs, IVs maxIVs, uint32_t method = 1);
+  
+  SeedCountType NumberOfSeeds() const;
+  
+  SeedType Next();
+  
+private:
+  const IVs       m_minIVs, m_maxIVs;
+  const uint32_t  m_method;
+  const bool      m_iteratingHpAtDef;
+  const uint32_t  m_numRollbacks;
+  uint32_t        m_iv0, m_iv1, m_iv2;
+  uint32_t        m_iv0Low, m_iv0High, m_iv1Low, m_iv1High, m_iv2Low, m_iv2High;
+  uint32_t        m_otherHalfCounter;
+};
 
 class TimeSeedGenerator
 {
@@ -44,7 +69,7 @@ public:
       m_delay(maxDelay)
   {}
   
-  SeedCountType NumSeeds() const
+  SeedCountType NumberOfSeeds() const
   {
     return 256 * 24 * (m_maxDelay - m_minDelay + 1);
   }
@@ -94,9 +119,9 @@ public:
     : m_macAddressLow(macAddressLow), m_timeSeedGenerator(minDelay, maxDelay)
   {}
   
-  SeedCountType NumSeeds() const
+  SeedCountType NumberOfSeeds() const
   {
-    return m_timeSeedGenerator.NumSeeds();
+    return m_timeSeedGenerator.NumberOfSeeds();
   }
   
   SeedType Next()
@@ -124,39 +149,73 @@ public:
   typedef HashedSeed  SeedType;
   typedef uint64_t    SeedCountType;
   
+  struct Parameters
+  {
+    Game::Version             version;
+    DS::Type                  dsType;
+    MACAddress                macAddress;
+    uint32_t                  timer0Low, timer0High;
+    uint32_t                  vcountLow, vcountHigh;
+    uint32_t                  vframeLow, vframeHigh;
+    boost::posix_time::ptime  fromTime, toTime;
+    Button::List              heldButtons;
+    
+    Parameters()
+      : version(Game::Version(0)), macAddress(), timer0Low(0), timer0High(0),
+        vcountLow(0), vcountHigh(0), vframeLow(0), vframeHigh(0),
+        fromTime(), toTime(), heldButtons()
+    {}
+    
+    HashedSeed::Parameters ToInitialSeedParameters() const;
+    
+    SeedCountType NumberOfSeeds() const;
+  };
+  
   enum { SeedsPerChunk = 50000 };
   
-  HashedSeedGenerator(Game::Version version,
-                      uint32_t macAddressLow, uint32_t macAddressHigh,
-                      uint32_t timer0Low, uint32_t timer0High,
-                      uint32_t vcountLow, uint32_t vcountHigh,
-                      uint32_t vframeLow, uint32_t vframeHigh,
-                      boost::posix_time::ptime fromTime,
-                      boost::posix_time::ptime toTime,
-                      const std::vector<uint32_t> &keyCombos);
+  HashedSeedGenerator(const Parameters &parameters);
   
   HashedSeedGenerator(const HashedSeedGenerator &other);
   
-  SeedCountType NumSeeds() const;
+  SeedCountType NumberOfSeeds() const;
   
   SeedType Next();
   
   std::list<HashedSeedGenerator>  Split(uint32_t parts);
   
 private:
-  const uint32_t                  m_nazo;
-  const uint32_t                  m_macAddressLow, m_macAddressHigh;
-  const uint32_t                  m_timer0Low, m_timer0High;
-  const uint32_t                  m_vcountLow, m_vcountHigh;
-  const uint32_t                  m_vframeLow, m_vframeHigh;
-  const std::vector<uint32_t>     m_keyCombos;
-  boost::posix_time::ptime        m_fromTime, m_toTime;
+  const Parameters              m_parameters;
   
-  boost::posix_time::ptime               m_time;
-  uint32_t                               m_timer0;
-  uint32_t                               m_vcount;
-  uint32_t                               m_vframe;
-  std::vector<uint32_t>::const_iterator  m_keyComboIter;
+  HashedSeed::Parameters        m_hashedSeedParameters;
+  Button::List::const_iterator  m_heldButtonsIter;
+};
+
+
+class UnhashedSeedGenerator
+{
+public:
+  typedef HashedSeed  SeedType;
+  typedef uint64_t    SeedCountType;
+  
+  enum { SeedsPerChunk = 50000 };
+  
+  UnhashedSeedGenerator(const HashedSeedGenerator::Parameters &parameters);
+  
+  UnhashedSeedGenerator(const UnhashedSeedGenerator &other);
+  
+  SeedCountType NumberOfSeeds() const;
+  
+  SeedType Next();
+  
+  std::list<UnhashedSeedGenerator>  Split(uint32_t parts);
+  
+private:
+  const HashedSeedGenerator::Parameters  m_parameters;
+  
+  UnhashedSeed                           m_unhashedSeed;
+  
+  uint32_t                               m_timer0, m_vcount, m_vframe;
+  Button::List::const_iterator           m_heldButtonsIter;
 };
 
 }

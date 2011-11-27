@@ -48,6 +48,10 @@
   IBOutlet NSPopUpButton          *keyThreePopUp;
   
   IBOutlet SearcherController     *searcherController;
+  
+  BOOL                            useStandardParameterRanges;
 }
+
+@property BOOL  useStandardParameterRanges;
 
 @end

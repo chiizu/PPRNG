@@ -61,19 +61,214 @@ public:
   
   const Frame& CurrentFrame() { return m_frame; }
   
-  //uint32_t CurrentSeed() { return m_RNG.PeekNext(); }
-  
 private:
-  RNG             m_RNG;
-  PIDRNG          m_PIDRNG;
-  IVRNG           m_IVRNG;
-  Frame           m_frame;
+  RNG     m_RNG;
+  PIDRNG  m_PIDRNG;
+  IVRNG   m_IVRNG;
+  Frame   m_frame;
 };
 
 typedef Gen34FrameGenerator<1> Method1FrameGenerator;
 typedef Gen34FrameGenerator<2> Method2FrameGenerator;
 typedef Gen34FrameGenerator<3> Method3FrameGenerator;
 typedef Gen34FrameGenerator<4> Method4FrameGenerator;
+
+template <class Method>
+class Gen4EncounterFrameGenerator
+{
+public:
+  typedef Gen4EncounterFrame   Frame;
+  typedef QueuedRNG<LCRNG34>   RNG;
+  typedef Gen34PIDRNG<1, RNG>  PIDRNG;
+  typedef Gen34IVRNG<1, RNG>   IVRNG;
+  
+  enum EncounterType
+  {
+    GrassCaveEncounter = 0,
+    SurfingEncounter,
+    OldRodFishingEncounter,
+    GoodRodFishingEncounter,
+    SuperRodFishingEncounter,
+    StationaryEncounter,
+    
+    NumEncounterTypes
+  };
+  
+  static uint32_t MonsterFrameForEncounterType(EncounterType t)
+  {
+    uint32_t  offsets[NumEncounterTypes] = { 2, 3, 4, 4, 4, 1 };
+    return offsets[t];
+  }
+  
+  struct Parameters
+  {
+    EncounterType  encounterType;
+    Nature::Type   syncNature;
+    
+    Parameters()
+      : encounterType(GrassCaveEncounter), syncNature(Nature::ANY)
+    {}
+  };
+  
+  Gen4EncounterFrameGenerator(uint32_t seed, const Parameters &parameters)
+    : m_RNG(seed), m_PIDRNG(m_RNG), m_IVRNG(m_RNG), m_ProfElmResponseRNG(seed),
+      m_parameters(parameters)
+  {
+    m_frame.seed = seed;
+    m_frame.number = 0;
+    m_frame.synched = false;
+    m_frame.isEncounter = true;
+    m_frame.esv = ESV::Value(0);
+    m_ProfElmResponseRNG.Next();
+  }
+  
+  void AdvanceFrame()
+  {
+    m_RNG.AdvanceBuffer();
+    
+    ++m_frame.number;
+    m_frame.method1Number = m_frame.number;
+    m_frame.profElmResponse =
+      ProfElmResponses::CalcResponse(m_ProfElmResponseRNG.Next());
+    
+    switch (m_parameters.encounterType)
+    {
+    case GrassCaveEncounter:
+      m_frame.esv = ESV::Gen4Land(Method::CalculatePercentage(m_RNG.Next()));
+      break;
+    case SurfingEncounter:
+      m_frame.esv = ESV::Gen4Surfing(Method::CalculatePercentage(m_RNG.Next()));
+      m_RNG.Next(); // level calc?
+      break;
+    case OldRodFishingEncounter:
+      m_frame.isEncounter = IsFishingEncounter(Method::OldRodThreshold);
+      m_frame.esv =
+        Method::OldRodESV(Method::CalculatePercentage(m_RNG.Next()));
+      m_RNG.Next(); // level calc?
+      break;
+    case GoodRodFishingEncounter:
+      m_frame.isEncounter = IsFishingEncounter(Method::GoodRodThreshold);
+      m_frame.esv =
+        Method::GoodRodESV(Method::CalculatePercentage(m_RNG.Next()));
+      m_RNG.Next(); // level calc?
+      break;
+    case SuperRodFishingEncounter:
+      m_frame.isEncounter = IsFishingEncounter(Method::SuperRodThreshold);
+      m_frame.esv =
+        Method::SuperRodESV(Method::CalculatePercentage(m_RNG.Next()));
+      m_RNG.Next(); // level calc?
+      break;
+    case StationaryEncounter:
+      // no esv
+    default:
+      break;
+    }
+    
+    Nature::Type  targetNature;
+    
+    if (m_parameters.syncNature != Nature::ANY)
+    {
+      m_frame.synched = Method::DetermineSync(m_RNG.Next());
+      ++m_frame.method1Number;
+    }
+    if (m_frame.synched)
+    {
+      targetNature = m_parameters.syncNature;
+    }
+    else
+    {
+      targetNature = Method::DetermineNature(m_RNG.Next());
+      ++m_frame.method1Number;
+    }
+    
+    m_frame.pid = m_PIDRNG.NextPIDWord();
+    while (m_frame.pid.Gen34Nature() != targetNature)
+    {
+      m_frame.pid = m_PIDRNG.NextPIDWord();
+      m_frame.method1Number += 2;
+    }
+    m_frame.ivs = m_IVRNG.NextIVWord();
+  }
+  
+  const Frame& CurrentFrame() { return m_frame; }
+  
+  //uint32_t CurrentSeed() { return m_RNG.PeekNext(); }
+  
+  bool GeneratesESV() const
+  { return m_parameters.encounterType != StationaryEncounter; }
+  
+  bool GeneratesIsEncounter() const
+  {
+    return (m_parameters.encounterType == OldRodFishingEncounter) ||
+           (m_parameters.encounterType == GoodRodFishingEncounter) ||
+           (m_parameters.encounterType == SuperRodFishingEncounter);
+  }
+  
+private:
+  bool IsFishingEncounter(uint32_t threshold)
+  {
+    return Method::CalculatePercentage(m_RNG.Next()) < threshold;
+  }
+  
+  RNG         m_RNG;
+  PIDRNG      m_PIDRNG;
+  IVRNG       m_IVRNG;
+  LCRNG34     m_ProfElmResponseRNG;
+  Frame       m_frame;
+  Parameters  m_parameters;
+};
+
+struct MethodJ
+{
+  static uint32_t CalculatePercentage(uint32_t rawRNG)
+  { return (rawRNG >> 16) / 656; }
+  
+  static Nature::Type DetermineNature(uint32_t rawRNG)
+  { return Nature::Type((rawRNG >> 16) / 0xA3E); }
+  
+  static bool DetermineSync(uint32_t rawRNG)
+  { return (rawRNG >> 31) == 0; }
+  
+  static const uint32_t OldRodThreshold = 25;
+  static ESV::Value OldRodESV(uint32_t percentage)
+  { return ESV::Gen4OldRod(percentage); }
+  
+  static const uint32_t GoodRodThreshold = 50;
+  static ESV::Value GoodRodESV(uint32_t percentage)
+  { return ESV::Gen4GoodRodJ(percentage); }
+  
+  static const uint32_t SuperRodThreshold = 75;
+  static ESV::Value SuperRodESV(uint32_t percentage)
+  { return ESV::Gen4SuperRodJ(percentage); }
+};
+
+struct MethodK
+{
+  static uint32_t CalculatePercentage(uint32_t rawRNG)
+  { return (rawRNG >> 16) % 100; }
+  
+  static Nature::Type DetermineNature(uint32_t rawRNG)
+  { return Nature::Type((rawRNG >> 16) % 25); }
+  
+  static bool DetermineSync(uint32_t rawRNG)
+  { return (rawRNG & 0x00010000) == 0; }
+  
+  static const uint32_t OldRodThreshold = 0x2D;
+  static ESV::Value OldRodESV(uint32_t rawRNG)
+  { return ESV::Gen4OldRod(CalculatePercentage(rawRNG)); }
+  
+  static const uint32_t GoodRodThreshold = 0x46;
+  static ESV::Value GoodRodESV(uint32_t rawRNG)
+  { return ESV::Gen4GoodRodK(CalculatePercentage(rawRNG)); }
+  
+  static const uint32_t SuperRodThreshold = 0x5F;
+  static ESV::Value SuperRodESV(uint32_t rawRNG)
+  { return ESV::Gen4SuperRodK(CalculatePercentage(rawRNG)); }
+};
+
+typedef Gen4EncounterFrameGenerator<MethodJ> DPPtEncounterFrameGenerator;
+typedef Gen4EncounterFrameGenerator<MethodK> HGSSEncounterFrameGenerator;
+
 
 class CGearIVFrameGenerator
 {
@@ -153,8 +348,18 @@ public:
     NumFrameTypes
   };
   
-  Gen5PIDFrameGenerator(const HashedSeed &seed, FrameType frameType,
-                        bool useCompoundEyes, uint32_t tid, uint32_t sid);
+  struct Parameters
+  {
+    FrameType  frameType;
+    bool       useCompoundEyes;
+    uint32_t   tid, sid;
+    
+    Parameters()
+      : frameType(GrassCaveFrame), useCompoundEyes(false), tid(0), sid(0)
+    {}
+  };
+  
+  Gen5PIDFrameGenerator(const HashedSeed &seed, const Parameters &parameters);
   
   void AdvanceFrame();
   
@@ -211,22 +416,36 @@ public:
   typedef Gen5NonBufferingIVRNG<RNG> IVRNG;
   typedef Gen5PIDRNG<RNG>            PIDRNG;
   
-  WonderCardFrameGenerator(const HashedSeed &seed, bool startFromLowestFrame,
-                           uint32_t ivSkip, uint32_t pidSkip, uint32_t natureSkip,
-                           bool canBeShiny, uint32_t tid, uint32_t sid)
-    : m_RNG(seed.m_rawSeed), m_IVRNG(m_RNG, IVRNG::Normal),
-      m_PIDRNG(m_RNG, (canBeShiny ? PIDRNG::GiftPID : PIDRNG::GiftNoShinyPID),
-               tid, sid),
-      m_frame(seed), m_pidSkip(pidSkip), m_natureSkip(natureSkip)
+  struct Parameters
+  {
+    bool      startFromLowestFrame;
+    uint32_t  ivSkip, pidSkip, natureSkip;
+    bool      canBeShiny;
+    uint32_t  tid, sid;
+    
+    Parameters()
+      : startFromLowestFrame(false),
+        ivSkip(0), pidSkip(0), natureSkip(0),
+        canBeShiny(false), tid(0), sid(0)
+    {}
+  };
+  
+  WonderCardFrameGenerator(const HashedSeed &seed, const Parameters &parameters)
+    : m_RNG(seed.rawSeed), m_IVRNG(m_RNG, IVRNG::Normal),
+      m_PIDRNG(m_RNG, (parameters.canBeShiny ?
+                       PIDRNG::GiftPID : PIDRNG::GiftNoShinyPID),
+               parameters.tid, parameters.sid),
+      m_frame(seed),
+      m_pidSkip(parameters.pidSkip), m_natureSkip(parameters.natureSkip)
   {
     // skip over 'unused' frames
-    for (uint32_t i = 0; i < ivSkip; ++i)
+    for (uint32_t i = 0; i < parameters.ivSkip; ++i)
     {
       m_RNG.AdvanceBuffer();
     }
     m_frame.number = 0;
     
-    if (startFromLowestFrame)
+    if (parameters.startFromLowestFrame)
     {
       uint32_t  skippedFrames = seed.GetSkippedPIDFrames();
       while (skippedFrames-- > 0)
@@ -278,7 +497,7 @@ public:
   typedef LCRNG5              RNG;
   
   Gen5TrainerIDFrameGenerator(const HashedSeed &seed)
-    : m_RNG(seed.m_rawSeed),
+    : m_RNG(seed.rawSeed),
       m_frame(seed)
   {
     m_frame.number = 0;
@@ -307,17 +526,23 @@ public:
   typedef QueuedRNG<LCRNG5>  RNG;
   typedef Gen5PIDRNG<RNG>    PIDRNG;
   
-  Gen5BreedingFrameGenerator(const HashedSeed &seed, bool isInternational,
-                             bool hasEverstone, bool hasDitto,
-                             uint32_t tid, uint32_t sid);
+  struct Parameters
+  {
+    bool      usingEverstone;
+    bool      usingDitto;
+    bool      internationalParents;
+    uint32_t  tid, sid;
+  };
+  
+  Gen5BreedingFrameGenerator(const HashedSeed &seed,
+                             const Parameters &parameters);
   
   void AdvanceFrame();
   
   const Frame& CurrentFrame() { return m_frame; }
   
 private:
-  const bool      m_hasDitto, m_hasEverstone, m_isInternational;
-  const uint32_t  m_tid, m_sid;
+  const Parameters  m_parameters;
   
   RNG       m_RNG;
   PIDRNG    m_PIDRNG;

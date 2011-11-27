@@ -20,16 +20,29 @@
 
 
 #import "AppDelegate.h"
+
 #import "Gen5ConfigurationController.h"
+
+#import "CoinFlipsTransformer.h"
 #import "DSTypeTransformer.h"
+#import "HGSSRoamerLocationsTransformer.h"
+#import "ProfElmResponsesTransformer.h"
 #import "VersionTransformer.h"
 
 @implementation AppDelegate
 
 + (void)initialize
 {
+  [NSValueTransformer setValueTransformer: [[CoinFlipsTransformer alloc] init]
+                      forName: @"CoinFlipsTransformer"];
   [NSValueTransformer setValueTransformer: [[DSTypeTransformer alloc] init]
                       forName: @"DSTypeTransformer"];
+  [NSValueTransformer
+   setValueTransformer: [[HGSSRoamerLocationsTransformer alloc] init]
+   forName: @"HGSSRoamerLocationsTransformer"];
+  [NSValueTransformer
+   setValueTransformer: [[ProfElmResponsesTransformer alloc] init]
+   forName: @"ProfElmResponsesTransformer"];
   [NSValueTransformer setValueTransformer: [[VersionTransformer alloc] init]
                       forName: @"VersionTransformer"];
 }
@@ -117,7 +130,7 @@
 {
   launcherController = [[LauncherController alloc] init];
   [launcherController showWindow:self];
-  [self performSelectorInBackground:@selector(checkVersion) withObject:nil];
+  //[self performSelectorInBackground:@selector(checkVersion) withObject:nil];
 }
 
 @end

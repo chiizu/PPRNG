@@ -44,33 +44,31 @@ using namespace pprng;
   HashedSeed  targetSeed;
   [currentSeed getBytes: &targetSeed length: sizeof(HashedSeed)];
   
-  if (targetSeed.m_rawSeed != [[seedField objectValue] unsignedLongLongValue])
+  if (targetSeed.rawSeed != [[seedField objectValue] unsignedLongLongValue])
   {
     return;
   }
   
   [adjacentsContentArray setContent: [NSMutableArray array]];
   
-  uint32_t  tid = [gen5ConfigController tid];
-  uint32_t  sid = [gen5ConfigController sid];
-  uint32_t  timer0Low = targetSeed.m_timer0 - 1;
-  uint32_t  timer0High = targetSeed.m_timer0 + 1;
+  uint32_t  timer0Low = targetSeed.timer0 - 1;
+  uint32_t  timer0High = targetSeed.timer0 + 1;
   
-  if (targetSeed.m_timer0 == 0)
+  if (targetSeed.timer0 == 0)
   {
     timer0Low = 0;
   }
-  if (targetSeed.m_timer0 == 0xffffffff)
+  if (targetSeed.timer0 == 0xffffffff)
   {
     timer0High = 0xffffffff;
   }
   
   uint32_t  secondVariance = [adjacentsTimeVarianceField intValue];
   
-  ptime     seedTime(date(targetSeed.m_year, targetSeed.m_month,
-                          targetSeed.m_day),
-                     hours(targetSeed.m_hour) + minutes(targetSeed.m_minute) +
-                     seconds(targetSeed.m_second));
+  ptime     seedTime(date(targetSeed.year(), targetSeed.month(),
+                     targetSeed.day()),
+                     hours(targetSeed.hour) + minutes(targetSeed.minute) +
+                     seconds(targetSeed.second));
   ptime     dt = seedTime;
   ptime     endTime = dt + seconds(secondVariance);
   dt = dt - seconds(secondVariance);
@@ -84,9 +82,21 @@ using namespace pprng;
        (pidFrameNum - targetSeed.GetSkippedPIDFrames() - 1) : pidFrameNum;
   uint32_t  pidFrameVariance = [adjacentsPIDFrameVarianceField intValue];
   
-  Gen5PIDFrameGenerator::FrameType  frameType =
-    static_cast<Gen5PIDFrameGenerator::FrameType>
-      ([[adjacentsPIDFrameTypeMenu selectedItem] tag]);
+  HashedSeed::Parameters  seedParams;
+  seedParams.version = targetSeed.version;
+  seedParams.dsType = targetSeed.dsType;
+  seedParams.macAddress = targetSeed.macAddress;
+  seedParams.gxStat = targetSeed.gxStat;
+  seedParams.vcount = targetSeed.vcount;
+  seedParams.vframe = targetSeed.vframe;
+  seedParams.heldButtons = targetSeed.heldButtons;
+  
+  Gen5PIDFrameGenerator::Parameters  pidFrameParams;
+  pidFrameParams.frameType = Gen5PIDFrameGenerator::FrameType
+                              ([[adjacentsPIDFrameTypeMenu selectedItem] tag]);
+  pidFrameParams.useCompoundEyes = false;
+  pidFrameParams.tid = [gen5ConfigController tid];
+  pidFrameParams.sid = [gen5ConfigController sid];
   
   NSMutableArray  *rowArray =
     [NSMutableArray arrayWithCapacity:
@@ -94,7 +104,8 @@ using namespace pprng;
   
   for (; dt <= endTime; dt = dt + seconds(1))
   {
-    date           d = dt.date();
+    seedParams.date = dt.date();
+    
     time_duration  t = dt.time_of_day();
     
     NSString  *timeStr = (dt == seedTime) ?
@@ -102,14 +113,15 @@ using namespace pprng;
                                  t.hours(), t.minutes(), t.seconds()] :
       [NSString stringWithFormat:@"%+dsec", (dt - seedTime).total_seconds()];
     
+    seedParams.hour = t.hours();
+    seedParams.minute = t.minutes();
+    seedParams.second = t.seconds();
+    
     for (uint32_t timer0 = timer0Low; timer0 <= timer0High; ++timer0)
     {
-      HashedSeed  seed(d.year(), d.month(), d.day(), d.day_of_week(),
-                       t.hours(), t.minutes(), t.seconds(),
-                       targetSeed.m_macAddressLow, targetSeed.m_macAddressHigh,
-                       targetSeed.m_nazo,
-                       targetSeed.m_vcount, timer0, HashedSeed::GxStat,
-                       targetSeed.m_vframe, targetSeed.m_keyInput);
+      seedParams.timer0 = timer0;
+      
+      HashedSeed  seed(seedParams);
       
       HashedIVFrameGenerator  ivGenerator(seed,
                                           (isRoamer ?
@@ -129,7 +141,7 @@ using namespace pprng;
           1 : (adjacentPIDFrameNum - pidFrameVariance);
       uint32_t  pidEndFrameNum = adjacentPIDFrameNum + pidFrameVariance;
       
-      Gen5PIDFrameGenerator  pidGenerator(seed, frameType, false, tid, sid);
+      Gen5PIDFrameGenerator  pidGenerator(seed, pidFrameParams);
       bool  generatesESV = pidGenerator.GeneratesESV();
       bool  generatesIsEncounter = pidGenerator.GeneratesIsEncounter();
       
@@ -152,7 +164,8 @@ using namespace pprng;
           [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1],
             @"startFrame",
           [NSNumber numberWithUnsignedInt: frame.number], @"pidFrame",
-          (frame.pid.IsShiny(tid, sid) ? @"★" : @""), @"shiny",
+          (frame.pid.IsShiny(pidFrameParams.tid, pidFrameParams.sid) ?
+            @"★" : @""), @"shiny",
           [NSString stringWithFormat: @"%s",
             Nature::ToString(frame.nature).c_str()], @"nature",
           [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
