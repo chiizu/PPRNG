@@ -44,18 +44,28 @@ public:
     
     SPBlackNazo = 0x02216050,
     SPWhiteNazo = 0x02216070,
+    SPBlackDSiNazo = 0x02761150,
+    SPWhiteDSiNazo = 0x02761150,
     
     FRBlackNazo = 0x02216030,
     FRWhiteNazo = 0x02216050,
+    FRBlackDSiNazo = 0x02761150,
+    FRWhiteDSiNazo = 0x02761150,
     
     DEBlackNazo = 0x02215FF0,
     DEWhiteNazo = 0x02216010,
+    DEBlackDSiNazo = 0x027602f0,
+    DEWhiteDSiNazo = 0x027602f0,
     
     ITBlackNazo = 0x02215FB0,
     ITWhiteNazo = 0x02215FD0,
+    ITBlackDSiNazo = 0x02761150,
+    ITWhiteDSiNazo = 0x02761150,
     
-    KRBlackNazo = 0x02216790,
-    KRWhiteNazo = 0x022167B0
+    KRBlackNazo = 0x022167B0,
+    KRWhiteNazo = 0x022167B0,
+    KRBlackDSiNazo = 0x02761150,
+    KRWhiteDSiNazo = 0x02761150
   };
   
   static Nazo NazoForVersionAndDS(Game::Version version, DS::Type dsType);

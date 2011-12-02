@@ -100,6 +100,7 @@ struct Gen5PIDFrame
   PID               pid;
   Nature::Type      nature;
   bool              synched;
+  bool              isSwarm;
   ESV::Value        esv;
   HeldItem::Type    heldItem;
   bool              isEncounter;

@@ -145,11 +145,11 @@ struct ProgressHandler
     }
     else
     {
-      criteria.seedParameters.timer0Low = 0x1200;
+      criteria.seedParameters.timer0Low = 0x1100;
       criteria.seedParameters.timer0High = 0x1300;
       
-      criteria.seedParameters.vcountLow = 0x80;
-      criteria.seedParameters.vcountHigh = 0x9F;
+      criteria.seedParameters.vcountLow = 0x78;
+      criteria.seedParameters.vcountHigh = 0x98;
       
       criteria.seedParameters.vframeLow = 0x0;
       criteria.seedParameters.vframeHigh = 0xF;

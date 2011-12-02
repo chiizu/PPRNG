@@ -2,7 +2,7 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
-		<string key="IBDocument.SystemVersion">10K540</string>
+		<string key="IBDocument.SystemVersion">10K549</string>
 		<string key="IBDocument.InterfaceBuilderVersion">851</string>
 		<string key="IBDocument.AppKitVersion">1038.36</string>
 		<string key="IBDocument.HIToolboxVersion">461.00</string>
@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="1"/>
+			<integer value="2"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1448,7 +1448,6 @@
 														</object>
 														<object class="NSMenuItem" id="774285660">
 															<reference key="NSMenu" ref="514110613"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">DSi</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -1461,7 +1460,6 @@
 														</object>
 														<object class="NSMenuItem" id="146292507">
 															<reference key="NSMenu" ref="514110613"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">DSi XL</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -1474,7 +1472,6 @@
 														</object>
 														<object class="NSMenuItem" id="475986783">
 															<reference key="NSMenu" ref="514110613"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">3DS</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -1739,18 +1736,16 @@
 												<string key="NSKeyEquivalent"/>
 												<int key="NSPeriodicDelay">400</int>
 												<int key="NSPeriodicInterval">75</int>
-												<object class="NSMenuItem" key="NSMenuItem" id="996039686">
+												<object class="NSMenuItem" key="NSMenuItem" id="575569372">
 													<reference key="NSMenu" ref="514636871"/>
-													<bool key="NSIsDisabled">YES</bool>
-													<string key="NSTitle">White (Korean)</string>
+													<string key="NSTitle">Select…</string>
 													<string key="NSKeyEquiv"/>
-													<int key="NSKeyEquivModMask">1048576</int>
 													<int key="NSMnemonicLoc">2147483647</int>
 													<int key="NSState">1</int>
 													<reference key="NSOnImage" ref="317631821"/>
 													<reference key="NSMixedImage" ref="464249196"/>
 													<string key="NSAction">_popUpItemAction:</string>
-													<int key="NSTag">19</int>
+													<int key="NSTag">-1</int>
 													<reference key="NSTarget" ref="887467472"/>
 												</object>
 												<bool key="NSMenuItemRespectAlignment">YES</bool>
@@ -1758,17 +1753,7 @@
 													<string key="NSTitle">OtherViews</string>
 													<object class="NSMutableArray" key="NSMenuItems">
 														<bool key="EncodedWithXMLCoder">YES</bool>
-														<object class="NSMenuItem" id="575569372">
-															<reference key="NSMenu" ref="514636871"/>
-															<string key="NSTitle">Select…</string>
-															<string key="NSKeyEquiv"/>
-															<int key="NSMnemonicLoc">2147483647</int>
-															<reference key="NSOnImage" ref="317631821"/>
-															<reference key="NSMixedImage" ref="464249196"/>
-															<string key="NSAction">_popUpItemAction:</string>
-															<int key="NSTag">-1</int>
-															<reference key="NSTarget" ref="887467472"/>
-														</object>
+														<reference ref="575569372"/>
 														<object class="NSMenuItem" id="335648564">
 															<reference key="NSMenu" ref="514636871"/>
 															<bool key="NSIsDisabled">YES</bool>
@@ -1843,7 +1828,6 @@
 														</object>
 														<object class="NSMenuItem" id="165930872">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">Black (Korean)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -1938,7 +1922,18 @@
 															<int key="NSTag">16</int>
 															<reference key="NSTarget" ref="887467472"/>
 														</object>
-														<reference ref="996039686"/>
+														<object class="NSMenuItem" id="996039686">
+															<reference key="NSMenu" ref="514636871"/>
+															<string key="NSTitle">White (Korean)</string>
+															<string key="NSKeyEquiv"/>
+															<int key="NSKeyEquivModMask">1048576</int>
+															<int key="NSMnemonicLoc">2147483647</int>
+															<reference key="NSOnImage" ref="317631821"/>
+															<reference key="NSMixedImage" ref="464249196"/>
+															<string key="NSAction">_popUpItemAction:</string>
+															<int key="NSTag">19</int>
+															<reference key="NSTarget" ref="887467472"/>
+														</object>
 														<object class="NSMenuItem" id="511140004">
 															<reference key="NSMenu" ref="514636871"/>
 															<string key="NSTitle">White (Spanish)</string>
@@ -1954,7 +1949,6 @@
 													</object>
 													<reference key="NSMenuFont" ref="367031224"/>
 												</object>
-												<int key="NSSelectedIndex">15</int>
 												<int key="NSPreferredEdge">1</int>
 												<bool key="NSUsesItemFromMenu">YES</bool>
 												<bool key="NSAltersState">YES</bool>
@@ -4616,7 +4610,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{429, 512}, {120, 133}}</string>
+					<string>{{598, 512}, {120, 133}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>

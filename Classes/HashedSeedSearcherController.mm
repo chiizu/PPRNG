@@ -78,6 +78,7 @@ struct GUICriteria : public HashedSeedSearcher::Criteria
   bool           syncC;
   uint32_t       esvMaskLand;
   uint32_t       esvMaskWater;
+  bool           isSwarmPoke;
   bool           canFish;
   bool           dustIsPoke;
   bool           shadowIsPoke;
@@ -124,6 +125,9 @@ struct ResultHandler
     frameParameters.frameType = Gen5PIDFrameGenerator::GrassCaveFrame;
     Gen5PIDFrameGenerator  gcGenerator(frame.seed, frameParameters);
     
+    frameParameters.frameType = Gen5PIDFrameGenerator::SwarmFrame;
+    Gen5PIDFrameGenerator  swGenerator(frame.seed, frameParameters);
+    
     frameParameters.frameType = Gen5PIDFrameGenerator::FishingFrame;
     Gen5PIDFrameGenerator  fsGenerator(frame.seed, frameParameters);
     
@@ -159,6 +163,7 @@ struct ResultHandler
     while (fsGenerator.CurrentFrame().number < minFrame)
     {
       gcGenerator.AdvanceFrame();
+      swGenerator.AdvanceFrame();
       fsGenerator.AdvanceFrame();
       sdGenerator.AdvanceFrame();
       bsGenerator.AdvanceFrame();
@@ -172,6 +177,7 @@ struct ResultHandler
            !found)
     {
       gcGenerator.AdvanceFrame();
+      swGenerator.AdvanceFrame();
       fsGenerator.AdvanceFrame();
       sdGenerator.AdvanceFrame();
       bsGenerator.AdvanceFrame();
@@ -179,6 +185,7 @@ struct ResultHandler
       pidGenerator.AdvanceFrame();
       
       Gen5PIDFrame  gcFrame = gcGenerator.CurrentFrame();
+      Gen5PIDFrame  swFrame = swGenerator.CurrentFrame();
       Gen5PIDFrame  fsFrame = fsGenerator.CurrentFrame();
       Gen5PIDFrame  sdFrame = sdGenerator.CurrentFrame();
       Gen5PIDFrame  bsFrame = bsGenerator.CurrentFrame();
@@ -219,11 +226,14 @@ struct ResultHandler
           (!m_criteria.syncA || gcFrame.synched) &&
           (!m_criteria.syncB || fsFrame.synched) &&
           (!m_criteria.syncC || stFrame.synched) &&
-          ((m_criteria.esvMaskLand & (0x1 << ESV::Slot(gcFrame.esv))) != 0) &&
-          ((m_criteria.esvMaskWater & (0x1 << ESV::Slot(fsFrame.esv))) != 0) &&
+          ((m_criteria.esvMaskLand == 0) ||
+           ((m_criteria.esvMaskLand & (0x1 << ESV::Slot(gcFrame.esv))) != 0)) &&
+          ((m_criteria.esvMaskWater == 0) ||
+           ((m_criteria.esvMaskWater & (0x1 << ESV::Slot(fsFrame.esv))) != 0))&&
+          (!m_criteria.isSwarmPoke || swFrame.isSwarm) &&
           (!m_criteria.canFish || fsFrame.isEncounter) &&
-          (!m_criteria.dustIsPoke || !sdFrame.isEncounter) &&
-          (!m_criteria.shadowIsPoke || !bsFrame.isEncounter))
+          (!m_criteria.dustIsPoke || sdFrame.isEncounter) &&
+          (!m_criteria.shadowIsPoke || bsFrame.isEncounter))
       {
         found = true;
       }
@@ -232,6 +242,7 @@ struct ResultHandler
     if (found)
     {
       Gen5PIDFrame  gcFrame = gcGenerator.CurrentFrame();
+      Gen5PIDFrame  swFrame = swGenerator.CurrentFrame();
       Gen5PIDFrame  fsFrame = fsGenerator.CurrentFrame();
       Gen5PIDFrame  sdFrame = sdGenerator.CurrentFrame();
       Gen5PIDFrame  bsFrame = bsGenerator.CurrentFrame();
@@ -259,9 +270,10 @@ struct ResultHandler
           @"shinyLandESV",
         [NSString stringWithFormat: @"%d", ESV::Slot(fsFrame.esv)],
           @"shinyWaterESV",
+        (swFrame.isSwarm ? @"Y" : @""), @"isSwarm",
         (fsFrame.isEncounter ? @"Y" : @""), @"canFish",
-        (sdFrame.isEncounter ? @"" : @"Y"), @"dustIsPoke",
-        (bsFrame.isEncounter ? @"" : @"Y"), @"shadowIsPoke",
+        (sdFrame.isEncounter ? @"Y" : @""), @"dustIsPoke",
+        (bsFrame.isEncounter ? @"Y" : @""), @"shadowIsPoke",
         nil];
     }
     else if (m_criteria.shinyOnly)
@@ -532,6 +544,7 @@ struct ProgressHandler
   criteria.syncC = [shinySyncCCheckBox state];
   criteria.esvMaskLand = GetESVBitmask(shinyLandESVPopUp);
   criteria.esvMaskWater = GetESVBitmask(shinyWaterESVPopUp);
+  criteria.isSwarmPoke = [shinyIsSwarmPokeCheckBox state];
   criteria.canFish = [shinyCanFishCheckBox state];
   criteria.dustIsPoke = [shinyDustIsPokeCheckBox state];
   criteria.shadowIsPoke = [shinyShadowIsPokeCheckBox state];

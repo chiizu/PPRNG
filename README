@@ -1,10 +1,10 @@
-PPRNG 1.8.0
+PPRNG 1.8.2
 
 Mac Requirements: Intel Mac with OS X 10.5 or greater.
 
-DS Requirements: All DS types now supported for English and Japanese language
-games. We still need to figure out details for the other languages, so in the
-meantime they are still stuck on the original DS or DS Lite only.
+DS Requirements: All DS types now supported for English, Japanese, and German
+language games. We still need to figure out details for the other languages, so
+in the meantime they are still stuck on the original DS or DS Lite only.
 
 Quick Start:
 1. First, before doing anything else, open the DS / Game Config screen.
@@ -21,26 +21,17 @@ In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
 on a result row to bring up the seed inspector for that specific seed.
 
 
-New in 1.8.0
+New in 1.8.2
 
-* DSi, DSi XL, and 3DS users can now do Standard Seed RNG on English and
-  Japanese language games.  We hope to get other languages soon.  Make sure you
-  set your DS model correctly in your configuration.
-* Added the 4th Generation Seed Inspector, and rewrote the 4th Generation Seed
-  Searcher to use Wichu's instant search algorithm.  There are now also
-  separate configurations for 4th Generation games.
-* Searches based on Standard Seeds (including Wonder Cards and Breeding) have
-  received another speed increase.  For example, on my 2008 Mac Book Pro (2
-  cores), searching all key combinations took 1 minute 37 seconds for a single
-  date, and about 48 minutes for a full month.  With this update running on the
-  same machine, it now takes 1 minute 10 seconds for a single day, or 35 minutes
-  for a whole month, which is more than 25% less than version 1.5.0.  Users with
-  better machines than mine will see less drastic improvement, but it will still
-  be faster.
-* Numerous tweaks have been done behind the scenes.
-
-While the above list appears short, a lot has changed under the hood, so it's
-possible that I've broken something that used to work.
+* Added Swarm frame support in the Standard Seed Searcher and Inspector.
+* Added support for Korean games on DS and DS Lite.
+* Added support for German games on DSi and 3DS.
+* The Standard Seed Searcher columns are now adjustable and the window width can
+  be resized.  There is too much data to display for me to try to cram it into a
+  fixed size.  There is no saving of column widths or window size, however.
+* Fixed the automatic check for updates that I broke in 1.8.0.  Please spread
+  the word to fellow PPRNG users about this update, since they won't get the
+  automatic notification this time.
 
 
 Known Issues in this version:
@@ -67,6 +58,27 @@ Upcoming Features:
 
 
 Previous Releases:
+
+1.8.0
+
+* DSi, DSi XL, and 3DS users can now do Standard Seed RNG on English and
+  Japanese language games.  We hope to get other languages soon.  Make sure you
+  set your DS model correctly in your configuration.
+* Added the 4th Generation Seed Inspector, and rewrote the 4th Generation Seed
+  Searcher to use Wichu's instant search algorithm.  There are now also
+  separate configurations for 4th Generation games.
+* Searches based on Standard Seeds (including Wonder Cards and Breeding) have
+  received another speed increase.  For example, on my 2008 Mac Book Pro (2
+  cores), searching all key combinations took 1 minute 37 seconds for a single
+  date, and about 48 minutes for a full month.  With this update running on the
+  same machine, it now takes 1 minute 10 seconds for a single day, or 35 minutes
+  for a whole month, which is more than 25% less than version 1.5.0.  Users with
+  better machines than mine will see less drastic improvement, but it will still
+  be faster.
+* Numerous tweaks have been done behind the scenes.
+
+While the above list appears short, a lot has changed under the hood, so it's
+possible that I've broken something that used to work.
 
 
 1.5.0

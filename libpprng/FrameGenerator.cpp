@@ -73,6 +73,7 @@ Gen5PIDFrameGenerator::Gen5PIDFrameGenerator
 {
   m_frame.number = 0;
   m_frame.synched = false;
+  m_frame.isSwarm = false;
   m_frame.esv = ESV::Value(0);
   m_frame.heldItem = HeldItem::NO_ITEM;
   m_frame.isEncounter = 0;
@@ -104,6 +105,10 @@ const Gen5PIDFrameGenerator::FrameGeneratorInfo
   { PIDRNG::WildPID,
     &Gen5PIDFrameGenerator::NextFishingFrame,
     &Gen5PIDFrameGenerator::WaterESV },
+  // SwarmFrame
+  { PIDRNG::WildPID,
+    &Gen5PIDFrameGenerator::NextSwarmFrame,
+    &Gen5PIDFrameGenerator::LandESV },
   // ShakingGrassFrame
   { PIDRNG::WildPID,
     &Gen5PIDFrameGenerator::NextWildFrame,
@@ -187,7 +192,7 @@ void Gen5PIDFrameGenerator::NextWildFrame()
   
   (this->*m_ESVGenerator)();
   
-  // unknown
+  // level
   m_RNG.Next();
   
   NextSimpleFrame();
@@ -201,6 +206,22 @@ void Gen5PIDFrameGenerator::NextFishingFrame()
   
   m_frame.isEncounter = ((m_RNG.Next() >> 48) / 0x290) < 50;
   WaterESV();
+  
+  // level
+  m_RNG.Next();
+  
+  NextSimpleFrame();
+  NextHeldItem();
+}
+
+
+void Gen5PIDFrameGenerator::NextSwarmFrame()
+{
+  if (!m_useCompoundEyes)
+    NextSync();
+  
+  m_frame.isSwarm = (((m_RNG.Next() >> 32) * 100) >> 32) < 40;
+  LandESV();
   
   // level
   m_RNG.Next();

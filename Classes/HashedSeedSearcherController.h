@@ -26,7 +26,7 @@
 #import "Gen5ConfigurationController.h"
 
 
-@interface HashedSeedSearcherController : VertResizeOnlyWindowController
+@interface HashedSeedSearcherController : NSWindowController
 {
   IBOutlet Gen5ConfigurationController  *gen5ConfigController;
   IBOutlet IVParameterController        *ivParameterController;
@@ -57,6 +57,7 @@
   IBOutlet NSButton       *shinySyncCCheckBox;
   IBOutlet NSPopUpButton  *shinyLandESVPopUp;
   IBOutlet NSPopUpButton  *shinyWaterESVPopUp;
+  IBOutlet NSButton       *shinyIsSwarmPokeCheckBox;
   IBOutlet NSButton       *shinyCanFishCheckBox;
   IBOutlet NSButton       *shinyDustIsPokeCheckBox;
   IBOutlet NSButton       *shinyShadowIsPokeCheckBox;

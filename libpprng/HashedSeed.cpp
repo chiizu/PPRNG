@@ -376,43 +376,43 @@ HashedSeed::Nazo HashedSeed::NazoForVersionAndDS(Game::Version version,
       break;
     
     case Game::BlackSpanish:
-      return SPBlackNazo;
+      return isPlainDS ? SPBlackNazo : SPBlackDSiNazo;
       break;
     
     case Game::WhiteSpanish:
-      return SPWhiteNazo;
+      return isPlainDS ? SPWhiteNazo : SPWhiteDSiNazo;
       break;
     
     case Game::BlackFrench:
-      return FRBlackNazo;
+      return isPlainDS ? FRBlackNazo : FRBlackDSiNazo;
       break;
       
     case Game::WhiteFrench:
-      return FRWhiteNazo;
+      return isPlainDS ? FRWhiteNazo : FRWhiteDSiNazo;
       break;
       
     case Game::BlackItalian:
-      return ITBlackNazo;
+      return isPlainDS ? ITBlackNazo : ITBlackDSiNazo;
       break;
       
     case Game::WhiteItalian:
-      return ITWhiteNazo;
+      return isPlainDS ? ITWhiteNazo : ITWhiteDSiNazo;
       break;
       
     case Game::BlackGerman:
-      return DEBlackNazo;
+      return isPlainDS ? DEBlackNazo : DEBlackDSiNazo;
       break;
       
     case Game::WhiteGerman:
-      return DEWhiteNazo;
+      return isPlainDS ? DEWhiteNazo : DEWhiteDSiNazo;
       break;
       
     case Game::BlackKorean:
-      return KRBlackNazo;
+      return isPlainDS ? KRBlackNazo : KRBlackDSiNazo;
       break;
       
     case Game::WhiteKorean:
-      return KRWhiteNazo;
+      return isPlainDS ? KRWhiteNazo : KRWhiteDSiNazo;
       break;
       
     default:

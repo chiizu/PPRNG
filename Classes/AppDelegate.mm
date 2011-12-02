@@ -29,6 +29,8 @@
 #import "ProfElmResponsesTransformer.h"
 #import "VersionTransformer.h"
 
+#import "VersionCheckURL.h"
+
 @implementation AppDelegate
 
 + (void)initialize
@@ -56,7 +58,12 @@
 // check for a newer version - should be called on background thread
 - (void)checkVersion
 {
-  NSString       *urlString = @"";
+  NSString  *currentVersion = [[[NSBundle mainBundle] infoDictionary]
+                               objectForKey:(NSString*)kCFBundleVersionKey];
+  
+  NSString       *urlString = [NSString stringWithFormat: @"%@?version=%@",
+                                 VERSION_CHECK_URL, currentVersion];
+  
   NSURLRequest   *request =
     [NSURLRequest requestWithURL:[NSURL URLWithString: urlString]
                   cachePolicy: NSURLRequestReloadIgnoringLocalAndRemoteCacheData
@@ -77,8 +84,6 @@
   NSString  *latestVersion = [[NSString alloc] initWithBytes: [result bytes]
                               length: [result length]
                               encoding:NSISOLatin1StringEncoding];
-  NSString  *currentVersion = [[[NSBundle mainBundle] infoDictionary]
-                               objectForKey:(NSString*)kCFBundleVersionKey];
   
   NSArray  *latestVersionElements =
     [latestVersion componentsSeparatedByString: @"."];
@@ -130,7 +135,7 @@
 {
   launcherController = [[LauncherController alloc] init];
   [launcherController showWindow:self];
-  //[self performSelectorInBackground:@selector(checkVersion) withObject:nil];
+  [self performSelectorInBackground:@selector(checkVersion) withObject:nil];
 }
 
 @end

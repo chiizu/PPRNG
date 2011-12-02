@@ -334,6 +334,7 @@ public:
     GrassCaveFrame = 0,
     SurfingFrame,
     FishingFrame,
+    SwarmFrame,
     ShakingGrassFrame,
     SwirlingDustFrame,
     BridgeShadowFrame,
@@ -389,6 +390,7 @@ private:
   
   void NextWildFrame();
   void NextFishingFrame();
+  void NextSwarmFrame();
   void NextDustFrame();
   void NextShadowFrame();
   void NextStationaryFrame();

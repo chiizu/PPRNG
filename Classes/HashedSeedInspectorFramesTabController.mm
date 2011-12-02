@@ -101,7 +101,8 @@ using namespace pprng;
         ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
         (frame.synched ? @"Y" : @""), @"sync",
         (generatesESV ?
-          [NSString stringWithFormat: @"%d", ESV::Slot(frame.esv)] : @""),
+          (frame.isSwarm ? @"Sw" :
+            [NSString stringWithFormat: @"%d", ESV::Slot(frame.esv)]) : @""),
           @"esv",
         HeldItemString(frame.heldItem), @"heldItem",
         ((generatesIsEncounter && frame.isEncounter) ? @"Y" : @""),
