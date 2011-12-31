@@ -44,13 +44,13 @@ public:
     
     SPBlackNazo = 0x02216050,
     SPWhiteNazo = 0x02216070,
-    SPBlackDSiNazo = 0x02761150,
-    SPWhiteDSiNazo = 0x02761150,
+    SPBlackDSiNazo = 0x027601f0,
+    SPWhiteDSiNazo = 0x027601f0,
     
     FRBlackNazo = 0x02216030,
     FRWhiteNazo = 0x02216050,
-    FRBlackDSiNazo = 0x02761150,
-    FRWhiteDSiNazo = 0x02761150,
+    FRBlackDSiNazo = 0x02760230,
+    FRWhiteDSiNazo = 0x02760250,
     
     DEBlackNazo = 0x02215FF0,
     DEWhiteNazo = 0x02216010,
