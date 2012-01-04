@@ -11,7 +11,6 @@
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		C02E0A0213515E1A00855098 /* README in Resources */ = {isa = PBXBuildFile; fileRef = C02E0A0113515E1A00855098 /* README */; };
-		C02E0A0413515E2300855098 /* COPYING in Resources */ = {isa = PBXBuildFile; fileRef = C02E0A0313515E2300855098 /* COPYING */; };
 		C03B40FE1463D21100AD59B0 /* Gen4ConfigurationController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */; };
 		C05B870114626E42009166E0 /* UnhashedSeed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05B86FF14626E42009166E0 /* UnhashedSeed.cpp */; };
 		C0821492136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0821491136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm */; };
@@ -20,22 +19,23 @@
 		C0821518136EE9F600B6E0E5 /* TrainerIDFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = C0821517136EE9F600B6E0E5 /* TrainerIDFormatter.m */; };
 		C08215661372F4FF00B6E0E5 /* EggSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C08215641372F4FF00B6E0E5 /* EggSeedSearcher.cpp */; };
 		C082156D1375923500B6E0E5 /* EggSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C082156C1375923500B6E0E5 /* EggSeedSearcherController.mm */; };
-		C08216FB137E1D7000B6E0E5 /* CGearSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216E1137E1D7000B6E0E5 /* CGearSeedInspector.nib */; };
-		C08216FC137E1D7000B6E0E5 /* CGearSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216E3137E1D7000B6E0E5 /* CGearSeedSearcher.nib */; };
-		C08216FD137E1D7000B6E0E5 /* DSParameterSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216E5137E1D7000B6E0E5 /* DSParameterSearcher.nib */; };
-		C08216FE137E1D7000B6E0E5 /* EggSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216E7137E1D7000B6E0E5 /* EggSeedSearcher.nib */; };
-		C08216FF137E1D7000B6E0E5 /* Gen4SeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216E9137E1D7000B6E0E5 /* Gen4SeedSearcher.nib */; };
-		C0821700137E1D7000B6E0E5 /* Gen5Configuration.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216EB137E1D7000B6E0E5 /* Gen5Configuration.nib */; };
-		C0821701137E1D7000B6E0E5 /* HashedSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216ED137E1D7000B6E0E5 /* HashedSeedInspector.nib */; };
-		C0821702137E1D7000B6E0E5 /* HashedSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216EF137E1D7000B6E0E5 /* HashedSeedSearcher.nib */; };
-		C0821703137E1D7000B6E0E5 /* Launcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F1137E1D7000B6E0E5 /* Launcher.nib */; };
-		C0821704137E1D7000B6E0E5 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F3137E1D7000B6E0E5 /* MainMenu.nib */; };
-		C0821705137E1D7000B6E0E5 /* TrainerIDSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F5137E1D7000B6E0E5 /* TrainerIDSearcher.nib */; };
-		C0821706137E1D7000B6E0E5 /* WonderCardSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F7137E1D7000B6E0E5 /* WonderCardSeedInspector.nib */; };
-		C0821707137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C08216F9137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib */; };
 		C082189F13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C082189D13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp */; };
-		C0A0ACEF141C7CF2008C67F0 /* Gen4SeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0A0ACED141C7CF1008C67F0 /* Gen4SeedInspector.nib */; };
 		C0A0AD1B1423B9AB008C67F0 /* Gen4SeedInspectorController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0A0AD1A1423B9AB008C67F0 /* Gen4SeedInspectorController.mm */; };
+		C0AA905014B4A7E4003EC28F /* CGearSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA903214B4A7E4003EC28F /* CGearSeedInspector.nib */; };
+		C0AA905114B4A7E4003EC28F /* CGearSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA903414B4A7E4003EC28F /* CGearSeedSearcher.nib */; };
+		C0AA905214B4A7E4003EC28F /* DSParameterSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA903614B4A7E4003EC28F /* DSParameterSearcher.nib */; };
+		C0AA905314B4A7E4003EC28F /* EggSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA903814B4A7E4003EC28F /* EggSeedSearcher.nib */; };
+		C0AA905414B4A7E4003EC28F /* Gen4Configuration.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA903A14B4A7E4003EC28F /* Gen4Configuration.nib */; };
+		C0AA905514B4A7E4003EC28F /* Gen4SeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA903C14B4A7E4003EC28F /* Gen4SeedInspector.nib */; };
+		C0AA905614B4A7E4003EC28F /* Gen4SeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA903E14B4A7E4003EC28F /* Gen4SeedSearcher.nib */; };
+		C0AA905714B4A7E4003EC28F /* Gen5Configuration.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904014B4A7E4003EC28F /* Gen5Configuration.nib */; };
+		C0AA905814B4A7E4003EC28F /* HashedSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904214B4A7E4003EC28F /* HashedSeedInspector.nib */; };
+		C0AA905914B4A7E4003EC28F /* HashedSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904414B4A7E4003EC28F /* HashedSeedSearcher.nib */; };
+		C0AA905A14B4A7E4003EC28F /* Launcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904614B4A7E4003EC28F /* Launcher.nib */; };
+		C0AA905B14B4A7E4003EC28F /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904814B4A7E4003EC28F /* MainMenu.nib */; };
+		C0AA905C14B4A7E4003EC28F /* TrainerIDSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904A14B4A7E4003EC28F /* TrainerIDSearcher.nib */; };
+		C0AA905D14B4A7E4003EC28F /* WonderCardSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904C14B4A7E4003EC28F /* WonderCardSeedInspector.nib */; };
+		C0AA905E14B4A7E4003EC28F /* WonderCardSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904E14B4A7E4003EC28F /* WonderCardSeedSearcher.nib */; };
 		C0B3528C1428C22400935815 /* CoinFlipsTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0B3528B1428C22400935815 /* CoinFlipsTransformer.mm */; };
 		C0B352A31428C76800935815 /* ProfElmResponsesTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0B352A21428C76800935815 /* ProfElmResponsesTransformer.mm */; };
 		C0B353051428DFF600935815 /* HGSSRoamerLocationsTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B353041428DFF600935815 /* HGSSRoamerLocationsTransformer.m */; };
@@ -73,7 +73,6 @@
 		C0E304631346349900C56C1A /* WonderCardSeedInspectorController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E3044E1346349900C56C1A /* WonderCardSeedInspectorController.mm */; };
 		C0E304641346349900C56C1A /* WonderCardSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */; };
 		C0E30466134634BF00C56C1A /* Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = C0E30465134634BF00C56C1A /* Icon.icns */; };
-		C0FA492714432C7A004DA9A3 /* Gen4Configuration.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0FA492514432C7A004DA9A3 /* Gen4Configuration.nib */; };
 		C0FA492C14433018004DA9A3 /* Gen4ConfigurationEditController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0FA492B14433018004DA9A3 /* Gen4ConfigurationEditController.mm */; };
 /* End PBXBuildFile section */
 
@@ -87,50 +86,50 @@
 		32CA4F630368D1EE00C91783 /* PPRNG_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPRNG_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* PPRNG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PPRNG.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C02E0A0113515E1A00855098 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		C02E0A0313515E2300855098 /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
-		C03B40FC1463D21100AD59B0 /* Gen4ConfigurationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gen4ConfigurationController.h; path = ../PPRNG/Classes/Gen4ConfigurationController.h; sourceTree = SOURCE_ROOT; };
-		C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Gen4ConfigurationController.mm; path = ../PPRNG/Classes/Gen4ConfigurationController.mm; sourceTree = SOURCE_ROOT; };
-		C05B86FF14626E42009166E0 /* UnhashedSeed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UnhashedSeed.cpp; path = ../PPRNG/libpprng/UnhashedSeed.cpp; sourceTree = SOURCE_ROOT; };
-		C05B870014626E42009166E0 /* UnhashedSeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnhashedSeed.h; path = ../PPRNG/libpprng/UnhashedSeed.h; sourceTree = SOURCE_ROOT; };
+		C02E0A0113515E1A00855098 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README; path = ../README; sourceTree = "<group>"; };
+		C03B40FC1463D21100AD59B0 /* Gen4ConfigurationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4ConfigurationController.h; sourceTree = "<group>"; };
+		C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Gen4ConfigurationController.mm; sourceTree = "<group>"; };
+		C05B86FF14626E42009166E0 /* UnhashedSeed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnhashedSeed.cpp; sourceTree = "<group>"; };
+		C05B870014626E42009166E0 /* UnhashedSeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnhashedSeed.h; sourceTree = "<group>"; };
 		C0821490136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashedSeedInspectorFramesTabController.h; sourceTree = "<group>"; };
 		C0821491136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HashedSeedInspectorFramesTabController.mm; sourceTree = "<group>"; };
 		C08214B3136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashedSeedInspectorAdjacentsTabController.h; sourceTree = "<group>"; };
 		C08214B4136D373800B6E0E5 /* HashedSeedInspectorAdjacentsTabController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HashedSeedInspectorAdjacentsTabController.mm; sourceTree = "<group>"; };
 		C08214C2136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashedSeedInspectorEggsTabController.h; sourceTree = "<group>"; };
 		C08214C3136D3C5600B6E0E5 /* HashedSeedInspectorEggsTabController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HashedSeedInspectorEggsTabController.mm; sourceTree = "<group>"; };
-		C0821516136EE9F600B6E0E5 /* TrainerIDFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TrainerIDFormatter.h; path = ../PPRNG/Classes/TrainerIDFormatter.h; sourceTree = SOURCE_ROOT; };
-		C0821517136EE9F600B6E0E5 /* TrainerIDFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TrainerIDFormatter.m; path = ../PPRNG/Classes/TrainerIDFormatter.m; sourceTree = SOURCE_ROOT; };
-		C08215641372F4FF00B6E0E5 /* EggSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EggSeedSearcher.cpp; path = ../PPRNG/libpprng/EggSeedSearcher.cpp; sourceTree = SOURCE_ROOT; };
-		C08215651372F4FF00B6E0E5 /* EggSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EggSeedSearcher.h; path = ../PPRNG/libpprng/EggSeedSearcher.h; sourceTree = SOURCE_ROOT; };
+		C0821516136EE9F600B6E0E5 /* TrainerIDFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerIDFormatter.h; sourceTree = "<group>"; };
+		C0821517136EE9F600B6E0E5 /* TrainerIDFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrainerIDFormatter.m; sourceTree = "<group>"; };
+		C08215641372F4FF00B6E0E5 /* EggSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EggSeedSearcher.cpp; sourceTree = "<group>"; };
+		C08215651372F4FF00B6E0E5 /* EggSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EggSeedSearcher.h; sourceTree = "<group>"; };
 		C082156B1375923500B6E0E5 /* EggSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EggSeedSearcherController.h; sourceTree = "<group>"; };
 		C082156C1375923500B6E0E5 /* EggSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EggSeedSearcherController.mm; sourceTree = "<group>"; };
-		C08216E2137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/CGearSeedInspector.nib; sourceTree = SOURCE_ROOT; };
-		C08216E4137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/CGearSeedSearcher.nib; sourceTree = SOURCE_ROOT; };
-		C08216E6137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/DSParameterSearcher.nib; sourceTree = SOURCE_ROOT; };
-		C08216E8137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/EggSeedSearcher.nib; sourceTree = SOURCE_ROOT; };
-		C08216EA137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/Gen4SeedSearcher.nib; sourceTree = SOURCE_ROOT; };
-		C08216EC137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/Gen5Configuration.nib; sourceTree = SOURCE_ROOT; };
-		C08216EE137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/HashedSeedInspector.nib; sourceTree = SOURCE_ROOT; };
-		C08216F0137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/HashedSeedSearcher.nib; sourceTree = SOURCE_ROOT; };
-		C08216F2137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/Launcher.nib; sourceTree = SOURCE_ROOT; };
-		C08216F4137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/MainMenu.nib; sourceTree = SOURCE_ROOT; };
-		C08216F6137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/TrainerIDSearcher.nib; sourceTree = SOURCE_ROOT; };
-		C08216F8137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/WonderCardSeedInspector.nib; sourceTree = SOURCE_ROOT; };
-		C08216FA137E1D7000B6E0E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/WonderCardSeedSearcher.nib; sourceTree = SOURCE_ROOT; };
-		C082189D13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MersenneTwisterRNG.cpp; path = ../PPRNG/libpprng/MersenneTwisterRNG.cpp; sourceTree = SOURCE_ROOT; };
-		C082189E13895C1D00B6E0E5 /* MersenneTwisterRNG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MersenneTwisterRNG.h; path = ../PPRNG/libpprng/MersenneTwisterRNG.h; sourceTree = SOURCE_ROOT; };
-		C0A0ACEE141C7CF1008C67F0 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/Gen4SeedInspector.nib; sourceTree = SOURCE_ROOT; };
+		C082189D13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MersenneTwisterRNG.cpp; sourceTree = "<group>"; };
+		C082189E13895C1D00B6E0E5 /* MersenneTwisterRNG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MersenneTwisterRNG.h; sourceTree = "<group>"; };
 		C0A0AD191423B9AB008C67F0 /* Gen4SeedInspectorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4SeedInspectorController.h; sourceTree = "<group>"; };
 		C0A0AD1A1423B9AB008C67F0 /* Gen4SeedInspectorController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Gen4SeedInspectorController.mm; sourceTree = "<group>"; };
-		C0B3528A1428C22400935815 /* CoinFlipsTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoinFlipsTransformer.h; path = ../PPRNG/Classes/CoinFlipsTransformer.h; sourceTree = SOURCE_ROOT; };
-		C0B3528B1428C22400935815 /* CoinFlipsTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CoinFlipsTransformer.mm; path = ../PPRNG/Classes/CoinFlipsTransformer.mm; sourceTree = SOURCE_ROOT; };
-		C0B352A11428C76800935815 /* ProfElmResponsesTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProfElmResponsesTransformer.h; path = ../PPRNG/Classes/ProfElmResponsesTransformer.h; sourceTree = SOURCE_ROOT; };
-		C0B352A21428C76800935815 /* ProfElmResponsesTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ProfElmResponsesTransformer.mm; path = ../PPRNG/Classes/ProfElmResponsesTransformer.mm; sourceTree = SOURCE_ROOT; };
-		C0B353031428DFF600935815 /* HGSSRoamerLocationsTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HGSSRoamerLocationsTransformer.h; path = ../PPRNG/Classes/HGSSRoamerLocationsTransformer.h; sourceTree = SOURCE_ROOT; };
-		C0B353041428DFF600935815 /* HGSSRoamerLocationsTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HGSSRoamerLocationsTransformer.m; path = ../PPRNG/Classes/HGSSRoamerLocationsTransformer.m; sourceTree = SOURCE_ROOT; };
-		C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Gen4QuickSeedSearcher.cpp; path = ../PPRNG/libpprng/Gen4QuickSeedSearcher.cpp; sourceTree = SOURCE_ROOT; };
-		C0B53D001451CEBC00C62866 /* Gen4QuickSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gen4QuickSeedSearcher.h; path = ../PPRNG/libpprng/Gen4QuickSeedSearcher.h; sourceTree = SOURCE_ROOT; };
+		C0AA903314B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/CGearSeedInspector.nib; sourceTree = "<group>"; };
+		C0AA903514B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/CGearSeedSearcher.nib; sourceTree = "<group>"; };
+		C0AA903714B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/DSParameterSearcher.nib; sourceTree = "<group>"; };
+		C0AA903914B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/EggSeedSearcher.nib; sourceTree = "<group>"; };
+		C0AA903B14B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Gen4Configuration.nib; sourceTree = "<group>"; };
+		C0AA903D14B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Gen4SeedInspector.nib; sourceTree = "<group>"; };
+		C0AA903F14B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Gen4SeedSearcher.nib; sourceTree = "<group>"; };
+		C0AA904114B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Gen5Configuration.nib; sourceTree = "<group>"; };
+		C0AA904314B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/HashedSeedInspector.nib; sourceTree = "<group>"; };
+		C0AA904514B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/HashedSeedSearcher.nib; sourceTree = "<group>"; };
+		C0AA904714B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Launcher.nib; sourceTree = "<group>"; };
+		C0AA904914B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
+		C0AA904B14B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/TrainerIDSearcher.nib; sourceTree = "<group>"; };
+		C0AA904D14B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/WonderCardSeedInspector.nib; sourceTree = "<group>"; };
+		C0AA904F14B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/WonderCardSeedSearcher.nib; sourceTree = "<group>"; };
+		C0B3528A1428C22400935815 /* CoinFlipsTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoinFlipsTransformer.h; sourceTree = "<group>"; };
+		C0B3528B1428C22400935815 /* CoinFlipsTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CoinFlipsTransformer.mm; sourceTree = "<group>"; };
+		C0B352A11428C76800935815 /* ProfElmResponsesTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfElmResponsesTransformer.h; sourceTree = "<group>"; };
+		C0B352A21428C76800935815 /* ProfElmResponsesTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ProfElmResponsesTransformer.mm; sourceTree = "<group>"; };
+		C0B353031428DFF600935815 /* HGSSRoamerLocationsTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HGSSRoamerLocationsTransformer.h; sourceTree = "<group>"; };
+		C0B353041428DFF600935815 /* HGSSRoamerLocationsTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HGSSRoamerLocationsTransformer.m; sourceTree = "<group>"; };
+		C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Gen4QuickSeedSearcher.cpp; sourceTree = "<group>"; };
+		C0B53D001451CEBC00C62866 /* Gen4QuickSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4QuickSeedSearcher.h; sourceTree = "<group>"; };
 		C0D1A3B6136C2C3100D6E2DA /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Utilities.mm; sourceTree = "<group>"; };
 		C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrainerIDSearcher.cpp; sourceTree = "<group>"; };
@@ -205,9 +204,8 @@
 		C0E3044F1346349900C56C1A /* WonderCardSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderCardSeedSearcherController.h; sourceTree = "<group>"; };
 		C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WonderCardSeedSearcherController.mm; sourceTree = "<group>"; };
 		C0E30465134634BF00C56C1A /* Icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Icon.icns; sourceTree = "<group>"; };
-		C0FA492614432C7A004DA9A3 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = ../PPRNG/English.lproj/Gen4Configuration.nib; sourceTree = SOURCE_ROOT; };
-		C0FA492A14433018004DA9A3 /* Gen4ConfigurationEditController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gen4ConfigurationEditController.h; path = ../PPRNG/Classes/Gen4ConfigurationEditController.h; sourceTree = SOURCE_ROOT; };
-		C0FA492B14433018004DA9A3 /* Gen4ConfigurationEditController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Gen4ConfigurationEditController.mm; path = ../PPRNG/Classes/Gen4ConfigurationEditController.mm; sourceTree = SOURCE_ROOT; };
+		C0FA492A14433018004DA9A3 /* Gen4ConfigurationEditController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4ConfigurationEditController.h; sourceTree = "<group>"; };
+		C0FA492B14433018004DA9A3 /* Gen4ConfigurationEditController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Gen4ConfigurationEditController.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -342,23 +340,22 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				C08216E1137E1D7000B6E0E5 /* CGearSeedInspector.nib */,
-				C08216E3137E1D7000B6E0E5 /* CGearSeedSearcher.nib */,
-				C08216E5137E1D7000B6E0E5 /* DSParameterSearcher.nib */,
-				C08216E7137E1D7000B6E0E5 /* EggSeedSearcher.nib */,
-				C0FA492514432C7A004DA9A3 /* Gen4Configuration.nib */,
-				C0A0ACED141C7CF1008C67F0 /* Gen4SeedInspector.nib */,
-				C08216E9137E1D7000B6E0E5 /* Gen4SeedSearcher.nib */,
-				C08216EB137E1D7000B6E0E5 /* Gen5Configuration.nib */,
-				C08216ED137E1D7000B6E0E5 /* HashedSeedInspector.nib */,
-				C08216EF137E1D7000B6E0E5 /* HashedSeedSearcher.nib */,
-				C08216F1137E1D7000B6E0E5 /* Launcher.nib */,
-				C08216F3137E1D7000B6E0E5 /* MainMenu.nib */,
-				C08216F5137E1D7000B6E0E5 /* TrainerIDSearcher.nib */,
-				C08216F7137E1D7000B6E0E5 /* WonderCardSeedInspector.nib */,
-				C08216F9137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib */,
+				C0AA903214B4A7E4003EC28F /* CGearSeedInspector.nib */,
+				C0AA903414B4A7E4003EC28F /* CGearSeedSearcher.nib */,
+				C0AA903614B4A7E4003EC28F /* DSParameterSearcher.nib */,
+				C0AA903814B4A7E4003EC28F /* EggSeedSearcher.nib */,
+				C0AA903A14B4A7E4003EC28F /* Gen4Configuration.nib */,
+				C0AA903C14B4A7E4003EC28F /* Gen4SeedInspector.nib */,
+				C0AA903E14B4A7E4003EC28F /* Gen4SeedSearcher.nib */,
+				C0AA904014B4A7E4003EC28F /* Gen5Configuration.nib */,
+				C0AA904214B4A7E4003EC28F /* HashedSeedInspector.nib */,
+				C0AA904414B4A7E4003EC28F /* HashedSeedSearcher.nib */,
+				C0AA904614B4A7E4003EC28F /* Launcher.nib */,
+				C0AA904814B4A7E4003EC28F /* MainMenu.nib */,
+				C0AA904A14B4A7E4003EC28F /* TrainerIDSearcher.nib */,
+				C0AA904C14B4A7E4003EC28F /* WonderCardSeedInspector.nib */,
+				C0AA904E14B4A7E4003EC28F /* WonderCardSeedSearcher.nib */,
 				C02E0A0113515E1A00855098 /* README */,
-				C02E0A0313515E2300855098 /* COPYING */,
 				C0E30465134634BF00C56C1A /* Icon.icns */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
@@ -420,8 +417,9 @@
 				C0E304191346343400C56C1A /* WonderCardSeedSearcher.cpp */,
 				C0E3041A1346343400C56C1A /* WonderCardSeedSearcher.h */,
 			);
-			path = libpprng;
-			sourceTree = "<group>";
+			name = libpprng;
+			path = ../libpprng;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -449,7 +447,7 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "pprng" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "PPRNG" */;
 			compatibilityVersion = "Xcode 3.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -476,22 +474,21 @@
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				C0E30466134634BF00C56C1A /* Icon.icns in Resources */,
 				C02E0A0213515E1A00855098 /* README in Resources */,
-				C02E0A0413515E2300855098 /* COPYING in Resources */,
-				C08216FB137E1D7000B6E0E5 /* CGearSeedInspector.nib in Resources */,
-				C08216FC137E1D7000B6E0E5 /* CGearSeedSearcher.nib in Resources */,
-				C08216FD137E1D7000B6E0E5 /* DSParameterSearcher.nib in Resources */,
-				C08216FE137E1D7000B6E0E5 /* EggSeedSearcher.nib in Resources */,
-				C08216FF137E1D7000B6E0E5 /* Gen4SeedSearcher.nib in Resources */,
-				C0821700137E1D7000B6E0E5 /* Gen5Configuration.nib in Resources */,
-				C0821701137E1D7000B6E0E5 /* HashedSeedInspector.nib in Resources */,
-				C0821702137E1D7000B6E0E5 /* HashedSeedSearcher.nib in Resources */,
-				C0821703137E1D7000B6E0E5 /* Launcher.nib in Resources */,
-				C0821704137E1D7000B6E0E5 /* MainMenu.nib in Resources */,
-				C0821705137E1D7000B6E0E5 /* TrainerIDSearcher.nib in Resources */,
-				C0821706137E1D7000B6E0E5 /* WonderCardSeedInspector.nib in Resources */,
-				C0821707137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib in Resources */,
-				C0A0ACEF141C7CF2008C67F0 /* Gen4SeedInspector.nib in Resources */,
-				C0FA492714432C7A004DA9A3 /* Gen4Configuration.nib in Resources */,
+				C0AA905014B4A7E4003EC28F /* CGearSeedInspector.nib in Resources */,
+				C0AA905114B4A7E4003EC28F /* CGearSeedSearcher.nib in Resources */,
+				C0AA905214B4A7E4003EC28F /* DSParameterSearcher.nib in Resources */,
+				C0AA905314B4A7E4003EC28F /* EggSeedSearcher.nib in Resources */,
+				C0AA905414B4A7E4003EC28F /* Gen4Configuration.nib in Resources */,
+				C0AA905514B4A7E4003EC28F /* Gen4SeedInspector.nib in Resources */,
+				C0AA905614B4A7E4003EC28F /* Gen4SeedSearcher.nib in Resources */,
+				C0AA905714B4A7E4003EC28F /* Gen5Configuration.nib in Resources */,
+				C0AA905814B4A7E4003EC28F /* HashedSeedInspector.nib in Resources */,
+				C0AA905914B4A7E4003EC28F /* HashedSeedSearcher.nib in Resources */,
+				C0AA905A14B4A7E4003EC28F /* Launcher.nib in Resources */,
+				C0AA905B14B4A7E4003EC28F /* MainMenu.nib in Resources */,
+				C0AA905C14B4A7E4003EC28F /* TrainerIDSearcher.nib in Resources */,
+				C0AA905D14B4A7E4003EC28F /* WonderCardSeedInspector.nib in Resources */,
+				C0AA905E14B4A7E4003EC28F /* WonderCardSeedSearcher.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -564,124 +561,124 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		C08216E1137E1D7000B6E0E5 /* CGearSeedInspector.nib */ = {
+		C0AA903214B4A7E4003EC28F /* CGearSeedInspector.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C08216E2137E1D7000B6E0E5 /* English */,
+				C0AA903314B4A7E4003EC28F /* English */,
 			);
 			name = CGearSeedInspector.nib;
 			sourceTree = "<group>";
 		};
-		C08216E3137E1D7000B6E0E5 /* CGearSeedSearcher.nib */ = {
+		C0AA903414B4A7E4003EC28F /* CGearSeedSearcher.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C08216E4137E1D7000B6E0E5 /* English */,
+				C0AA903514B4A7E4003EC28F /* English */,
 			);
 			name = CGearSeedSearcher.nib;
 			sourceTree = "<group>";
 		};
-		C08216E5137E1D7000B6E0E5 /* DSParameterSearcher.nib */ = {
+		C0AA903614B4A7E4003EC28F /* DSParameterSearcher.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C08216E6137E1D7000B6E0E5 /* English */,
+				C0AA903714B4A7E4003EC28F /* English */,
 			);
 			name = DSParameterSearcher.nib;
 			sourceTree = "<group>";
 		};
-		C08216E7137E1D7000B6E0E5 /* EggSeedSearcher.nib */ = {
+		C0AA903814B4A7E4003EC28F /* EggSeedSearcher.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C08216E8137E1D7000B6E0E5 /* English */,
+				C0AA903914B4A7E4003EC28F /* English */,
 			);
 			name = EggSeedSearcher.nib;
 			sourceTree = "<group>";
 		};
-		C08216E9137E1D7000B6E0E5 /* Gen4SeedSearcher.nib */ = {
+		C0AA903A14B4A7E4003EC28F /* Gen4Configuration.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C08216EA137E1D7000B6E0E5 /* English */,
+				C0AA903B14B4A7E4003EC28F /* English */,
 			);
-			name = Gen4SeedSearcher.nib;
+			name = Gen4Configuration.nib;
 			sourceTree = "<group>";
 		};
-		C08216EB137E1D7000B6E0E5 /* Gen5Configuration.nib */ = {
+		C0AA903C14B4A7E4003EC28F /* Gen4SeedInspector.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C08216EC137E1D7000B6E0E5 /* English */,
-			);
-			name = Gen5Configuration.nib;
-			sourceTree = "<group>";
-		};
-		C08216ED137E1D7000B6E0E5 /* HashedSeedInspector.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C08216EE137E1D7000B6E0E5 /* English */,
-			);
-			name = HashedSeedInspector.nib;
-			sourceTree = "<group>";
-		};
-		C08216EF137E1D7000B6E0E5 /* HashedSeedSearcher.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C08216F0137E1D7000B6E0E5 /* English */,
-			);
-			name = HashedSeedSearcher.nib;
-			sourceTree = "<group>";
-		};
-		C08216F1137E1D7000B6E0E5 /* Launcher.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C08216F2137E1D7000B6E0E5 /* English */,
-			);
-			name = Launcher.nib;
-			sourceTree = "<group>";
-		};
-		C08216F3137E1D7000B6E0E5 /* MainMenu.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C08216F4137E1D7000B6E0E5 /* English */,
-			);
-			name = MainMenu.nib;
-			sourceTree = "<group>";
-		};
-		C08216F5137E1D7000B6E0E5 /* TrainerIDSearcher.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C08216F6137E1D7000B6E0E5 /* English */,
-			);
-			name = TrainerIDSearcher.nib;
-			sourceTree = "<group>";
-		};
-		C08216F7137E1D7000B6E0E5 /* WonderCardSeedInspector.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C08216F8137E1D7000B6E0E5 /* English */,
-			);
-			name = WonderCardSeedInspector.nib;
-			sourceTree = "<group>";
-		};
-		C08216F9137E1D7000B6E0E5 /* WonderCardSeedSearcher.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C08216FA137E1D7000B6E0E5 /* English */,
-			);
-			name = WonderCardSeedSearcher.nib;
-			sourceTree = "<group>";
-		};
-		C0A0ACED141C7CF1008C67F0 /* Gen4SeedInspector.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C0A0ACEE141C7CF1008C67F0 /* English */,
+				C0AA903D14B4A7E4003EC28F /* English */,
 			);
 			name = Gen4SeedInspector.nib;
 			sourceTree = "<group>";
 		};
-		C0FA492514432C7A004DA9A3 /* Gen4Configuration.nib */ = {
+		C0AA903E14B4A7E4003EC28F /* Gen4SeedSearcher.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C0FA492614432C7A004DA9A3 /* English */,
+				C0AA903F14B4A7E4003EC28F /* English */,
 			);
-			name = Gen4Configuration.nib;
+			name = Gen4SeedSearcher.nib;
+			sourceTree = "<group>";
+		};
+		C0AA904014B4A7E4003EC28F /* Gen5Configuration.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0AA904114B4A7E4003EC28F /* English */,
+			);
+			name = Gen5Configuration.nib;
+			sourceTree = "<group>";
+		};
+		C0AA904214B4A7E4003EC28F /* HashedSeedInspector.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0AA904314B4A7E4003EC28F /* English */,
+			);
+			name = HashedSeedInspector.nib;
+			sourceTree = "<group>";
+		};
+		C0AA904414B4A7E4003EC28F /* HashedSeedSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0AA904514B4A7E4003EC28F /* English */,
+			);
+			name = HashedSeedSearcher.nib;
+			sourceTree = "<group>";
+		};
+		C0AA904614B4A7E4003EC28F /* Launcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0AA904714B4A7E4003EC28F /* English */,
+			);
+			name = Launcher.nib;
+			sourceTree = "<group>";
+		};
+		C0AA904814B4A7E4003EC28F /* MainMenu.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0AA904914B4A7E4003EC28F /* English */,
+			);
+			name = MainMenu.nib;
+			sourceTree = "<group>";
+		};
+		C0AA904A14B4A7E4003EC28F /* TrainerIDSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0AA904B14B4A7E4003EC28F /* English */,
+			);
+			name = TrainerIDSearcher.nib;
+			sourceTree = "<group>";
+		};
+		C0AA904C14B4A7E4003EC28F /* WonderCardSeedInspector.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0AA904D14B4A7E4003EC28F /* English */,
+			);
+			name = WonderCardSeedInspector.nib;
+			sourceTree = "<group>";
+		};
+		C0AA904E14B4A7E4003EC28F /* WonderCardSeedSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0AA904F14B4A7E4003EC28F /* English */,
+			);
+			name = WonderCardSeedSearcher.nib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -699,10 +696,7 @@
 				GCC_PREFIX_HEADER = PPRNG_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../3rd_party/lib\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = PPRNG;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -718,10 +712,7 @@
 				GCC_PREFIX_HEADER = PPRNG_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../3rd_party/lib\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = PPRNG;
 				WRAPPER_EXTENSION = app;
 			};
@@ -775,7 +766,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "pprng" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "PPRNG" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,

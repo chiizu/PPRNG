@@ -1,5 +1,5 @@
 # ignore build directory
-build/
-PPRNG.xcodeproj/*.mode2v3
-PPRNG.xcodeproj/*.pbxuser
-Classes/VersionCheckURL.h
+macosx/build/
+macosx/PPRNG.xcodeproj/*.mode2v3
+macosx/PPRNG.xcodeproj/*.pbxuser
+macosx/Classes/VersionCheckURL.h
