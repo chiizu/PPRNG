@@ -106,7 +106,7 @@ void HashedSeedSearcher::Search(const Criteria &criteria,
                                 const ResultCallback &resultHandler,
                                 const ProgressCallback &progressHandler)
 {
-  UnhashedSeedGenerator  seedGenerator(criteria.seedParameters);
+  HashedSeedGenerator    seedGenerator(criteria.seedParameters);
   FrameGeneratorFactory  frameGenFactory(criteria.ivs.isRoamer ?
                                          HashedIVFrameGenerator::Roamer :
                                          HashedIVFrameGenerator::Normal);

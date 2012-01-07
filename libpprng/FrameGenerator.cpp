@@ -34,8 +34,8 @@ CGearIVFrameGenerator::CGearIVFrameGenerator(uint32_t seed, FrameType frameType,
   if (skipFirstTwoFrames)
   {
     // C-Gear starts on 'frame 3'
-    m_RNG.Next();
-    m_RNG.Next();
+    m_IVRNG.NextIVWord();
+    m_IVRNG.NextIVWord();
   }
 }
 

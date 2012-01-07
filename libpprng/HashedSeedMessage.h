@@ -18,8 +18,8 @@
   along with libpprng.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef UNHASHED_SEED_H
-#define UNHASHED_SEED_H
+#ifndef HASHED_SEED_MESSAGE_H
+#define HASHED_SEED_MESSAGE_H
 
 #include "BasicTypes.h"
 #include "HashedSeed.h"
@@ -28,12 +28,17 @@
 namespace pprng
 {
 
-class UnhashedSeed
+// this class contains the message that will be run through the SHA1 hash
+// and provides an interface for iterating over the individual message parts
+class HashedSeedMessage
 {
 public:
-  UnhashedSeed(const HashedSeed::Parameters &parameters);
+  HashedSeedMessage(const HashedSeed::Parameters &parameters);
   
   HashedSeed AsHashedSeed() const;
+  
+  // calculated raw seed
+  uint64_t GetRawSeed() const;
   
   const MACAddress& GetMACAddress() const { return m_parameters.macAddress; }
   void SetMACAddress(const MACAddress &macAddress);
@@ -68,11 +73,6 @@ public:
   
   uint32_t GetHeldButtons() const { return m_parameters.heldButtons; }
   void SetHeldButtons(uint32_t heldButtons);
-  
-  // calculated raw seed
-  uint64_t GetRawSeed() const;
-  
-  uint32_t GetSkippedPIDFrames() const;
   
 private:
   HashedSeed::Parameters  m_parameters;

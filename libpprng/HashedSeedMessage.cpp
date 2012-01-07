@@ -19,7 +19,7 @@
 */
 
 
-#include "UnhashedSeed.h"
+#include "HashedSeedMessage.h"
 #include "LinearCongruentialRNG.h"
 
 
@@ -256,7 +256,7 @@ uint64_t CalcRawSeed(const uint32_t *message)
 }
 
 
-UnhashedSeed::UnhashedSeed(const HashedSeed::Parameters &parameters)
+HashedSeedMessage::HashedSeedMessage(const HashedSeed::Parameters &parameters)
   : m_parameters(parameters), m_message(),
     m_monthDays(parameters.date.end_of_month().day()),
     m_rawSeedCalculated(false)
@@ -264,7 +264,12 @@ UnhashedSeed::UnhashedSeed(const HashedSeed::Parameters &parameters)
   MakeMessage(m_message, parameters);
 }
 
-HashedSeed UnhashedSeed::AsHashedSeed() const
+HashedSeed HashedSeedMessage::AsHashedSeed() const
+{
+  return HashedSeed(m_parameters, GetRawSeed());
+}
+
+uint64_t HashedSeedMessage::GetRawSeed() const
 {
   if (!m_rawSeedCalculated)
   {
@@ -272,10 +277,10 @@ HashedSeed UnhashedSeed::AsHashedSeed() const
     m_rawSeedCalculated = true;
   }
   
-  return HashedSeed(m_parameters, m_rawSeed);
+  return m_rawSeed;
 }
 
-void UnhashedSeed::SetMACAddress(const MACAddress &macAddress)
+void HashedSeedMessage::SetMACAddress(const MACAddress &macAddress)
 {
   m_message[6] = macAddress.low & 0xffff;
   m_message[7] = (m_message[7] ^
@@ -287,7 +292,7 @@ void UnhashedSeed::SetMACAddress(const MACAddress &macAddress)
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::SetGxStat(HashedSeed::GxStat gxStat)
+void HashedSeedMessage::SetGxStat(HashedSeed::GxStat gxStat)
 {
   m_message[7] = m_message[7] ^
                  SwapEndianess(m_parameters.gxStat) ^ SwapEndianess(gxStat);
@@ -296,7 +301,7 @@ void UnhashedSeed::SetGxStat(HashedSeed::GxStat gxStat)
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::SetVCount(uint32_t vcount)
+void HashedSeedMessage::SetVCount(uint32_t vcount)
 {
   m_message[5] = (m_message[5] & 0xffff0000) |
                  ((vcount & 0xff) << 8) | (vcount >> 8);
@@ -305,7 +310,7 @@ void UnhashedSeed::SetVCount(uint32_t vcount)
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::SetVFrame(uint32_t vframe)
+void HashedSeedMessage::SetVFrame(uint32_t vframe)
 {
   m_message[7] = (m_message[7] ^ (m_parameters.vframe << 24)) ^ (vframe << 24);
   
@@ -313,7 +318,7 @@ void UnhashedSeed::SetVFrame(uint32_t vframe)
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::SetTimer0(uint32_t timer0)
+void HashedSeedMessage::SetTimer0(uint32_t timer0)
 {
   m_message[5] = (m_message[5] & 0xffff) |
                  ((timer0 & 0xff) << 24) | ((timer0 & 0xff00) << 8);
@@ -322,7 +327,7 @@ void UnhashedSeed::SetTimer0(uint32_t timer0)
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::SetDate(boost::gregorian::date d)
+void HashedSeedMessage::SetDate(boost::gregorian::date d)
 {
   m_message[8] = ((ToBCD(d.year()) & 0xff) << 24) |
                  ((ToBCD(d.month()) & 0xff) << 16) |
@@ -334,7 +339,7 @@ void UnhashedSeed::SetDate(boost::gregorian::date d)
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::NextDay()
+void HashedSeedMessage::NextDay()
 {
   m_parameters.date = m_parameters.date + date_duration(1);
   
@@ -392,7 +397,7 @@ void UnhashedSeed::NextDay()
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::SetHour(uint32_t hour)
+void HashedSeedMessage::SetHour(uint32_t hour)
 {
   m_message[9] = (m_message[9] & 0x00ffffff) |
     ((ToBCD(hour) +
@@ -402,7 +407,7 @@ void UnhashedSeed::SetHour(uint32_t hour)
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::NextHour()
+void HashedSeedMessage::NextHour()
 {
   if (m_parameters.hour == 23)
   {
@@ -438,7 +443,7 @@ void UnhashedSeed::NextHour()
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::SetMinute(uint32_t minute)
+void HashedSeedMessage::SetMinute(uint32_t minute)
 {
   m_message[9] = (m_message[9] & 0xff00ffff) | (ToBCD(minute) << 16);
   
@@ -446,7 +451,7 @@ void UnhashedSeed::SetMinute(uint32_t minute)
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::NextMinute()
+void HashedSeedMessage::NextMinute()
 {
   if (m_parameters.minute == 59)
   {
@@ -478,7 +483,7 @@ void UnhashedSeed::NextMinute()
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::SetSecond(uint32_t second)
+void HashedSeedMessage::SetSecond(uint32_t second)
 {
   m_message[9] = (m_message[9] & 0xffff00ff) | (ToBCD(second) << 8);
   
@@ -486,7 +491,7 @@ void UnhashedSeed::SetSecond(uint32_t second)
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::NextSecond()
+void HashedSeedMessage::NextSecond()
 {
   if (m_parameters.second == 59)
   {
@@ -518,7 +523,7 @@ void UnhashedSeed::NextSecond()
   m_rawSeedCalculated = false;
 }
 
-void UnhashedSeed::SetHeldButtons(uint32_t heldButtons)
+void HashedSeedMessage::SetHeldButtons(uint32_t heldButtons)
 {
   m_parameters.heldButtons = heldButtons;
   

@@ -23,7 +23,7 @@
 
 #include "BasicTypes.h"
 #include "HashedSeed.h"
-#include "UnhashedSeed.h"
+#include "HashedSeedMessage.h"
 #include <list>
 #include <vector>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -173,7 +173,7 @@ public:
   
   enum { SeedsPerChunk = 50000 };
   
-  HashedSeedGenerator(const Parameters &parameters);
+  HashedSeedGenerator(const HashedSeedGenerator::Parameters &parameters);
   
   HashedSeedGenerator(const HashedSeedGenerator &other);
   
@@ -184,35 +184,9 @@ public:
   std::list<HashedSeedGenerator>  Split(uint32_t parts);
   
 private:
-  const Parameters              m_parameters;
-  
-  HashedSeed::Parameters        m_hashedSeedParameters;
-  Button::List::const_iterator  m_heldButtonsIter;
-};
-
-
-class UnhashedSeedGenerator
-{
-public:
-  typedef HashedSeed  SeedType;
-  typedef uint64_t    SeedCountType;
-  
-  enum { SeedsPerChunk = 50000 };
-  
-  UnhashedSeedGenerator(const HashedSeedGenerator::Parameters &parameters);
-  
-  UnhashedSeedGenerator(const UnhashedSeedGenerator &other);
-  
-  SeedCountType NumberOfSeeds() const;
-  
-  SeedType Next();
-  
-  std::list<UnhashedSeedGenerator>  Split(uint32_t parts);
-  
-private:
   const HashedSeedGenerator::Parameters  m_parameters;
   
-  UnhashedSeed                           m_unhashedSeed;
+  HashedSeedMessage                      m_seedMessage;
   
   uint32_t                               m_timer0, m_vcount, m_vframe;
   Button::List::const_iterator           m_heldButtonsIter;

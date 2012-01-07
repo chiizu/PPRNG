@@ -134,29 +134,15 @@ Gen34IVSeedGenerator::SeedType Gen34IVSeedGenerator::Next()
 HashedSeedGenerator::HashedSeedGenerator
   (const HashedSeedGenerator::Parameters &parameters)
 : m_parameters(parameters),
-  m_hashedSeedParameters(),
+  m_seedMessage(parameters.ToInitialSeedParameters()),
+  m_timer0(parameters.timer0High), m_vcount(parameters.vcountHigh),
+  m_vframe(parameters.vframeHigh),
   m_heldButtonsIter(m_parameters.heldButtons.end() - 1)
-{
-  m_hashedSeedParameters.version = parameters.version;
-  m_hashedSeedParameters.dsType = parameters.dsType;
-  m_hashedSeedParameters.macAddress = parameters.macAddress;
-  m_hashedSeedParameters.gxStat = HashedSeed::HardResetGxStat;
-  m_hashedSeedParameters.timer0 = parameters.timer0High;
-  m_hashedSeedParameters.vcount = parameters.vcountHigh;
-  m_hashedSeedParameters.vframe = parameters.vframeHigh;
-  
-  ptime          dt = parameters.fromTime - seconds(1);
-  time_duration  t = dt.time_of_day();
-  
-  m_hashedSeedParameters.date = dt.date();
-  m_hashedSeedParameters.hour = t.hours();
-  m_hashedSeedParameters.minute = t.minutes();
-  m_hashedSeedParameters.second = t.seconds();
-}
+{}
 
 HashedSeedGenerator::HashedSeedGenerator(const HashedSeedGenerator &other)
-: m_parameters(other.m_parameters),
-  m_hashedSeedParameters(other.m_hashedSeedParameters),
+: m_parameters(other.m_parameters), m_seedMessage(other.m_seedMessage),
+  m_timer0(other.m_timer0), m_vcount(other.m_vcount), m_vframe(other.m_vframe),
   m_heldButtonsIter(m_parameters.heldButtons.begin() +
                     (other.m_heldButtonsIter -
                      other.m_parameters.heldButtons.begin()))
@@ -209,43 +195,33 @@ HashedSeedGenerator::SeedType HashedSeedGenerator::Next()
   {
     m_heldButtonsIter = m_parameters.heldButtons.begin();
     
-    if (++m_hashedSeedParameters.timer0 > m_parameters.timer0High)
+    if (++m_timer0 > m_parameters.timer0High)
     {
-      m_hashedSeedParameters.timer0 = m_parameters.timer0Low;
+      m_timer0 = m_parameters.timer0Low;
       
-      if (++m_hashedSeedParameters.vcount > m_parameters.vcountHigh)
+      if (++m_vcount > m_parameters.vcountHigh)
       {
-        m_hashedSeedParameters.vcount = m_parameters.vcountLow;
+        m_vcount = m_parameters.vcountLow;
         
-        if (++m_hashedSeedParameters.vframe > m_parameters.vframeHigh)
+        if (++m_vframe > m_parameters.vframeHigh)
         {
-          m_hashedSeedParameters.vframe = m_parameters.vframeLow;
+          m_vframe = m_parameters.vframeLow;
           
-          if (++m_hashedSeedParameters.second > 59)
-          {
-            m_hashedSeedParameters.second = 0;
-            
-            if (++m_hashedSeedParameters.minute > 59)
-            {
-              m_hashedSeedParameters.minute = 0;
-              
-              if (++m_hashedSeedParameters.hour > 23)
-              {
-                m_hashedSeedParameters.hour = 0;
-                
-                m_hashedSeedParameters.date =
-                  m_hashedSeedParameters.date + date_duration(1);
-              }
-            }
-          }
+          m_seedMessage.NextSecond();
         }
+        
+        m_seedMessage.SetVFrame(m_vframe);
       }
+      
+      m_seedMessage.SetVCount(m_vcount);
     }
+    
+    m_seedMessage.SetTimer0(m_timer0);
   }
   
-  m_hashedSeedParameters.heldButtons = *m_heldButtonsIter;
+  m_seedMessage.SetHeldButtons(*m_heldButtonsIter);
   
-  HashedSeed  seed(m_hashedSeedParameters);
+  HashedSeed  seed = m_seedMessage.AsHashedSeed();
   
   return seed;
 }
@@ -268,99 +244,6 @@ std::list<HashedSeedGenerator> HashedSeedGenerator::Split(uint32_t parts)
     p.toTime = toTime;
     
     HashedSeedGenerator  part(p);
-    
-    result.push_back(part);
-    
-    fromTime = toTime;
-    toTime = toTime + seconds(partSeconds);
-    if (i == (parts - 1))
-    {
-      toTime = m_parameters.toTime;
-    }
-  }
-  
-  return result;
-}
-
-
-
-UnhashedSeedGenerator::UnhashedSeedGenerator
-  (const HashedSeedGenerator::Parameters &parameters)
-: m_parameters(parameters),
-  m_unhashedSeed(parameters.ToInitialSeedParameters()),
-  m_timer0(parameters.timer0High), m_vcount(parameters.vcountHigh),
-  m_vframe(parameters.vframeHigh),
-  m_heldButtonsIter(m_parameters.heldButtons.end() - 1)
-{}
-
-UnhashedSeedGenerator::UnhashedSeedGenerator(const UnhashedSeedGenerator &other)
-: m_parameters(other.m_parameters), m_unhashedSeed(other.m_unhashedSeed),
-  m_timer0(other.m_timer0), m_vcount(other.m_vcount), m_vframe(other.m_vframe),
-  m_heldButtonsIter(m_parameters.heldButtons.begin() +
-                    (other.m_heldButtonsIter -
-                     other.m_parameters.heldButtons.begin()))
-{}
-
-UnhashedSeedGenerator::SeedCountType UnhashedSeedGenerator::NumberOfSeeds() const
-{
-  return m_parameters.NumberOfSeeds();
-}
-
-UnhashedSeedGenerator::SeedType UnhashedSeedGenerator::Next()
-{
-  if (++m_heldButtonsIter == m_parameters.heldButtons.end())
-  {
-    m_heldButtonsIter = m_parameters.heldButtons.begin();
-    
-    if (++m_timer0 > m_parameters.timer0High)
-    {
-      m_timer0 = m_parameters.timer0Low;
-      
-      if (++m_vcount > m_parameters.vcountHigh)
-      {
-        m_vcount = m_parameters.vcountLow;
-        
-        if (++m_vframe > m_parameters.vframeHigh)
-        {
-          m_vframe = m_parameters.vframeLow;
-          
-          m_unhashedSeed.NextSecond();
-        }
-        
-        m_unhashedSeed.SetVFrame(m_vframe);
-      }
-      
-      m_unhashedSeed.SetVCount(m_vcount);
-    }
-    
-    m_unhashedSeed.SetTimer0(m_timer0);
-  }
-  
-  m_unhashedSeed.SetHeldButtons(*m_heldButtonsIter);
-  
-  HashedSeed  seed = m_unhashedSeed.AsHashedSeed();
-  
-  return seed;
-}
-
-
-std::list<UnhashedSeedGenerator> UnhashedSeedGenerator::Split(uint32_t parts)
-{
-  std::list<UnhashedSeedGenerator>  result;
-  
-  HashedSeedGenerator::Parameters  p = m_parameters;
-  
-  uint32_t  partSeconds =
-    ((m_parameters.toTime - m_parameters.fromTime).total_seconds() + 1) / parts;
-  ptime     fromTime = m_parameters.fromTime;
-  ptime     toTime = fromTime + seconds(partSeconds);
-  
-  for (uint32_t i = 0; i < parts; ++i)
-  {
-    p.fromTime = fromTime;
-    p.toTime = toTime;
-    
-    UnhashedSeedGenerator  part(p);
     
     result.push_back(part);
     
