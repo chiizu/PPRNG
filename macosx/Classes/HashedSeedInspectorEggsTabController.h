@@ -39,43 +39,26 @@
   IBOutlet NSTextField            *eggsMinPIDFrameField;
   IBOutlet NSTextField            *eggsMaxPIDFrameField;
   
-  IBOutlet NSButton               *eggsEnableParentIVsCheckBox;
-  
-  IBOutlet NSTextField            *eggsFemaleHPField;
-  IBOutlet NSStepper              *eggsFemaleHPStepper;
-  IBOutlet NSTextField            *eggsFemaleAtkField;
-  IBOutlet NSStepper              *eggsFemaleAtkStepper;
-  IBOutlet NSTextField            *eggsFemaleDefField;
-  IBOutlet NSStepper              *eggsFemaleDefStepper;
-  IBOutlet NSTextField            *eggsFemaleSpAField;
-  IBOutlet NSStepper              *eggsFemaleSpAStepper;
-  IBOutlet NSTextField            *eggsFemaleSpDField;
-  IBOutlet NSStepper              *eggsFemaleSpDStepper;
-  IBOutlet NSTextField            *eggsFemaleSpeField;
-  IBOutlet NSStepper              *eggsFemaleSpeStepper;
-  
-  IBOutlet NSTextField            *eggsMaleHPField;
-  IBOutlet NSStepper              *eggsMaleHPStepper;
-  IBOutlet NSTextField            *eggsMaleAtkField;
-  IBOutlet NSStepper              *eggsMaleAtkStepper;
-  IBOutlet NSTextField            *eggsMaleDefField;
-  IBOutlet NSStepper              *eggsMaleDefStepper;
-  IBOutlet NSTextField            *eggsMaleSpAField;
-  IBOutlet NSStepper              *eggsMaleSpAStepper;
-  IBOutlet NSTextField            *eggsMaleSpDField;
-  IBOutlet NSStepper              *eggsMaleSpDStepper;
-  IBOutlet NSTextField            *eggsMaleSpeField;
-  IBOutlet NSStepper              *eggsMaleSpeStepper;
-  
   IBOutlet NSPopUpButton          *eggsFemaleSpeciesPopup;
   
   IBOutlet NSTableView            *eggsTableView;
   IBOutlet NSArrayController      *eggsContentArray;
+  
+  BOOL      enableParentIVs;
+  NSNumber  *femaleHP, *femaleAT, *femaleDF, *femaleSA, *femaleSD, *femaleSP;
+  NSNumber  *maleHP, *maleAT, *maleDF, *maleSA, *maleSD, *maleSP;
 }
+
+@property BOOL  enableParentIVs;
+
+@property (copy)
+NSNumber  *femaleHP, *femaleAT, *femaleDF, *femaleSA, *femaleSD, *femaleSP;
+
+@property (copy)
+NSNumber  *maleHP, *maleAT, *maleDF, *maleSA, *maleSD, *maleSP;
 
 - (IBAction)toggleUseInitialPID:(id)sender;
 - (IBAction)toggleEggIVs:(id)sender;
-- (IBAction)toggleParentIVs:(id)sender;
 - (IBAction)generateEggs:(id)sender;
 
 @end

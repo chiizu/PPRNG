@@ -34,22 +34,17 @@ using namespace pprng;
 namespace
 {
 
-struct GUICriteria : public WonderCardSeedSearcher::Criteria
-{
-  bool  showNature;
-  bool  showAbility;
-  bool  showGender;
-};
-
 struct ResultHandler
 {
-  ResultHandler(SearcherController *c, const GUICriteria &criteria)
+  ResultHandler(SearcherController *c,
+                const WonderCardSeedSearcher::Criteria &criteria)
     : m_controller(c), m_criteria(criteria)
   {}
   
   void operator()(const WonderCardFrame &frame)
   {
     uint32_t  genderValue = frame.pid.GenderValue();
+    bool      showGender = m_criteria.frameParameters.cardGender == Gender::ANY;
     
     NSMutableDictionary  *result =
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -63,20 +58,25 @@ struct ResultHandler
         [NSNumber numberWithUnsignedInt: frame.seed.GetSkippedPIDFrames() + 1],
           @"startFrame",
 				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        (m_criteria.showNature ?
-            [NSString stringWithFormat: @"%s",
-             Nature::ToString(frame.nature).c_str()] : @""),
+        [NSString stringWithFormat: @"%s",
+          Nature::ToString
+            ((m_criteria.frameParameters.cardNature != Nature::ANY) ?
+               m_criteria.frameParameters.cardNature : frame.nature).c_str()],
           @"nature",
-        (m_criteria.showAbility ?
-         [NSString stringWithFormat: @"%d", frame.pid.Gen5Ability()] : @""),
+        ((m_criteria.frameParameters.cardAbility == Ability::HIDDEN) ?
+          @"DW" :
+          [NSString stringWithFormat: @"%d",
+            ((m_criteria.frameParameters.cardAbility == Ability::ANY) ?
+               frame.pid.Gen5Ability() :
+               m_criteria.frameParameters.cardAbility)]),
           @"ability",
-        (m_criteria.showGender ? ((genderValue < 31) ? @"♀" : @"♂") : @""),
+        (showGender ? ((genderValue < 31) ? @"♀" : @"♂") : @""),
           @"gender18",
-        (m_criteria.showGender ? ((genderValue < 63) ? @"♀" : @"♂") : @""),
+        (showGender ? ((genderValue < 63) ? @"♀" : @"♂") : @""),
           @"gender14",
-        (m_criteria.showGender ? ((genderValue < 127) ? @"♀" : @"♂") : @""),
+        (showGender ? ((genderValue < 127) ? @"♀" : @"♂") : @""),
           @"gender12",
-        (m_criteria.showGender ? ((genderValue < 191) ? @"♀" : @"♂") : @""),
+        (showGender ? ((genderValue < 191) ? @"♀" : @"♂") : @""),
           @"gender34",
         [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
         [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
@@ -97,8 +97,8 @@ struct ResultHandler
                   waitUntilDone: NO];
   }
   
-  SearcherController  *m_controller;
-  const               GUICriteria &m_criteria;
+  SearcherController                      *m_controller;
+  const WonderCardSeedSearcher::Criteria  &m_criteria;
 };
 
 struct ProgressHandler
@@ -124,6 +124,16 @@ struct ProgressHandler
 
 @implementation WonderCardSeedSearcherController
 
+@synthesize cardNature;
+@synthesize cardAbility;
+@synthesize cardAlwaysShiny;
+@synthesize cardGender;
+@synthesize cardGenderRatio;
+
+@synthesize natureSearchable;
+@synthesize abilitySearchable;
+@synthesize genderSearchable;
+
 - (NSString *)windowNibName
 {
 	return @"WonderCardSeedSearcher";
@@ -143,6 +153,12 @@ struct ProgressHandler
   NSDate  *now = [NSDate date];
   [fromDateField setObjectValue: now];
   [toDateField setObjectValue: now];
+  
+  self.cardNature = Nature::ANY;
+  self.cardAbility = Ability::ANY;
+  self.cardAlwaysShiny = NO;
+  self.cardGender = Gender::ANY;
+  self.cardGenderRatio = Gender::UNSPECIFIED;
 }
 
 - (void)windowWillClose:(NSNotification *)notification
@@ -151,66 +167,49 @@ struct ProgressHandler
     [searcherController startStop: self];
 }
 
-- (IBAction)onTypeChange:(id)sender
+- (void)setCardNature:(uint32_t)newValue
 {
-  NSInteger  selection = [[sender selectedItem] tag];
-  
-  if (selection == -1)
+  if (cardNature != newValue)
   {
-    [ivSkipField setEnabled: YES];
-    [pidSkipField setEnabled: YES];
-    [natureSkipField setEnabled: YES];
-  }
-  else
-  {
-    [ivSkipField setEnabled: NO];
-    [pidSkipField setEnabled: NO];
-    [natureSkipField setEnabled: NO];
+    cardNature = newValue;
     
-    if (selection == 0)
+    self.natureSearchable = (newValue == Nature::ANY);
+    if (!natureSearchable)
     {
-      [ivSkipField setIntValue: 22];
-      [pidSkipField setIntValue: 2];
-      [natureSkipField setIntValue: 1];
-    }
-    else
-    {
-      [ivSkipField setIntValue: 24];
-      [pidSkipField setIntValue: 2];
-      [natureSkipField setIntValue: 3];
+      [naturePopUp selectItemWithTag: Nature::ANY];
     }
   }
 }
 
-- (IBAction)toggleFixedNature:(id)sender
+- (void)setCardAbility:(uint32_t)newValue
 {
-  BOOL  checked = [fixedNatureCheckBox state];
-  [naturePopUp setEnabled: !checked];
-  if (checked)
+  if (cardAbility != newValue)
   {
-    [naturePopUp selectItemWithTag: -1];
+    cardAbility = newValue;
+    
+    self.abilitySearchable = (newValue == Ability::ANY);
+    if (!abilitySearchable)
+    {
+      [abilityPopUp selectItemWithTag: Ability::ANY];
+    }
   }
 }
 
-- (IBAction)toggleFixedAbility:(id)sender
+- (void)setCardGender:(uint32_t)newValue
 {
-  BOOL  checked = [fixedAbilityCheckBox state];
-  [abilityPopUp setEnabled: !checked];
-  if (checked)
+  if (cardGender != newValue)
   {
-    [abilityPopUp selectItemWithTag: -1];
-  }
-}
-
-- (IBAction)toggleFixedGender:(id)sender
-{
-  BOOL  checked = [fixedGenderCheckBox state];
-  [genderPopUp setEnabled: !checked];
-  [genderRatioPopUp setEnabled: !checked];
-  if (checked)
-  {
-    [genderPopUp selectItemWithTag: -1];
-    [genderRatioPopUp selectItemWithTag: -1];
+    cardGender = newValue;
+    
+    self.genderSearchable = (newValue == Gender::ANY);
+    if (!genderSearchable)
+    {
+      [genderPopUp selectItemWithTag: Gender::ANY];
+      [genderRatioPopUp selectItemWithTag: Gender::UNSPECIFIED];
+    }
+    
+    if (cardGender == Gender::NEUTRAL)
+      self.cardGenderRatio = Gender::UNSPECIFIED;
   }
 }
 
@@ -238,6 +237,12 @@ struct ProgressHandler
         [[WonderCardSeedInspectorController alloc] init];
       [inspector showWindow: self];
       [inspector setSeed: seed];
+      
+      inspector.cardNature = cardNature;
+      inspector.cardAbility = cardAbility;
+      inspector.cardAlwaysShiny = cardAlwaysShiny;
+      inspector.cardGender = cardGender;
+      inspector.cardGenderRatio = cardGenderRatio;
     }
   }
 }
@@ -252,7 +257,7 @@ struct ProgressHandler
   using namespace boost::gregorian;
   using namespace boost::posix_time;
   
-  GUICriteria  criteria;
+  WonderCardSeedSearcher::Criteria  criteria;
   
   criteria.seedParameters.macAddress = [gen5ConfigController macAddress];
   
@@ -302,16 +307,18 @@ struct ProgressHandler
                             hours(23) + minutes(59) + seconds(59));
   
   criteria.frameParameters.startFromLowestFrame = [useInitialPIDButton state];
-  criteria.frameParameters.ivSkip = [ivSkipField intValue];
-  criteria.frameParameters.pidSkip = [pidSkipField intValue];
-  criteria.frameParameters.natureSkip = [natureSkipField intValue];
-  criteria.frameParameters.canBeShiny = false;
+  criteria.frameParameters.cardNature = Nature::Type(cardNature);
+  criteria.frameParameters.cardAbility = cardAbility;
+  criteria.frameParameters.cardAlwaysShiny = cardAlwaysShiny;
+  criteria.frameParameters.cardGender = Gender::Type(cardGender);
+  criteria.frameParameters.cardGenderRatio = Gender::Ratio(cardGenderRatio);
   
   criteria.ivs.min = [ivParameterController minIVs];
-  criteria.ivs.shouldCheckMax = [ivParameterController shouldCheckMaxIVs];
   criteria.ivs.max = [ivParameterController maxIVs];
+  criteria.ivs.shouldCheckMax =
+    (criteria.ivs.max != IVs(31, 31, 31, 31, 31, 31));
   
-  if ([ivParameterController shouldCheckHiddenPower])
+  if ([ivParameterController considerHiddenPower])
   {
     criteria.ivs.hiddenType = [ivParameterController hiddenType];
     criteria.ivs.minHiddenPower = [ivParameterController minHiddenPower];
@@ -321,7 +328,7 @@ struct ProgressHandler
     criteria.ivs.hiddenType = Element::UNKNOWN;
   }
   criteria.pid.nature = Nature::Type([[naturePopUp selectedItem] tag]);
-  criteria.pid.ability = [[abilityPopUp selectedItem] tag];
+  criteria.pid.ability = Ability::Type([[abilityPopUp selectedItem] tag]);
   criteria.pid.gender = Gender::Type([[genderPopUp selectedItem] tag]);
   criteria.pid.genderRatio =
     Gender::Ratio([[genderRatioPopUp selectedItem] tag]);
@@ -329,16 +336,13 @@ struct ProgressHandler
   criteria.frame.min = [minFrameField intValue];
   criteria.frame.max = [maxFrameField intValue];
   
-  criteria.showNature = ![fixedNatureCheckBox state];
-  criteria.showAbility = ![fixedAbilityCheckBox state];
-  criteria.showGender = ![fixedGenderCheckBox state];
-  
   if (CheckExpectedResults(criteria, 10000,
                            @"The current search parameters are expected to return more than 10,000 results. Please set more specific IVs, limit the date range, use fewer held keys, or other similar settings to reduce the number of expected results.",
                            self,
                            @selector(alertDidEnd:returnCode:contextInfo:)))
   {
-    return [NSValue valueWithPointer: new GUICriteria(criteria)];
+    return [NSValue valueWithPointer:
+            new WonderCardSeedSearcher::Criteria(criteria)];
   }
   else
   {
@@ -348,8 +352,9 @@ struct ProgressHandler
 
 - (void)doSearchWithCriteria:(NSValue*)criteriaPtr
 {
-  std::auto_ptr<GUICriteria>
-    criteria(static_cast<GUICriteria*>([criteriaPtr pointerValue]));
+  std::auto_ptr<WonderCardSeedSearcher::Criteria>
+    criteria(static_cast<WonderCardSeedSearcher::Criteria*>
+      ([criteriaPtr pointerValue]));
   
   WonderCardSeedSearcher  searcher;
   

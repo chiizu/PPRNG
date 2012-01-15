@@ -20,7 +20,7 @@
 
 
 #include "EggSeedSearcher.h"
-#include "SeedGenerator.h"
+#include "SeedSearcher.h"
 
 #include <vector>
 
@@ -192,7 +192,7 @@ struct IVFrameResultHandler
   
   bool CheckAbility(const Gen5BreedingFrame &frame) const
   {
-    return ((m_criteria.pid.ability > 1) ||
+    return ((m_criteria.pid.ability == Ability::ANY) ||
             (m_criteria.pid.ability == frame.pid.Gen5Ability())) &&
            (!m_criteria.inheritsHiddenAbility ||
             frame.inheritsHiddenAbility);
@@ -241,6 +241,8 @@ struct IVFrameResultHandler
 
 struct IVFrameGeneratorFactory
 {
+  typedef HashedIVFrameGenerator  FrameGenerator;
+  
   HashedIVFrameGenerator operator()(const HashedSeed &seed) const
   {
     return HashedIVFrameGenerator(seed, HashedIVFrameGenerator::Normal);
@@ -336,22 +338,24 @@ uint64_t EggSeedSearcher::Criteria::ExpectedNumberOfResults() const
   return result + 1;
 }
 
-void EggSeedSearcher::Search(const Criteria &criteria,
-                             const ResultCallback &resultHandler,
-                             const ProgressCallback &progressHandler)
+void EggSeedSearcher::Search
+  (const Criteria &criteria, const ResultCallback &resultHandler,
+   const SearchRunner::ProgressCallback &progressHandler)
 {
   HashedSeedGenerator   seedGenerator(criteria.seedParameters);
   
   IVFrameGeneratorFactory   ivFrameGenFactory;
   
+  SeedFrameSearcher<IVFrameGeneratorFactory>  seedSearcher(ivFrameGenFactory,
+                                                           criteria.ivFrame);
+  
   IVFrameChecker            ivFrameChecker(criteria);
   
   IVFrameResultHandler      ivFrameResultHandler(criteria, resultHandler);
   
-  SeedSearcherType              searcher;
+  SearchRunner              searcher;
   
-  searcher.SearchThreaded(seedGenerator, ivFrameGenFactory,
-                         criteria.ivFrame, ivFrameChecker,
+  searcher.SearchThreaded(seedGenerator, seedSearcher, ivFrameChecker,
                          ivFrameResultHandler, progressHandler);
 }
 

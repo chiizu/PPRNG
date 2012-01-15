@@ -21,7 +21,7 @@
 #ifndef FRAME_H
 #define FRAME_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 #include "TimeSeed.h"
 #include "CGearSeed.h"
 #include "HashedSeed.h"

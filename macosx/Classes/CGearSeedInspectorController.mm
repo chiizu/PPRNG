@@ -26,6 +26,8 @@
 #include "FrameGenerator.h"
 #include "Utilities.h"
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 using namespace pprng;
 
 @implementation CGearSeedInspectorController

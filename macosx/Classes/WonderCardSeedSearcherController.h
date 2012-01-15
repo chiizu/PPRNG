@@ -40,14 +40,6 @@
   IBOutlet NSButton       *twoKeysHeldButton;
   IBOutlet NSButton       *threeKeysHeldButton;
   
-  IBOutlet NSPopUpButton  *typePopUp;
-  IBOutlet NSTextField    *ivSkipField;
-  IBOutlet NSTextField    *pidSkipField;
-  IBOutlet NSTextField    *natureSkipField;
-  IBOutlet NSButton       *fixedNatureCheckBox;
-  IBOutlet NSButton       *fixedAbilityCheckBox;
-  IBOutlet NSButton       *fixedGenderCheckBox;
-  
   IBOutlet NSPopUpButton  *naturePopUp;
   IBOutlet NSPopUpButton  *abilityPopUp;
   IBOutlet NSPopUpButton  *genderPopUp;
@@ -56,12 +48,28 @@
   IBOutlet NSButton       *useInitialPIDButton;
   IBOutlet NSTextField    *minFrameField;
   IBOutlet NSTextField    *maxFrameField;
+  
+  uint32_t  cardNature;
+  uint32_t  cardAbility;
+  BOOL      cardAlwaysShiny;
+  uint32_t  cardGender;
+  uint32_t  cardGenderRatio;
+  
+  BOOL      natureSearchable;
+  BOOL      abilitySearchable;
+  BOOL      genderSearchable;
 }
 
-- (IBAction)onTypeChange:(id)sender;
-- (IBAction)toggleFixedNature:(id)sender;
-- (IBAction)toggleFixedAbility:(id)sender;
-- (IBAction)toggleFixedGender:(id)sender;
+@property uint32_t  cardNature;
+@property uint32_t  cardAbility;
+@property BOOL      cardAlwaysShiny;
+@property uint32_t  cardGender;
+@property uint32_t  cardGenderRatio;
+
+@property BOOL      natureSearchable;
+@property BOOL      abilitySearchable;
+@property BOOL      genderSearchable;
+
 - (IBAction)toggleUseInitialPID:(id)sender;
 
 @end

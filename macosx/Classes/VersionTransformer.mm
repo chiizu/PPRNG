@@ -21,7 +21,7 @@
 
 #import "VersionTransformer.h"
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 
 using namespace pprng;
 

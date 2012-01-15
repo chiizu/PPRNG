@@ -22,11 +22,13 @@
 #define EGG_SEED_SEARCHER_H
 
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
+#include "SearchCriteria.h"
+#include "SearchRunner.h"
 #include "SeedGenerator.h"
-#include "SeedSearcher.h"
 #include "FrameGenerator.h"
-#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include <boost/function.hpp>
 
 namespace pprng
 {
@@ -34,27 +36,22 @@ namespace pprng
 class EggSeedSearcher
 {
 public:
-  typedef SeedSearcher<HashedIVFrameGenerator>    SeedSearcherType;
-  typedef Gen5EggFrame                            Frame;
-  typedef boost::function<void (const Frame&)>    ResultCallback;
-  typedef boost::function<bool (double percent)>  ProgressCallback;
-  
-  struct Criteria : public SeedSearchCriteria
+  struct Criteria : public SearchCriteria
   {
     HashedSeedGenerator::Parameters         seedParameters;
     Gen5BreedingFrameGenerator::Parameters  frameParameters;
     
-    SeedSearchCriteria::IVCriteria   ivs;
-    SeedSearcherType::FrameRange     ivFrame;
-    IVs                              femaleIVs, maleIVs;
+    SearchCriteria::IVCriteria   ivs;
+    SearchCriteria::FrameRange   ivFrame;
+    IVs                          femaleIVs, maleIVs;
     
-    FemaleParent::Type               femaleSpecies;
+    FemaleParent::Type           femaleSpecies;
     
-    SeedSearchCriteria::PIDCriteria  pid;
-    SeedSearcherType::FrameRange     pidFrame;
-    bool                             inheritsHiddenAbility;
-    bool                             shinyOnly;
-    uint32_t                         childSpecies;
+    SearchCriteria::PIDCriteria  pid;
+    SearchCriteria::FrameRange   pidFrame;
+    bool                         inheritsHiddenAbility;
+    bool                         shinyOnly;
+    uint32_t                     childSpecies;
     
     Criteria()
       : seedParameters(), frameParameters(),
@@ -68,10 +65,13 @@ public:
     uint64_t ExpectedNumberOfResults() const;
   };
   
+  typedef Gen5EggFrame                               ResultType;
+  typedef boost::function<void (const ResultType&)>  ResultCallback;
+  
   EggSeedSearcher() {}
   
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
-              const ProgressCallback &progressHandler);
+              const SearchRunner::ProgressCallback &progressHandler);
 };
 
 }

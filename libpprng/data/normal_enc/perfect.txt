@@ -1,0 +1,49 @@
+/*
+  Copyright (C) 2011 chiizu
+  chiizu.pprng@gmail.com
+  
+  This file is part of libpprng.
+  
+  libpprng is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  libpprng is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with libpprng.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+DEFINE_IV_SEED(0x14b11ba6,1,0x7fff7fff)
+DEFINE_IV_SEED(0x22bc4e21,4,0x7fff7fff)
+DEFINE_IV_SEED(0x2af20946,5,0x7fff7fff)
+DEFINE_IV_SEED(0x31c26de4,3,0x7fff7fff)
+DEFINE_IV_SEED(0x35652a5f,2,0x7fff7fff)
+DEFINE_IV_SEED(0x4707f449,2,0x7fff7fff)
+DEFINE_IV_SEED(0x4edad270,4,0x7fff7fff)
+DEFINE_IV_SEED(0x519a0c07,3,0x7fff7fff)
+DEFINE_IV_SEED(0x5d4b5fd4,5,0x7fff7fff)
+DEFINE_IV_SEED(0x60b5ce6a,6,0x7fff7fff)
+DEFINE_IV_SEED(0x65b8d33d,6,0x7fff7fff)
+DEFINE_IV_SEED(0x7541aad0,2,0x7fff7fff)
+DEFINE_IV_SEED(0x795b3f16,4,0x7fff7fff)
+DEFINE_IV_SEED(0x81022e80,6,0x7fff7fff)
+DEFINE_IV_SEED(0x81d3d58b,5,0x7fff7fff)
+DEFINE_IV_SEED(0x8a30480d,1,0x7fff7fff)
+DEFINE_IV_SEED(0x9e02b0ae,1,0x7fff7fff)
+DEFINE_IV_SEED(0xa2156653,5,0x7fff7fff)
+DEFINE_IV_SEED(0xadfa2178,1,0x7fff7fff)
+DEFINE_IV_SEED(0xbee598a7,2,0x7fff7fff)
+DEFINE_IV_SEED(0xc28a882e,3,0x7fff7fff)
+DEFINE_IV_SEED(0xc7bf8c89,4,0x7fff7fff)
+DEFINE_IV_SEED(0xdfe7ebf2,3,0x7fff7fff)
+DEFINE_IV_SEED(0xe34372ae,3,0x7fff7fff)
+DEFINE_IV_SEED(0xeaa27a05,2,0x7fff7fff)
+DEFINE_IV_SEED(0xed01c9c2,3,0x7fff7fff)
+DEFINE_IV_SEED(0xfc4aa3ac,1,0x7fff7fff)
+DEFINE_IV_SEED(0xfd290502,4,0x7fff7fff)

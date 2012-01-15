@@ -21,9 +21,12 @@
 #ifndef GEN_4_QUICK_SEED_SEARCHER_H
 #define GEN_4_QUICK_SEED_SEARCHER_H
 
-#include "BasicTypes.h"
-#include "SeedSearcher.h"
+#include "PPRNGTypes.h"
+#include "SearchRunner.h"
+#include "SeedGenerator.h"
 #include "FrameGenerator.h"
+
+#include <boost/function.hpp>
 
 namespace pprng
 {
@@ -43,7 +46,7 @@ public:
     bool           shinyOnly;
     uint32_t       tid, sid;
     Nature::Type   nature;
-    uint32_t       ability;
+    Ability::Type  ability;
     Gender::Type   gender;
     Gender::Ratio  genderRatio;
     
@@ -60,12 +63,11 @@ public:
   
   Gen4QuickSeedSearcher() {}
   
-  typedef Gen4Frame                               Frame;
-  typedef boost::function<void (const Frame&)>    ResultCallback;
-  typedef boost::function<bool (double percent)>  ProgressCallback;
+  typedef Gen4Frame                                  ResultType;
+  typedef boost::function<void (const ResultType&)>  ResultCallback;
   
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
-              const ProgressCallback &progressHandler);
+              const SearchRunner::ProgressCallback &progressHandler);
 };
 
 }

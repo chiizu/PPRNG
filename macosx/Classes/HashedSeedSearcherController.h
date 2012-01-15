@@ -20,7 +20,6 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import "VertResizeOnlyWindowController.h"
 #import "SearcherController.h"
 #import "IVParameterController.h"
 #import "Gen5ConfigurationController.h"

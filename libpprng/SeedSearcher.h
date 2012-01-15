@@ -21,293 +21,45 @@
 #ifndef SEED_SEARCHER_H
 #define SEED_SEARCHER_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
+#include "SearchCriteria.h"
 #include "FrameSearcher.h"
-#include <boost/lexical_cast.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/thread.hpp>
-#include <functional>
+#include <boost/function.hpp>
 #include <sstream>
 
 namespace pprng
 {
 
-struct SeedSearchCriteria
-{
-  struct PIDCriteria
-  {
-    Nature::Type   nature;
-    uint32_t       ability;
-    Gender::Type   gender;
-    Gender::Ratio  genderRatio;
-    bool           searchFromInitialFrame;
-    
-    PIDCriteria()
-      : nature(Nature::ANY), ability(0xffffffff),
-        gender(Gender::ANY), genderRatio(Gender::UNSPECIFIED),
-        searchFromInitialFrame(false)
-    {}
-  };
-  
-  struct IVCriteria
-  {
-    bool           shouldCheckMax;
-    IVs            min, max;
-    Element::Type  hiddenType;
-    uint32_t       minHiddenPower;
-    bool           isRoamer;
-    
-    IVCriteria()
-      : shouldCheckMax(true), min(), max(),
-        hiddenType(Element::UNKNOWN), minHiddenPower(30), isRoamer(false)
-    {}
-  };
-  
-  class ImpossibleMinMaxFrameRangeException : public Exception
-  {
-  public:
-    ImpossibleMinMaxFrameRangeException
-      (uint32_t minFrame, uint32_t maxFrame, const std::string &frameType)
-      : Exception
-        ("Minimum " + frameType + " frame " +
-         boost::lexical_cast<std::string>(minFrame) +
-         " is not less than or equal to maximum " + frameType + " frame " +
-         boost::lexical_cast<std::string>(maxFrame))
-    {}
-  };
-  
-  virtual uint64_t ExpectedNumberOfResults() const = 0;
-};
-
-template <class FrameGenerator>
-class SeedSearcher
+template <class FrameGeneratorFactory>
+class SeedFrameSearcher
 {
 public:
-  typedef typename FrameGenerator::Frame          Frame;
-  typedef FrameSearcher<FrameGenerator>           SeedFrameSearcher;
-  typedef typename SeedFrameSearcher::FrameRange  FrameRange;
+  typedef typename FrameGeneratorFactory::FrameGenerator  FrameGenerator;
+  typedef typename FrameGenerator::Seed                   Seed;
+  typedef typename FrameGenerator::Frame                  Frame;
+  typedef Frame                                           ResultType;
   
   typedef boost::function<void (const Frame&)> ResultCallback;
   
-  typedef boost::function<bool (double percent)>  ProgressCallback;
+  SeedFrameSearcher(const FrameGeneratorFactory &frameGeneratorFactory,
+                    const SearchCriteria::FrameRange &frameRange)
+    : m_frameGeneratorFactory(frameGeneratorFactory), m_frameRange(frameRange)
+  {}
   
-  template <class SeedGenerator, class FrameGeneratorFactory, class FrameChecker>
-  void Search(SeedGenerator &seedGenerator,
-              const FrameGeneratorFactory &frameGeneratorFactory,
-              const FrameRange &frameRange,
-              FrameChecker &frameChecker,
-              const ResultCallback &resultHandler,
-              const ProgressCallback &progressHandler,
-              uint32_t numSplits = 1)
+  template <class FrameChecker>
+  void Search(const Seed &seed, const FrameChecker &frameChecker,
+              const ResultCallback &resultHandler)
   {
-    typename SeedGenerator::SeedCountType  numSeeds =
-      seedGenerator.NumberOfSeeds();
+    FrameGenerator     frameGenerator = m_frameGeneratorFactory(seed);
+    FrameSearcher<FrameGenerator>  frameSearcher(frameGenerator);
     
-    double  seedPercent = double(SeedGenerator::SeedsPerChunk) /
-                            (numSeeds * numSplits);
-    
-    if (seedPercent > 0.002)
-    {
-      seedPercent = 0.002;
-    }
-    
-    typename SeedGenerator::SeedCountType  stepPercentSeeds =
-      (seedPercent * (numSeeds * numSplits)) + 1;
-    
-    const double stepPercent = seedPercent * 100.0;
-    
-    typename SeedGenerator::SeedCountType  threshold = stepPercentSeeds;
-    
-    for (typename SeedGenerator::SeedCountType i = 0;
-         (i < numSeeds) && progressHandler(stepPercent);
-         /* empty */)
-    {
-      for (/* empty */; i < threshold; ++i)
-      {
-        typename SeedGenerator::SeedType  seed = seedGenerator.Next();
-        
-        FrameGenerator     frameGenerator = frameGeneratorFactory(seed);
-        SeedFrameSearcher  frameSearcher(frameGenerator);
-        
-        while(frameSearcher.Search(frameRange, frameChecker, resultHandler))
-          /* search all frames, not just first */;
-      }
-      
-      threshold += stepPercentSeeds;
-      if (threshold > numSeeds)
-      {
-        threshold = numSeeds;
-      }
-    }
-  }
-  
-  template <class SeedGenerator, class FrameGeneratorFactory, class FrameChecker>
-  void SearchThreaded(SeedGenerator &seedGenerator,
-                      const FrameGeneratorFactory &frameGeneratorFactory,
-                      const FrameRange &frameRange,
-                      FrameChecker &frameChecker,
-                      const ResultCallback &resultHandler,
-                      const ProgressCallback &progressHandler)
-  {
-    boost::condition_variable  progressUpdate;
-    boost::mutex               progressMutex,  resultMutex;
-    std::deque<double>         progressQueue;
-    std::deque<Frame>          resultQueue;
-    bool                       shouldContinue = true;
-    
-    uint32_t  numProcs = boost::thread::hardware_concurrency();
-    
-    std::list<SeedGenerator>  generators = seedGenerator.Split(numProcs);
-    
-    typedef std::list<boost::shared_ptr<boost::thread> >  ThreadList;
-    ThreadList  threadList;
-    
-    ThreadResultHandler    threadResultHandler(resultMutex, resultQueue);
-    ThreadProgressHandler  threadProgressHandler(progressUpdate, progressMutex,
-                                                 progressQueue, shouldContinue,
-                                                 numProcs);
-    
-    typename std::list<SeedGenerator>::iterator  sg = generators.begin();
-    for (uint32_t i = 0; i < numProcs; ++i)
-    {
-      SearchFunctor<SeedGenerator, FrameGeneratorFactory, FrameChecker>
-        searchFunctor(*this, *sg++, frameGeneratorFactory, frameRange,
-                      frameChecker, threadResultHandler, threadProgressHandler,
-                      numProcs);
-      
-      boost::shared_ptr<boost::thread>  t(new boost::thread(searchFunctor));
-      
-      threadList.push_back(t);
-    }
-    
-    while (threadProgressHandler.m_numActiveThreads > 0)
-    {
-      // look for new results
-      {
-        boost::lock_guard<boost::mutex>  lock(resultMutex);
-        while (!resultQueue.empty())
-        {
-          resultHandler(resultQueue.front());
-          resultQueue.pop_front();
-        }
-      }
-      
-      // update progress display
-      {
-        boost::unique_lock<boost::mutex>  lock(progressMutex);
-        if (progressQueue.empty())
-        {
-          progressUpdate.wait(lock);
-        }
-        while (!progressQueue.empty())
-        {
-          shouldContinue = shouldContinue &&
-                           progressHandler(progressQueue.front());
-          progressQueue.pop_front();
-        }
-      }
-    }
-    
-    ThreadList::iterator  it;
-    for (it = threadList.begin(); it != threadList.end(); ++it)
-    {
-      (*it)->join();
-    }
+    while(frameSearcher.Search(m_frameRange, frameChecker, resultHandler))
+      /* search all frames, not just first */;
   }
   
 private:
-  struct ThreadResultHandler
-  {
-    ThreadResultHandler(boost::mutex &mut, std::deque<Frame> &queue)
-      : m_mut(mut), m_queue(queue)
-    {}
-    
-    void operator()(const Frame &frame)
-    {
-      boost::lock_guard<boost::mutex>  lock(m_mut);
-      
-      m_queue.push_back(frame);
-    }
-    
-    boost::mutex               &m_mut;
-    std::deque<Frame>          &m_queue;
-  };
-  
-  struct ThreadProgressHandler
-  {
-    ThreadProgressHandler(boost::condition_variable &condVar, boost::mutex &mut,
-                          std::deque<double> &queue, bool &shouldContinue,
-                          uint32_t numActiveThreads)
-      : m_condVar(condVar), m_mut(mut), m_queue(queue),
-        m_shouldContinue(shouldContinue), m_numActiveThreads(numActiveThreads)
-    {}
-    
-    bool operator()(double progress)
-    {
-      {
-        boost::unique_lock<boost::mutex>  lock(m_mut);
-        
-        m_queue.push_back(progress);
-      }
-      m_condVar.notify_one();
-      
-      return m_shouldContinue;
-    }
-    
-    void ThreadFinished()
-    {
-      {
-        boost::unique_lock<boost::mutex>  lock(m_mut);
-        --m_numActiveThreads;
-      }
-      m_condVar.notify_one();
-    }
-    
-    boost::condition_variable  &m_condVar;
-    boost::mutex               &m_mut;
-    std::deque<double>         &m_queue;
-    bool                       &m_shouldContinue;
-    uint32_t                   m_numActiveThreads;
-  };
-  
-  template <class SeedGenerator, class FrameGeneratorFactory, class FrameChecker>
-  struct SearchFunctor
-  {
-    SearchFunctor(SeedSearcher &searcher,
-                  SeedGenerator &seedGenerator,
-                  const FrameGeneratorFactory &frameGeneratorFactory,
-                  const FrameRange &frameRange,
-                  FrameChecker &frameChecker,
-                  ThreadResultHandler &resultHandler,
-                  ThreadProgressHandler &progressHandler,
-                  uint32_t numSplits)
-      : m_searcher(searcher),
-        m_seedGenerator(seedGenerator),
-        m_frameGeneratorFactory(frameGeneratorFactory),
-        m_frameRange(frameRange),
-        m_frameChecker(frameChecker),
-        m_resultHandler(resultHandler),
-        m_progressHandler(progressHandler),
-        m_numSplits(numSplits)
-    {}
-    
-    void operator()()
-    {
-      m_searcher.Search(m_seedGenerator, m_frameGeneratorFactory, m_frameRange,
-                        m_frameChecker, m_resultHandler, m_progressHandler,
-                        m_numSplits);
-      m_progressHandler.ThreadFinished();
-    }
-    
-    SeedSearcher                &m_searcher;
-    SeedGenerator               &m_seedGenerator;
-    const FrameGeneratorFactory &m_frameGeneratorFactory;
-    const FrameRange            &m_frameRange;
-    FrameChecker                &m_frameChecker;
-    ThreadResultHandler         &m_resultHandler;
-    ThreadProgressHandler       &m_progressHandler;
-    const uint32_t              m_numSplits;
-  };
+  const FrameGeneratorFactory       &m_frameGeneratorFactory;
+  const SearchCriteria::FrameRange  &m_frameRange;
 };
 
 }

@@ -21,7 +21,7 @@
 #ifndef FRAME_GENERATOR_H
 #define FRAME_GENERATOR_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 #include "Frame.h"
 #include "LinearCongruentialRNG.h"
 #include "MersenneTwisterRNG.h"
@@ -36,6 +36,7 @@ template <int Method = 1>
 class Gen34FrameGenerator
 {
 public:
+  typedef uint32_t                  Seed;
   typedef Gen34Frame                Frame;
   typedef BufferedRNG<LCRNG34, 5>   RNG;
   typedef Gen34PIDRNG<Method, RNG>  PIDRNG;
@@ -77,6 +78,7 @@ template <class Method>
 class Gen4EncounterFrameGenerator
 {
 public:
+  typedef uint32_t             Seed;
   typedef Gen4EncounterFrame   Frame;
   typedef QueuedRNG<LCRNG34>   RNG;
   typedef Gen34PIDRNG<1, RNG>  PIDRNG;
@@ -273,6 +275,7 @@ typedef Gen4EncounterFrameGenerator<MethodK> HGSSEncounterFrameGenerator;
 class CGearIVFrameGenerator
 {
 public:
+  typedef uint32_t                 Seed;
   typedef CGearIVFrame             Frame;
   typedef MTRNG                    RNG;
   typedef Gen5BufferingIVRNG<RNG>  IVRNG;
@@ -299,6 +302,7 @@ private:
 class HashedIVFrameGenerator
 {
 public:
+  typedef HashedSeed               Seed;
   typedef HashedIVFrame            Frame;
   typedef MTRNG                    RNG;
   typedef Gen5BufferingIVRNG<RNG>  IVRNG;
@@ -325,8 +329,9 @@ private:
 class Gen5PIDFrameGenerator
 {
 public:
+  typedef HashedSeed              Seed;
   typedef Gen5PIDFrame            Frame;
-  typedef BufferedRNG<LCRNG5, 6>  RNG;
+  typedef BufferedRNG<LCRNG5, 7>  RNG;
   typedef Gen5PIDRNG<RNG>         PIDRNG;
   
   enum FrameType
@@ -413,73 +418,35 @@ private:
 class WonderCardFrameGenerator
 {
 public:
-  typedef WonderCardFrame            Frame;
-  typedef BufferedRNG<LCRNG5, 11>    RNG;
-  typedef Gen5NonBufferingIVRNG<RNG> IVRNG;
-  typedef Gen5PIDRNG<RNG>            PIDRNG;
+  typedef HashedSeed               Seed;
+  typedef WonderCardFrame          Frame;
+  typedef BufferedRNG<LCRNG5, 15>  RNG;
+  typedef Gen5BufferingIVRNG<RNG>  IVRNG;
+  typedef Gen5PIDRNG<RNG>          PIDRNG;
   
   struct Parameters
   {
-    bool      startFromLowestFrame;
-    uint32_t  ivSkip, pidSkip, natureSkip;
-    bool      canBeShiny;
-    uint32_t  tid, sid;
+    Nature::Type   cardNature;
+    uint32_t       cardAbility;
+    bool           cardAlwaysShiny;
+    Gender::Type   cardGender;
+    Gender::Ratio  cardGenderRatio;
+    
+    bool           startFromLowestFrame;
+    uint32_t       tid, sid;
     
     Parameters()
-      : startFromLowestFrame(false),
-        ivSkip(0), pidSkip(0), natureSkip(0),
-        canBeShiny(false), tid(0), sid(0)
+      : cardNature(Nature::ANY), cardAbility(Ability::ANY),
+        cardAlwaysShiny(false), cardGender(Gender::ANY),
+        cardGenderRatio(Gender::UNSPECIFIED),
+        startFromLowestFrame(false), tid(0), sid(0)
     {}
   };
   
-  WonderCardFrameGenerator(const HashedSeed &seed, const Parameters &parameters)
-    : m_RNG(seed.rawSeed), m_IVRNG(m_RNG, IVRNG::Normal),
-      m_PIDRNG(m_RNG, (parameters.canBeShiny ?
-                       PIDRNG::GiftPID : PIDRNG::GiftNoShinyPID),
-               parameters.tid, parameters.sid),
-      m_frame(seed),
-      m_pidSkip(parameters.pidSkip), m_natureSkip(parameters.natureSkip)
-  {
-    // skip over 'unused' frames
-    for (uint32_t i = 0; i < parameters.ivSkip; ++i)
-    {
-      m_RNG.AdvanceBuffer();
-    }
-    m_frame.number = 0;
-    
-    if (parameters.startFromLowestFrame)
-    {
-      uint32_t  skippedFrames = seed.GetSkippedPIDFrames();
-      while (skippedFrames-- > 0)
-      {
-        m_RNG.AdvanceBuffer();
-        ++m_frame.number;
-      }
-    }
-  }
+  WonderCardFrameGenerator(const HashedSeed &seed,
+                           const Parameters &parameters);
   
-  void AdvanceFrame()
-  {
-    m_RNG.AdvanceBuffer();
-    
-    ++m_frame.number;
-    m_frame.ivs = m_IVRNG.NextIVWord();
-    
-    // 'unused' frames
-    uint32_t  i = m_pidSkip;
-    while (i-- > 0)
-      m_RNG.Next();
-    
-    m_frame.pid = m_PIDRNG.NextPIDWord();
-    
-    // skip 'unused' frames
-    i = m_natureSkip;
-    while (i-- > 0)
-      m_RNG.Next();
-    
-    m_frame.nature =
-      static_cast<Nature::Type>(((m_RNG.Next() >> 32) * 25) >> 32);
-  }
+  void AdvanceFrame();
   
   const Frame& CurrentFrame() { return m_frame; }
   
@@ -488,6 +455,7 @@ private:
   IVRNG           m_IVRNG;
   PIDRNG          m_PIDRNG;
   Frame           m_frame;
+  const uint32_t  m_ivSkip;
   const uint32_t  m_pidSkip;
   const uint32_t  m_natureSkip;
 };
@@ -495,6 +463,7 @@ private:
 class Gen5TrainerIDFrameGenerator
 {
 public:
+  typedef HashedSeed          Seed;
   typedef Gen5TrainerIDFrame  Frame;
   typedef LCRNG5              RNG;
   
@@ -524,6 +493,7 @@ private:
 class Gen5BreedingFrameGenerator
 {
 public:
+  typedef HashedSeed         Seed;
   typedef Gen5BreedingFrame  Frame;
   typedef QueuedRNG<LCRNG5>  RNG;
   typedef Gen5PIDRNG<RNG>    PIDRNG;

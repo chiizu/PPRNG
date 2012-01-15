@@ -21,8 +21,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "BasicTypes.h"
-#include "SeedSearcher.h"
+#include "PPRNGTypes.h"
+#include "SearchCriteria.h"
 #include <boost/date_time/gregorian/gregorian_types.hpp>
 
 extern boost::gregorian::date NSDateToBoostDate(NSDate *date);
@@ -37,5 +37,5 @@ extern void SaveTableContentsToCSV(NSTableView *tableView,
                                    NSArrayController *contentArray);
 
 extern BOOL CheckExpectedResults
-  (pprng::SeedSearchCriteria &criteria, uint64_t maxResults,
+  (pprng::SearchCriteria &criteria, uint64_t maxResults,
    NSString *tooManyResultsMessage, id caller, SEL alertHandler);

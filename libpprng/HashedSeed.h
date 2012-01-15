@@ -21,7 +21,7 @@
 #ifndef NON_C_GEAR_SEED_H
 #define NON_C_GEAR_SEED_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 #include <boost/date_time/gregorian/gregorian.hpp>
 
 namespace pprng

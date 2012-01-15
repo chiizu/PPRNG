@@ -20,7 +20,7 @@
 
 
 #import "Gen5ConfigurationEditController.h"
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 
 using namespace pprng;
 

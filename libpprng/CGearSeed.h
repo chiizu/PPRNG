@@ -21,7 +21,7 @@
 #ifndef CGEAR_SEED_H
 #define CGEAR_SEED_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 #include "TimeSeed.h"
 
 namespace pprng

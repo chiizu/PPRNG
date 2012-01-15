@@ -21,7 +21,7 @@
 #ifndef PID_RNG_H
 #define PID_RNG_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 
 namespace pprng
 {

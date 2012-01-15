@@ -147,10 +147,16 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
 
 @implementation HashedSeedInspectorEggsTabController
 
+@synthesize enableParentIVs;
+@synthesize femaleHP, femaleAT, femaleDF, femaleSA, femaleSD, femaleSP;
+@synthesize maleHP, maleAT, maleDF, maleSA, maleSD, maleSP;
+
 - (void)awakeFromNib
 {
   [[[[eggsTableView tableColumnWithIdentifier: @"pid"] dataCell] formatter]
    setFormatWidth: 8];
+  
+  enableParentIVs = NO;
 }
 
 - (IBAction)toggleUseInitialPID:(id)sender
@@ -163,37 +169,6 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
 {
   BOOL enabled = [eggsEnableIVsButton state];
   [eggsIVFrameField setEnabled: enabled];
-}
-
-- (IBAction)toggleParentIVs:(id)sender
-{
-  BOOL enabled = [eggsEnableParentIVsCheckBox state];
-  
-  [eggsFemaleHPField setEnabled: enabled];
-  [eggsFemaleHPStepper setEnabled: enabled];
-  [eggsFemaleAtkField setEnabled: enabled];
-  [eggsFemaleAtkStepper setEnabled: enabled];
-  [eggsFemaleDefField setEnabled: enabled];
-  [eggsFemaleDefStepper setEnabled: enabled];
-  [eggsFemaleSpAField setEnabled: enabled];
-  [eggsFemaleSpAStepper setEnabled: enabled];
-  [eggsFemaleSpDField setEnabled: enabled];
-  [eggsFemaleSpDStepper setEnabled: enabled];
-  [eggsFemaleSpeField setEnabled: enabled];
-  [eggsFemaleSpeStepper setEnabled: enabled];
-  
-  [eggsMaleHPField setEnabled: enabled];
-  [eggsMaleHPStepper setEnabled: enabled];
-  [eggsMaleAtkField setEnabled: enabled];
-  [eggsMaleAtkStepper setEnabled: enabled];
-  [eggsMaleDefField setEnabled: enabled];
-  [eggsMaleDefStepper setEnabled: enabled];
-  [eggsMaleSpAField setEnabled: enabled];
-  [eggsMaleSpAStepper setEnabled: enabled];
-  [eggsMaleSpDField setEnabled: enabled];
-  [eggsMaleSpDStepper setEnabled: enabled];
-  [eggsMaleSpeField setEnabled: enabled];
-  [eggsMaleSpeStepper setEnabled: enabled];
 }
 
 - (IBAction)generateEggs:(id)sender
@@ -216,24 +191,23 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
     ivGenerator.AdvanceFrame();
   
   IVs  ivs = ivGenerator.CurrentFrame().ivs;
+  IVs  femaleIVs, maleIVs;
   
-  bool      parentIVs = [eggsEnableParentIVsCheckBox state];
-  IVs       femaleIVs, maleIVs;
-  if (parentIVs)
+  if (enableParentIVs)
   {
-    femaleIVs.hp([eggsFemaleHPField intValue]);
-    femaleIVs.at([eggsFemaleAtkField intValue]);
-    femaleIVs.df([eggsFemaleDefField intValue]);
-    femaleIVs.sa([eggsFemaleSpAField intValue]);
-    femaleIVs.sd([eggsFemaleSpDField intValue]);
-    femaleIVs.sp([eggsFemaleSpeField intValue]);
+    femaleIVs.hp([femaleHP intValue]);
+    femaleIVs.at([femaleAT intValue]);
+    femaleIVs.df([femaleDF intValue]);
+    femaleIVs.sa([femaleSA intValue]);
+    femaleIVs.sd([femaleSD intValue]);
+    femaleIVs.sp([femaleSP intValue]);
     
-    maleIVs.hp([eggsMaleHPField intValue]);
-    maleIVs.at([eggsMaleAtkField intValue]);
-    maleIVs.df([eggsMaleDefField intValue]);
-    maleIVs.sa([eggsMaleSpAField intValue]);
-    maleIVs.sd([eggsMaleSpDField intValue]);
-    maleIVs.sp([eggsMaleSpeField intValue]);
+    maleIVs.hp([maleHP intValue]);
+    maleIVs.at([maleAT intValue]);
+    maleIVs.df([maleDF intValue]);
+    maleIVs.sa([maleSA intValue]);
+    maleIVs.sd([maleSD intValue]);
+    maleIVs.sp([maleSP intValue]);
   }
   
   FemaleParent::Type femaleSpecies =
@@ -273,7 +247,7 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
     id                 hiddenPower = @"";
     id                 characteristic = @"";
     
-    if (showIVs && parentIVs)
+    if (showIVs && enableParentIVs)
     {
       IVs  eggIVs = GetEggIVs(frame, ivs, femaleIVs, maleIVs);
       
@@ -302,17 +276,17 @@ NSString* GetEggHiddenPowers(Gen5BreedingFrame::Inheritance inheritance[6],
         ((genderValue < 127) ? @"♀" : @"♂"), @"gender12",
         ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
         GetEggIV(frame.inheritance[0], ivs.hp(), showIVs,
-                 femaleIVs.hp(), maleIVs.hp(), parentIVs), @"hp",
+                 femaleIVs.hp(), maleIVs.hp(), enableParentIVs), @"hp",
         GetEggIV(frame.inheritance[1], ivs.at(), showIVs,
-                 femaleIVs.at(), maleIVs.at(), parentIVs), @"atk",
+                 femaleIVs.at(), maleIVs.at(), enableParentIVs), @"atk",
         GetEggIV(frame.inheritance[2], ivs.df(), showIVs,
-                 femaleIVs.df(), maleIVs.df(), parentIVs), @"def",
+                 femaleIVs.df(), maleIVs.df(), enableParentIVs), @"def",
         GetEggIV(frame.inheritance[3], ivs.sa(), showIVs,
-                 femaleIVs.sa(), maleIVs.sa(), parentIVs), @"spa",
+                 femaleIVs.sa(), maleIVs.sa(), enableParentIVs), @"spa",
         GetEggIV(frame.inheritance[4], ivs.sd(), showIVs,
-                 femaleIVs.sd(), maleIVs.sd(), parentIVs), @"spd",
+                 femaleIVs.sd(), maleIVs.sd(), enableParentIVs), @"spd",
         GetEggIV(frame.inheritance[5], ivs.sp(), showIVs,
-                 femaleIVs.sp(), maleIVs.sp(), parentIVs), @"spe",
+                 femaleIVs.sp(), maleIVs.sp(), enableParentIVs), @"spe",
         hiddenType, @"hiddenType",
         hiddenPower, @"hiddenPower",
         characteristic, @"characteristic",

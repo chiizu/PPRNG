@@ -21,7 +21,7 @@
 #ifndef IV_RNG_H
 #define IV_RNG_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 #include "RNGWrappers.h"
 
 namespace pprng

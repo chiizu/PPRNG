@@ -65,7 +65,7 @@ struct ResultHandler
     : controller(c), tid(tid), sid(sid)
   {}
   
-  void operator()(const Gen4QuickSeedSearcher::Frame &frame)
+  void operator()(const Gen4QuickSeedSearcher::ResultType &frame)
   {
     TimeSeed  seed(frame.seed);
     uint32_t  genderValue = frame.pid.GenderValue();
@@ -192,7 +192,7 @@ struct ProgressHandler
   self.mode = isDPPt ? 0 : 1;
   self.shinyOnly = NO;
   self.nature = Nature::ANY;
-  self.ability = -1;
+  self.ability = Ability::ANY;
   self.gender = Gender::ANY;
   self.genderRatio = Gender::UNSPECIFIED;
   self.minFrame = 1;
@@ -312,7 +312,7 @@ struct ProgressHandler
   criteria.maxFrame = maxFrame;
   
   criteria.nature = Nature::Type([[naturePopup selectedItem] tag]);
-  criteria.ability = [[abilityPopUp selectedItem] tag];
+  criteria.ability = Ability::Type([[abilityPopUp selectedItem] tag]);
   criteria.gender = Gender::Type([[genderPopUp selectedItem] tag]);
   criteria.genderRatio =
     Gender::Ratio([[genderRatioPopUp selectedItem] tag]);
@@ -324,10 +324,11 @@ struct ProgressHandler
   criteria.superRodESVs = GetESVBitmaskForTypeMask(0x40, esvPopUp);
   
   criteria.minIVs = [ivParameterController minIVs];
-  criteria.shouldCheckMaxIVs = [ivParameterController shouldCheckMaxIVs];
   criteria.maxIVs = [ivParameterController maxIVs];
+  criteria.shouldCheckMaxIVs =
+    (criteria.maxIVs != IVs(31, 31, 31, 31, 31, 31));
   
-  if ([ivParameterController shouldCheckHiddenPower])
+  if ([ivParameterController considerHiddenPower])
   {
     criteria.hiddenType = [ivParameterController hiddenType];
     criteria.minHiddenPower = [ivParameterController minHiddenPower];

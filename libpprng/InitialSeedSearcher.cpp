@@ -109,9 +109,9 @@ uint64_t InitialIVSeedSearcher::Criteria::ExpectedNumberOfResults() const
   return numSeeds * numIVs / (32 * 32 * 32 * 32 * 32 * 32);
 }
 
-void InitialIVSeedSearcher::Search(const Criteria &criteria,
-                                   const ResultCallback &resultHandler,
-                                   const ProgressCallback &progressHandler)
+void InitialIVSeedSearcher::Search
+  (const Criteria &criteria, const ResultCallback &resultHandler,
+   const SearchRunner::ProgressCallback &progressHandler)
 {
   using namespace boost::posix_time;
   

@@ -307,6 +307,65 @@ void Gen5PIDFrameGenerator::NextHeldItem()
 }
 
 
+WonderCardFrameGenerator::WonderCardFrameGenerator(const HashedSeed &seed,
+                                                   const Parameters &parameters)
+  : m_RNG(seed.rawSeed), m_IVRNG(m_RNG, IVRNG::Normal),
+    m_PIDRNG(m_RNG, PIDRNG::GiftNoShinyPID, parameters.tid, parameters.sid),
+    m_frame(seed),
+    m_ivSkip(((parameters.cardNature == Nature::ANY) &&
+              ((parameters.cardGender == Gender::FEMALE) ||
+               (parameters.cardGender == Gender::MALE))) ? 24 : 22),
+    m_pidSkip((m_ivSkip == 22) ? 2 : 0),
+    m_natureSkip((m_ivSkip == 22) ? 1 : 4)
+{
+  // skip over IVs buffered in IVRNG
+  for (uint32_t i = 0; i < 5; ++i)
+    m_RNG.AdvanceBuffer();
+  
+  // skip over 'unused' frames
+  for (uint32_t i = 0; i < m_ivSkip; ++i)
+  {
+    m_RNG.AdvanceBuffer();
+    m_IVRNG.NextIVWord();
+  }
+  m_frame.number = 0;
+  
+  if (parameters.startFromLowestFrame)
+  {
+    uint32_t  skippedFrames = seed.GetSkippedPIDFrames();
+    while (skippedFrames-- > 0)
+    {
+      m_RNG.AdvanceBuffer();
+      m_IVRNG.NextIVWord();
+      ++m_frame.number;
+    }
+  }
+}
+
+void WonderCardFrameGenerator::AdvanceFrame()
+{
+  m_RNG.AdvanceBuffer();
+  
+  ++m_frame.number;
+  m_frame.ivs = m_IVRNG.NextIVWord();
+  
+  // 'unused' frames
+  uint32_t  i = m_pidSkip;
+  while (i-- > 0)
+    m_RNG.Next();
+  
+  m_frame.pid = m_PIDRNG.NextPIDWord();
+  
+  // skip 'unused' frames
+  i = m_natureSkip;
+  while (i-- > 0)
+    m_RNG.Next();
+  
+  m_frame.nature =
+    static_cast<Nature::Type>(((m_RNG.Next() >> 32) * 25) >> 32);
+}
+
+
 Gen5BreedingFrameGenerator::Gen5BreedingFrameGenerator
     (const HashedSeed &seed, const Parameters &parameters)
   : m_parameters(parameters),

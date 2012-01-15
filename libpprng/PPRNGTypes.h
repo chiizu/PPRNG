@@ -48,7 +48,7 @@ struct DS
     DSi_XL,
     _3DS,
     
-    UnknownDSType = -1
+    UnknownDSType
   };
   
   static std::string ToString(Type v);
@@ -207,6 +207,19 @@ struct Nature
 };
 
 
+struct Ability
+{
+  enum Type
+  {
+    ZERO = 0,
+    ONE,
+    HIDDEN,
+    
+    ANY
+  };
+};
+
+
 struct Gender
 {
   enum Type
@@ -215,7 +228,7 @@ struct Gender
     MALE,
     NEUTRAL,
     
-    ANY = -1
+    ANY
   };
   
   enum Ratio
@@ -227,7 +240,7 @@ struct Gender
     FEMALE_ONLY,
     MALE_ONLY,
     
-    UNSPECIFIED = -1
+    UNSPECIFIED
   };
   
   static bool GenderValueMatches(uint32_t value, Type t, Ratio r)
@@ -284,11 +297,14 @@ struct PersonalityValue
   
   uint32_t GenderValue() const { return word & 0xff; }
   
-  uint32_t Gen34Ability() const { return word & 0x1; }
-  uint32_t Gen5Ability() const { return (word >> 16) & 0x1; }
+  Ability::Type Gen34Ability() const
+  { return Ability::Type(word & 0x1); }
+  
+  Ability::Type Gen5Ability() const
+  { return Ability::Type((word >> 16) & 0x1); }
   
   Nature::Type Gen34Nature() const
-  { return static_cast<Nature::Type>(word % 25); }
+  { return Nature::Type(word % 25); }
   
   bool IsShiny(uint32_t tid, uint32_t sid) const
   {
@@ -556,6 +572,22 @@ inline bool operator==(const IVs &ivs1, const IVs &ivs2)
 inline bool operator!=(const IVs &ivs1, const IVs &ivs2)
 { return ivs1.word != ivs2.word; }
 
+
+struct IVPattern
+{
+  enum Type
+  {
+    CUSTOM = 0,
+    HEX_FLAWLESS,
+    PHYSICAL_FLAWLESS,
+    SPECIAL_FLAWLESS,
+    SPECIAL_HIDDEN_POWER_FLAWLESS,
+    HEX_FLAWLESS_TRICK,
+    PHYSICAL_FLAWLESS_TRICK,
+    SPECIAL_FLAWLESS_TRICK,
+    SPECIAL_HIDDEN_POWER_FLAWLESS_TRICK
+  };
+};
 
 
 struct Characteristic

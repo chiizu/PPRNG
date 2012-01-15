@@ -21,11 +21,13 @@
 #ifndef TRAINER_ID_SEARCHER_H
 #define TRAINER_ID_SEARCHER_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
+#include "SearchCriteria.h"
+#include "SearchRunner.h"
 #include "SeedGenerator.h"
-#include "SeedSearcher.h"
 #include "FrameGenerator.h"
-#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include <boost/function.hpp>
 
 namespace pprng
 {
@@ -33,15 +35,10 @@ namespace pprng
 class TrainerIDSearcher
 {
 public:
-  typedef SeedSearcher<Gen5TrainerIDFrameGenerator>  SeedSearcherType;
-  typedef SeedSearcherType::Frame                    Frame;
-  typedef SeedSearcherType::ResultCallback           ResultCallback;
-  typedef SeedSearcherType::ProgressCallback         ProgressCallback;
-  
-  struct Criteria : public SeedSearchCriteria
+  struct Criteria : public SearchCriteria
   {
-    HashedSeedGenerator::Parameters       seedParameters;
-    SeedSearcherType::FrameRange          frame;
+    HashedSeedGenerator::Parameters  seedParameters;
+    SearchCriteria::FrameRange       frame;
     
     bool                      hasTID;
     uint32_t                  tid;
@@ -54,10 +51,13 @@ public:
     uint64_t ExpectedNumberOfResults() const;
   };
   
+  typedef Gen5TrainerIDFrameGenerator::Frame         ResultType;
+  typedef boost::function<void (const ResultType&)>  ResultCallback;
+  
   TrainerIDSearcher() {}
   
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
-              const ProgressCallback &progressHandler);
+              const SearchRunner::ProgressCallback &progressHandler);
 };
 
 }

@@ -20,7 +20,7 @@
 
 
 #include "WonderCardSeedSearcher.h"
-#include "SeedGenerator.h"
+#include "SeedSearcher.h"
 
 namespace pprng
 {
@@ -50,7 +50,8 @@ struct FrameChecker
   
   bool CheckAbility(uint32_t ability) const
   {
-    return (m_criteria.pid.ability > 1) || (m_criteria.pid.ability == ability);
+    return (m_criteria.pid.ability == Ability::ANY) ||
+           (m_criteria.pid.ability == ability);
   }
   
   bool CheckGender(uint32_t genderValue) const
@@ -88,6 +89,8 @@ struct FrameChecker
 
 struct FrameGeneratorFactory
 {
+  typedef WonderCardFrameGenerator  FrameGenerator;
+  
   FrameGeneratorFactory(const WonderCardSeedSearcher::Criteria &criteria)
     : m_criteria(criteria)
   {}
@@ -128,23 +131,26 @@ uint64_t WonderCardSeedSearcher::Criteria::ExpectedNumberOfResults() const
   return numResults;
 }
 
-void WonderCardSeedSearcher::Search(const Criteria &criteria,
-                                    const ResultCallback &resultHandler,
-                                    const ProgressCallback &progressHandler)
+void WonderCardSeedSearcher::Search
+  (const Criteria &criteria, const ResultCallback &resultHandler,
+   const SearchRunner::ProgressCallback &progressHandler)
 {
-  HashedSeedGenerator           seedGenerator(criteria.seedParameters);
-  
-  FrameChecker                  frameChecker(criteria);
+  HashedSeedGenerator         seedGenerator(criteria.seedParameters);
+  FrameGeneratorFactory       frameGeneratorFactory(criteria);
   
   // slightly hacky...
-  SeedSearcherType::FrameRange  frameRange
+  SearchCriteria::FrameRange  frameRange
     (criteria.frameParameters.startFromLowestFrame ? 1 : criteria.frame.min,
      criteria.frame.max);
   
-  SeedSearcherType              searcher;
+  SeedFrameSearcher<FrameGeneratorFactory>  seedSearcher(frameGeneratorFactory,
+                                                         frameRange);
   
-  searcher.SearchThreaded(seedGenerator, FrameGeneratorFactory(criteria),
-                          frameRange, frameChecker,
+  FrameChecker                frameChecker(criteria);
+  
+  SearchRunner                searcher;
+  
+  searcher.SearchThreaded(seedGenerator, seedSearcher, frameChecker,
                           resultHandler, progressHandler);
 }
 

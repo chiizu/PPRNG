@@ -19,7 +19,7 @@
 */
 
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 #include <list>
 #include <map>
 #include <vector>

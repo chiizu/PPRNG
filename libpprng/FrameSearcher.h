@@ -21,7 +21,8 @@
 #ifndef FRAME_SEARCHER_H
 #define FRAME_SEARCHER_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
+#include "SearchCriteria.h"
 
 namespace pprng
 {
@@ -32,15 +33,6 @@ class FrameSearcher
 public:
   typedef typename FrameGenerator::Frame  Frame;
   
-  struct FrameRange
-  {
-    FrameRange() : min(0), max(0) {}
-    FrameRange(uint32_t mi, uint32_t ma) : min(mi), max(ma) {}
-    
-    uint32_t  min;
-    uint32_t  max;
-  };
-  
   FrameSearcher(FrameGenerator &frameGenerator)
     : m_FrameGenerator(frameGenerator)
   {}
@@ -48,7 +40,7 @@ public:
   uint32_t FrameNum() const { return m_FrameGenerator.CurrentFrame().number; }
   
   template <class FrameChecker, class ResultCallback>
-  bool Search(const FrameRange &frameRange,
+  bool Search(const SearchCriteria::FrameRange &frameRange,
               FrameChecker checker, ResultCallback callback)
   {
     uint32_t  limitFrame;

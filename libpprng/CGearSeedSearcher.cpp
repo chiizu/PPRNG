@@ -20,7 +20,7 @@
 
 
 #include "CGearSeedSearcher.h"
-#include "SeedGenerator.h"
+#include "SeedSearcher.h"
 
 namespace pprng
 {
@@ -41,22 +41,22 @@ struct FrameChecker
   
   bool CheckIVs(const IVs &ivs) const
   {
-    return ivs.betterThanOrEqual(m_criteria.minIVs) &&
-           (!m_criteria.shouldCheckMaxIVs ||
-            ivs.worseThanOrEqual(m_criteria.maxIVs));
+    return ivs.betterThanOrEqual(m_criteria.ivs.min) &&
+           (!m_criteria.ivs.shouldCheckMax ||
+            ivs.worseThanOrEqual(m_criteria.ivs.max));
   }
 
   bool CheckHiddenPower(const IVs &ivs) const
   {
-    if (m_criteria.hiddenType == Element::UNKNOWN)
+    if (m_criteria.ivs.hiddenType == Element::UNKNOWN)
     {
       return true;
     }
     
-    if ((m_criteria.hiddenType == Element::ANY) ||
-        (m_criteria.hiddenType == ivs.HiddenType()))
+    if ((m_criteria.ivs.hiddenType == Element::ANY) ||
+        (m_criteria.ivs.hiddenType == ivs.HiddenType()))
     {
-      return ivs.HiddenPower() >= m_criteria.minHiddenPower;
+      return ivs.HiddenPower() >= m_criteria.ivs.minHiddenPower;
     }
     
     return false;
@@ -67,6 +67,8 @@ struct FrameChecker
 
 struct FrameGeneratorFactory
 {
+  typedef CGearIVFrameGenerator  FrameGenerator;
+  
   FrameGeneratorFactory(CGearIVFrameGenerator::FrameType frameType)
     : m_frameType(frameType)
   {}
@@ -87,48 +89,42 @@ uint64_t CGearSeedSearcher::Criteria::ExpectedNumberOfResults() const
   
   uint64_t  numSeeds = delays * 256 * 24;
   
-  uint64_t  numFrames = maxFrame - minFrame + 1;
+  uint64_t  numFrames = frameRange.max - frameRange.min + 1;
   
-  uint64_t  hpDivisor = 1;
-  if (hiddenType != Element::UNKNOWN)
+  IVs  maxIVs = ivs.shouldCheckMax ? ivs.max : IVs(0x7FFF7FFF);
+  
+  uint64_t  numIVs = IVs::CalculateNumberOfCombinations(ivs.min, ivs.max);
+  
+  uint64_t  numResults = numFrames * numSeeds * numIVs /
+                           (32 * 32 * 32 * 32 * 32 * 32);
+  
+  if (ivs.hiddenType != Element::UNKNOWN)
   {
-    hpDivisor = 40; // number of power levels
-    
-    if (hiddenType != Element::ANY)
-    {
-      hpDivisor *= 16;
-    }
+    numResults = IVs::AdjustExpectedResultsForHiddenPower
+      (numResults, ivs.min, ivs.max, ivs.hiddenType, ivs.minHiddenPower);
   }
   
-  IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
-  
-  uint32_t  numIVs = (maxIVs.hp() - minIVs.hp() + 1) *
-                     (maxIVs.at() - minIVs.at() + 1) *
-                     (maxIVs.df() - minIVs.df() + 1) *
-                     (maxIVs.sa() - minIVs.sa() + 1) *
-                     (maxIVs.sd() - minIVs.sd() + 1) *
-                     (maxIVs.sp() - minIVs.sp() + 1);
-  return numFrames * numSeeds * numIVs /
-         (32 * 32 * 32 * 32 * 32 * 32 * hpDivisor);
+  return numResults;
 }
 
-void CGearSeedSearcher::Search(const Criteria &criteria,
-                               const ResultCallback &resultHandler,
-                               const ProgressCallback &progressHandler)
+void CGearSeedSearcher::Search
+  (const Criteria &criteria, const ResultCallback &resultHandler,
+   const SearchRunner::ProgressCallback &progressHandler)
 {
   CGearSeedGenerator        seedGenerator(criteria.minDelay, criteria.maxDelay,
                                           criteria.macAddressLow);
   
-  FrameGeneratorFactory     frameGenFactory(criteria.isRoamer ?
+  FrameGeneratorFactory     frameGenFactory(criteria.ivs.isRoamer ?
                                             CGearIVFrameGenerator::Roamer :
                                             CGearIVFrameGenerator::Normal);
   
+  SeedFrameSearcher<FrameGeneratorFactory>  seedSearcher(frameGenFactory,
+                                                         criteria.frameRange);
   FrameChecker              frameChecker(criteria);
-  SearcherType::FrameRange  frameRange(criteria.minFrame, criteria.maxFrame);
   
-  SearcherType              searcher;
+  SearchRunner              searcher;
   
-  searcher.Search(seedGenerator, frameGenFactory, frameRange, frameChecker,
+  searcher.Search(seedGenerator, seedSearcher, frameChecker,
                   resultHandler, progressHandler);
 }
 

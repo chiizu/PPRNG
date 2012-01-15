@@ -20,6 +20,7 @@
 
 
 #include "HashedSeedSearcher.h"
+#include "SeedSearcher.h"
 
 namespace pprng
 {
@@ -66,6 +67,8 @@ struct FrameChecker
 
 struct FrameGeneratorFactory
 {
+  typedef HashedIVFrameGenerator  FrameGenerator;
+  
   FrameGeneratorFactory(HashedIVFrameGenerator::FrameType frameType)
     : m_frameType(frameType)
   {}
@@ -102,19 +105,21 @@ uint64_t HashedSeedSearcher::Criteria::ExpectedNumberOfResults() const
   return numResults;
 }
 
-void HashedSeedSearcher::Search(const Criteria &criteria,
-                                const ResultCallback &resultHandler,
-                                const ProgressCallback &progressHandler)
+void HashedSeedSearcher::Search
+  (const Criteria &criteria, const ResultCallback &resultHandler,
+   const SearchRunner::ProgressCallback &progressHandler)
 {
   HashedSeedGenerator    seedGenerator(criteria.seedParameters);
   FrameGeneratorFactory  frameGenFactory(criteria.ivs.isRoamer ?
                                          HashedIVFrameGenerator::Roamer :
                                          HashedIVFrameGenerator::Normal);
-  FrameChecker           frameChecker(criteria);
-  SeedSearcherType       searcher;
   
-  searcher.SearchThreaded(seedGenerator, frameGenFactory,
-                          criteria.ivFrame, frameChecker,
+  SeedFrameSearcher<FrameGeneratorFactory>  seedSearcher(frameGenFactory,
+                                                         criteria.ivFrame);
+  FrameChecker           frameChecker(criteria);
+  SearchRunner           searcher;
+  
+  searcher.SearchThreaded(seedGenerator, seedSearcher, frameChecker,
                           resultHandler, progressHandler);
 }
 

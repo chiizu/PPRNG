@@ -21,10 +21,11 @@
 #import "Gen4SeedInspectorController.h"
 
 #include "LinearCongruentialRNG.h"
-#include "MersenneTwisterRNG.h"
 #include "TimeSeed.h"
 #include "FrameGenerator.h"
 #include "Utilities.h"
+
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 using namespace pprng;
 

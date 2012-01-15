@@ -21,9 +21,13 @@
 #ifndef C_GEAR_SEED_SEARCHER_H
 #define C_GEAR_SEED_SEARCHER_H
 
-#include "BasicTypes.h"
-#include "SeedSearcher.h"
+#include "PPRNGTypes.h"
+#include "SearchCriteria.h"
+#include "SearchRunner.h"
+#include "SeedGenerator.h"
 #include "FrameGenerator.h"
+
+#include <boost/function.hpp>
 
 namespace pprng
 {
@@ -31,30 +35,23 @@ namespace pprng
 class CGearSeedSearcher
 {
 public:
-  struct Criteria : public SeedSearchCriteria
+  struct Criteria : public SearchCriteria
   {
-    uint32_t       macAddressLow;
-    uint32_t       minDelay, maxDelay;
-    uint32_t       minFrame, maxFrame;
-    uint32_t       maxResults;
-    bool           shouldCheckMaxIVs;
-    IVs            minIVs, maxIVs;
-    Element::Type  hiddenType;
-    uint32_t       minHiddenPower;
-    bool           isRoamer;
+    uint32_t                    macAddressLow;
+    uint32_t                    minDelay, maxDelay;
+    SearchCriteria::FrameRange  frameRange;
+    SearchCriteria::IVCriteria  ivs;
     
     uint64_t ExpectedNumberOfResults() const;
   };
   
+  typedef CGearIVFrameGenerator::Frame               ResultType;
+  typedef boost::function<void (const ResultType&)>  ResultCallback;
+  
   CGearSeedSearcher() {}
   
-  typedef SeedSearcher<CGearIVFrameGenerator>  SearcherType;
-  typedef SearcherType::Frame                  Frame;
-  typedef SearcherType::ResultCallback         ResultCallback;
-  typedef SearcherType::ProgressCallback       ProgressCallback;
-  
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
-              const ProgressCallback &progressHandler);
+              const SearchRunner::ProgressCallback &progressHandler);
 };
 
 

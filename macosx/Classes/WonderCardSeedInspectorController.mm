@@ -26,9 +26,17 @@
 #include "FrameGenerator.h"
 #include "Utilities.h"
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 using namespace pprng;
 
 @implementation WonderCardSeedInspectorController
+
+@synthesize cardNature;
+@synthesize cardAbility;
+@synthesize cardAlwaysShiny;
+@synthesize cardGender;
+@synthesize cardGenderRatio;
 
 - (NSString *)windowNibName
 {
@@ -41,75 +49,12 @@ using namespace pprng;
   
   [[seedField formatter] setFormatWidth: 16];
   [startDate setObjectValue: [NSDate date]];
-}
-
-- (IBAction)onTypeChange:(id)sender
-{
-  NSInteger  selection = [[sender selectedItem] tag];
   
-  if (selection == -1)
-  {
-    [ivSkipField setEnabled: YES];
-    [pidSkipField setEnabled: YES];
-    [natureSkipField setEnabled: YES];
-  }
-  else
-  {
-    [ivSkipField setEnabled: NO];
-    [pidSkipField setEnabled: NO];
-    [natureSkipField setEnabled: NO];
-    
-    if (selection == 0)
-    {
-      [ivSkipField setIntValue: 22];
-      [pidSkipField setIntValue: 2];
-      [natureSkipField setIntValue: 1];
-    }
-    else
-    {
-      [ivSkipField setIntValue: 24];
-      [pidSkipField setIntValue: 2];
-      [natureSkipField setIntValue: 3];
-    }
-  }
-}
-
-- (IBAction)toggleFixedNature:(id)sender
-{
-  /*
-  BOOL  checked = [fixedNatureCheckBox state];
-  [naturePopUp setEnabled: !checked];
-  if (checked)
-  {
-    [naturePopUp selectItemWithTag: -1];
-  }
-  */
-}
-
-- (IBAction)toggleFixedAbility:(id)sender
-{
-  /*
-  BOOL  checked = [fixedAbilityCheckBox state];
-  [abilityPopUp setEnabled: !checked];
-  if (checked)
-  {
-    [abilityPopUp selectItemWithTag: -1];
-  }
-  */
-}
-
-- (IBAction)toggleFixedGender:(id)sender
-{
-  /*
-  BOOL  checked = [fixedGenderCheckBox state];
-  [genderPopUp setEnabled: !checked];
-  [genderRatioPopUp setEnabled: !checked];
-  if (checked)
-  {
-    [genderPopUp selectItemWithTag: -1];
-    [genderRatioPopUp selectItemWithTag: -1];
-  }
-  */
+  self.cardNature = Nature::ANY;
+  self.cardAbility = Ability::ANY;
+  self.cardAlwaysShiny = NO;
+  self.cardGender = Gender::ANY;
+  self.cardGenderRatio = Gender::UNSPECIFIED;
 }
 
 - (IBAction)toggleUseInitialPID:(id)sender
@@ -120,9 +65,6 @@ using namespace pprng;
 
 - (IBAction)calculateSeed:(id)sender
 {
-  using namespace boost::gregorian;
-  using namespace boost::posix_time;
-  
   HashedSeed::Parameters  p;
   
   p.version = [gen5ConfigController version];
@@ -169,10 +111,11 @@ using namespace pprng;
   WonderCardFrameGenerator::Parameters  p;
   
   p.startFromLowestFrame = [useInitialPIDButton state];
-  p.ivSkip = [ivSkipField intValue];
-  p.pidSkip = [pidSkipField intValue];
-  p.natureSkip = [natureSkipField intValue];
-  p.canBeShiny = false;
+  p.cardNature = Nature::Type(cardNature);
+  p.cardAbility = cardAbility;
+  p.cardAlwaysShiny = cardAlwaysShiny;
+  p.cardGender = Gender::Type(cardGender);
+  p.cardGenderRatio = Gender::Ratio(cardGenderRatio);
   p.tid = [gen5ConfigController tid];
   p.sid = [gen5ConfigController sid];
   
@@ -196,9 +139,7 @@ using namespace pprng;
   NSMutableArray  *rowArray =
     [NSMutableArray arrayWithCapacity: maxFrame - minFrame + 1];
   
-  BOOL  showNature = ![fixedNatureCheckBox state];
-  BOOL  showAbility = ![fixedAbilityCheckBox state];
-  BOOL  showGender = ![fixedGenderCheckBox state];
+  BOOL  showGender = cardGender == Gender::ANY;
   
   while (frameNum < maxFrame)
   {
@@ -211,11 +152,15 @@ using namespace pprng;
     [rowArray addObject:
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
 				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        (showNature ? [NSString stringWithFormat: @"%s",
-                       Nature::ToString(frame.nature).c_str()] : @""),
+        [NSString stringWithFormat: @"%s",
+          Nature::ToString((p.cardNature != Nature::ANY) ?
+                           p.cardNature : frame.nature).c_str()],
           @"nature",
-        (showAbility ?
-         [NSString stringWithFormat: @"%d", frame.pid.Gen5Ability()] : @""),
+        ((cardAbility == Ability::HIDDEN) ?
+          @"DW" :
+          [NSString stringWithFormat: @"%d",
+            ((cardAbility == Ability::ANY) ?
+              frame.pid.Gen5Ability() : cardAbility)]),
           @"ability",
         (showGender ? ((genderValue < 31) ? @"♀" : @"♂") : @""), @"gender18",
         (showGender ? ((genderValue < 63) ? @"♀" : @"♂") : @""), @"gender14",
@@ -301,10 +246,11 @@ using namespace pprng;
   
   WonderCardFrameGenerator::Parameters  frameParams;
   frameParams.startFromLowestFrame = useInitialPIDOffset;
-  frameParams.ivSkip = [ivSkipField intValue];
-  frameParams.pidSkip = [pidSkipField intValue];
-  frameParams.natureSkip = [natureSkipField intValue];
-  frameParams.canBeShiny = false;
+  frameParams.cardNature = Nature::Type(cardNature);
+  frameParams.cardAbility = cardAbility;
+  frameParams.cardAlwaysShiny = cardAlwaysShiny;
+  frameParams.cardGender = Gender::Type(cardGender);
+  frameParams.cardGenderRatio = Gender::Ratio(cardGenderRatio);
   frameParams.tid = [gen5ConfigController tid];
   frameParams.sid = [gen5ConfigController sid];
   
@@ -312,9 +258,7 @@ using namespace pprng;
     [NSMutableArray arrayWithCapacity:
       (timer0High - timer0Low + 1) * ((2 * secondVariance) + 1)];
   
-  BOOL  showNature = ![fixedNatureCheckBox state];
-  BOOL  showAbility = ![fixedAbilityCheckBox state];
-  BOOL  showGender = ![fixedGenderCheckBox state];
+  BOOL  showGender = cardGender == Gender::ANY;
   
   for (; dt <= endTime; dt = dt + seconds(1))
   {
@@ -370,11 +314,15 @@ using namespace pprng;
           [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1],
             @"startFrame",
           [NSNumber numberWithUnsignedInt: frame.number], @"frame",
-          (showNature ? [NSString stringWithFormat: @"%s",
-                         Nature::ToString(frame.nature).c_str()] : @""),
+          [NSString stringWithFormat: @"%s",
+            Nature::ToString((frameParams.cardNature != Nature::ANY) ?
+                             frameParams.cardNature : frame.nature).c_str()],
             @"nature",
-          (showAbility ?
-           [NSString stringWithFormat: @"%d", frame.pid.Gen5Ability()] : @""),
+          ((cardAbility == Ability::HIDDEN) ?
+            @"DW" :
+            [NSString stringWithFormat: @"%d",
+              ((cardAbility == Ability::ANY) ?
+                frame.pid.Gen5Ability() : cardAbility)]),
             @"ability",
           (showGender ? ((genderValue < 31) ? @"♀" : @"♂") : @""), @"gender18",
           (showGender ? ((genderValue < 63) ? @"♀" : @"♂") : @""), @"gender14",

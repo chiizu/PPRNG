@@ -19,7 +19,7 @@
 */
 
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 #include "Frame.h"
 #include "FrameGenerator.h"
 #include "LinearCongruentialRNG.h"

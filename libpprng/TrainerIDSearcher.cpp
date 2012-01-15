@@ -20,6 +20,7 @@
 
 
 #include "TrainerIDSearcher.h"
+#include "SeedSearcher.h"
 
 namespace pprng
 {
@@ -75,6 +76,8 @@ struct FrameChecker
 
 struct FrameGeneratorFactory
 {
+  typedef Gen5TrainerIDFrameGenerator  FrameGenerator;
+  
   Gen5TrainerIDFrameGenerator operator()(const HashedSeed &seed) const
   {
     return Gen5TrainerIDFrameGenerator(seed);
@@ -96,18 +99,21 @@ uint64_t TrainerIDSearcher::Criteria::ExpectedNumberOfResults() const
   return numFrames * numSeeds / (tidDivisor * shinyDivisor);
 }
 
-void TrainerIDSearcher::Search(const Criteria &criteria,
-                               const ResultCallback &resultHandler,
-                               const ProgressCallback &progressHandler)
+void TrainerIDSearcher::Search
+  (const Criteria &criteria, const ResultCallback &resultHandler,
+   const SearchRunner::ProgressCallback &progressHandler)
 {
-  HashedSeedGenerator   seedGenerator(criteria.seedParameters);
+  HashedSeedGenerator    seedGenerator(criteria.seedParameters);
+  FrameGeneratorFactory  frameGeneratorFactory;
   
-  FrameChecker          frameChecker(criteria);
+  SeedFrameSearcher<FrameGeneratorFactory>  seedSearcher(frameGeneratorFactory,
+                                                         criteria.frame);
   
-  SeedSearcherType      searcher;
+  FrameChecker  frameChecker(criteria);
   
-  searcher.Search(seedGenerator, FrameGeneratorFactory(),
-                  criteria.frame, frameChecker,
+  SearchRunner  searcher;
+  
+  searcher.Search(seedGenerator, seedSearcher, frameChecker,
                   resultHandler, progressHandler);
 }
 

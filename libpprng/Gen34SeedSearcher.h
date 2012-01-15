@@ -21,9 +21,12 @@
 #ifndef GEN_3_4_SEED_SEARCHER_H
 #define GEN_3_4_SEED_SEARCHER_H
 
-#include "BasicTypes.h"
-#include "SeedSearcher.h"
+#include "PPRNGTypes.h"
+#include "SearchRunner.h"
+#include "SeedGenerator.h"
 #include "FrameGenerator.h"
+
+#include <boost/function.hpp>
 
 namespace pprng
 {
@@ -45,15 +48,13 @@ public:
     uint64_t ExpectedNumberOfResults();
   };
   
+  typedef Method1FrameGenerator::Frame               ResultType;
+  typedef boost::function<void (const ResultType&)>  ResultCallback;
+  
   Gen34SeedSearcher() {}
   
-  typedef SeedSearcher<Method1FrameGenerator>  SearcherType;
-  typedef SearcherType::Frame                  Frame;
-  typedef SearcherType::ResultCallback         ResultCallback;
-  typedef SearcherType::ProgressCallback       ProgressCallback;
-  
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
-              const ProgressCallback &progressHandler);
+              const SearchRunner::ProgressCallback &progressHandler);
 };
 
 }

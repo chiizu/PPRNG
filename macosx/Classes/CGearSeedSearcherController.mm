@@ -148,22 +148,23 @@ struct ProgressHandler
   
   criteria.minDelay = [minDelayField intValue];
   criteria.maxDelay = [maxDelayField intValue];
-  criteria.minFrame = [minFrameField intValue];
-  criteria.maxFrame = [maxFrameField intValue];
+  criteria.frameRange.min = [minFrameField intValue];
+  criteria.frameRange.max = [maxFrameField intValue];
   
-  criteria.minIVs = [ivParameterController minIVs];
-  criteria.shouldCheckMaxIVs = [ivParameterController shouldCheckMaxIVs];
-  criteria.maxIVs = [ivParameterController maxIVs];
-  criteria.isRoamer = [ivParameterController isRoamer];
+  criteria.ivs.min = [ivParameterController minIVs];
+  criteria.ivs.max = [ivParameterController maxIVs];
+  criteria.ivs.shouldCheckMax =
+    (criteria.ivs.max != IVs(31, 31, 31, 31, 31, 31));
+  criteria.ivs.isRoamer = [ivParameterController isRoamer];
   
-  if ([ivParameterController shouldCheckHiddenPower])
+  if ([ivParameterController considerHiddenPower])
   {
-    criteria.hiddenType = [ivParameterController hiddenType];
-    criteria.minHiddenPower = [ivParameterController minHiddenPower];
+    criteria.ivs.hiddenType = [ivParameterController hiddenType];
+    criteria.ivs.minHiddenPower = [ivParameterController minHiddenPower];
   }
   else
   {
-    criteria.hiddenType = Element::UNKNOWN;
+    criteria.ivs.hiddenType = Element::UNKNOWN;
   }
   
   if (criteria.ExpectedNumberOfResults() > 10000)

@@ -21,7 +21,7 @@
 #ifndef NEXT_POWER_OF_2_H
 #define NEXT_POWER_OF_2_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 
 namespace pprng
 {

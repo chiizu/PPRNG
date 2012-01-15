@@ -21,11 +21,13 @@
 #ifndef WONDER_CARD_SEED_SEARCHER_H
 #define WONDER_CARD_SEED_SEARCHER_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
+#include "SearchCriteria.h"
+#include "SearchRunner.h"
 #include "SeedGenerator.h"
-#include "SeedSearcher.h"
 #include "FrameGenerator.h"
-#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include <boost/function.hpp>
 
 namespace pprng
 {
@@ -33,31 +35,29 @@ namespace pprng
 class WonderCardSeedSearcher
 {
 public:
-  typedef SeedSearcher<WonderCardFrameGenerator>  SeedSearcherType;
-  typedef SeedSearcherType::Frame                 Frame;
-  typedef SeedSearcherType::ResultCallback        ResultCallback;
-  typedef SeedSearcherType::ProgressCallback      ProgressCallback;
-  
-  struct Criteria : public SeedSearchCriteria
+  struct Criteria : public SearchCriteria
   {
     HashedSeedGenerator::Parameters       seedParameters;
     WonderCardFrameGenerator::Parameters  frameParameters;
-    SeedSearchCriteria::IVCriteria        ivs;
-    SeedSearchCriteria::PIDCriteria       pid;
-    SeedSearcherType::FrameRange          frame;
+    SearchCriteria::IVCriteria            ivs;
+    SearchCriteria::PIDCriteria           pid;
+    SearchCriteria::FrameRange            frame;
     
     Criteria()
-      : SeedSearchCriteria(), seedParameters(), frameParameters(),
+      : SearchCriteria(), seedParameters(), frameParameters(),
         ivs(), pid(), frame()
     {}
     
     uint64_t ExpectedNumberOfResults() const;
   };
   
+  typedef WonderCardFrameGenerator::Frame            ResultType;
+  typedef boost::function<void (const ResultType&)>  ResultCallback;
+  
   WonderCardSeedSearcher() {}
   
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
-              const ProgressCallback &progressHandler);
+              const SearchRunner::ProgressCallback &progressHandler);
 };
 
 }

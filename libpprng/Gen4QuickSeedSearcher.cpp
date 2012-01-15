@@ -19,9 +19,8 @@
 */
 
 
-#include "BasicTypes.h"
 #include "Gen4QuickSeedSearcher.h"
-#include "SeedGenerator.h"
+#include "SearchCriteria.h"
 
 namespace pprng
 {
@@ -122,7 +121,7 @@ struct FrameChecker
   
   bool CheckAbility(const PID &pid) const
   {
-    return (m_criteria.ability > 1) ||
+    return (m_criteria.ability == Ability::ANY) ||
            (m_criteria.ability == pid.Gen34Ability());
   }
   
@@ -159,11 +158,20 @@ struct FrameChecker
   const Gen4QuickSeedSearcher::Criteria  &m_criteria;
 };
 
-struct FrameGeneratorFactory
+struct SeedSearcher
 {
-  Method1FrameGenerator operator()(uint32_t seed) const
+  typedef Gen34Frame  ResultType;
+  
+  void Search(uint32_t seed, const FrameChecker &frameChecker,
+              const SeedChecker &resultHandler)
   {
-    return Method1FrameGenerator(seed);
+    Method1FrameGenerator  frameGenerator(seed);
+    
+    frameGenerator.AdvanceFrame();
+    Gen34Frame  result = frameGenerator.CurrentFrame();
+    
+    if (frameChecker(result))
+      resultHandler(result);
   }
 };
 
@@ -203,21 +211,19 @@ uint64_t Gen4QuickSeedSearcher::Criteria::ExpectedNumberOfResults()
          (32 * 32 * 32 * 32 * 32 * 32 * natureDivisor * hpDivisor);
 }
 
-void Gen4QuickSeedSearcher::Search(const Criteria &criteria,
-                                   const ResultCallback &resultHandler,
-                                   const ProgressCallback &progressHandler)
+void Gen4QuickSeedSearcher::Search
+  (const Criteria &criteria, const ResultCallback &resultHandler,
+   const SearchRunner::ProgressCallback &progressHandler)
 {
-  Gen34IVSeedGenerator      seedGenerator(criteria.minIVs, criteria.maxIVs);
+  Gen34IVSeedGenerator  seedGenerator(criteria.minIVs, criteria.maxIVs);
+  SeedSearcher          seedSearcher;
   
-  FrameChecker              frameChecker(criteria);
-  SeedChecker               seedChecker(criteria, resultHandler);
+  FrameChecker          frameChecker(criteria);
+  SeedChecker           seedChecker(criteria, resultHandler);
   
-  typedef SeedSearcher<Method1FrameGenerator>  SearcherType;
-  SearcherType::FrameRange  frameRange(1, 1);
-  SearcherType              searcher;
+  SearchRunner          searcher;
   
-  searcher.Search(seedGenerator, FrameGeneratorFactory(),
-                  frameRange, frameChecker,
+  searcher.Search(seedGenerator, seedSearcher, frameChecker,
                   seedChecker, progressHandler);
 }
 

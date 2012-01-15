@@ -44,15 +44,6 @@
   IBOutlet NSTextField            *seedField;
   IBOutlet NSTextField            *initialPIDFrameField;
   
-  IBOutlet NSPopUpButton          *typePopUp;
-  IBOutlet NSTextField            *ivSkipField;
-  IBOutlet NSTextField            *pidSkipField;
-  IBOutlet NSTextField            *natureSkipField;
-  IBOutlet NSButton               *fixedNatureCheckBox;
-  IBOutlet NSButton               *fixedAbilityCheckBox;
-  IBOutlet NSButton               *fixedGenderCheckBox;
-  
-  
   IBOutlet NSButton               *useInitialPIDButton;
   IBOutlet NSTextField            *minFrameField;
   IBOutlet NSTextField            *maxFrameField;
@@ -76,14 +67,23 @@
   IBOutlet NSTableView            *adjacentsTableView;
   IBOutlet NSArrayController      *adjacentsContentArray;
   
-  NSData  *currentSeed;
+  NSData    *currentSeed;
+  
+  uint32_t  cardNature;
+  uint32_t  cardAbility;
+  BOOL      cardAlwaysShiny;
+  uint32_t  cardGender;
+  uint32_t  cardGenderRatio;
 }
 
+@property uint32_t  cardNature;
+@property uint32_t  cardAbility;
+@property BOOL      cardAlwaysShiny;
+@property uint32_t  cardGender;
+@property uint32_t  cardGenderRatio;
+
+
 - (IBAction)calculateSeed:(id)sender;
-- (IBAction)onTypeChange:(id)sender;
-- (IBAction)toggleFixedNature:(id)sender;
-- (IBAction)toggleFixedAbility:(id)sender;
-- (IBAction)toggleFixedGender:(id)sender;
 - (IBAction)toggleUseInitialPID:(id)sender;
 - (IBAction)generateFrames:(id)sender;
 - (IBAction)generateAdjacents:(id)sender;

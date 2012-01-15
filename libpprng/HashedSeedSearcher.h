@@ -22,11 +22,13 @@
 #define HASHED_SEED_SEARCHER_H
 
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
+#include "SearchRunner.h"
+#include "SearchCriteria.h"
 #include "SeedGenerator.h"
-#include "SeedSearcher.h"
 #include "FrameGenerator.h"
-#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include <boost/function.hpp>
 
 namespace pprng
 {
@@ -34,28 +36,26 @@ namespace pprng
 class HashedSeedSearcher
 {
 public:
-  typedef SeedSearcher<HashedIVFrameGenerator>  SeedSearcherType;
-  typedef SeedSearcherType::Frame               Frame;
-  typedef SeedSearcherType::ResultCallback      ResultCallback;
-  typedef SeedSearcherType::ProgressCallback    ProgressCallback;
-  
-  struct Criteria : public SeedSearchCriteria
+  struct Criteria : public SearchCriteria
   {
     HashedSeedGenerator::Parameters  seedParameters;
-    SeedSearchCriteria::IVCriteria   ivs;
-    SeedSearcherType::FrameRange     ivFrame;
+    SearchCriteria::IVCriteria       ivs;
+    SearchCriteria::FrameRange       ivFrame;
     
     Criteria()
-      : SeedSearchCriteria(), seedParameters(), ivs(), ivFrame()
+      : SearchCriteria(), seedParameters(), ivs(), ivFrame()
     {}
     
     uint64_t ExpectedNumberOfResults() const;
   };
   
+  typedef HashedIVFrameGenerator::Frame              ResultType;
+  typedef boost::function<void (const ResultType&)>  ResultCallback;
+  
   HashedSeedSearcher() {}
   
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
-              const ProgressCallback &progressHandler);
+              const SearchRunner::ProgressCallback &progressHandler);
 };
 
 }

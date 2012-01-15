@@ -21,11 +21,11 @@
 #ifndef INITIAL_SEED_SEARCHER_H
 #define INITIAL_SEED_SEARCHER_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 #include "HashedSeed.h"
 #include "HashedSeedSearcher.h"
+#include "SearchRunner.h"
 #include "SeedGenerator.h"
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace pprng
 {
@@ -55,7 +55,7 @@ public:
 class InitialIVSeedSearcher
 {
 public:
-  struct Criteria : public SeedSearchCriteria
+  struct Criteria : public SearchCriteria
   {
     HashedSeedGenerator::Parameters  seedParameters;
     
@@ -70,15 +70,14 @@ public:
     uint64_t ExpectedNumberOfResults() const;
   };
   
-  typedef HashedSeedSearcher::Frame             Frame;
+  typedef HashedSeedSearcher::ResultType        ResultType;
   typedef HashedSeedSearcher::ResultCallback    ResultCallback;
-  typedef HashedSeedSearcher::ProgressCallback  ProgressCallback;
   
   InitialIVSeedSearcher() {}
   
   void Search(const Criteria &criteria,
               const ResultCallback &resultHandler,
-              const ProgressCallback &progressHandler);
+              const SearchRunner::ProgressCallback &progressHandler);
 };
 
 class InitialSeedSearcher

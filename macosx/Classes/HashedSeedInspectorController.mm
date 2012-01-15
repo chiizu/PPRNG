@@ -46,9 +46,6 @@ using namespace pprng;
 
 - (IBAction)calculateSeed:(id)sender
 {
-  using namespace boost::gregorian;
-  using namespace boost::posix_time;
-  
   HashedSeed::Parameters  p;
   
   p.version = [gen5ConfigController version];

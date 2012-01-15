@@ -19,9 +19,9 @@
 */
 
 
-#include "BasicTypes.h"
 #include "Gen34SeedSearcher.h"
-#include "SeedGenerator.h"
+#include "SeedSearcher.h"
+#include "SearchCriteria.h"
 
 namespace pprng
 {
@@ -76,6 +76,8 @@ struct FrameChecker
 
 struct FrameGeneratorFactory
 {
+  typedef Method1FrameGenerator  FrameGenerator;
+  
   Method1FrameGenerator operator()(uint32_t seed) const
   {
     return Method1FrameGenerator(seed);
@@ -118,19 +120,22 @@ uint64_t Gen34SeedSearcher::Criteria::ExpectedNumberOfResults()
          (32 * 32 * 32 * 32 * 32 * 32 * natureDivisor * hpDivisor);
 }
 
-void Gen34SeedSearcher::Search(const Criteria &criteria,
-                               const ResultCallback &resultHandler,
-                               const ProgressCallback &progressHandler)
+void Gen34SeedSearcher::Search
+  (const Criteria &criteria, const ResultCallback &resultHandler,
+   const SearchRunner::ProgressCallback &progressHandler)
 {
   TimeSeedGenerator         seedGenerator(criteria.minDelay, criteria.maxDelay);
+  FrameGeneratorFactory     frameGeneratorFactory;
+  
+  SearchCriteria::FrameRange  frameRange(criteria.minFrame, criteria.maxFrame);
+  SeedFrameSearcher<FrameGeneratorFactory>  seedSearcher(frameGeneratorFactory,
+                                                         frameRange);
   
   FrameChecker              frameChecker(criteria);
-  SearcherType::FrameRange  frameRange(criteria.minFrame, criteria.maxFrame);
   
-  SearcherType              searcher;
+  SearchRunner              searcher;
   
-  searcher.Search(seedGenerator, FrameGeneratorFactory(),
-                  frameRange, frameChecker,
+  searcher.Search(seedGenerator, seedSearcher, frameChecker,
                   resultHandler, progressHandler);
 }
 

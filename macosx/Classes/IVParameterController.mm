@@ -27,246 +27,416 @@ using namespace pprng;
 namespace
 {
 
-enum Pattern
-{
-  Custom = 0,
-  HexFlawless,
-  PhysicalFlawless,
-  SpecialFlawless,
-  SpecialHiddenPowerFlawless
-};
+const IVs  PerfectIVs(31, 31, 31, 31, 31, 31);
+const IVs  PerfectTrickIVs(31, 31, 31, 31, 31, 0);
+const IVs  PhysIVs(31, 31, 31, 0, 31, 31);
+const IVs  PhysTrickIVs(31, 31, 31, 0, 31, 0);
+const IVs  SpecIVs(31, 0, 31, 31, 31, 31);
+const IVs  SpecTrickIVs(31, 0, 31, 31, 31, 0);
+const IVs  HpLowIVs(30, 0, 30, 30, 30, 30);
+const IVs  HpHighIVs(31, 31, 31, 31, 31, 31);
+const IVs  HpTrickLowIVs(30, 0, 30, 30, 30, 2);
+const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
 
 }
 
 @implementation IVParameterController
 
+@synthesize  minHP, minAT, minDF, minSA, minSD, minSP;
+@synthesize  maxHP, maxAT, maxDF, maxSA, maxSD, maxSP;
+@synthesize  considerHiddenPower;
+@synthesize  hiddenPowerType;
+@synthesize  minHiddenPower;
+@synthesize  isRoamer;
+
+- (void)awakeFromNib
+{
+  [self setMinIVs: IVs(0, 0, 0, 0, 0, 0)];
+  [self setMaxIVs: IVs(31, 31, 31, 31, 31, 31)];
+  
+  self.considerHiddenPower = NO;
+  self.hiddenPowerType = Element::ANY;
+  self.minHiddenPower = 70;
+  self.isRoamer = NO;
+}
+
 - (IBAction)switchIVPattern:(id)sender
 {
-  IVs  ivs;
-  
-  ivs.hp(31); ivs.at(31); ivs.df(31); ivs.sa(31); ivs.sd(31); ivs.sp(31);
-  
   uint32_t  patternNum = [[sender selectedItem] tag];
   
-  if (patternNum != Custom)
-  {
-    [self setMaxIVs: ivs];
-    [self setShouldCheckMaxIVs: NO];
-  }
-  
-  BOOL shouldCheckHiddenPower = NO;
-  
-  switch (patternNum)
-  {
-  case HexFlawless:
-    break;
-    
-  case PhysicalFlawless:
-    ivs.sa(0);
-    break;
-    
-  case SpecialFlawless:
-    ivs.at(0);
-    break;
-    
-  case SpecialHiddenPowerFlawless:
-    ivs.hp(30); ivs.at(0); ivs.df(30); ivs.sa(30); ivs.sd(30); ivs.sp(30);
-    shouldCheckHiddenPower = YES;
-    break;
-  
-  case Custom:
-  default:
-    return;
-    break;
-  }
-  
-  [self setMinIVs: ivs];
-  [self setShouldCheckHiddenPower: shouldCheckHiddenPower];
-  [self setMinHiddenPower: 70];
+  [self setIVPattern: IVPattern::Type(patternNum)];
 }
 
-- (void)checkIVPattern
+- (IVPattern::Type)ivPattern
 {
-  if (![self shouldCheckMaxIVs])
+  IVs  minIVs = [self minIVs], maxIVs = [self maxIVs];
+  
+  if ((minIVs == PerfectIVs) && (maxIVs == PerfectIVs))
   {
-    IVs  ivs, minIVs = [self minIVs];
-    
-    if ([self shouldCheckHiddenPower])
+    return IVPattern::HEX_FLAWLESS;
+  }
+  else if ((minIVs == PerfectTrickIVs) && (maxIVs == PerfectTrickIVs))
+  {
+    return IVPattern::HEX_FLAWLESS_TRICK;
+  }
+  else if (((minIVs.word & PhysIVs.word) == PhysIVs.word) &&
+           ((maxIVs.word & PhysIVs.word) == PhysIVs.word))
+  {
+    return IVPattern::PHYSICAL_FLAWLESS;
+  }
+  else if (((minIVs.word & PhysIVs.word) == PhysTrickIVs.word) &&
+           ((maxIVs.word & PhysIVs.word) == PhysTrickIVs.word))
+  {
+    return IVPattern::PHYSICAL_FLAWLESS_TRICK;
+  }
+  else if (((minIVs.word & SpecIVs.word) == SpecIVs.word) &&
+           ((maxIVs.word & SpecIVs.word) == SpecIVs.word))
+  {
+    return IVPattern::SPECIAL_FLAWLESS;
+  }
+  else if (((minIVs.word & SpecIVs.word) == SpecTrickIVs.word) &&
+           ((maxIVs.word & SpecIVs.word) == SpecTrickIVs.word))
+  {
+    return IVPattern::SPECIAL_FLAWLESS_TRICK;
+  }
+  else if (considerHiddenPower && (minHiddenPower == 70))
+  {
+    if (minIVs.betterThanOrEqual(HpLowIVs) &&
+        maxIVs.worseThanOrEqual(HpHighIVs))
     {
-      ivs.hp(30); ivs.at(0); ivs.df(30); ivs.sa(30); ivs.sd(30); ivs.sp(30);
-      uint32_t  minHiddenPower = [self minHiddenPower];
-      
-      if ((minHiddenPower == 70) && (minIVs == ivs))
-      {
-        [ivPatternMenu selectItemWithTag: SpecialHiddenPowerFlawless];
-        return;
-      }
+      return IVPattern::SPECIAL_HIDDEN_POWER_FLAWLESS;
     }
-    else
+    else if (minIVs.betterThanOrEqual(HpTrickLowIVs) &&
+             maxIVs.worseThanOrEqual(HpTrickHighIVs))
     {
-      ivs.hp(31); ivs.at(31); ivs.df(31); ivs.sa(31); ivs.sd(31); ivs.sp(31);
-      
-      if (minIVs == ivs)
-      {
-        [ivPatternMenu selectItemWithTag: HexFlawless];
-        return;
-      }
-      
-      ivs.sa(0);
-      if (minIVs == ivs)
-      {
-        [ivPatternMenu selectItemWithTag: PhysicalFlawless];
-        return;
-      }
-      
-      ivs.at(0);
-      ivs.sa(31);
-      if (minIVs == ivs)
-      {
-        [ivPatternMenu selectItemWithTag: SpecialFlawless];
-        return;
-      }
+      return IVPattern::SPECIAL_HIDDEN_POWER_FLAWLESS_TRICK;
     }
   }
   
-  [ivPatternMenu selectItemWithTag: Custom];
+  return IVPattern::CUSTOM;
 }
 
-- (IBAction)toggleMaxIVs:(id)sender
+- (void)setIVPattern:(pprng::IVPattern::Type)ivPattern
 {
-  BOOL  enabled = [sender state];
-  
-  [maxHPField setEnabled: enabled];
-  [maxHPStepper setEnabled: enabled];
-  [maxAtkField setEnabled: enabled];
-  [maxAtkStepper setEnabled: enabled];
-  [maxDefField setEnabled: enabled];
-  [maxDefStepper setEnabled: enabled];
-  [maxSpAField setEnabled: enabled];
-  [maxSpAStepper setEnabled: enabled];
-  [maxSpDField setEnabled: enabled];
-  [maxSpDStepper setEnabled: enabled];
-  [maxSpeField setEnabled: enabled];
-  [maxSpeStepper setEnabled: enabled];
-  
-  [self checkIVPattern];
+  if (ivPattern != IVPattern::CUSTOM)
+  {
+    BOOL shouldCheckHiddenPower = NO;
+    
+    switch (ivPattern)
+    {
+    case IVPattern::HEX_FLAWLESS:
+      [self setMinIVs: PerfectIVs];
+      [self setMaxIVs: PerfectIVs];
+      break;
+      
+    case IVPattern::HEX_FLAWLESS_TRICK:
+      [self setMinIVs: PerfectTrickIVs];
+      [self setMaxIVs: PerfectTrickIVs];
+      break;
+      
+    case IVPattern::PHYSICAL_FLAWLESS:
+      [self setMinIVs: PhysIVs];
+      [self setMaxIVs: PerfectIVs];
+      break;
+      
+    case IVPattern::PHYSICAL_FLAWLESS_TRICK:
+      [self setMinIVs: PhysTrickIVs];
+      [self setMaxIVs: PerfectTrickIVs];
+      break;
+      
+    case IVPattern::SPECIAL_FLAWLESS:
+      [self setMinIVs: SpecIVs];
+      [self setMaxIVs: PerfectIVs];
+      break;
+      
+    case IVPattern::SPECIAL_FLAWLESS_TRICK:
+      [self setMinIVs: SpecTrickIVs];
+      [self setMaxIVs: PerfectTrickIVs];
+      break;
+      
+    case IVPattern::SPECIAL_HIDDEN_POWER_FLAWLESS:
+      [self setMinIVs: HpLowIVs];
+      [self setMaxIVs: HpHighIVs];
+      shouldCheckHiddenPower = YES;
+      break;
+      
+    case IVPattern::SPECIAL_HIDDEN_POWER_FLAWLESS_TRICK:
+      [self setMinIVs: HpTrickLowIVs];
+      [self setMaxIVs: HpTrickHighIVs];
+      shouldCheckHiddenPower = YES;
+      break;
+    
+    case IVPattern::CUSTOM:
+    default:
+      return;
+      break;
+    }
+    
+    [self setConsiderHiddenPower: shouldCheckHiddenPower];
+    [self setMinHiddenPower: 70];
+  }
 }
 
-- (IBAction)toggleHiddenPower:(id)sender
+- (void)setMinHP:(uint32_t)newValue
 {
-  BOOL  enabled = [sender state];
-  
-  [hiddenTypeMenu setEnabled: enabled];
-  [minHiddenPowerField setEnabled: enabled];
-  [minHiddenPowerStepper setEnabled: enabled];
-  
-  [self checkIVPattern];
+  if (newValue != minHP)
+  {
+    minHP = newValue;
+    
+    if (maxHP < minHP)
+    {
+      self.maxHP = newValue;
+    }
+    
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
+}
+
+- (void)setMinAT:(uint32_t)newValue
+{
+  if (newValue != minAT)
+  {
+    minAT = newValue;
+    
+    if (maxAT < minAT)
+    {
+      self.maxAT = newValue;
+    }
+    
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
+}
+
+- (void)setMinDF:(uint32_t)newValue
+{
+  if (newValue != minDF)
+  {
+    minDF = newValue;
+    
+    if (maxDF < minDF)
+    {
+      self.maxDF = newValue;
+    }
+    
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
+}
+
+- (void)setMinSA:(uint32_t)newValue
+{
+  if (newValue != minSA)
+  {
+    minSA = newValue;
+    
+    if (maxSA < minSA)
+    {
+      self.maxSA = newValue;
+    }
+    
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
+}
+
+- (void)setMinSD:(uint32_t)newValue
+{
+  if (newValue != minSD)
+  {
+    minSD = newValue;
+    
+    if (maxSD < minSD)
+    {
+      self.maxSD = newValue;
+    }
+    
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
+}
+
+- (void)setMinSP:(uint32_t)newValue
+{
+  if (newValue != minSP)
+  {
+    minSP = newValue;
+    
+    if (maxSP < minSP)
+    {
+      self.maxSP = newValue;
+    }
+    
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
 }
 
 - (IVs)minIVs
 {
   IVs  result;
   
-  result.hp([minHPField intValue]);
-  result.at([minAtkField intValue]);
-  result.df([minDefField intValue]);
-  result.sa([minSpAField intValue]);
-  result.sd([minSpDField intValue]);
-  result.sp([minSpeField intValue]);
+  result.hp(minHP);
+  result.at(minAT);
+  result.df(minDF);
+  result.sa(minSA);
+  result.sd(minSD);
+  result.sp(minSP);
   
   return result;
 }
 
 - (void)setMinIVs:(IVs)ivs
 {
-  [minHPField setIntValue: ivs.hp()];
-  [minAtkField setIntValue: ivs.at()];
-  [minDefField setIntValue: ivs.df()];
-  [minSpAField setIntValue: ivs.sa()];
-  [minSpDField setIntValue: ivs.sd()];
-  [minSpeField setIntValue: ivs.sp()];
+  self.minHP = ivs.hp();
+  self.minAT = ivs.at();
+  self.minDF = ivs.df();
+  self.minSA = ivs.sa();
+  self.minSD = ivs.sd();
+  self.minSP = ivs.sp();
 }
 
-- (BOOL)shouldCheckMaxIVs
+- (void)setMaxHP:(uint32_t)newValue
 {
-  return [enableMaxIVsButton state];
+  if (newValue != maxHP)
+  {
+    maxHP = newValue;
+    
+    if (maxHP < minHP)
+    {
+      self.minHP = newValue;
+    }
+    
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
 }
 
-- (void)setShouldCheckMaxIVs:(BOOL)s
+- (void)setMaxAT:(uint32_t)newValue
 {
-  [enableMaxIVsButton setState: s];
-  [self toggleMaxIVs: enableMaxIVsButton];
+  if (newValue != maxAT)
+  {
+    maxAT = newValue;
+    
+    if (maxAT < minAT)
+    {
+      self.minAT = newValue;
+    }
+    
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
+}
+
+- (void)setMaxDF:(uint32_t)newValue
+{
+  if (newValue != maxDF)
+  {
+    maxDF = newValue;
+    
+    if (maxDF < minDF)
+    {
+      self.minDF = newValue;
+    }
+    
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
+}
+
+- (void)setMaxSA:(uint32_t)newValue
+{
+  if (newValue != maxSA)
+  {
+    maxSA = newValue;
+    
+    if (maxSA < minSA)
+    {
+      self.minSA = newValue;
+    }
+    
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
+}
+
+- (void)setMaxSD:(uint32_t)newValue
+{
+  if (newValue != maxSD)
+  {
+    maxSD = newValue;
+    
+    if (maxSD < minSD)
+    {
+      self.minSD = newValue;
+    }
+    
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
+}
+
+- (void)setMaxSP:(uint32_t)newValue
+{
+  if (newValue != maxSP)
+  {
+    maxSP = newValue;
+    
+    if (maxSP < minSP)
+    {
+      self.minSP = newValue;
+    }
+    
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
 }
 
 - (IVs)maxIVs
 {
   IVs  result;
   
-  result.hp([maxHPField intValue]);
-  result.at([maxAtkField intValue]);
-  result.df([maxDefField intValue]);
-  result.sa([maxSpAField intValue]);
-  result.sd([maxSpDField intValue]);
-  result.sp([maxSpeField intValue]);
+  result.hp(maxHP);
+  result.at(maxAT);
+  result.df(maxDF);
+  result.sa(maxSA);
+  result.sd(maxSD);
+  result.sp(maxSP);
   
   return result;
 }
 
 - (void)setMaxIVs:(IVs)ivs
 {
-  [maxHPField setIntValue: ivs.hp()];
-  [maxAtkField setIntValue: ivs.at()];
-  [maxDefField setIntValue: ivs.df()];
-  [maxSpAField setIntValue: ivs.sa()];
-  [maxSpDField setIntValue: ivs.sd()];
-  [maxSpeField setIntValue: ivs.sp()];
+  self.maxHP = ivs.hp();
+  self.maxAT = ivs.at();
+  self.maxDF = ivs.df();
+  self.maxSA = ivs.sa();
+  self.maxSD = ivs.sd();
+  self.maxSP = ivs.sp();
 }
 
-- (BOOL)shouldCheckHiddenPower
+- (void)setConsiderHiddenPower:(BOOL)newValue
 {
-  return [enableHiddenPowerButton state];
-}
-
-- (void)setShouldCheckHiddenPower:(BOOL)s
-{
-  [enableHiddenPowerButton setState: s];
-  [self toggleHiddenPower: enableHiddenPowerButton];
+  if (considerHiddenPower != newValue)
+  {
+    considerHiddenPower = newValue;
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
 }
 
 - (Element::Type)hiddenType
 {
-  return static_cast<Element::Type>([[hiddenTypeMenu selectedItem] tag]);
+  return static_cast<Element::Type>(hiddenPowerType);
 }
 
 - (void)setHiddenType:(Element::Type)type
 {
-  [hiddenTypeMenu selectItemWithTag: type];
+  self.hiddenPowerType = type;
 }
 
-- (uint32_t)minHiddenPower
+- (void)setMinHiddenPower:(uint32_t)newPower
 {
-  return [minHiddenPowerField intValue];
-}
-
-- (void)setMinHiddenPower:(uint32_t)power
-{
-  [minHiddenPowerField setIntValue: power];
-}
-
-- (BOOL)isRoamer
-{
-  return [isRoamerButton state];
-}
-
-- (void)setIsRoamer:(BOOL)ir
-{
-  [isRoamerButton setState: ir];
+  if (minHiddenPower != newPower)
+  {
+    minHiddenPower = newPower;
+    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+  }
 }
 
 - (uint32_t)numberOfIVCombinations
 {
   IVs  minIVs = [self minIVs];
-  IVs  maxIVs = [self shouldCheckMaxIVs] ? [self maxIVs] : IVs(0x7FFF7FFF);
+  IVs  maxIVs = [self maxIVs];
   
   uint32_t  result = (maxIVs.hp() - minIVs.hp() + 1) *
                      (maxIVs.at() - minIVs.at() + 1) *
@@ -275,11 +445,6 @@ enum Pattern
                      (maxIVs.sd() - minIVs.sd() + 1) *
                      (maxIVs.sp() - minIVs.sp() + 1);
   return result;
-}
-
-- (void)controlTextDidChange:(NSNotification*)notification
-{
-  [self checkIVPattern];
 }
 
 @end

@@ -20,13 +20,12 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import "VertResizeOnlyWindowController.h"
 #import "SearcherController.h"
 #import "IVParameterController.h"
 #import "Gen5ConfigurationController.h"
 
 
-@interface EggSeedSearcherController : VertResizeOnlyWindowController
+@interface EggSeedSearcherController : NSWindowController
 {
   IBOutlet Gen5ConfigurationController  *gen5ConfigController;
   
@@ -37,20 +36,6 @@
   IBOutlet NSButton               *oneKeyHeldButton;
   IBOutlet NSButton               *twoKeysHeldButton;
   IBOutlet NSButton               *threeKeysHeldButton;
-  
-  IBOutlet NSTextField            *femaleHPField;
-  IBOutlet NSTextField            *femaleAtkField;
-  IBOutlet NSTextField            *femaleDefField;
-  IBOutlet NSTextField            *femaleSpAField;
-  IBOutlet NSTextField            *femaleSpDField;
-  IBOutlet NSTextField            *femaleSpeField;
-  
-  IBOutlet NSTextField            *maleHPField;
-  IBOutlet NSTextField            *maleAtkField;
-  IBOutlet NSTextField            *maleDefField;
-  IBOutlet NSTextField            *maleSpAField;
-  IBOutlet NSTextField            *maleSpDField;
-  IBOutlet NSTextField            *maleSpeField;
   
   IBOutlet NSPopUpButton          *femaleSpeciesPopUp;
   IBOutlet NSButton               *everstoneButton;
@@ -75,7 +60,16 @@
   IBOutlet IVParameterController  *ivParameterController;
   
   IBOutlet SearcherController     *searcherController;
+  
+  NSNumber  *femaleHP, *femaleAT, *femaleDF, *femaleSA, *femaleSD, *femaleSP;
+  NSNumber  *maleHP, *maleAT, *maleDF, *maleSA, *maleSD, *maleSP;
 }
+
+@property (copy)
+NSNumber  *femaleHP, *femaleAT, *femaleDF, *femaleSA, *femaleSD, *femaleSP;
+
+@property (copy)
+NSNumber  *maleHP, *maleAT, *maleDF, *maleSA, *maleSD, *maleSP;
 
 - (IBAction)onFemaleSpeciesChange:(id)sender;
 - (IBAction)toggleSearchFromStartFrame:(id)sender;

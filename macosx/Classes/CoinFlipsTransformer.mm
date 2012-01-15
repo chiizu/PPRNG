@@ -20,7 +20,7 @@
 
 
 #import "CoinFlipsTransformer.h"
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 
 using namespace pprng;
 

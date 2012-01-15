@@ -21,7 +21,7 @@
 #ifndef HASHED_SEED_MESSAGE_H
 #define HASHED_SEED_MESSAGE_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 #include "HashedSeed.h"
 #include <boost/date_time/gregorian/gregorian.hpp>
 

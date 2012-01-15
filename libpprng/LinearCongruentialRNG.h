@@ -21,7 +21,7 @@
 #ifndef LINEAR_CONGRUENTIAL_RNG_H
 #define LINEAR_CONGRUENTIAL_RNG_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 
 namespace pprng
 {

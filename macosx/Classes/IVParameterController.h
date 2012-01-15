@@ -21,68 +21,42 @@
 
 
 #import <Cocoa/Cocoa.h>
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 
 @interface IVParameterController : NSObject
 {
   IBOutlet NSPopUpButton  *ivPatternMenu;
-  
-  IBOutlet NSTextField    *minHPField;
-  IBOutlet NSTextField    *minAtkField;
-  IBOutlet NSTextField    *minDefField;
-  IBOutlet NSTextField    *minSpAField;
-  IBOutlet NSTextField    *minSpDField;
-  IBOutlet NSTextField    *minSpeField;
-  
-  IBOutlet NSButton       *enableMaxIVsButton;
-  IBOutlet NSTextField    *maxHPField;
-  IBOutlet NSStepper      *maxHPStepper;
-  IBOutlet NSTextField    *maxAtkField;
-  IBOutlet NSStepper      *maxAtkStepper;
-  IBOutlet NSTextField    *maxDefField;
-  IBOutlet NSStepper      *maxDefStepper;
-  IBOutlet NSTextField    *maxSpAField;
-  IBOutlet NSStepper      *maxSpAStepper;
-  IBOutlet NSTextField    *maxSpDField;
-  IBOutlet NSStepper      *maxSpDStepper;
-  IBOutlet NSTextField    *maxSpeField;
-  IBOutlet NSStepper      *maxSpeStepper;
-  
-  IBOutlet NSButton       *enableHiddenPowerButton;
   IBOutlet NSPopUpButton  *hiddenTypeMenu;
-  IBOutlet NSTextField    *minHiddenPowerField;
-  IBOutlet NSStepper      *minHiddenPowerStepper;
   
-  IBOutlet NSButton       *isRoamerButton;
+  uint32_t  minHP, minAT, minDF, minSA, minSD, minSP;
+  uint32_t  maxHP, maxAT, maxDF, maxSA, maxSD, maxSP;
+  BOOL      considerHiddenPower;
+  uint32_t  hiddenPowerType;
+  uint32_t  minHiddenPower;
+  BOOL      isRoamer;
 }
 
+@property uint32_t  minHP, minAT, minDF, minSA, minSD, minSP;
+@property uint32_t  maxHP, maxAT, maxDF, maxSA, maxSD, maxSP;
+@property BOOL      considerHiddenPower;
+@property uint32_t  hiddenPowerType;
+@property uint32_t  minHiddenPower;
+@property BOOL      isRoamer;
+
 - (IBAction)switchIVPattern:(id)sender;
-- (IBAction)toggleMaxIVs:(id)sender;
-- (IBAction)toggleHiddenPower:(id)sender;
 
 - (pprng::IVs)minIVs;
 - (void)setMinIVs:(pprng::IVs)ivs;
 
-- (BOOL)shouldCheckMaxIVs;
-- (void)setShouldCheckMaxIVs:(BOOL)s;
-
 - (pprng::IVs)maxIVs;
 - (void)setMaxIVs:(pprng::IVs)ivs;
-
-- (BOOL)shouldCheckHiddenPower;
-- (void)setShouldCheckHiddenPower:(BOOL)s;
 
 - (pprng::Element::Type)hiddenType;
 - (void)setHiddenType:(pprng::Element::Type)type;
 
-- (uint32_t)minHiddenPower;
-- (void)setMinHiddenPower:(uint32_t)power;
-
-- (BOOL)isRoamer;
-- (void)setIsRoamer:(BOOL)ir;
+- (pprng::IVPattern::Type)ivPattern;
+- (void)setIVPattern:(pprng::IVPattern::Type)ivPattern;
 
 - (uint32_t)numberOfIVCombinations;
-
-- (void)controlTextDidChange:(NSNotification*)notification;
 
 @end

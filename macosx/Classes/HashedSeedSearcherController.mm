@@ -21,7 +21,7 @@
 
 #import "HashedSeedSearcherController.h"
 
-#include "HashedSeedSearcher.h"
+#include "HashedSeedQuickSearcher.h"
 #include "FrameGenerator.h"
 #include "Utilities.h"
 
@@ -54,7 +54,7 @@ uint32_t GetESVBitmask(NSPopUpButton *esvMenu)
   return mask;
 }
 
-struct GUICriteria : public HashedSeedSearcher::Criteria
+struct GUICriteria : public HashedSeedQuickSearcher::Criteria
 {
   enum EncounterType
   {
@@ -86,7 +86,9 @@ struct GUICriteria : public HashedSeedSearcher::Criteria
   
   uint64_t ExpectedNumberOfResults() const
   {
-    uint64_t  result = HashedSeedSearcher::Criteria::ExpectedNumberOfResults();
+    uint64_t  result =
+      HashedSeedQuickSearcher::Criteria::ExpectedNumberOfResults();
+    
     uint64_t  pidFrameMultiplier = 1;
     uint64_t  shinyDivisor = 1;
     uint64_t  natureDivisor = 1;
@@ -218,7 +220,7 @@ struct ResultHandler
       if (shinyFound &&
           ((m_criteria.nature == Nature::ANY) ||
            (pidFrame.nature == m_criteria.nature)) &&
-          ((m_criteria.ability > 1) ||
+          ((m_criteria.ability == Ability::ANY) ||
            (m_criteria.ability == pidFrame.pid.Gen5Ability())) &&
           Gender::GenderValueMatches(pidFrame.pid.GenderValue(),
                                      m_criteria.gender,
@@ -351,8 +353,6 @@ struct ProgressHandler
 
 - (void)awakeFromNib
 {
-  [super awakeFromNib];
-  
   [searcherController setGetValidatedSearchCriteriaSelector:
                       @selector(getValidatedSearchCriteria)];
   [searcherController setDoSearchWithCriteriaSelector:
@@ -508,15 +508,18 @@ struct ProgressHandler
     ptime(NSDateToBoostDate([toDateField objectValue]),
                             hours(23) + minutes(59) + seconds(59));
   
+  criteria.ivPattern = [ivParameterController ivPattern];
+  
   criteria.ivFrame.min = [minIVFrameField intValue];
   criteria.ivFrame.max = [maxIVFrameField intValue];
   
   criteria.ivs.min = [ivParameterController minIVs];
-  criteria.ivs.shouldCheckMax = [ivParameterController shouldCheckMaxIVs];
   criteria.ivs.max = [ivParameterController maxIVs];
+  criteria.ivs.shouldCheckMax =
+    (criteria.ivs.max != IVs(31, 31, 31, 31, 31, 31));
   criteria.ivs.isRoamer = [ivParameterController isRoamer];
   
-  if ([ivParameterController shouldCheckHiddenPower])
+  if ([ivParameterController considerHiddenPower])
   {
     criteria.ivs.hiddenType = [ivParameterController hiddenType];
     criteria.ivs.minHiddenPower = [ivParameterController minHiddenPower];
@@ -567,7 +570,7 @@ struct ProgressHandler
   std::auto_ptr<GUICriteria> 
     criteria(static_cast<GUICriteria*>([criteriaPtr pointerValue]));
   
-  HashedSeedSearcher  searcher;
+  HashedSeedQuickSearcher  searcher;
   
   searcher.Search(*criteria, ResultHandler(searcherController, *criteria),
                   ProgressHandler(searcherController));

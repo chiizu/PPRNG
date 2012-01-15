@@ -21,7 +21,7 @@
 #ifndef TIME_SEED_H
 #define TIME_SEED_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 #include <vector>
 
 namespace pprng

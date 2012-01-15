@@ -227,7 +227,7 @@ void SaveTableContentsToCSV(NSTableView *tableView,
 
 
 BOOL CheckExpectedResults
-  (SeedSearchCriteria &criteria, uint64_t maxResults,
+  (SearchCriteria &criteria, uint64_t maxResults,
    NSString *tooManyResultsMessage, id caller, SEL alertHandler)
 {
   uint64_t  numResults = 0;

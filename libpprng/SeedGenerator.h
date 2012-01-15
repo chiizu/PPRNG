@@ -21,7 +21,7 @@
 #ifndef SEED_GENERATOR_H
 #define SEED_GENERATOR_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 #include "HashedSeed.h"
 #include "HashedSeedMessage.h"
 #include <list>

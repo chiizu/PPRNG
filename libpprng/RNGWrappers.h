@@ -21,7 +21,7 @@
 #ifndef RNG_WRAPPERS_H
 #define RNG_WRAPPERS_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 #include "NextPowerOf2.h"
 #include <deque>
 

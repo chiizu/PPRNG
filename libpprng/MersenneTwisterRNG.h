@@ -67,7 +67,7 @@
 #ifndef LAZY_MERSENNE_TWISTER_RNG_H
 #define LAZY_MERSENNE_TWISTER_RNG_H
 
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 
 namespace pprng
 {

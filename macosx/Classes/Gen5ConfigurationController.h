@@ -20,7 +20,7 @@
 
 
 #import <Cocoa/Cocoa.h>
-#include "BasicTypes.h"
+#include "PPRNGTypes.h"
 
 @interface Gen5ConfigurationController : NSObject
 {

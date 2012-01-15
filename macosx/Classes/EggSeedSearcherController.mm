@@ -121,6 +121,9 @@ struct ProgressHandler
 
 @implementation EggSeedSearcherController
 
+@synthesize femaleHP, femaleAT, femaleDF, femaleSA, femaleSD, femaleSP;
+@synthesize maleHP, maleAT, maleDF, maleSA, maleSD, maleSP;
+
 - (NSString *)windowNibName
 {
 	return @"EggSeedSearcher";
@@ -128,8 +131,6 @@ struct ProgressHandler
 
 - (void)awakeFromNib
 {
-  [super awakeFromNib];
-  
   [searcherController setGetValidatedSearchCriteriaSelector:
                       @selector(getValidatedSearchCriteria)];
   [searcherController setDoSearchWithCriteriaSelector:
@@ -226,12 +227,12 @@ struct ProgressHandler
 {
   IVs  result;
   
-  result.hp([femaleHPField intValue]);
-  result.at([femaleAtkField intValue]);
-  result.df([femaleDefField intValue]);
-  result.sa([femaleSpAField intValue]);
-  result.sd([femaleSpDField intValue]);
-  result.sp([femaleSpeField intValue]);
+  result.hp([femaleHP intValue]);
+  result.at([femaleAT intValue]);
+  result.df([femaleDF intValue]);
+  result.sa([femaleSA intValue]);
+  result.sd([femaleSD intValue]);
+  result.sp([femaleSP intValue]);
   
   return result;
 }
@@ -240,12 +241,12 @@ struct ProgressHandler
 {
   IVs  result;
   
-  result.hp([maleHPField intValue]);
-  result.at([maleAtkField intValue]);
-  result.df([maleDefField intValue]);
-  result.sa([maleSpAField intValue]);
-  result.sd([maleSpDField intValue]);
-  result.sp([maleSpeField intValue]);
+  result.hp([maleHP intValue]);
+  result.at([maleAT intValue]);
+  result.df([maleDF intValue]);
+  result.sa([maleSA intValue]);
+  result.sd([maleSD intValue]);
+  result.sp([maleSP intValue]);
   
   return result;
 }
@@ -314,11 +315,12 @@ struct ProgressHandler
   criteria.ivFrame.max = [maxIVFrameField intValue];
   
   criteria.ivs.min = [ivParameterController minIVs];
-  criteria.ivs.shouldCheckMax = [ivParameterController shouldCheckMaxIVs];
   criteria.ivs.max = [ivParameterController maxIVs];
+  criteria.ivs.shouldCheckMax =
+    (criteria.ivs.max != IVs(31, 31, 31, 31, 31, 31));
   criteria.ivs.isRoamer = false;
   
-  if ([ivParameterController shouldCheckHiddenPower])
+  if ([ivParameterController considerHiddenPower])
   {
     criteria.ivs.hiddenType = [ivParameterController hiddenType];
     criteria.ivs.minHiddenPower = [ivParameterController minHiddenPower];
@@ -334,7 +336,7 @@ struct ProgressHandler
     FemaleParent::Type([[femaleSpeciesPopUp selectedItem] tag]);
   
   criteria.pid.nature = Nature::Type([[naturePopUp selectedItem] tag]);
-  criteria.pid.ability = [[abilityPopUp selectedItem] tag];
+  criteria.pid.ability = Ability::Type([[abilityPopUp selectedItem] tag]);
   criteria.pid.gender = Gender::Type([[genderPopUp selectedItem] tag]);
   criteria.pid.genderRatio =
     Gender::Ratio([[genderRatioPopUp selectedItem] tag]);

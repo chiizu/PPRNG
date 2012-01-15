@@ -40,9 +40,10 @@
 		C0B352A31428C76800935815 /* ProfElmResponsesTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0B352A21428C76800935815 /* ProfElmResponsesTransformer.mm */; };
 		C0B353051428DFF600935815 /* HGSSRoamerLocationsTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B353041428DFF600935815 /* HGSSRoamerLocationsTransformer.m */; };
 		C0B53D011451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */; };
+		C0CB379F14BDBD270043877C /* HashedSeedQuickSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0CB379D14BDBD270043877C /* HashedSeedQuickSearcher.cpp */; };
 		C0D1A3B8136C2C3100D6E2DA /* Utilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */; };
 		C0DAED071356A9CC008D00D5 /* TrainerIDSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */; };
-		C0E3041B1346343400C56C1A /* BasicTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303F81346343400C56C1A /* BasicTypes.cpp */; };
+		C0E3041B1346343400C56C1A /* PPRNGTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303F81346343400C56C1A /* PPRNGTypes.cpp */; };
 		C0E3041C1346343400C56C1A /* CGearSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303FB1346343400C56C1A /* CGearSeedSearcher.cpp */; };
 		C0E3041D1346343400C56C1A /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303FE1346343400C56C1A /* Frame.cpp */; };
 		C0E3041E1346343400C56C1A /* FrameGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E304001346343400C56C1A /* FrameGenerator.cpp */; };
@@ -130,12 +131,16 @@
 		C0B353041428DFF600935815 /* HGSSRoamerLocationsTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HGSSRoamerLocationsTransformer.m; sourceTree = "<group>"; };
 		C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Gen4QuickSeedSearcher.cpp; sourceTree = "<group>"; };
 		C0B53D001451CEBC00C62866 /* Gen4QuickSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4QuickSeedSearcher.h; sourceTree = "<group>"; };
+		C0CB35F814B827CC0043877C /* SeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeedSearcher.h; sourceTree = "<group>"; };
+		C0CB35FD14B82ECC0043877C /* SearchCriteria.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchCriteria.h; sourceTree = "<group>"; };
+		C0CB379D14BDBD270043877C /* HashedSeedQuickSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HashedSeedQuickSearcher.cpp; sourceTree = "<group>"; };
+		C0CB379E14BDBD270043877C /* HashedSeedQuickSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashedSeedQuickSearcher.h; sourceTree = "<group>"; };
 		C0D1A3B6136C2C3100D6E2DA /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Utilities.mm; sourceTree = "<group>"; };
 		C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrainerIDSearcher.cpp; sourceTree = "<group>"; };
 		C0DAED061356A9CC008D00D5 /* TrainerIDSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerIDSearcher.h; sourceTree = "<group>"; };
-		C0E303F81346343400C56C1A /* BasicTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BasicTypes.cpp; sourceTree = "<group>"; };
-		C0E303F91346343400C56C1A /* BasicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicTypes.h; sourceTree = "<group>"; };
+		C0E303F81346343400C56C1A /* PPRNGTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPRNGTypes.cpp; sourceTree = "<group>"; };
+		C0E303F91346343400C56C1A /* PPRNGTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPRNGTypes.h; sourceTree = "<group>"; };
 		C0E303FA1346343400C56C1A /* CGearSeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGearSeed.h; sourceTree = "<group>"; };
 		C0E303FB1346343400C56C1A /* CGearSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGearSeedSearcher.cpp; sourceTree = "<group>"; };
 		C0E303FC1346343400C56C1A /* CGearSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGearSeedSearcher.h; sourceTree = "<group>"; };
@@ -160,7 +165,7 @@
 		C0E304111346343400C56C1A /* RNGWrappers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGWrappers.h; sourceTree = "<group>"; };
 		C0E304121346343400C56C1A /* SeedGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SeedGenerator.cpp; sourceTree = "<group>"; };
 		C0E304131346343400C56C1A /* SeedGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeedGenerator.h; sourceTree = "<group>"; };
-		C0E304141346343400C56C1A /* SeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeedSearcher.h; sourceTree = "<group>"; };
+		C0E304141346343400C56C1A /* SearchRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchRunner.h; sourceTree = "<group>"; };
 		C0E304171346343400C56C1A /* TimeSeed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimeSeed.cpp; sourceTree = "<group>"; };
 		C0E304181346343400C56C1A /* TimeSeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeSeed.h; sourceTree = "<group>"; };
 		C0E304191346343400C56C1A /* WonderCardSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WonderCardSeedSearcher.cpp; sourceTree = "<group>"; };
@@ -375,8 +380,8 @@
 		C0E303F71346343400C56C1A /* libpprng */ = {
 			isa = PBXGroup;
 			children = (
-				C0E303F81346343400C56C1A /* BasicTypes.cpp */,
-				C0E303F91346343400C56C1A /* BasicTypes.h */,
+				C0E303F81346343400C56C1A /* PPRNGTypes.cpp */,
+				C0E303F91346343400C56C1A /* PPRNGTypes.h */,
 				C0E303FA1346343400C56C1A /* CGearSeed.h */,
 				C0E303FB1346343400C56C1A /* CGearSeedSearcher.cpp */,
 				C0E303FC1346343400C56C1A /* CGearSeedSearcher.h */,
@@ -396,20 +401,24 @@
 				C0E304061346343400C56C1A /* HashedSeed.h */,
 				C05B86FF14626E42009166E0 /* HashedSeedMessage.cpp */,
 				C05B870014626E42009166E0 /* HashedSeedMessage.h */,
+				C0CB379D14BDBD270043877C /* HashedSeedQuickSearcher.cpp */,
+				C0CB379E14BDBD270043877C /* HashedSeedQuickSearcher.h */,
 				C0E304071346343400C56C1A /* HashedSeedSearcher.cpp */,
 				C0E304081346343400C56C1A /* HashedSeedSearcher.h */,
 				C0E304091346343400C56C1A /* InitialSeedSearcher.cpp */,
 				C0E3040A1346343400C56C1A /* InitialSeedSearcher.h */,
 				C0E3040B1346343400C56C1A /* IVRNG.h */,
+				C0E3040C1346343400C56C1A /* LinearCongruentialRNG.h */,
 				C082189D13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp */,
 				C082189E13895C1D00B6E0E5 /* MersenneTwisterRNG.h */,
-				C0E3040C1346343400C56C1A /* LinearCongruentialRNG.h */,
 				C0E3040F1346343400C56C1A /* NextPowerOf2.h */,
 				C0E304101346343400C56C1A /* PIDRNG.h */,
 				C0E304111346343400C56C1A /* RNGWrappers.h */,
+				C0CB35FD14B82ECC0043877C /* SearchCriteria.h */,
+				C0E304141346343400C56C1A /* SearchRunner.h */,
 				C0E304121346343400C56C1A /* SeedGenerator.cpp */,
 				C0E304131346343400C56C1A /* SeedGenerator.h */,
-				C0E304141346343400C56C1A /* SeedSearcher.h */,
+				C0CB35F814B827CC0043877C /* SeedSearcher.h */,
 				C0E304171346343400C56C1A /* TimeSeed.cpp */,
 				C0E304181346343400C56C1A /* TimeSeed.h */,
 				C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */,
@@ -500,7 +509,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
-				C0E3041B1346343400C56C1A /* BasicTypes.cpp in Sources */,
+				C0E3041B1346343400C56C1A /* PPRNGTypes.cpp in Sources */,
 				C0E3041C1346343400C56C1A /* CGearSeedSearcher.cpp in Sources */,
 				C0E3041D1346343400C56C1A /* Frame.cpp in Sources */,
 				C0E3041E1346343400C56C1A /* FrameGenerator.cpp in Sources */,
@@ -547,6 +556,7 @@
 				C0B53D011451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp in Sources */,
 				C05B870114626E42009166E0 /* HashedSeedMessage.cpp in Sources */,
 				C03B40FE1463D21100AD59B0 /* Gen4ConfigurationController.mm in Sources */,
+				C0CB379F14BDBD270043877C /* HashedSeedQuickSearcher.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
