@@ -98,9 +98,9 @@
     int  latest = [[latestVersionElements objectAtIndex: i] intValue];
     int  current = [[currentVersionElements objectAtIndex: i] intValue];
     
-    if (current < latest)
+    if (current != latest)
     {
-      reportNewVersion = YES;
+      reportNewVersion = (current < latest);
       break;
     }
     ++i;

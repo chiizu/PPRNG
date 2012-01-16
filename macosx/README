@@ -1,0 +1,223 @@
+PPRNG 1.8.2
+
+Mac Requirements: Intel Mac with OS X 10.5 or greater.
+
+DS Requirements: All DS types now supported for English, Japanese, and German
+language games. We still need to figure out details for the other languages, so
+in the meantime they are still stuck on the original DS or DS Lite only.
+
+Quick Start:
+1. First, before doing anything else, open the DS / Game Config screen.
+2. Enter what you know about your game and DS (at minimum, that would be game
+   version, DS type, and MAC address).
+3. Click OK to save the config.
+4. If you don't know your DS Parameters, go to the DS Parameter Searcher to find
+   your parameters.  Once you have found your parameters, go back to the
+   DS / Game Config screen and add them to your configuration.
+5. You are now ready to search for Standard Seeds in the Standard Seed Searcher.
+
+General Usage Tip:
+In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
+on a result row to bring up the seed inspector for that specific seed.
+
+
+New in 1.9.0
+
+* The Standard Seed Searcher is now 75% faster than before for all common
+  searches.  As long as you choose one of the IV patterns from the drop down
+  menu (you can still set more specific IVs for, for example, a specific hidden
+  power) and you are searching within the first 6 IV frames (there is not much
+  reason to search for other frames unless you really want something on a
+  particular date), you will benefit from the fact that PPRNG has all useful
+  seeds of these types precalculated.  This reduces the search time for a 30-day
+  month with up to 3 key presses on my 2008 Mac Book Pro (2 cores) from 35
+  minutes to 9 minutes.  If you choose to search with other parameters, PPRNG
+  will revert to the slower (though still relatively fast!) search.
+* Support for French and Spanish games on DSi/3DS added.
+* Wonder Card and Egg Seed searches experienced minor speed increases.
+* Fixed a bug in the CGear IV generation code that caused slightly wrong IVs to
+  be generated for the first 6 frames.
+* Fixed a crash that occurred when opening any of the windows before setting a
+  DS Type in the configuration.
+* Fixed the problem with the Standard Seed Searcher not opening in OS 10.5.
+* Made various cosmetic and behind-the-scenes code changes to clean up the
+  project code base in preparation for source release.
+
+
+Known Issues in this version:
+
+* Aside from the C-Gear Seed Inspector, none of the 'Find' or 'Save' buttons in
+  the seed inspectors work. For now, you'll just have to scroll through
+  manually. 'Save' buttons in the searcher windows should properly save CSV
+  files of the results.
+* Copy / Paste will work on specific fields that you can type in, but at the
+  moment you can't copy other things such as result rows.
+* There is not much in the way of argument checking. If you set a minimum IV
+  that is greater than the corresponding maximum IV, it will try very hard to
+  find that impossible IV spread.
+* There is some funny behavior when editing the DS / Game Config with multiple
+  windows open. The selected config in other windows appears to change. It is a
+  minor annoyance, but for now just set your config again in the other window
+  from it's drop down menu. Down the line there will be a bit of an interface
+  change to deal with this.
+
+
+Upcoming Features:
+
+* Generation 4 Support - Breeding (maybe some day...)
+
+
+Previous Releases:
+
+1.8.2
+
+* Added Swarm frame support in the Standard Seed Searcher and Inspector.
+* Added support for Korean games on DS and DS Lite.
+* Added support for German games on DSi and 3DS.
+* The Standard Seed Searcher columns are now adjustable and the window width can
+  be resized.  There is too much data to display for me to try to cram it into a
+  fixed size.  There is no saving of column widths or window size, however.
+* Fixed the automatic check for updates that I broke in 1.8.0.  Please spread
+  the word to fellow PPRNG users about this update, since they won't get the
+  automatic notification this time.
+
+1.8.0
+
+* DSi, DSi XL, and 3DS users can now do Standard Seed RNG on English and
+  Japanese language games.  We hope to get other languages soon.  Make sure you
+  set your DS model correctly in your configuration.
+* Added the 4th Generation Seed Inspector, and rewrote the 4th Generation Seed
+  Searcher to use Wichu's instant search algorithm.  There are now also
+  separate configurations for 4th Generation games.
+* Searches based on Standard Seeds (including Wonder Cards and Breeding) have
+  received another speed increase.  For example, on my 2008 Mac Book Pro (2
+  cores), searching all key combinations took 1 minute 37 seconds for a single
+  date, and about 48 minutes for a full month.  With this update running on the
+  same machine, it now takes 1 minute 10 seconds for a single day, or 35 minutes
+  for a whole month, which is more than 25% less than version 1.5.0.  Users with
+  better machines than mine will see less drastic improvement, but it will still
+  be faster.
+* Numerous tweaks have been done behind the scenes.
+
+While the above list appears short, a lot has changed under the hood, so it's
+possible that I've broken something that used to work.
+
+
+1.5.0
+General
+* Searching for Standard Seeds, Wonder Card Seeds, and Egg Seeds is now multi-
+  threaded.  One thread for each processor on the machine will be created,
+  meaning that searching will be potentially be multiple times faster.  If you
+  run multiple searches simultaneously, search time will be impacted because
+  there will be more threads running than processors.
+* The search algorithm speed for Standard Seeds and Egg Seeds has been improved,
+  in addition to the threading above.  Combined with the threading, most users
+  will see searches running at least twice as fast as before.  As an example,
+  searching in the Standard Seed Searcher on IV frames 1-5 for a single day
+  with all buttons checked and two Timer0 values takes 5 minutes 46 seconds for
+  me in version 1.2.0 on my 2.53 GHz Core 2 Due with 4GB Mac Book Pro (late
+  2008).  In 1.5.0 it takes 1 minute 37 seconds.  Multiplied out to a full
+  month's search, what used to take 2 hours and 53 minutes now takes 48 minutes
+  30 seconds.
+* All searchers and inspectors now handle the initial PID frame offsets, for
+  example displaying the initial frame number and only considering results
+  starting from the initial frame number.  Adjacent frames are generated using
+  the same offset from the initial PID frame so as to more likely provide
+  accurate and useful adjacents.
+* Each gender ratio now has its own column to make clear which ratio is which
+  gender.
+* Many searchers and inspectors now have tool tips to help explain the meaning
+  of some of the less obvious columns and settings.  Hover over fields, column
+  headings, etc. to see their meaning.  Note that not all tool tips have been
+  added at this time, though the Standard Seed Searcher is complete.
+* Some better argument is starting to be added, though it is still incomplete.
+* PPRNG will now check for updates when you run it.  Hopefully fewer people will
+  be stuck on old versions in the future.
+
+Standard Seeds
+* Many more filtering options have been added to the Standard Seed Searcher.
+  Note that PID frame-related fitlers do not have a significant effect on the
+  search time because the majority of the search time is taken finding the IV
+  frames.  These filters are there because many people dislike having to sift
+  through results.  At the moment these filters are not taken into account when
+  estimating the number of results that will be produced.
+* The Egg Seed Searcher and Eggs tab now handle the special parents Nidoran-F
+  and Illumise.
+* It is now possible to search for Eggs based on the desired Species or Gender.
+* The Hidden Power column was added back to the Eggs tab.
+
+Wonder Cards
+* The searcher and inspector now allow for the user to enter details of the
+  Wonder Card which may affect how the frames are generated.  At the moment, it
+  has defaults for the two known card types, but it is possible to edit the
+  specific details using the custom setting if a new type of card is released.
+  All currently available cards are handled by the 'Standard' card except for
+  the two shiny cards released in Japan which are covered by the 'Shiny' card.
+* The Wonder Card Seed Inspector now shows Characteristics.
+
+C-Gear Seeds
+* The C-Gear Seed Inspector now allows for searching within the list of frames,
+  which is very helpful when using the Adjacents tab to try and find what delay
+  and frame you actually hit.
+
+There are probably some other changes that I have forgotten in this big update.
+
+1.2.0
+* Initial Egg Seed Searcher added.  It isn't always accurate when calculating
+  how many expected results there will be, but it shouldn't prevent you from
+  running reasonable searches.  In some cases you can run searches that will
+  return way too many results.
+* Added Characteristic to the Adjacents Tab of the Standard Seed Inspector.
+* Updated wild encounter PID generation to use the newest researched algorithm.
+* Fixed a bug where you couldn't have an ID or SID of 0 (again).
+* Fixed a bug where the searches would get stuck if there were too few seeds
+  being considered (most commonly seen in the ID Frame Search tab).
+* Various minor cosmetic changes.  Most notable is that shiny is now indicated
+  with a star instead of '!!!' (because I felt like it).
+
+1.1.5
+* Added Characteristic calculation for egg frames if you supply the IV frame
+  number and the IVs of both parents.  This is helpful for locating which frame
+  you landed on.
+* Fixed (hopefully) incorrect egg frame generation.
+* Removed the ES (everstone) column from the egg tab of the Standard Seed
+  Inspector.  If breeding with an everstone, the nature will be replaced with
+  <ES> if the everstone takes effect.
+* Added columns for held item, fishing success, and dust/shadow item to the
+  PID frame section of the Standard Seed Searcher.
+* Added a switch for when the first pokemon in your party has the ability
+  Compound Eyes to the PID frame section of the Standard Seed Inspector. This
+  has a small effect on how the frame is generated, but most importantly it has
+  an effect on the item that a wild Pokemon holds (if it holds any at all).
+* Added columns for fishing success and dust/shadow encounter to the Trainer ID
+  searcher so that you can know whether your shiny PID will allow you to fish
+  and / or find a Pokemon in swirling dust / bridge shadows.
+* Fixed a bug where you couldn't have an ID / SID of 0.
+* Fixed a bug where you couldn't type into the Hidden Power minimum power field.
+
+1.1.0:
+* ID/SID Abuse - See Trainer ID Searcher
+* DS Parameter Searcher now uses the MAC address from your configuration.
+* Min PID frame for shiny search in Standard Seed Searcher
+* Better estimation of the number of results (now considers HP type, shininess)
+
+1.0.5:
+* Added Stationary Encounter frame type to cover encounters such as Coballion.
+* Various minor GUI fixes.
+
+1.0.4
+* Bugfix for incorrect Encounter Slot calculation.
+* Added Sync and ESV columns to shiny section of the Standard Seed Searcher.
+
+1.0.3
+Fixed a bug causing the Standard Seed Searcher to not display shiny PID frame
+information.
+
+1.0.2
+Actual fix for OS X 10.5 issues.
+
+1.0.1
+Attempt to fix issues when running on OS X 10.5.
+
+1.0.0
+Initial Release
