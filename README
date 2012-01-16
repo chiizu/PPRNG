@@ -41,7 +41,9 @@ called PPRNG.  PPRNG strives to be a simple wrapper front-end for libpprng,
 attempting to adhere to an MVC style of programming where possible in order to
 make porting to other platforms a relatively easy process.  One file is not
 included in the repository, which is the file that contains the web address for
-checking the latest PPRNG version.  If you wish to compile PPRNG, you will need to 
+checking the latest PPRNG version.  If you wish to compile PPRNG, you will need
+to add the file VersionCheckURL.h to the macosx/Classes directory and
+#define VERSION_CHECK_URL to be an Objective-C string.
 
 
 For more information on PPRNG, visit:
