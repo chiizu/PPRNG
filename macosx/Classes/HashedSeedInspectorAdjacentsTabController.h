@@ -25,12 +25,12 @@
 
 #import "Gen5ConfigurationController.h"
 
-@class HashedSeedInspectorController;
+@class StandardSeedInspectorController;
 
 @interface HashedSeedInspectorAdjacentsTabController : NSObject
 {
-  IBOutlet HashedSeedInspectorController  *inspectorController;
-  IBOutlet Gen5ConfigurationController    *gen5ConfigController;
+  IBOutlet StandardSeedInspectorController  *inspectorController;
+  IBOutlet Gen5ConfigurationController      *gen5ConfigController;
   
   uint32_t  secondsVariance;
   uint32_t  timer0Variance;

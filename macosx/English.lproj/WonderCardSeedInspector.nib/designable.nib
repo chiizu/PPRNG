@@ -14231,22 +14231,6 @@ IC0gMTAwJSk</string>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: initialFrame</string>
-						<reference key="source" ref="434399544"/>
-						<reference key="destination" ref="1001"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="434399544"/>
-							<reference key="NSDestination" ref="1001"/>
-							<string key="NSLabel">value: initialFrame</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">initialFrame</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">2849</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
 						<string key="label">value: startFromInitialFrame</string>
 						<reference key="source" ref="534611848"/>
 						<reference key="destination" ref="1001"/>
@@ -15144,6 +15128,22 @@ IC0gMTAwJSk</string>
 						</object>
 					</object>
 					<int key="connectionID">2918</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: initialPIDFrame</string>
+						<reference key="source" ref="434399544"/>
+						<reference key="destination" ref="1001"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="434399544"/>
+							<reference key="NSDestination" ref="1001"/>
+							<string key="NSLabel">value: initialPIDFrame</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">initialPIDFrame</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">2920</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -22548,9 +22548,9 @@ IC0gMTAwJSk</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1195, 86}, {962, 727}}</string>
+					<string>{{-1274, 86}, {962, 727}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1195, 86}, {962, 727}}</string>
+					<string>{{-1274, 86}, {962, 727}}</string>
 					<integer value="1"/>
 					<string>{196, 240}</string>
 					<string>{{357, 418}, {480, 270}}</string>
@@ -24427,7 +24427,7 @@ IC0gMTAwJSk</string>
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">2919</int>
+			<int key="maxID">2920</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -24624,6 +24624,57 @@ IC0gMTAwJSk</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">HashedSeedInspectorController</string>
+					<string key="superclassName">VertResizeOnlyWindowController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>seedParameterChanged:</string>
+							<string>seedValueChanged:</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>seedParameterChanged:</string>
+							<string>seedValueChanged:</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">seedParameterChanged:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">seedValueChanged:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">gen5ConfigController</string>
+						<string key="NS.object.0">Gen5ConfigurationController</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">gen5ConfigController</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">gen5ConfigController</string>
+							<string key="candidateClassName">Gen5ConfigurationController</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">Classes/HashedSeedInspectorController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">HexadecimalFormatter</string>
 					<string key="superclassName">NSNumberFormatter</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
@@ -24665,20 +24716,16 @@ IC0gMTAwJSk</string>
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">WonderCardSeedInspectorController</string>
-					<string key="superclassName">VertResizeOnlyWindowController</string>
+					<string key="superclassName">HashedSeedInspectorController</string>
 					<object class="NSMutableDictionary" key="actions">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>generateAdjacents:</string>
 							<string>generateFrames:</string>
-							<string>seedParameterChanged:</string>
-							<string>seedValueChanged:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
-							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 						</object>
@@ -24689,8 +24736,6 @@ IC0gMTAwJSk</string>
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>generateAdjacents:</string>
 							<string>generateFrames:</string>
-							<string>seedParameterChanged:</string>
-							<string>seedValueChanged:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -24700,14 +24745,6 @@ IC0gMTAwJSk</string>
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">generateFrames:</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">seedParameterChanged:</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">seedValueChanged:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>
@@ -24720,7 +24757,6 @@ IC0gMTAwJSk</string>
 							<string>adjacentsTableView</string>
 							<string>frameContentArray</string>
 							<string>frameTableView</string>
-							<string>gen5ConfigController</string>
 							<string>ivParameterController</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -24729,7 +24765,6 @@ IC0gMTAwJSk</string>
 							<string>NSTableView</string>
 							<string>NSArrayController</string>
 							<string>NSTableView</string>
-							<string>Gen5ConfigurationController</string>
 							<string>IVParameterController</string>
 						</object>
 					</object>
@@ -24741,7 +24776,6 @@ IC0gMTAwJSk</string>
 							<string>adjacentsTableView</string>
 							<string>frameContentArray</string>
 							<string>frameTableView</string>
-							<string>gen5ConfigController</string>
 							<string>ivParameterController</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -24761,10 +24795,6 @@ IC0gMTAwJSk</string>
 							<object class="IBToOneOutletInfo">
 								<string key="name">frameTableView</string>
 								<string key="candidateClassName">NSTableView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">gen5ConfigController</string>
-								<string key="candidateClassName">Gen5ConfigurationController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">ivParameterController</string>

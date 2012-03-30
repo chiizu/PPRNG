@@ -24,12 +24,12 @@
 
 #import "Gen5ConfigurationController.h"
 
-@class HashedSeedInspectorController;
+@class StandardSeedInspectorController;
 
 @interface HashedSeedInspectorEggsTabController : NSObject
 {
-  IBOutlet HashedSeedInspectorController  *inspectorController;
-  IBOutlet Gen5ConfigurationController    *gen5ConfigController;
+  IBOutlet StandardSeedInspectorController  *inspectorController;
+  IBOutlet Gen5ConfigurationController      *gen5ConfigController;
   
   BOOL      internationalParents;
   BOOL      usingEverstone;

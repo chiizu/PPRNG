@@ -26,7 +26,7 @@
 #include "SearchResultProtocols.h"
 #include "Utilities.h"
 
-#import "HashedSeedInspectorController.h"
+#import "StandardSeedInspectorController.h"
 
 #include <map>
 #include <vector>
@@ -627,8 +627,8 @@ struct ProgressHandler
     
     if (row != nil)
     {
-      HashedSeedInspectorController  *inspector =
-        [[HashedSeedInspectorController alloc] init];
+      StandardSeedInspectorController  *inspector =
+        [[StandardSeedInspectorController alloc] init];
       [inspector window];
       
       [inspector setSeedFromResult: row];

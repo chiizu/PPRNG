@@ -26,12 +26,12 @@
 #import "Gen5ConfigurationController.h"
 #import "IVParameterController.h"
 
-@class HashedSeedInspectorController;
+@class StandardSeedInspectorController;
 
 @interface HashedSeedInspectorFramesTabController : NSObject
 {
-  IBOutlet HashedSeedInspectorController  *inspectorController;
-  IBOutlet Gen5ConfigurationController    *gen5ConfigController;
+  IBOutlet StandardSeedInspectorController  *inspectorController;
+  IBOutlet Gen5ConfigurationController      *gen5ConfigController;
   
   pprng::Gen5PIDFrameGenerator::FrameType  encounterFrameType;
   pprng::EncounterLead::Ability            encounterLeadAbility;

@@ -23,9 +23,6 @@
 #import <Cocoa/Cocoa.h>
 #import "VertResizeOnlyWindowController.h"
 #import "Gen5ConfigurationController.h"
-#import "HashedSeedInspectorFramesTabController.h"
-#import "HashedSeedInspectorAdjacentsTabController.h"
-#import "HashedSeedInspectorEggsTabController.h"
 #import "SearchResultProtocols.h"
 
 #include "HashedSeed.h"
@@ -33,12 +30,6 @@
 @interface HashedSeedInspectorController : VertResizeOnlyWindowController
 {
   IBOutlet Gen5ConfigurationController  *gen5ConfigController;
-  
-  IBOutlet HashedSeedInspectorFramesTabController     *framesTabController;
-  
-  IBOutlet HashedSeedInspectorAdjacentsTabController  *adjacentsTabController;
-  
-  IBOutlet HashedSeedInspectorEggsTabController       *eggsTabController;
   
   NSDate    *startDate;
   NSNumber  *startHour, *startMinute, *startSecond;
@@ -48,8 +39,6 @@
   
   NSNumber  *rawSeed;
   NSNumber  *initialPIDFrame;
-  
-  NSString  *selectedTabId;
 }
 
 @property (copy) NSDate    *startDate;
@@ -60,15 +49,6 @@
 
 @property (copy) NSNumber  *rawSeed;
 @property (copy) NSNumber  *initialPIDFrame;
-
-@property (copy) NSString  *selectedTabId;
-
-@property (readonly)
-  HashedSeedInspectorFramesTabController *framesTabController;
-@property (readonly)
-  HashedSeedInspectorAdjacentsTabController *adjacentsTabController;
-@property (readonly)
-  HashedSeedInspectorEggsTabController *eggsTabController;
 
 - (IBAction) seedParameterChanged:(id)sender;
 - (IBAction) seedValueChanged:(id)sender;

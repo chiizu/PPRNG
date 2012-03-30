@@ -22,7 +22,7 @@
 #import "LauncherController.h"
 
 #import "HashedSeedSearcherController.h"
-#import "HashedSeedInspectorController.h"
+#import "StandardSeedInspectorController.h"
 #import "EggSeedSearcherController.h"
 #import "WonderCardSeedSearcherController.h"
 #import "WonderCardSeedInspectorController.h"
@@ -56,8 +56,8 @@
     [NSDictionary dictionaryWithObjectsAndKeys:
       [HashedSeedSearcherController class],
         [launchHashedSeedSearcher title],
-      [HashedSeedInspectorController class],
-        [launchHashedSeedInspector title],
+      [StandardSeedInspectorController class],
+        [launchStandardSeedInspector title],
       [EggSeedSearcherController class],
         [launchEggSeedSearcher title],
       [WonderCardSeedSearcherController class],

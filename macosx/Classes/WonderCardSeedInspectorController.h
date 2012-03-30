@@ -20,24 +20,11 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import "VertResizeOnlyWindowController.h"
-#import "Gen5ConfigurationController.h"
+#import "HashedSeedInspectorController.h"
 #import "IVParameterController.h"
-#import "SearchResultProtocols.h"
 
-@interface WonderCardSeedInspectorController : VertResizeOnlyWindowController
+@interface WonderCardSeedInspectorController : HashedSeedInspectorController
 {
-  IBOutlet Gen5ConfigurationController  *gen5ConfigController;
-  
-  NSDate    *startDate;
-  NSNumber  *startHour, *startMinute, *startSecond;
-  NSNumber  *timer0, *vcount, *vframe;
-  
-  uint32_t  button1, button2, button3;
-  
-  NSNumber  *rawSeed;
-  NSNumber  *initialFrame;
-  
   pprng::Nature::Type               cardNature;
   pprng::Ability::Type              cardAbility;
   pprng::Gender::Type               cardGender;
@@ -69,15 +56,6 @@
   IBOutlet NSArrayController      *adjacentsContentArray;
 }
 
-@property (copy) NSDate    *startDate;
-@property (copy) NSNumber  *startHour, *startMinute, *startSecond;
-@property (copy) NSNumber  *timer0, *vcount, *vframe;
-
-@property        uint32_t  button1, button2, button3;
-
-@property (copy) NSNumber  *rawSeed;
-@property (copy) NSNumber  *initialFrame;
-
 @property pprng::Nature::Type               cardNature;
 @property pprng::Ability::Type              cardAbility;
 @property pprng::Gender::Type               cardGender;
@@ -99,14 +77,8 @@
 @property uint32_t  targetFrameVariance;
 
 
-- (IBAction)seedParameterChanged:(id)sender;
-- (IBAction)seedValueChanged:(id)sender;
-
 - (IBAction)generateFrames:(id)sender;
 - (IBAction)generateAdjacents:(id)sender;
-
-- (void)setSeedFromResult:(id <HashedSeedResultParameters>)result;
-- (void)setSeed:(const pprng::HashedSeed&)seed;
 
 - (void)selectAndShowFrame:(uint32_t)frame;
 

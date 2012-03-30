@@ -38,16 +38,6 @@ using namespace pprng;
 @synthesize rawSeed;
 @synthesize initialPIDFrame;
 
-@synthesize selectedTabId;
-@synthesize framesTabController;
-@synthesize adjacentsTabController;
-@synthesize eggsTabController;
-
-- (NSString *)windowNibName
-{
-	return @"HashedSeedInspector";
-}
-
 - (void)awakeFromNib
 {
   [super awakeFromNib];

@@ -20,7 +20,7 @@
 
 #import "HashedSeedInspectorAdjacentsTabController.h"
 
-#import "HashedSeedInspectorController.h"
+#import "StandardSeedInspectorController.h"
 
 #include "HashedSeed.h"
 #include "FrameGenerator.h"

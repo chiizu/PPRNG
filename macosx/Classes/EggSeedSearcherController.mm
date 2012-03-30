@@ -21,7 +21,7 @@
 
 #import "EggSeedSearcherController.h"
 
-#import "HashedSeedInspectorController.h"
+#import "StandardSeedInspectorController.h"
 #import "SearchResultProtocols.h"
 
 #include "EggSeedSearcher.h"
@@ -368,8 +368,8 @@ struct ProgressHandler
     
     if (row != nil)
     {
-      HashedSeedInspectorController  *inspector =
-        [[HashedSeedInspectorController alloc] init];
+      StandardSeedInspectorController  *inspector =
+        [[StandardSeedInspectorController alloc] init];
       [inspector window];
       
       [inspector setSeedFromResult: row];

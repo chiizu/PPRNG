@@ -30,7 +30,7 @@
 		<object class="NSMutableArray" key="IBDocument.RootObjects" id="1000">
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<object class="NSCustomObject" id="1001">
-				<string key="NSClassName">HashedSeedInspectorController</string>
+				<string key="NSClassName">StandardSeedInspectorController</string>
 			</object>
 			<object class="NSCustomObject" id="1003">
 				<string key="NSClassName">FirstResponder</string>
@@ -36576,9 +36576,9 @@ IC0gMTAwJSk</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1259, 225}, {1078, 661}}</string>
+					<string>{{-1270, 334}, {1078, 661}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1259, 225}, {1078, 661}}</string>
+					<string>{{-1270, 334}, {1078, 661}}</string>
 					<boolean value="NO"/>
 					<string>{196, 240}</string>
 					<string>{{357, 418}, {480, 270}}</string>
@@ -40033,7 +40033,7 @@ IC0gMTAwJSk</string>
 							<string>NSArrayController</string>
 							<string>NSTableView</string>
 							<string>Gen5ConfigurationController</string>
-							<string>HashedSeedInspectorController</string>
+							<string>StandardSeedInspectorController</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -40061,7 +40061,7 @@ IC0gMTAwJSk</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">inspectorController</string>
-								<string key="candidateClassName">HashedSeedInspectorController</string>
+								<string key="candidateClassName">StandardSeedInspectorController</string>
 							</object>
 						</object>
 					</object>
@@ -40106,49 +40106,14 @@ IC0gMTAwJSk</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="outlets">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>adjacentsTabController</string>
-							<string>eggsTabController</string>
-							<string>framesTabController</string>
-							<string>gen5ConfigController</string>
-						</object>
-						<object class="NSMutableArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>HashedSeedInspectorAdjacentsTabController</string>
-							<string>HashedSeedInspectorEggsTabController</string>
-							<string>HashedSeedInspectorFramesTabController</string>
-							<string>Gen5ConfigurationController</string>
-						</object>
+						<string key="NS.key.0">gen5ConfigController</string>
+						<string key="NS.object.0">Gen5ConfigurationController</string>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>adjacentsTabController</string>
-							<string>eggsTabController</string>
-							<string>framesTabController</string>
-							<string>gen5ConfigController</string>
-						</object>
-						<object class="NSMutableArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="IBToOneOutletInfo">
-								<string key="name">adjacentsTabController</string>
-								<string key="candidateClassName">HashedSeedInspectorAdjacentsTabController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">eggsTabController</string>
-								<string key="candidateClassName">HashedSeedInspectorEggsTabController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">framesTabController</string>
-								<string key="candidateClassName">HashedSeedInspectorFramesTabController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">gen5ConfigController</string>
-								<string key="candidateClassName">Gen5ConfigurationController</string>
-							</object>
+						<string key="NS.key.0">gen5ConfigController</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">gen5ConfigController</string>
+							<string key="candidateClassName">Gen5ConfigurationController</string>
 						</object>
 					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
@@ -40184,7 +40149,7 @@ IC0gMTAwJSk</string>
 							<string>NSArrayController</string>
 							<string>NSTableView</string>
 							<string>Gen5ConfigurationController</string>
-							<string>HashedSeedInspectorController</string>
+							<string>StandardSeedInspectorController</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -40212,7 +40177,7 @@ IC0gMTAwJSk</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">inspectorController</string>
-								<string key="candidateClassName">HashedSeedInspectorController</string>
+								<string key="candidateClassName">StandardSeedInspectorController</string>
 							</object>
 						</object>
 					</object>
@@ -40271,7 +40236,7 @@ IC0gMTAwJSk</string>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>Gen5ConfigurationController</string>
-							<string>HashedSeedInspectorController</string>
+							<string>StandardSeedInspectorController</string>
 							<string>NSArrayController</string>
 							<string>NSTableView</string>
 							<string>IVParameterController</string>
@@ -40299,7 +40264,7 @@ IC0gMTAwJSk</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">inspectorController</string>
-								<string key="candidateClassName">HashedSeedInspectorController</string>
+								<string key="candidateClassName">StandardSeedInspectorController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">ivFrameContentArray</string>
@@ -40350,6 +40315,53 @@ IC0gMTAwJSk</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">Classes/IVParameterController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">StandardSeedInspectorController</string>
+					<string key="superclassName">HashedSeedInspectorController</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>adjacentsTabController</string>
+							<string>eggsTabController</string>
+							<string>framesTabController</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>HashedSeedInspectorAdjacentsTabController</string>
+							<string>HashedSeedInspectorEggsTabController</string>
+							<string>HashedSeedInspectorFramesTabController</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>adjacentsTabController</string>
+							<string>eggsTabController</string>
+							<string>framesTabController</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">adjacentsTabController</string>
+								<string key="candidateClassName">HashedSeedInspectorAdjacentsTabController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">eggsTabController</string>
+								<string key="candidateClassName">HashedSeedInspectorEggsTabController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">framesTabController</string>
+								<string key="candidateClassName">HashedSeedInspectorFramesTabController</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">Classes/StandardSeedInspectorController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

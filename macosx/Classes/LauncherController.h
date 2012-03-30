@@ -25,7 +25,7 @@
 @interface LauncherController : NSWindowController
 {
   IBOutlet NSButton  *launchHashedSeedSearcher;
-  IBOutlet NSButton  *launchHashedSeedInspector;
+  IBOutlet NSButton  *launchStandardSeedInspector;
   IBOutlet NSButton  *launchEggSeedSearcher;
   IBOutlet NSButton  *launchWonderCardSeedSearcher;
   IBOutlet NSButton  *launchWonderCardSeedInspector;
