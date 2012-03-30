@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -21,11 +21,77 @@
 
 #import "TrainerIDSearcherController.h"
 
+#import "SearchResultProtocols.h"
+
 #include "TrainerIDSearcher.h"
 #include "Utilities.h"
 
 
 using namespace pprng;
+
+@interface DesiredShinyPIDFrameResult : NSObject <PIDResult>
+{
+  uint64_t  rawSeed;
+  uint32_t  frame;
+  
+  DECLARE_PID_RESULT_VARIABLES();
+  
+  NSString  *grassCaveSurfSpotFrame;
+  NSString  *swarmFrame, *dustFrame, *shadowFrame;
+  NSString  *stationaryFrame, *fishFrame;
+  
+  ESV::Value  landESV, surfESV, fishESV;
+}
+
+@property uint64_t  rawSeed;
+@property uint32_t  frame;
+
+@property (copy) NSString  *grassCaveSurfSpotFrame;
+@property (copy) NSString  *swarmFrame, *dustFrame, *shadowFrame;
+@property (copy) NSString  *stationaryFrame, *fishFrame;
+
+@property ESV::Value  landESV, surfESV, fishESV;
+
+@end
+
+@implementation DesiredShinyPIDFrameResult
+
+@synthesize rawSeed, frame;
+
+SYNTHESIZE_PID_RESULT_PROPERTIES();
+
+@synthesize grassCaveSurfSpotFrame;
+@synthesize swarmFrame, dustFrame, shadowFrame;
+@synthesize stationaryFrame, fishFrame;
+@synthesize landESV, surfESV, fishESV;
+
+@end
+
+
+@interface TrainerIDSeedSearchResult : NSObject <HashedSeedResultParameters>
+{
+  DECLARE_HASHED_SEED_RESULT_PARAMETERS_VARIABLES();
+  
+  uint32_t  frame;
+  uint32_t  tid, sid;
+  BOOL      wildShiny, giftShiny, eggShiny;
+}
+
+@property uint32_t  frame, tid, sid;
+@property BOOL      wildShiny, giftShiny, eggShiny;
+
+@end
+
+@implementation TrainerIDSeedSearchResult
+
+SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
+
+@synthesize frame, tid, sid;
+@synthesize wildShiny, giftShiny, eggShiny;
+
+@end
+
+
 
 namespace
 {
@@ -38,20 +104,17 @@ struct TrainerIDSearchResultHandler
   
   void operator()(const Gen5TrainerIDFrame &frame)
   {
-    NSMutableDictionary  *result =
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedLongLong: frame.seed.rawSeed], @"seed",
-        [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
-          frame.seed.year(), frame.seed.month(), frame.seed.day()], @"date",
-        [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
-          frame.seed.hour, frame.seed.minute, frame.seed.second], @"time",
-        [NSNumber numberWithUnsignedInt: frame.seed.timer0], @"timer0",
-				[NSString stringWithFormat: @"%s",
-          Button::ToString(frame.seed.heldButtons).c_str()], @"keys",
-				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        [NSNumber numberWithUnsignedInt: frame.tid], @"tid",
-        [NSNumber numberWithUnsignedInt: frame.sid], @"sid",
-        nil];
+    TrainerIDSeedSearchResult  *result =
+      [[TrainerIDSeedSearchResult alloc] init];
+    
+    SetHashedSeedResultParameters(result, frame.seed);
+    
+    result.frame = frame.number;
+    result.tid = frame.tid;
+    result.sid = frame.sid;
+    result.wildShiny = frame.wildShiny;
+    result.giftShiny = frame.giftShiny;
+    result.eggShiny = frame.eggShiny;
     
     [controller performSelectorOnMainThread: @selector(addResult:)
                 withObject: result
@@ -87,20 +150,14 @@ struct IDFrameSearchResultHandler
   
   void operator()(const Gen5TrainerIDFrame &frame)
   {
-    NSMutableDictionary  *result =
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedLongLong: frame.seed.rawSeed], @"seed",
-        [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
-          frame.seed.year(), frame.seed.month(), frame.seed.day()], @"date",
-        [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
-          frame.seed.hour, frame.seed.minute, frame.seed.second], @"time",
-        [NSNumber numberWithUnsignedInt: frame.seed.timer0], @"timer0",
-				[NSString stringWithFormat: @"%s",
-          Button::ToString(frame.seed.heldButtons).c_str()], @"keys",
-				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        [NSNumber numberWithUnsignedInt: frame.tid], @"tid",
-        [NSNumber numberWithUnsignedInt: frame.sid], @"sid",
-        nil];
+    TrainerIDSeedSearchResult  *result =
+      [[TrainerIDSeedSearchResult alloc] init];
+    
+    SetHashedSeedResultParameters(result, frame.seed);
+    
+    result.frame = frame.number;
+    result.tid = frame.tid;
+    result.sid = frame.sid;
     
     [controller performSelectorOnMainThread: @selector(addResult:)
                 withObject: result
@@ -133,6 +190,34 @@ struct IDFrameSearchProgressHandler
 
 @implementation TrainerIDSearcherController
 
+@synthesize  ivSeed;
+  
+@synthesize  startFromInitialPIDFrame;
+@synthesize  minPIDFrame, maxPIDFrame;
+
+@synthesize  fromDate, toDate;
+@synthesize  noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
+
+@synthesize  minTIDFrame, maxTIDFrame;
+@synthesize  wildShiny, giftShiny, eggShiny;
+@synthesize  desiredTID;
+
+@synthesize  foundTID;
+@synthesize  startDate;
+  
+@synthesize  considerHour;
+@synthesize  startHour;
+  
+@synthesize  considerMinute;
+@synthesize  startMinute;
+  
+@synthesize  considerSecond;
+@synthesize  startSecond;
+  
+@synthesize  button1, button2, button3;
+  
+@synthesize  minFoundTIDFrame, maxFoundTIDFrame;
+
 - (NSString *)windowNibName
 {
 	return @"TrainerIDSearcher";
@@ -142,34 +227,54 @@ struct IDFrameSearchProgressHandler
 {
   [super awakeFromNib];
   
-  [[pidSeedField formatter] setFormatWidth: 16];
-  
-  [[[[pidFrameTableView tableColumnWithIdentifier: @"pid"] dataCell] formatter]
-   setFormatWidth: 8];
+  self.ivSeed = nil;
+  self.startFromInitialPIDFrame = YES;
+  self.minPIDFrame = 50;
+  self.maxPIDFrame = 100;
   
   [tidSidSearcherController setGetValidatedSearchCriteriaSelector:
                             @selector(tidSidSearchGetValidatedSearchCriteria)];
   [tidSidSearcherController setDoSearchWithCriteriaSelector:
                             @selector(tidSidSearchDoSearchWithCriteria:)];
   
-  [[[[[tidSidSearcherController tableView] tableColumnWithIdentifier: @"seed"]
-    dataCell] formatter]
-   setFormatWidth: 16];
-  
   NSDate  *now = [NSDate date];
-  [tidSidFromDateField setObjectValue: now];
-  [tidSidToDateField setObjectValue: now];
+  self.fromDate = now;
+  self.toDate = now;
+  
+  self.noButtonHeld = YES;
+  self.oneButtonHeld = NO;
+  self.twoButtonsHeld = NO;
+  self.threeButtonsHeld = NO;
+  
+  self.minTIDFrame = 30;
+  self.maxTIDFrame = 50;
+  
+  self.wildShiny = YES;
+  self.giftShiny = YES;
+  self.eggShiny = YES;
+  
+  self.desiredTID = nil;
   
   [idFrameSearcherController setGetValidatedSearchCriteriaSelector:
                              @selector(idFrameSearchGetValidatedSearchCriteria)];
   [idFrameSearcherController setDoSearchWithCriteriaSelector:
                              @selector(idFrameSearchDoSearchWithCriteria:)];
   
-  [[[[[idFrameSearcherController tableView] tableColumnWithIdentifier: @"seed"]
-    dataCell] formatter]
-   setFormatWidth: 16];
+  self.foundTID = nil;
+  self.startDate = now;
+  self.considerHour = YES;
+  self.startHour = 0;
+  self.considerMinute = YES;
+  self.startMinute = 0;
+  self.considerSecond = YES;
+  self.startSecond = 0;
   
-  [idFrameDateField setObjectValue: now];
+  self.button1 = 0;
+  self.button2 = 0;
+  self.button3 = 0;
+  
+  self.minFoundTIDFrame = 10;
+  self.maxFoundTIDFrame = 50;
 }
 
 - (void)windowWillClose:(NSNotification *)notification
@@ -182,30 +287,39 @@ struct IDFrameSearchProgressHandler
 
 - (IBAction) generatePIDFrames:(id)sender
 {
-  if ([[pidSeedField stringValue] length] == 0)
-  {
+  if (!EndEditing([self window]))
     return;
-  }
+  
+  if (!ivSeed)
+    return;
   
   [pidFrameContentArray setContent: [NSMutableArray array]];
   
-  HashedSeed  seed([[pidSeedField objectValue] unsignedLongLongValue]);
+  HashedSeed  seed([ivSeed unsignedLongLongValue]);
   
-  uint32_t  minPIDFrame = [pidMinFrameField intValue];
-  uint32_t  maxPIDFrame = [pidMaxFrameField intValue];
-  uint32_t  frameNum = 0, limitFrame = minPIDFrame - 1;
+  uint32_t  skippedFrames = startFromInitialPIDFrame ?
+                              seed.GetSkippedPIDFrames() : minPIDFrame - 1;
   
   Gen5PIDFrameGenerator::Parameters  frameParameters;
   
-  frameParameters.useCompoundEyes = false;
+  frameParameters.leadAbility = EncounterLead::SYNCHRONIZE;
+  frameParameters.targetGender = Gender::ANY;
+  frameParameters.targetRatio = Gender::ANY_RATIO;
   frameParameters.tid = 0;
   frameParameters.sid = 0;
+  frameParameters.startFromLowestFrame = false;  // need to handle manually
   
   frameParameters.frameType = Gen5PIDFrameGenerator::GrassCaveFrame;
   Gen5PIDFrameGenerator  gcGenerator(seed, frameParameters);
   
+  frameParameters.frameType = Gen5PIDFrameGenerator::SurfingFrame;
+  Gen5PIDFrameGenerator  sfGenerator(seed, frameParameters);
+  
   frameParameters.frameType = Gen5PIDFrameGenerator::FishingFrame;
   Gen5PIDFrameGenerator  fsGenerator(seed, frameParameters);
+  
+  frameParameters.frameType = Gen5PIDFrameGenerator::SwarmFrame;
+  Gen5PIDFrameGenerator  swGenerator(seed, frameParameters);
   
   frameParameters.frameType = Gen5PIDFrameGenerator::SwirlingDustFrame;
   Gen5PIDFrameGenerator  sdGenerator(seed, frameParameters);
@@ -221,6 +335,7 @@ struct IDFrameSearchProgressHandler
   
   // get the PIDs in sync
   gcGenerator.AdvanceFrame();
+  sfGenerator.AdvanceFrame();
   stGenerator.AdvanceFrame();
   stGenerator.AdvanceFrame();
   stGenerator.AdvanceFrame();
@@ -229,89 +344,81 @@ struct IDFrameSearchProgressHandler
   pidGenerator.AdvanceFrame();
   pidGenerator.AdvanceFrame();
   
-  while (frameNum < limitFrame)
+  while (pidGenerator.CurrentFrame().number <= skippedFrames)
   {
     gcGenerator.AdvanceFrame();
+    sfGenerator.AdvanceFrame();
     fsGenerator.AdvanceFrame();
+    swGenerator.AdvanceFrame();
     sdGenerator.AdvanceFrame();
     bsGenerator.AdvanceFrame();
     stGenerator.AdvanceFrame();
     pidGenerator.AdvanceFrame();
-    ++frameNum;
   }
   
   NSMutableArray  *rowArray =
     [NSMutableArray arrayWithCapacity: maxPIDFrame - minPIDFrame + 1];
   
-  while (frameNum < maxPIDFrame)
+  while (pidGenerator.CurrentFrame().number < maxPIDFrame)
   {
     gcGenerator.AdvanceFrame();
+    sfGenerator.AdvanceFrame();
     fsGenerator.AdvanceFrame();
+    swGenerator.AdvanceFrame();
     sdGenerator.AdvanceFrame();
     bsGenerator.AdvanceFrame();
     stGenerator.AdvanceFrame();
     pidGenerator.AdvanceFrame();
-    ++frameNum;
     
     Gen5PIDFrame  gcFrame = gcGenerator.CurrentFrame();
+    Gen5PIDFrame  sfFrame = sfGenerator.CurrentFrame();
     Gen5PIDFrame  fsFrame = fsGenerator.CurrentFrame();
+    Gen5PIDFrame  swFrame = swGenerator.CurrentFrame();
     Gen5PIDFrame  sdFrame = sdGenerator.CurrentFrame();
     Gen5PIDFrame  bsFrame = bsGenerator.CurrentFrame();
     Gen5PIDFrame  stFrame = stGenerator.CurrentFrame();
     Gen5PIDFrame  pidFrame = pidGenerator.CurrentFrame();
     
-    uint32_t  genderValue = pidFrame.pid.GenderValue();
+    DesiredShinyPIDFrameResult  *row =
+      [[DesiredShinyPIDFrameResult alloc] init];
     
-    NSMutableDictionary  *result =
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-				[NSNumber numberWithUnsignedInt: frameNum], @"frame",
-        [NSString stringWithFormat: @"%s",
-          Nature::ToString(pidFrame.nature).c_str()], @"nature",
-        [NSNumber numberWithUnsignedInt: pidFrame.pid.word], @"pid",
-        [NSNumber numberWithUnsignedInt: pidFrame.pid.Gen5Ability()],
-          @"ability",
-        ((genderValue < 31) ? @"♀" : @"♂"), @"gender18",
-        ((genderValue < 63) ? @"♀" : @"♂"), @"gender14",
-        ((genderValue < 127) ? @"♀" : @"♂"), @"gender12",
-        ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
-        (gcFrame.synched ? @"Y" : @""), @"syncA",
-        (fsFrame.synched ? @"Y" : @""), @"syncB",
-        (stFrame.synched ? @"Y" : @""), @"syncC",
-        [NSString stringWithFormat: @"%d", gcFrame.esv], @"esvL",
-        [NSString stringWithFormat: @"%d", fsFrame.esv], @"esvW",
-        (fsFrame.isEncounter ? @"Y" : @""), @"canFish",
-        (sdFrame.isEncounter ? @"Y" : @""), @"dustIsPoke",
-        (bsFrame.isEncounter ? @"" : @"Y"), @"shadowIsPoke",
-        nil];
+    row.frame = pidFrame.number;
+    SetGen5PIDResult(row, pidFrame.nature, pidFrame.pid, 0, 0,
+                     Gender::ANY, Gender::ANY_RATIO);
     
-    [rowArray addObject: result];
+    if (gcFrame.number > skippedFrames)
+    {
+      row.grassCaveSurfSpotFrame = gcFrame.abilityActivated ? @"S" : @"O";
+      row.landESV = gcFrame.esv;
+      row.surfESV = sfFrame.esv;
+      row.fishESV = fsFrame.esv; // waterspot
+    }
+    if ((fsFrame.number > skippedFrames) && fsFrame.isEncounter)
+    {
+      row.fishFrame = fsFrame.abilityActivated ? @"S" : @"O";
+      row.fishESV = fsFrame.esv;
+    }
+    if ((swFrame.number > skippedFrames) && (swFrame.esv == ESV::SWARM))
+    {
+      row.swarmFrame = swFrame.abilityActivated ? @"S" : @"O";
+    }
+    if ((sdFrame.number > skippedFrames) && sdFrame.isEncounter)
+    {
+      row.dustFrame = sdFrame.abilityActivated ? @"S" : @"O";
+    }
+    if ((bsFrame.number > skippedFrames) && bsFrame.isEncounter)
+    {
+      row.shadowFrame = bsFrame.abilityActivated ? @"S" : @"O";
+    }
+    if (stFrame.number > skippedFrames)
+    {
+      row.stationaryFrame = stFrame.abilityActivated ? @"S" : @"O";
+    }
+    
+    [rowArray addObject: row];
   }
   
   [pidFrameContentArray addObjects: rowArray];
-}
-
-- (IBAction) toggleTID:(id)sender
-{
-  BOOL enabled = [tidSidEnableDesiredTidButton state];
-  [tidSidDesiredTidField setEnabled: enabled];
-}
-
-- (IBAction) toggleTime:(id)sender
-{
-  BOOL  hourEnabled = [idFrameEnableHourButton state];
-  BOOL  minuteEnabled = [idFrameEnableMinuteButton state];
-  BOOL  secondEnabled = [idFrameEnableSecondButton state];
-  
-  [idFrameStartHour setEnabled: hourEnabled];
-  [idFrameHourStepper setEnabled: hourEnabled];
-  [idFrameEnableMinuteButton setEnabled: hourEnabled];
-  [idFrameStartMinute setEnabled: hourEnabled && minuteEnabled];
-  [idFrameMinuteStepper setEnabled: hourEnabled && minuteEnabled];
-  [idFrameEnableSecondButton setEnabled: hourEnabled && minuteEnabled];
-  [idFrameStartSecond
-   setEnabled: hourEnabled && minuteEnabled && secondEnabled];
-  [idFrameSecondStepper
-   setEnabled: hourEnabled && minuteEnabled && secondEnabled];
 }
 
 // dummy method for error panel
@@ -324,6 +431,9 @@ struct IDFrameSearchProgressHandler
 {
   using namespace boost::gregorian;
   using namespace boost::posix_time;
+  
+  if (!EndEditing([self window]))
+    return nil;
   
   NSInteger  rowNum = [pidFrameTableView selectedRow];
   if (rowNum < 0)
@@ -358,25 +468,25 @@ struct IDFrameSearchProgressHandler
   criteria.seedParameters.vframeLow = [gen5ConfigController vframeLow];
   criteria.seedParameters.vframeHigh = [gen5ConfigController vframeHigh];
   
-  if ([tidSidNoKeyHeldButton state])
+  if (noButtonHeld)
   {
-    criteria.seedParameters.heldButtons.push_back(0);  // no keys
+    criteria.seedParameters.heldButtons.push_back(0);  // no buttons
   }
-  if ([tidSidOneKeyHeldButton state])
+  if (oneButtonHeld)
   {
     criteria.seedParameters.heldButtons.insert
       (criteria.seedParameters.heldButtons.end(),
        Button::SingleButtons().begin(),
        Button::SingleButtons().end());
   }
-  if ([tidSidTwoKeysHeldButton state])
+  if (twoButtonsHeld)
   {
     criteria.seedParameters.heldButtons.insert
       (criteria.seedParameters.heldButtons.end(),
        Button::TwoButtonCombos().begin(),
        Button::TwoButtonCombos().end());
   }
-  if ([tidSidThreeKeysHeldButton state])
+  if (threeButtonsHeld)
   {
     criteria.seedParameters.heldButtons.insert
       (criteria.seedParameters.heldButtons.end(),
@@ -385,30 +495,26 @@ struct IDFrameSearchProgressHandler
   }
   
   criteria.seedParameters.fromTime =
-    ptime(NSDateToBoostDate([tidSidFromDateField objectValue]), seconds(0));
+    ptime(NSDateToBoostDate(fromDate), seconds(0));
   
   criteria.seedParameters.toTime =
-    ptime(NSDateToBoostDate([tidSidToDateField objectValue]),
-                            hours(23) + minutes(59) + seconds(59));
+    ptime(NSDateToBoostDate(toDate), hours(23) + minutes(59) + seconds(59));
   
-  criteria.frame.min = [tidSidMinFrameField intValue];
-  criteria.frame.max = [tidSidMaxFrameField intValue];
+  criteria.frame.min = minTIDFrame;
+  criteria.frame.max = maxTIDFrame;
   
-  criteria.hasTID = [tidSidEnableDesiredTidButton state];
+  criteria.hasTID = (desiredTID != nil);
   if (criteria.hasTID)
-  {
-    criteria.tid = [tidSidDesiredTidField intValue];
-  }
+    criteria.tid = [desiredTID unsignedIntValue];
   
-  NSDictionary  *row =
+  DesiredShinyPIDFrameResult  *row =
     [[pidFrameContentArray arrangedObjects] objectAtIndex: rowNum];
-  NSNumber  *pid = [row objectForKey: @"pid"];
-  criteria.shinyPID = [pid unsignedIntValue];
+  criteria.shinyPID = row.pid;
   criteria.hasShinyPID = true;
   
-  criteria.wildShiny = [tidSidWildShinyButton state];
-  criteria.giftShiny = [tidSidGiftShinyButton state];
-  criteria.eggShiny = [tidSidEggShinyButton state];
+  criteria.wildShiny = wildShiny;
+  criteria.giftShiny = giftShiny;
+  criteria.eggShiny = eggShiny;
   
   if (criteria.ExpectedNumberOfResults() > 10000)
   {
@@ -450,6 +556,12 @@ struct IDFrameSearchProgressHandler
   using namespace boost::gregorian;
   using namespace boost::posix_time;
 
+  if (!EndEditing([self window]))
+    return nil;
+  
+  if (!foundTID)
+    return nil;
+  
   TrainerIDSearcher::Criteria  criteria;
   
   criteria.seedParameters.macAddress = [gen5ConfigController macAddress];
@@ -466,21 +578,19 @@ struct IDFrameSearchProgressHandler
   criteria.seedParameters.vframeLow = [gen5ConfigController vframeLow];
   criteria.seedParameters.vframeHigh = [gen5ConfigController vframeHigh];
   
-  date  d = NSDateToBoostDate([idFrameDateField objectValue]);
+  date  d = NSDateToBoostDate(startDate);
   
   time_duration  startTime, endTime;
   
-  if ([idFrameEnableHourButton state])
+  if (considerHour)
   {
-    startTime = hours([idFrameStartHour intValue]);
-    if ([idFrameEnableMinuteButton isEnabled] &&
-        [idFrameEnableMinuteButton state])
+    startTime = hours(startHour);
+    if (considerMinute)
     {
-      startTime = startTime + minutes([idFrameStartMinute intValue]);
-      if ([idFrameEnableSecondButton isEnabled] &&
-          [idFrameEnableSecondButton state])
+      startTime = startTime + minutes(startMinute);
+      if (considerSecond)
       {
-        startTime = startTime + seconds([idFrameStartSecond intValue]);
+        startTime = startTime + seconds(startSecond);
         
         endTime = startTime + seconds(10);
         startTime = startTime - seconds(5);
@@ -504,16 +614,13 @@ struct IDFrameSearchProgressHandler
   criteria.seedParameters.fromTime = ptime(d, startTime);
   criteria.seedParameters.toTime = ptime(d, endTime);
   
-  criteria.seedParameters.heldButtons.push_back
-    ([[idFrameKeyOnePopUp selectedItem] tag] |
-     [[idFrameKeyTwoPopUp selectedItem] tag] |
-     [[idFrameKeyThreePopUp selectedItem] tag]);
+  criteria.seedParameters.heldButtons.push_back(button1 | button2 | button3);
   
-  criteria.frame.min = [idFrameMinFrameField intValue];
-  criteria.frame.max = [idFrameMaxFrameField intValue];
+  criteria.frame.min = minFoundTIDFrame;
+  criteria.frame.max = maxFoundTIDFrame;
   
   criteria.hasTID = true;
-  criteria.tid = [idFrameTrainerIDField intValue];
+  criteria.tid = [foundTID unsignedIntValue];
   criteria.hasShinyPID = false;
   
   if (criteria.ExpectedNumberOfResults() > 100)

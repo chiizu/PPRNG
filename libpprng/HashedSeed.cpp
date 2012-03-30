@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -29,16 +29,15 @@ namespace pprng
 namespace
 {
 
-enum { NumTableRows = 6, NumTableColumns = 5, NumLoops = 5 };
+enum { NumTableRows = 5, NumTableColumns = 4, NumLoops = 5 };
 
 static uint32_t  PercentageTable[NumTableRows][NumTableColumns] =
 {
-  {  50,100,100,100,100 },
-  {  50, 50,100,100,100 },
-  {  30, 50,100,100,100 },
-  {  25, 30, 50,100,100 },
-  {  20, 25, 33, 50,100 },
-  { 100,100,100,100,100 }
+  {  50,100,100,100 },
+  {  50, 50,100,100 },
+  {  30, 50,100,100 },
+  {  25, 30, 50,100 },
+  {  20, 25, 33, 50 }
 };
 
 static uint32_t CalculateConsumedPIDRNGFrames(uint64_t rawSeed)

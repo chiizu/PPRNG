@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -26,26 +26,13 @@
 #import "HashedSeedInspectorFramesTabController.h"
 #import "HashedSeedInspectorAdjacentsTabController.h"
 #import "HashedSeedInspectorEggsTabController.h"
+#import "SearchResultProtocols.h"
+
+#include "HashedSeed.h"
 
 @interface HashedSeedInspectorController : VertResizeOnlyWindowController
 {
   IBOutlet Gen5ConfigurationController  *gen5ConfigController;
-  
-  IBOutlet NSDatePicker           *startDate;
-  IBOutlet NSTextField            *startHour;
-  IBOutlet NSTextField            *startMinute;
-  IBOutlet NSTextField            *startSecond;
-  
-  IBOutlet NSTextField            *timer0Field;
-  IBOutlet NSTextField            *vcountField;
-  IBOutlet NSTextField            *vframeField;
-  
-  IBOutlet NSPopUpButton          *key1Menu;
-  IBOutlet NSPopUpButton          *key2Menu;
-  IBOutlet NSPopUpButton          *key3Menu;
-  
-  IBOutlet NSTextField            *seedField;
-  IBOutlet NSTextField            *initialPIDFrameField;
   
   IBOutlet HashedSeedInspectorFramesTabController     *framesTabController;
   
@@ -53,15 +40,40 @@
   
   IBOutlet HashedSeedInspectorEggsTabController       *eggsTabController;
   
-  NSData  *currentSeed;
+  NSDate    *startDate;
+  NSNumber  *startHour, *startMinute, *startSecond;
+  NSNumber  *timer0, *vcount, *vframe;
+  
+  uint32_t  button1, button2, button3;
+  
+  NSNumber  *rawSeed;
+  NSNumber  *initialPIDFrame;
+  
+  NSString  *selectedTabId;
 }
 
-- (IBAction)calculateSeed:(id)sender;
+@property (copy) NSDate    *startDate;
+@property (copy) NSNumber  *startHour, *startMinute, *startSecond;
+@property (copy) NSNumber  *timer0, *vcount, *vframe;
 
-// take HashedSeed from NSData pointer
-- (void)setSeed:(NSData*)seedData;
+@property        uint32_t  button1, button2, button3;
 
-// for updating initial PID frame when user types a new seed value
-- (void)controlTextDidEndEditing:(NSNotification*)notification;
+@property (copy) NSNumber  *rawSeed;
+@property (copy) NSNumber  *initialPIDFrame;
+
+@property (copy) NSString  *selectedTabId;
+
+@property (readonly)
+  HashedSeedInspectorFramesTabController *framesTabController;
+@property (readonly)
+  HashedSeedInspectorAdjacentsTabController *adjacentsTabController;
+@property (readonly)
+  HashedSeedInspectorEggsTabController *eggsTabController;
+
+- (IBAction) seedParameterChanged:(id)sender;
+- (IBAction) seedValueChanged:(id)sender;
+
+- (void)setSeedFromResult:(id <HashedSeedResultParameters>)result;
+- (void)setSeed:(const pprng::HashedSeed&)seed;
 
 @end

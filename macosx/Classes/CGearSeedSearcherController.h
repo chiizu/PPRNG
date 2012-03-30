@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -29,16 +29,15 @@
 {
   IBOutlet Gen5ConfigurationController  *gen5ConfigController;
   IBOutlet IVParameterController        *ivParameterController;
+  
+  uint32_t  minFrame, maxFrame;
+  uint32_t  minDelay, maxDelay;
+  
   IBOutlet SearcherController           *searcherController;
-  
-  IBOutlet NSPopUpButton        *searchTypeMenu;
-  
-  IBOutlet NSTextField          *minFrameField;
-  IBOutlet NSTextField          *maxFrameField;
-  
-  IBOutlet NSTextField          *minDelayField;
-  IBOutlet NSTextField          *maxDelayField;
 }
+
+@property uint32_t  minFrame, maxFrame;
+@property uint32_t  minDelay, maxDelay;
 
 - (void)inspectSeed:(id)sender;
 

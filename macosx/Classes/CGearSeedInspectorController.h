@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -29,32 +29,28 @@
 {
   IBOutlet Gen5ConfigurationController  *gen5ConfigController;
   
-  IBOutlet NSTextField            *seedField;
+  NSNumber  *seed, *baseDelay;
   
+  uint32_t  minIVFrame, maxIVFrame;
   
-  IBOutlet NSTextField            *minIVFrameField;
-  IBOutlet NSTextField            *maxIVFrameField;
+  IBOutlet IVParameterController  *ivFrameParameterController;
   
   IBOutlet NSTableView            *ivFrameTableView;
   IBOutlet NSArrayController      *ivFrameContentArray;
   
-  IBOutlet IVParameterController  *ivFrameParameterController;
   
+  uint32_t  year;
+  NSNumber  *actualDelay;
   
-  IBOutlet NSTextField            *timeFinderYearField;
-  IBOutlet NSButton               *useSecondButton;
-  IBOutlet NSTextField            *timeFinderSecondField;
+  BOOL      considerSeconds;
+  uint32_t  second;
   
   IBOutlet NSTableView            *timeFinderTableView;
   IBOutlet NSArrayController      *timeFinderContentArray;
   
   
-  IBOutlet NSTextField            *adjacentsMinIVFrameField;
-  IBOutlet NSTextField            *adjacentsMaxIVFrameField;
-  IBOutlet NSButton               *adjacentsRoamerButton;
-  
-  IBOutlet NSTextField            *adjacentsDelayVarianceField;
-  IBOutlet NSTextField            *adjacentsTimeVarianceField;
+  uint32_t  adjacentsDelayVariance, adjacentsTimeVariance;
+  uint32_t  adjacentsMinIVFrame, adjacentsMaxIVFrame;
   
   IBOutlet IVParameterController  *adjacentsIVParameterController;
   
@@ -62,13 +58,26 @@
   IBOutlet NSArrayController      *adjacentsContentArray;
 }
 
-- (IBAction)toggleTimeFinderSeconds:(id)sender;
+@property (copy) NSNumber  *seed, *baseDelay;
+
+@property uint32_t  minIVFrame, maxIVFrame;
+@property IVParameterController  *ivFrameParameterController;
+
+@property uint32_t         year;
+@property (copy) NSNumber  *actualDelay;
+
+@property BOOL      considerSeconds;
+@property uint32_t  second;
+
+@property uint32_t  adjacentsDelayVariance, adjacentsTimeVariance;
+@property uint32_t  adjacentsMinIVFrame, adjacentsMaxIVFrame;
+@property IVParameterController  *adjacentsIVParameterController;
 
 - (IBAction)generateIVFrames:(id)sender;
 - (IBAction)calculateTimes:(id)sender;
 - (IBAction)generateAdjacents:(id)sender;
 - (IBAction)findAdjacent:(id)sender;
 
-- (void)setSeed:(uint32_t)seed;
+- (void)selectAndShowFrame:(uint32_t)frame;
 
 @end

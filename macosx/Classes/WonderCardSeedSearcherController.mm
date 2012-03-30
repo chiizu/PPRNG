@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -31,66 +31,90 @@
 
 using namespace pprng;
 
+@interface WonderCardSeedSearchResult :
+  NSObject <HashedSeedResultParameters, IVResult, PIDResult>
+{
+  pprng::Nature::Type               cardNature;
+  pprng::Ability::Type              cardAbility;
+  pprng::Gender::Type               cardGender;
+  pprng::Gender::Ratio              cardGenderRatio;
+  pprng::WonderCardShininess::Type  cardShininess;
+  NSNumber                          *cardTID, *cardSID;
+  
+  DECLARE_HASHED_SEED_RESULT_PARAMETERS_VARIABLES();
+  
+  uint32_t  startFrame, frame;
+  DECLARE_PID_RESULT_VARIABLES();
+  
+  DECLARE_IV_RESULT_VARIABLES();
+}
+
+@property pprng::Nature::Type               cardNature;
+@property pprng::Ability::Type              cardAbility;
+@property pprng::Gender::Type               cardGender;
+@property pprng::Gender::Ratio              cardGenderRatio;
+@property pprng::WonderCardShininess::Type  cardShininess;
+@property (copy) NSNumber                   *cardTID, *cardSID;
+
+@property uint32_t  startFrame, frame;
+
+@end
+
+@implementation WonderCardSeedSearchResult
+
+@synthesize cardNature, cardAbility;
+@synthesize cardGender, cardGenderRatio;
+@synthesize cardShininess, cardTID, cardSID;
+
+SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
+
+@synthesize startFrame, frame;
+SYNTHESIZE_PID_RESULT_PROPERTIES();
+
+SYNTHESIZE_IV_RESULT_PROPERTIES();
+
+@end
+
+
 namespace
 {
 
 struct ResultHandler
 {
   ResultHandler(SearcherController *c,
-                const WonderCardSeedSearcher::Criteria &criteria)
-    : m_controller(c), m_criteria(criteria)
+                const WonderCardSeedSearcher::Criteria &criteria,
+                NSNumber *cardTID, NSNumber *cardSID)
+    : m_controller(c), m_criteria(criteria),
+      m_cardTID(cardTID), m_cardSID(cardSID)
   {}
   
   void operator()(const WonderCardFrame &frame)
   {
-    uint32_t  genderValue = frame.pid.GenderValue();
-    bool      showGender = m_criteria.frameParameters.cardGender == Gender::ANY;
+    WonderCardSeedSearchResult  *result =
+      [[WonderCardSeedSearchResult alloc] init];
     
-    NSMutableDictionary  *result =
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
-          frame.seed.year(), frame.seed.month(), frame.seed.day()], @"date",
-        [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
-          frame.seed.hour, frame.seed.minute, frame.seed.second], @"time",
-        [NSNumber numberWithUnsignedInt: frame.seed.timer0], @"timer0",
-				[NSString stringWithFormat: @"%s",
-          Button::ToString(frame.seed.heldButtons).c_str()], @"keys",
-        [NSNumber numberWithUnsignedInt: frame.seed.GetSkippedPIDFrames() + 1],
-          @"startFrame",
-				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        [NSString stringWithFormat: @"%s",
-          Nature::ToString
-            ((m_criteria.frameParameters.cardNature != Nature::ANY) ?
-               m_criteria.frameParameters.cardNature : frame.nature).c_str()],
-          @"nature",
-        ((m_criteria.frameParameters.cardAbility == Ability::HIDDEN) ?
-          @"DW" :
-          [NSString stringWithFormat: @"%d",
-            ((m_criteria.frameParameters.cardAbility == Ability::ANY) ?
-               frame.pid.Gen5Ability() :
-               m_criteria.frameParameters.cardAbility)]),
-          @"ability",
-        (showGender ? ((genderValue < 31) ? @"♀" : @"♂") : @""),
-          @"gender18",
-        (showGender ? ((genderValue < 63) ? @"♀" : @"♂") : @""),
-          @"gender14",
-        (showGender ? ((genderValue < 127) ? @"♀" : @"♂") : @""),
-          @"gender12",
-        (showGender ? ((genderValue < 191) ? @"♀" : @"♂") : @""),
-          @"gender34",
-        [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
-        [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
-        [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sa()], @"spa",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sd()], @"spd",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sp()], @"spe",
-        [NSString stringWithFormat: @"%s",
-          Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
-        [NSNumber numberWithUnsignedInt: frame.ivs.HiddenPower()],
-          @"hiddenPower",
-        [NSData dataWithBytes: &frame.seed length: sizeof(HashedSeed)],
-          @"fullSeed",
-        nil];
+    result.cardNature = m_criteria.frameParameters.cardNature;
+    result.cardAbility = m_criteria.frameParameters.cardAbility;
+    result.cardGender = m_criteria.frameParameters.cardGender;
+    result.cardGenderRatio = m_criteria.frameParameters.cardGenderRatio;
+    result.cardShininess = m_criteria.frameParameters.cardShininess;
+    result.cardTID = m_cardTID;
+    result.cardSID = m_cardSID;
+    
+    SetHashedSeedResultParameters(result, frame.seed);
+    
+    result.startFrame = frame.seed.GetSkippedPIDFrames() + 1;
+    result.frame = frame.number;
+    
+    SetGen5PIDResult(result, frame.nature, frame.pid,
+                     m_criteria.frameParameters.cardTID,
+                     m_criteria.frameParameters.cardSID,
+                     m_criteria.frameParameters.cardGender,
+                     m_criteria.frameParameters.cardGenderRatio);
+    if (frame.hasHiddenAbility)
+      result.ability = Ability::HIDDEN;
+    
+    SetIVResult(result, frame.ivs, NO);
     
     [m_controller performSelectorOnMainThread: @selector(addResult:)
                   withObject: result
@@ -99,6 +123,7 @@ struct ResultHandler
   
   SearcherController                      *m_controller;
   const WonderCardSeedSearcher::Criteria  &m_criteria;
+  NSNumber                                *m_cardTID, *m_cardSID;
 };
 
 struct ProgressHandler
@@ -124,15 +149,21 @@ struct ProgressHandler
 
 @implementation WonderCardSeedSearcherController
 
-@synthesize cardNature;
-@synthesize cardAbility;
-@synthesize cardAlwaysShiny;
-@synthesize cardGender;
-@synthesize cardGenderRatio;
+@synthesize fromDate, toDate;
+@synthesize noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
 
-@synthesize natureSearchable;
-@synthesize abilitySearchable;
-@synthesize genderSearchable;
+@synthesize cardNature, cardAbility;
+@synthesize cardGender, cardGenderRatio;
+@synthesize cardShininess, cardTID, cardSID;
+
+@synthesize natureSearchable, abilitySearchable;
+@synthesize shininessSearchable, genderSearchable;
+
+@synthesize showShinyOnly;
+@synthesize ability, gender;
+
+@synthesize startFromInitialFrame;
+@synthesize minFrame, maxFrame;
 
 - (NSString *)windowNibName
 {
@@ -148,17 +179,38 @@ struct ProgressHandler
   [searcherController setDoSearchWithCriteriaSelector:
                       @selector(doSearchWithCriteria:)];
   
+  [[searcherController tableView] setTarget: self];
   [[searcherController tableView] setDoubleAction: @selector(inspectSeed:)];
   
   NSDate  *now = [NSDate date];
-  [fromDateField setObjectValue: now];
-  [toDateField setObjectValue: now];
+  self.fromDate = now;
+  self.toDate = now;
+  
+  self.noButtonHeld = YES;
+  self.oneButtonHeld = YES;
+  self.twoButtonsHeld = NO;
+  self.threeButtonsHeld = NO;
   
   self.cardNature = Nature::ANY;
   self.cardAbility = Ability::ANY;
-  self.cardAlwaysShiny = NO;
   self.cardGender = Gender::ANY;
-  self.cardGenderRatio = Gender::UNSPECIFIED;
+  self.cardGenderRatio = Gender::ANY_RATIO;
+  self.cardShininess = WonderCardShininess::NEVER_SHINY;
+  self.cardTID = nil;
+  self.cardSID = [NSNumber numberWithUnsignedInt: 0];
+  
+  self.showShinyOnly = NO;
+  self.ability = Ability::ANY;
+  self.gender = Gender::ANY;
+  
+  self.startFromInitialFrame = YES;
+  self.minFrame = 50;
+  self.maxFrame = 200;
+}
+
+- (IBAction)toggleDropDownChoice:(id)sender
+{
+  HandleComboMenuItemChoice(sender);
 }
 
 - (void)windowWillClose:(NSNotification *)notification
@@ -167,21 +219,17 @@ struct ProgressHandler
     [searcherController startStop: self];
 }
 
-- (void)setCardNature:(uint32_t)newValue
+- (void)setCardNature:(Nature::Type)newValue
 {
   if (cardNature != newValue)
   {
     cardNature = newValue;
     
     self.natureSearchable = (newValue == Nature::ANY);
-    if (!natureSearchable)
-    {
-      [naturePopUp selectItemWithTag: Nature::ANY];
-    }
   }
 }
 
-- (void)setCardAbility:(uint32_t)newValue
+- (void)setCardAbility:(Ability::Type)newValue
 {
   if (cardAbility != newValue)
   {
@@ -190,12 +238,30 @@ struct ProgressHandler
     self.abilitySearchable = (newValue == Ability::ANY);
     if (!abilitySearchable)
     {
-      [abilityPopUp selectItemWithTag: Ability::ANY];
+      self.ability = newValue;
     }
   }
 }
 
-- (void)setCardGender:(uint32_t)newValue
+- (void)setCardShininess:(WonderCardShininess::Type)newValue
+{
+  if (cardShininess != newValue)
+  {
+    cardShininess = newValue;
+    
+    self.shininessSearchable = (newValue == 1);
+    if (shininessSearchable)
+    {
+      self.showShinyOnly = YES;
+    }
+    else
+    {
+      self.showShinyOnly = (newValue == 2);
+    }
+  }
+}
+
+- (void)setCardGender:(Gender::Type)newValue
 {
   if (cardGender != newValue)
   {
@@ -204,19 +270,12 @@ struct ProgressHandler
     self.genderSearchable = (newValue == Gender::ANY);
     if (!genderSearchable)
     {
-      [genderPopUp selectItemWithTag: Gender::ANY];
-      [genderRatioPopUp selectItemWithTag: Gender::UNSPECIFIED];
+      self.gender = newValue;
     }
     
-    if (cardGender == Gender::NEUTRAL)
-      self.cardGenderRatio = Gender::UNSPECIFIED;
+    if (cardGender == Gender::GENDERLESS)
+      self.cardGenderRatio = Gender::ANY_RATIO;
   }
-}
-
-- (IBAction)toggleUseInitialPID:(id)sender
-{
-  BOOL enabled = [useInitialPIDButton state];
-  [minFrameField setEnabled: !enabled];
 }
 
 - (void)inspectSeed:(id)sender
@@ -225,24 +284,40 @@ struct ProgressHandler
   
   if (rowNum >= 0)
   {
-    NSDictionary  *row =
+    WonderCardSeedSearchResult  *row =
       [[[searcherController arrayController] arrangedObjects]
         objectAtIndex: rowNum];
     
     if (row != nil)
     {
-      NSData  *seed = [row objectForKey: @"fullSeed"];
-      
       WonderCardSeedInspectorController  *inspector =
         [[WonderCardSeedInspectorController alloc] init];
-      [inspector showWindow: self];
-      [inspector setSeed: seed];
+      [inspector window];
       
-      inspector.cardNature = cardNature;
-      inspector.cardAbility = cardAbility;
-      inspector.cardAlwaysShiny = cardAlwaysShiny;
-      inspector.cardGender = cardGender;
-      inspector.cardGenderRatio = cardGenderRatio;
+      [inspector setSeedFromResult: row];
+      
+      inspector.cardNature = row.cardNature;
+      inspector.cardAbility = row.cardAbility;
+      inspector.cardGender = row.cardGender;
+      inspector.cardGenderRatio = row.cardGenderRatio;
+      inspector.cardShininess = row.cardShininess;
+      inspector.cardTID = row.cardTID;
+      inspector.cardSID = row.cardSID;
+      
+      if (row.frame < row.startFrame)
+      {
+        inspector.startFromInitialFrame = NO;
+        inspector.minFrame = 1;
+        
+        inspector.matchOffsetFromInitialFrame = NO;
+      }
+      inspector.maxFrame = row.frame + 20;
+      inspector.targetFrame = row.frame;
+      
+      [inspector generateFrames: self];
+      [inspector selectAndShowFrame: row.frame];
+      
+      [inspector showWindow: self];
     }
   }
 }
@@ -256,6 +331,9 @@ struct ProgressHandler
 {
   using namespace boost::gregorian;
   using namespace boost::posix_time;
+  
+  if (!EndEditing([self window]))
+    return nil;
   
   WonderCardSeedSearcher::Criteria  criteria;
   
@@ -273,25 +351,25 @@ struct ProgressHandler
   criteria.seedParameters.vframeLow = [gen5ConfigController vframeLow];
   criteria.seedParameters.vframeHigh = [gen5ConfigController vframeHigh];
   
-  if ([noKeyHeldButton state])
+  if (noButtonHeld)
   {
-    criteria.seedParameters.heldButtons.push_back(0);  // no keys
+    criteria.seedParameters.heldButtons.push_back(0);  // no buttons
   }
-  if ([oneKeyHeldButton state])
+  if (oneButtonHeld)
   {
     criteria.seedParameters.heldButtons.insert
       (criteria.seedParameters.heldButtons.end(),
        Button::SingleButtons().begin(),
        Button::SingleButtons().end());
   }
-  if ([twoKeysHeldButton state])
+  if (twoButtonsHeld)
   {
     criteria.seedParameters.heldButtons.insert
       (criteria.seedParameters.heldButtons.end(),
        Button::TwoButtonCombos().begin(),
        Button::TwoButtonCombos().end());
   }
-  if ([threeKeysHeldButton state])
+  if (threeButtonsHeld)
   {
     criteria.seedParameters.heldButtons.insert
       (criteria.seedParameters.heldButtons.end(),
@@ -300,41 +378,42 @@ struct ProgressHandler
   }
   
   criteria.seedParameters.fromTime =
-    ptime(NSDateToBoostDate([fromDateField objectValue]), seconds(0));
+    ptime(NSDateToBoostDate(fromDate), seconds(0));
   
   criteria.seedParameters.toTime =
-    ptime(NSDateToBoostDate([toDateField objectValue]),
-                            hours(23) + minutes(59) + seconds(59));
+    ptime(NSDateToBoostDate(toDate), hours(23) + minutes(59) + seconds(59));
   
-  criteria.frameParameters.startFromLowestFrame = [useInitialPIDButton state];
-  criteria.frameParameters.cardNature = Nature::Type(cardNature);
+  criteria.frameParameters.startFromLowestFrame = startFromInitialFrame;
+  criteria.frameParameters.cardNature = cardNature;
   criteria.frameParameters.cardAbility = cardAbility;
-  criteria.frameParameters.cardAlwaysShiny = cardAlwaysShiny;
   criteria.frameParameters.cardGender = Gender::Type(cardGender);
   criteria.frameParameters.cardGenderRatio = Gender::Ratio(cardGenderRatio);
+  criteria.frameParameters.cardShininess = cardShininess;
+  criteria.frameParameters.cardTID = [cardTID unsignedIntValue];
+  criteria.frameParameters.cardSID = [cardSID unsignedIntValue];
   
-  criteria.ivs.min = [ivParameterController minIVs];
-  criteria.ivs.max = [ivParameterController maxIVs];
+  criteria.ivs.min = ivParameterController.minIVs;
+  criteria.ivs.max = ivParameterController.maxIVs;
   criteria.ivs.shouldCheckMax =
     (criteria.ivs.max != IVs(31, 31, 31, 31, 31, 31));
   
-  if ([ivParameterController considerHiddenPower])
+  if (ivParameterController.considerHiddenPower)
   {
-    criteria.ivs.hiddenType = [ivParameterController hiddenType];
-    criteria.ivs.minHiddenPower = [ivParameterController minHiddenPower];
+    criteria.ivs.hiddenType = ivParameterController.hiddenType;
+    criteria.ivs.minHiddenPower = ivParameterController.minHiddenPower;
   }
   else
   {
-    criteria.ivs.hiddenType = Element::UNKNOWN;
+    criteria.ivs.hiddenType = Element::NONE;
   }
-  criteria.pid.nature = Nature::Type([[naturePopUp selectedItem] tag]);
-  criteria.pid.ability = Ability::Type([[abilityPopUp selectedItem] tag]);
-  criteria.pid.gender = Gender::Type([[genderPopUp selectedItem] tag]);
-  criteria.pid.genderRatio =
-    Gender::Ratio([[genderRatioPopUp selectedItem] tag]);
+  criteria.pid.natureMask = GetComboMenuBitMask(natureDropDown);
+  criteria.pid.ability = ability;
+  criteria.pid.gender = gender;
+  criteria.pid.genderRatio = cardGenderRatio;
+  criteria.shinyOnly = showShinyOnly;
   
-  criteria.frame.min = [minFrameField intValue];
-  criteria.frame.max = [maxFrameField intValue];
+  criteria.frame.min = minFrame;
+  criteria.frame.max = maxFrame;
   
   if (CheckExpectedResults(criteria, 10000,
                            @"The current search parameters are expected to return more than 10,000 results. Please set more specific IVs, limit the date range, use fewer held keys, or other similar settings to reduce the number of expected results.",
@@ -358,9 +437,10 @@ struct ProgressHandler
   
   WonderCardSeedSearcher  searcher;
   
-  searcher.Search(*criteria,
-                  ResultHandler(searcherController, *criteria),
-                  ProgressHandler(searcherController));
+  searcher.Search
+    (*criteria,
+     ResultHandler(searcherController, *criteria, cardTID, cardSID),
+     ProgressHandler(searcherController));
 }
 
 

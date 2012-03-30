@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -22,15 +22,79 @@
 
 #import "CGearSeedInspectorController.h"
 
+#import "SearchResultProtocols.h"
+
 #include "HashedSeed.h"
 #include "FrameGenerator.h"
 #include "Utilities.h"
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 using namespace pprng;
 
+@interface CGearFrameResult : NSObject <IVResult>
+{
+  uint32_t  frame;
+  DECLARE_IV_RESULT_VARIABLES();
+}
+
+@property uint32_t  frame;
+
+@end
+
+@implementation CGearFrameResult
+
+@synthesize frame;
+SYNTHESIZE_IV_RESULT_PROPERTIES();
+
+@end
+
+
+@interface CGearSeedTimeResult : NSObject
+{
+  uint32_t  date, time, delay;
+}
+
+@property uint32_t  date, time, delay;
+
+@end
+
+@implementation CGearSeedTimeResult
+
+@synthesize date, time, delay;
+
+@end
+
+
+@interface CGearAdjacentSeedResult : NSObject <IVResult>
+{
+  uint32_t  seed, date, time, delay, frame;
+  DECLARE_IV_RESULT_VARIABLES();
+  uint32_t  ivWord;
+}
+
+@property uint32_t  seed, date, time, delay, frame, ivWord;
+
+@end
+
+@implementation CGearAdjacentSeedResult
+
+@synthesize seed, date, time, delay, frame, ivWord;
+SYNTHESIZE_IV_RESULT_PROPERTIES();
+
+@end
+
+
 @implementation CGearSeedInspectorController
+
+@synthesize seed, baseDelay;
+
+@synthesize ivFrameParameterController;
+@synthesize minIVFrame, maxIVFrame;
+
+@synthesize year, actualDelay;
+@synthesize considerSeconds, second;
+@synthesize adjacentsDelayVariance, adjacentsTimeVariance;
+@synthesize adjacentsMinIVFrame, adjacentsMaxIVFrame;
+@synthesize adjacentsIVParameterController;
 
 - (NSString *)windowNibName
 {
@@ -41,32 +105,85 @@ using namespace pprng;
 {
   [super awakeFromNib];
   
-  [[seedField formatter] setFormatWidth: 8];
+  self.seed = nil;
   
-  [timeFinderYearField
-   setIntValue: NSDateToBoostDate([NSDate date]).year()];
+  self.minIVFrame = 1;
+  self.maxIVFrame = 100;
   
-  [timeFinderSecondField setIntValue: 0];
+  self.year = uint32_t(NSDateToBoostDate([NSDate date]).year());
+  self.considerSeconds = YES;
+  self.second = 25;
+  
+  self.adjacentsDelayVariance = 10;
+  self.adjacentsTimeVariance = 1;
+  self.adjacentsMinIVFrame = 21;
+  self.adjacentsMaxIVFrame = 26;
+}
+
+- (void)updateActualDelay
+{
+  if (!seed)
+  {
+    self.actualDelay = nil;
+  }
+  else
+  {
+    uint32_t  base = [baseDelay unsignedIntValue];
+    uint32_t  offset = year - 2000;
+    
+    if (offset > base)
+      base += 65536;
+    
+    self.actualDelay = [NSNumber numberWithUnsignedInt: base - offset];
+  }
+}
+
+- (void)setSeed:(NSNumber *)newValue
+{
+  if (seed != newValue)
+  {
+    seed = newValue;
+    
+    if (newValue == nil)
+    {
+      self.baseDelay = nil;
+    }
+    else
+    {
+      CGearSeed  cgSeed([seed unsignedIntValue],
+                        [gen5ConfigController macAddressLow]);
+      self.baseDelay = [NSNumber numberWithUnsignedInt: cgSeed.BaseDelay()];
+      [self updateActualDelay];
+    }
+  }
+}
+
+- (void)setYear:(uint32_t)newValue
+{
+  if (year != newValue)
+  {
+    year = newValue;
+    [self updateActualDelay];
+  }
 }
 
 
 - (IBAction)generateIVFrames:(id)sender
 {
-  if ([[seedField stringValue] length] == 0)
-  {
+  if (!EndEditing([self window]))
     return;
-  }
+  
+  if (!seed)
+    return;
   
   [ivFrameContentArray setContent: [NSMutableArray array]];
   
-  uint32_t  seed = [[seedField objectValue] unsignedIntValue];
-  uint32_t  minIVFrame = [minIVFrameField intValue];
-  uint32_t  maxIVFrame = [maxIVFrameField intValue];
   uint32_t  frameNum = 0, limitFrame = minIVFrame - 1;
   
-  CGearIVFrameGenerator  generator(seed, [ivFrameParameterController isRoamer] ?
-                                         CGearIVFrameGenerator::Roamer :
-                                         CGearIVFrameGenerator::Normal);
+  CGearIVFrameGenerator  generator([seed unsignedIntValue],
+                                   ivFrameParameterController.isRoamer ?
+                                     CGearIVFrameGenerator::Roamer :
+                                     CGearIVFrameGenerator::Normal);
   
   while (frameNum < limitFrame)
   {
@@ -84,78 +201,69 @@ using namespace pprng;
     
     CGearIVFrame  frame = generator.CurrentFrame();
     
-    NSMutableDictionary  *result =
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
-        [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
-        [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sa()], @"spa",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sd()], @"spd",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sp()], @"spe",
-        [NSString stringWithFormat: @"%s",
-          Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
-        [NSNumber numberWithUnsignedInt: frame.ivs.HiddenPower()],
-          @"hiddenPower",
-        nil];
+    CGearFrameResult  *row = [[CGearFrameResult alloc] init];
     
-    [rowArray addObject: result];
+    row.frame = frame.number;
+    SetIVResult(row, frame.ivs, ivFrameParameterController.isRoamer);
+    
+    [rowArray addObject: row];
   }
   
   [ivFrameContentArray addObjects: rowArray];
 }
 
 
-- (IBAction)toggleTimeFinderSeconds:(id)sender
+- (void)selectAndShowFrame:(uint32_t)frame
 {
-  BOOL enabled = [useSecondButton state];
-  
-  [timeFinderSecondField setEnabled: enabled];
+  NSArray  *rows = [ivFrameContentArray arrangedObjects];
+  if (rows && ([rows count] > 0))
+  {
+    CGearFrameResult  *row = [rows objectAtIndex: 0];
+    
+    if (row.frame <= frame)
+    {
+      NSInteger  rowNum = frame - row.frame;
+      
+      [ivFrameTableView
+        selectRowIndexes: [NSIndexSet indexSetWithIndex: rowNum]
+        byExtendingSelection: NO];
+      [ivFrameTableView scrollRowToVisible: rowNum];
+    }
+  }
 }
 
 
 - (IBAction)calculateTimes:(id)sender
 {
-  if ([[seedField stringValue] length] == 0)
-  {
+  if (!EndEditing([self window]))
     return;
-  }
+  
+  if (!seed)
+    return;
   
   [timeFinderContentArray setContent: [NSMutableArray array]];
   
-  CGearSeed  seed([[seedField objectValue] unsignedIntValue],
-                  [gen5ConfigController macAddressLow]);
+  CGearSeed  cgSeed([seed unsignedIntValue],
+                    [gen5ConfigController macAddressLow]);
   
-  uint32_t  wantedSecond;
-  if ([useSecondButton state])
-  {
-    wantedSecond = [timeFinderSecondField intValue];
-  }
-  else
-  {
-    wantedSecond = -1;
-  }
+  uint32_t  wantedSecond = considerSeconds ? second : -1;
   
-  TimeSeed::TimeElements  elements =
-    seed.GetTimeElements([timeFinderYearField intValue], wantedSecond);
+  TimeSeed::TimeElements  elements = cgSeed.GetTimeElements(year, wantedSecond);
   
   NSMutableArray  *rows = [NSMutableArray arrayWithCapacity: elements.size()];
+  
   TimeSeed::TimeElements::iterator  i;
-  for (i = elements.begin(); i < elements.end(); ++i)
+  for (i = elements.begin(); i != elements.end(); ++i)
   {
-    [rows addObject:
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSString stringWithFormat:@"%.4d/%.2d/%.2d",
-            i->year, i->month, i->day],
-        @"date",
-        [NSString stringWithFormat:@"%.2d:%.2d:%.2d",
-            i->hour, i->minute, i->second],
-        @"time",
-        [NSNumber numberWithInt: i->delay], @"delay",
-        [NSData dataWithBytes: &(*i) length: sizeof(TimeSeed::TimeElement)],
-        @"fullTime",
-        nil]];
+    CGearSeedTimeResult  *row = [[CGearSeedTimeResult alloc] init];
+    
+    row.date = MakeUInt32Date(i->year, i->month, i->day);
+    row.time = MakeUInt32Time(i->hour, i->minute, i->second);
+    row.delay = i->delay;
+    
+    [rows addObject: row];
   }
+  
   [timeFinderContentArray addObjects: rows];
   [timeFinderContentArray setSelectionIndex: 0];
 }
@@ -166,95 +274,79 @@ using namespace pprng;
   using namespace boost::gregorian;
   using namespace boost::posix_time;
   
-  if ([[seedField stringValue] length] == 0)
-  {
+  if (!EndEditing([self window]))
     return;
-  }
+  
+  if (!seed)
+    return;
   
   NSInteger  rowNum = [timeFinderTableView selectedRow];
   if (rowNum < 0)
-  {
     return;
-  }
-  NSDictionary  *row =
-    [[timeFinderContentArray arrangedObjects] objectAtIndex: rowNum];
-  NSData  *timeElementData = [row objectForKey: @"fullTime"];
   
-  TimeSeed::TimeElement  timeElement;
-  [timeElementData getBytes:&timeElement length:sizeof(TimeSeed::TimeElement)];
+  CGearSeedTimeResult  *seedTime =
+    [[timeFinderContentArray arrangedObjects] objectAtIndex: rowNum];
   
   [adjacentsContentArray setContent: [NSMutableArray array]];
   
   uint32_t   macAddressLow = [gen5ConfigController macAddressLow];
-  CGearSeed  seed([[seedField objectValue] unsignedIntValue], macAddressLow);
   
-  uint32_t  delayVariance = [adjacentsDelayVarianceField intValue];
-  uint32_t  secondVariance = [adjacentsTimeVarianceField intValue];
-  uint32_t  minIVFrameNum = [adjacentsMinIVFrameField intValue];
-  uint32_t  maxIVFrameNum = [adjacentsMaxIVFrameField intValue];
-  bool      isRoamer = [adjacentsRoamerButton state];
+  uint32_t  targetDelay = seedTime.delay;
+  uint32_t  endDelay = targetDelay + adjacentsDelayVariance;
+  uint32_t  startDelay = (targetDelay < adjacentsDelayVariance) ? 0 :
+                           targetDelay - adjacentsDelayVariance;
   
-  uint32_t  targetDelay = timeElement.delay;
-  uint32_t  endDelay = targetDelay + delayVariance;
-  uint32_t  startDelay = (targetDelay > delayVariance) ? 0 :
-                           targetDelay - delayVariance;
+  ptime  targetTime(UInt32DateAndTimeToBoostTime(seedTime.date, seedTime.time));
   
-  ptime  targetTime(date(timeElement.year, timeElement.month, timeElement.day),
-                    hours(timeElement.hour) + minutes(timeElement.minute) +
-                    seconds(timeElement.second));
-  
-  ptime  endTime = targetTime + seconds(secondVariance);
-  targetTime = targetTime - seconds(secondVariance);
+  ptime  endTime = targetTime + seconds(adjacentsTimeVariance);
+  targetTime = targetTime - seconds(adjacentsTimeVariance);
   
   NSMutableArray  *rowArray =
     [NSMutableArray arrayWithCapacity:
-      ((2 * delayVariance) + 1) * ((2 * secondVariance) + 1)];
+      ((2 * adjacentsDelayVariance) + 1) * ((2 * adjacentsTimeVariance) + 1)];
   
   for (; targetTime <= endTime; targetTime = targetTime + seconds(1))
   {
-    date           d = targetTime.date();
-    time_duration  t = targetTime.time_of_day();
+    uint32_t  dt = MakeUInt32Date(targetTime.date());
+    uint32_t  yr = GetUInt32DateYear(dt);
+    uint32_t  mo = GetUInt32DateMonth(dt);
+    uint32_t  dy = GetUInt32DateDay(dt);
     
-    NSString  *dateStr =
-      [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
-                uint32_t(d.year()), uint32_t(d.month()), uint32_t(d.day())];
-    NSString  *timeStr = [NSString stringWithFormat:@"%.2d:%.2d:%.2d",
-                           t.hours(), t.minutes(), t.seconds()];
+    uint32_t  tm = MakeUInt32Time(targetTime.time_of_day());
+    uint32_t  hr = GetUInt32TimeHour(tm);
+    uint32_t  mi = GetUInt32TimeMinute(tm);
+    uint32_t  sc = GetUInt32TimeSecond(tm);
     
     for (uint32_t delay = startDelay; delay <= endDelay; ++delay)
     {
-      CGearSeed  s(d.year(), d.month(), d.day(),
-                   t.hours(), t.minutes(), t.seconds(),
-                   delay, macAddressLow);
+      CGearSeed  s(yr, mo, dy, hr, mi, sc, delay, macAddressLow);
       
-      CGearIVFrameGenerator  ivGenerator(s.m_rawSeed,
-                                         (isRoamer ?
-                                          CGearIVFrameGenerator::Roamer :
-                                          CGearIVFrameGenerator::Normal));
+      CGearIVFrameGenerator  ivGenerator
+        (s.m_rawSeed, (adjacentsIVParameterController.isRoamer ?
+                        CGearIVFrameGenerator::Roamer :
+                        CGearIVFrameGenerator::Normal));
       uint32_t   f;
-      for (f = 0; f < (minIVFrameNum - 1); ++f)
+      for (f = 0; f < (adjacentsMinIVFrame - 1); ++f)
         ivGenerator.AdvanceFrame();
       
-      while (f < maxIVFrameNum)
+      while (f++ < adjacentsMaxIVFrame)
       {
         ivGenerator.AdvanceFrame();
+        
+        CGearAdjacentSeedResult  *row = [[CGearAdjacentSeedResult alloc] init];
+        
+        row.seed = s.m_rawSeed;
+        row.date = dt;
+        row.time = tm;
+        row.delay = delay;
+        row.frame = f;
+        
         IVs  ivs = ivGenerator.CurrentFrame().ivs;
         
-        [rowArray addObject:
-          [NSMutableDictionary dictionaryWithObjectsAndKeys:
-            [NSNumber numberWithUnsignedInt: s.m_rawSeed], @"seed",
-            dateStr, @"date",
-            timeStr, @"time",
-            [NSNumber numberWithUnsignedInt: delay], @"delay",
-            [NSNumber numberWithUnsignedInt: ++f], @"frame",
-            [NSNumber numberWithUnsignedInt: ivs.hp()], @"hp",
-            [NSNumber numberWithUnsignedInt: ivs.at()], @"atk",
-            [NSNumber numberWithUnsignedInt: ivs.df()], @"def",
-            [NSNumber numberWithUnsignedInt: ivs.sa()], @"spa",
-            [NSNumber numberWithUnsignedInt: ivs.sd()], @"spd",
-            [NSNumber numberWithUnsignedInt: ivs.sp()], @"spe",
-            [NSNumber numberWithUnsignedInt: ivs.word], @"ivWord",
-            nil]];
+        SetIVResult(row, ivs, adjacentsIVParameterController.isRoamer);
+        row.ivWord = ivs.word;
+        
+        [rowArray addObject: row];
       }
     }
   }
@@ -271,18 +363,18 @@ using namespace pprng;
 
 - (IBAction)findAdjacent:(id)sender
 {
-  IVs  minIVs = [adjacentsIVParameterController minIVs];
-  IVs  maxIVs = [adjacentsIVParameterController maxIVs];
+  IVs  minIVs = adjacentsIVParameterController.minIVs;
+  IVs  maxIVs = adjacentsIVParameterController.maxIVs;
   
-  NSArray       *rows = [adjacentsContentArray arrangedObjects];
-  NSInteger     numRows = [rows count];
-  NSInteger     rowNum = [adjacentsTableView selectedRow];
-  NSDictionary  *row;
+  NSArray                  *rows = [adjacentsContentArray arrangedObjects];
+  NSInteger                numRows = [rows count];
+  NSInteger                rowNum = [adjacentsTableView selectedRow];
+  CGearAdjacentSeedResult  *row;
   
   while (++rowNum < numRows)
   {
     row = [rows objectAtIndex: rowNum];
-    IVs  rowIVs([[row objectForKey: @"ivWord"] unsignedIntValue]);
+    IVs  rowIVs(row.ivWord);
     
     if (rowIVs.betterThanOrEqual(minIVs) && rowIVs.worseThanOrEqual(maxIVs))
     {
@@ -307,12 +399,6 @@ using namespace pprng;
            didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:)
            contextInfo:nil];
   }
-}
-
-
-- (void)setSeed:(uint32_t)seed
-{
-  [seedField setObjectValue: [NSNumber numberWithUnsignedInt: seed]];
 }
 
 @end

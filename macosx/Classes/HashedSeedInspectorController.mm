@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -28,8 +28,20 @@
 
 using namespace pprng;
 
-
 @implementation HashedSeedInspectorController
+
+@synthesize startDate, startHour, startMinute, startSecond;
+@synthesize timer0, vcount, vframe;
+
+@synthesize button1, button2, button3;
+
+@synthesize rawSeed;
+@synthesize initialPIDFrame;
+
+@synthesize selectedTabId;
+@synthesize framesTabController;
+@synthesize adjacentsTabController;
+@synthesize eggsTabController;
 
 - (NSString *)windowNibName
 {
@@ -40,111 +52,164 @@ using namespace pprng;
 {
   [super awakeFromNib];
   
-  [[seedField formatter] setFormatWidth: 16];
-  [startDate setObjectValue: [NSDate date]];
+  self.startDate = [NSDate date];
+  self.button1 = 0;
+  self.button2 = 0;
+  self.button3 = 0;
 }
 
-- (IBAction)calculateSeed:(id)sender
+- (NSNumber*)calcRawSeed
 {
+  if (!startDate || !startHour || !startMinute || !startSecond ||
+      !timer0 || !vcount || !vframe)
+  {
+    return nil;
+  }
+  
   HashedSeed::Parameters  p;
   
   p.version = [gen5ConfigController version];
   p.dsType = [gen5ConfigController dsType];
   p.macAddress = [gen5ConfigController macAddress];
   p.gxStat = HashedSeed::HardResetGxStat;
-  p.vcount = [vcountField intValue];
-  p.vframe = [vframeField intValue];
-  p.timer0 = [timer0Field intValue];
-  p.date = NSDateToBoostDate([startDate objectValue]);
-  p.hour = [startHour intValue];
-  p.minute = [startMinute intValue];
-  p.second = [startSecond intValue];
-  p.heldButtons = [[key1Menu selectedItem] tag] |
-                  [[key2Menu selectedItem] tag] |
-                  [[key3Menu selectedItem] tag];
+  p.vcount = [vcount unsignedIntValue];
+  p.vframe = [vframe unsignedIntValue];
+  p.timer0 = [timer0 unsignedIntValue];
+  p.date = NSDateToBoostDate(startDate);
+  p.hour = [startHour unsignedIntValue];
+  p.minute = [startMinute unsignedIntValue];
+  p.second = [startSecond unsignedIntValue];
+  p.heldButtons = button1 | button2 | button3;
   
-  HashedSeed  seed(p);
+  HashedSeed  s(p);
   
-  currentSeed = [NSData dataWithBytes: &seed length: sizeof(HashedSeed)];
-  [adjacentsTabController setSeed: currentSeed];
-  
-  [seedField setObjectValue:
-    [NSNumber numberWithUnsignedLongLong: seed.rawSeed]];
-  [initialPIDFrameField setObjectValue:
-    [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
+  return [NSNumber numberWithUnsignedLongLong: s.rawSeed];
 }
 
-
-- (void)setSeed:(NSData*)seedData
+- (IBAction)seedParameterChanged:(id)sender
 {
-  if (seedData != currentSeed)
+  self.rawSeed = [self calcRawSeed];
+}
+
+- (IBAction) seedValueChanged:(id)sender
+{
+  NSNumber  *paramSeed = [self calcRawSeed];
+  
+  if ((paramSeed == nil) || ![paramSeed isEqualToNumber: rawSeed])
   {
-    currentSeed = seedData;
-    [adjacentsTabController setSeed: seedData];
-    
-    HashedSeed  seed;
-    [currentSeed getBytes: &seed length: sizeof(HashedSeed)];
-    
-    NSDate  *now = [NSDate date];
-    NSRange  timeZoneOffsetRange;
-    timeZoneOffsetRange.location = 20;
-    timeZoneOffsetRange.length = 5;
-    NSString  *dateTime =
-      [NSString stringWithFormat: @"%.4d-%.2d-%.2d %.2d:%.2d:%.2d %@",
-        seed.year(), seed.month(), seed.day(),
-        seed.hour, seed.minute, seed.second,
-        [[now description] substringWithRange: timeZoneOffsetRange]];
-    
-    [startDate setObjectValue: [NSDate dateWithString: dateTime]];
-    [startHour setIntValue: seed.hour];
-    [startMinute setIntValue: seed.minute];
-    [startSecond setIntValue: seed.second];
-    
-    [timer0Field setIntValue: seed.timer0];
-    [vcountField setIntValue: seed.vcount];
-    [vframeField setIntValue: seed.vframe];
-    
-    NSPopUpButton  *keyMenu[3] = { key1Menu, key2Menu, key3Menu };
-    uint32_t  i = 0;
-    uint32_t  dpadPress = seed.heldButtons & Button::DPAD_MASK;
-    uint32_t  buttonPress = seed.heldButtons & Button::SINGLE_BUTTON_MASK;
-    
-    if (dpadPress != 0)
-    {
-      [key1Menu selectItemWithTag: dpadPress];
-      ++i;
-    }
-    
-    uint32_t  j = 1;
-    while ((buttonPress != 0) && (i < 3))
-    {
-      if (buttonPress & 0x1)
-      {
-        [keyMenu[i++] selectItemWithTag: j];
-      }
-      
-      buttonPress >>= 1;
-      j <<= 1;
-    }
-    
-    [seedField setObjectValue:
-      [NSNumber numberWithUnsignedLongLong: seed.rawSeed]];
-    [initialPIDFrameField setObjectValue:
-      [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
+    self.startDate = [NSDate date];
+    self.startHour = nil;
+    self.startMinute = nil;
+    self.startSecond = nil;
+    self.timer0 = nil;
+    self.vcount = nil;
+    self.vframe = nil;
+    self.button1 = 0;
+    self.button2 = 0;
+    self.button3 = 0;
   }
 }
 
-- (void)controlTextDidEndEditing:(NSNotification*)notification
+- (void)setButton1:(uint32_t)newButton
 {
-  if ([[seedField stringValue] length] == 0)
+  if (newButton != button1)
   {
-    [initialPIDFrameField setObjectValue: nil];
+    button1 = newButton;
+    [self seedParameterChanged:self];
   }
-  else
+}
+
+- (void)setButton2:(uint32_t)newButton
+{
+  if (newButton != button2)
   {
-    HashedSeed  seed([[seedField objectValue] unsignedLongLongValue]);
-    [initialPIDFrameField setObjectValue:
-        [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
+    button2 = newButton;
+    [self seedParameterChanged:self];
+  }
+}
+
+- (void)setButton3:(uint32_t)newButton
+{
+  if (newButton != button3)
+  {
+    button3 = newButton;
+    [self seedParameterChanged:self];
+  }
+}
+
+- (void)setSeedFromResult:(id <HashedSeedResultParameters>)result
+{
+  HashedSeed::Parameters  p;
+  
+  p.timer0 = result.timer0;
+  p.vcount = result.vcount;
+  p.vframe = result.vframe;
+  p.date = UInt32DateToBoostDate(result.date);
+  p.hour = GetUInt32TimeHour(result.time);
+  p.minute = GetUInt32TimeMinute(result.time);
+  p.second = GetUInt32TimeSecond(result.time);
+  p.heldButtons = result.heldButtons;
+  
+  [self setSeed: HashedSeed(p, result.rawSeed)];
+}
+
+- (void)setSeed:(const pprng::HashedSeed&)seed
+{
+  self.startDate = MakeNSDate(seed.year(), seed.month(), seed.day());
+  self.startHour = [NSNumber numberWithUnsignedInt: seed.hour];
+  self.startMinute = [NSNumber numberWithUnsignedInt: seed.minute];
+  self.startSecond = [NSNumber numberWithUnsignedInt: seed.second];
+  
+  self.timer0 = [NSNumber numberWithUnsignedInt: seed.timer0];
+  self.vcount = [NSNumber numberWithUnsignedInt: seed.vcount];
+  self.vframe = [NSNumber numberWithUnsignedInt: seed.vframe];
+  
+  uint32_t  button[3] = { 0, 0, 0 };
+  uint32_t  i = 0;
+  uint32_t  dpadPress = seed.heldButtons & Button::DPAD_MASK;
+  uint32_t  buttonPress = seed.heldButtons & Button::SINGLE_BUTTON_MASK;
+  
+  if (dpadPress != 0)
+  {
+    button[0] = dpadPress;
+    ++i;
+  }
+  
+  uint32_t  j = 1;
+  while ((buttonPress != 0) && (i < 3))
+  {
+    if (buttonPress & 0x1)
+    {
+      button[i++] = j;
+    }
+    
+    buttonPress >>= 1;
+    j <<= 1;
+  }
+  
+  self.button1 = button[0];
+  self.button2 = button[1];
+  self.button3 = button[2];
+  
+  [self seedParameterChanged:self];
+}
+
+- (void)setRawSeed:(NSNumber*)newSeed
+{
+  if (newSeed != rawSeed)
+  {
+    if (newSeed == nil)
+    {
+      self.initialPIDFrame = nil;
+    }
+    else
+    {
+      HashedSeed  seed([newSeed unsignedLongLongValue]);
+      self.initialPIDFrame =
+        [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1];
+    }
+    
+    rawSeed = newSeed;
   }
 }
 

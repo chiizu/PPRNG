@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -29,29 +29,25 @@
 {
   IBOutlet Gen5ConfigurationController  *gen5ConfigController;
   
-  IBOutlet NSTextField            *timer0LowField;
-  IBOutlet NSTextField            *timer0HighField;
-  IBOutlet NSTextField            *vcountLowField;
-  IBOutlet NSTextField            *vcountHighField;
-  IBOutlet NSTextField            *frameLowField;
-  IBOutlet NSTextField            *frameHighField;
+  uint32_t  timer0Low, timer0High;
+  uint32_t  vcountLow, vcountHigh;
+  uint32_t  vframeLow, vframeHigh;
+  
+  NSDate    *startDate;
+  uint32_t  startHour, startMinute, startSecond;
+  uint32_t  button1, button2, button3;
   
   IBOutlet IVParameterController  *ivParameterController;
-  
-  IBOutlet NSDatePicker           *startDate;
-  IBOutlet NSTextField            *startHour;
-  IBOutlet NSTextField            *startMinute;
-  IBOutlet NSTextField            *startSecond;
-  
-  IBOutlet NSPopUpButton          *keyOnePopUp;
-  IBOutlet NSPopUpButton          *keyTwoPopUp;
-  IBOutlet NSPopUpButton          *keyThreePopUp;
-  
   IBOutlet SearcherController     *searcherController;
-  
-  BOOL                            useStandardParameterRanges;
 }
 
-@property BOOL  useStandardParameterRanges;
+@property uint32_t  timer0Low, timer0High;
+@property uint32_t  vcountLow, vcountHigh;
+@property uint32_t  vframeLow, vframeHigh;
+
+@property (copy) NSDate  *startDate;
+
+@property uint32_t  startHour, startMinute, startSecond;
+@property uint32_t  button1, button2, button3;
 
 @end

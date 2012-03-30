@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -23,10 +23,25 @@
 
 @implementation HexadecimalFormatter
 
+- (void)constructFormatString
+{
+  NSUInteger  width = [self formatWidth];
+  
+  if (width > 0)
+    format = [NSString stringWithFormat: @"%%.%dqX", width];
+  else
+    format = @"%qX";
+}
+
+- (void)awakeFromNib
+{
+  [self constructFormatString];
+}
+
 - (void)setFormatWidth:(NSUInteger) width
 {
-  format = [NSString stringWithFormat: @"%%.%dqX", width];
   [super setFormatWidth: width];
+  [self constructFormatString];
 }
 
 - (NSString*)stringForObjectValue:(id)anObject

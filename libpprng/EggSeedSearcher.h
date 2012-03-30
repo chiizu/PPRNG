@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -43,23 +43,20 @@ public:
     
     SearchCriteria::IVCriteria   ivs;
     SearchCriteria::FrameRange   ivFrame;
-    IVs                          femaleIVs, maleIVs;
-    
-    FemaleParent::Type           femaleSpecies;
+    OptionalIVs                  femaleIVs, maleIVs;
     
     SearchCriteria::PIDCriteria  pid;
     SearchCriteria::FrameRange   pidFrame;
     bool                         inheritsHiddenAbility;
     bool                         shinyOnly;
-    uint32_t                     childSpecies;
+    EggSpecies::Type             eggSpecies;
     
     Criteria()
       : seedParameters(), frameParameters(),
         ivs(), ivFrame(), femaleIVs(), maleIVs(),
-        femaleSpecies(FemaleParent::OTHER),
         pid(), pidFrame(),
         inheritsHiddenAbility(false), shinyOnly(false),
-        childSpecies(0xFFFFFFFF)
+        eggSpecies(EggSpecies::ANY)
     {}
     
     uint64_t ExpectedNumberOfResults() const;
@@ -72,6 +69,22 @@ public:
   
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
               const SearchRunner::ProgressCallback &progressHandler);
+  
+  // if not running from the command line, working directory may not be set
+  static void SetCacheDirectory(const std::string &dir);
+  
+  enum CacheLoadResult
+  {
+    LOADED = 0,
+    NO_CACHE_FILE,
+    BAD_CACHE_FILE,
+    NOT_ENOUGH_MEMORY,
+    UNKNOWN_ERROR
+  };
+  
+  static CacheLoadResult LoadSeedCache();
+  static void ReleaseSeedCache();
+  static void EnsureSeedCacheReleased();
 };
 
 }

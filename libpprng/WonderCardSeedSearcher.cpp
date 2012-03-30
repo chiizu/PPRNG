@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -36,16 +36,22 @@ struct FrameChecker
   
   bool operator()(const WonderCardFrame &frame) const
   {
-    return CheckNature(frame.nature) && CheckAbility(frame.pid.Gen5Ability()) &&
+    return CheckShiny(frame.pid) && CheckNature(frame.nature) &&
+           CheckAbility(frame.pid.Gen5Ability()) &&
            CheckGender(frame.pid.GenderValue()) && CheckIVs(frame.ivs) &&
            CheckHiddenPower(frame.ivs);
   }
   
+  bool CheckShiny(PID pid) const
+  {
+    return !m_criteria.shinyOnly ||
+           pid.IsShiny(m_criteria.frameParameters.cardTID,
+                       m_criteria.frameParameters.cardSID);
+  }
+  
   bool CheckNature(Nature::Type nature) const
   {
-    return (m_criteria.pid.nature == Nature::ANY) ||
-           (m_criteria.pid.nature == Nature::UNKNOWN) ||
-           (m_criteria.pid.nature == nature);
+    return m_criteria.pid.CheckNature(nature);
   }
   
   bool CheckAbility(uint32_t ability) const
@@ -70,7 +76,7 @@ struct FrameChecker
 
   bool CheckHiddenPower(const IVs &ivs) const
   {
-    if (m_criteria.ivs.hiddenType == Element::UNKNOWN)
+    if (m_criteria.ivs.hiddenType == Element::NONE)
     {
       return true;
     }
@@ -115,14 +121,18 @@ uint64_t WonderCardSeedSearcher::Criteria::ExpectedNumberOfResults() const
   
   uint64_t  numIVs = IVs::CalculateNumberOfCombinations(ivs.min, ivs.max);
   
-  uint64_t  natureDivisor = (pid.nature != Nature::ANY) ? 25 : 1;
+  uint64_t  natureMultiplier = pid.NumNatures(), natureDivisor = 25;
   uint64_t  abilityDivisor = (pid.ability > 1) ? 1 : 2;
   
-  uint64_t  numResults = numSeeds * numFrames * numIVs /
-                         (32 * 32 * 32 * 32 * 32 * 32 *
-                          natureDivisor * abilityDivisor);
+  uint64_t  shinyDivisor = (shinyOnly &&
+                            (frameParameters.cardShininess ==
+                             WonderCardShininess::MAY_BE_SHINY)) ? 8192 : 1;
   
-  if (ivs.hiddenType != Element::UNKNOWN)
+  uint64_t  numResults = numSeeds * numFrames * numIVs * natureMultiplier /
+                         (32 * 32 * 32 * 32 * 32 * 32 *
+                          natureDivisor * abilityDivisor * shinyDivisor);
+  
+  if (ivs.hiddenType != Element::NONE)
   {
     numResults = IVs::AdjustExpectedResultsForHiddenPower
       (numResults, ivs.min, ivs.max, ivs.hiddenType, ivs.minHiddenPower);

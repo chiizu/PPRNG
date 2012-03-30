@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -23,75 +23,91 @@
 #import "VertResizeOnlyWindowController.h"
 #import "Gen5ConfigurationController.h"
 #import "IVParameterController.h"
+#import "SearchResultProtocols.h"
 
 @interface WonderCardSeedInspectorController : VertResizeOnlyWindowController
 {
   IBOutlet Gen5ConfigurationController  *gen5ConfigController;
   
-  IBOutlet NSDatePicker           *startDate;
-  IBOutlet NSTextField            *startHour;
-  IBOutlet NSTextField            *startMinute;
-  IBOutlet NSTextField            *startSecond;
+  NSDate    *startDate;
+  NSNumber  *startHour, *startMinute, *startSecond;
+  NSNumber  *timer0, *vcount, *vframe;
   
-  IBOutlet NSTextField            *timer0Field;
-  IBOutlet NSTextField            *vcountField;
-  IBOutlet NSTextField            *vframeField;
+  uint32_t  button1, button2, button3;
   
-  IBOutlet NSPopUpButton          *key1Menu;
-  IBOutlet NSPopUpButton          *key2Menu;
-  IBOutlet NSPopUpButton          *key3Menu;
+  NSNumber  *rawSeed;
+  NSNumber  *initialFrame;
   
-  IBOutlet NSTextField            *seedField;
-  IBOutlet NSTextField            *initialPIDFrameField;
+  pprng::Nature::Type               cardNature;
+  pprng::Ability::Type              cardAbility;
+  pprng::Gender::Type               cardGender;
+  pprng::Gender::Ratio              cardGenderRatio;
+  pprng::WonderCardShininess::Type  cardShininess;
+  NSNumber                          *cardTID, *cardSID;
   
-  IBOutlet NSButton               *useInitialPIDButton;
-  IBOutlet NSTextField            *minFrameField;
-  IBOutlet NSTextField            *maxFrameField;
+  BOOL  natureSearchable, abilitySearchable;
+  BOOL  genderSearchable, shininessSearchable;
+  
+  // frames tab
+  BOOL      startFromInitialFrame;
+  uint32_t  minFrame, maxFrame;
   
   IBOutlet NSTableView            *frameTableView;
   IBOutlet NSArrayController      *frameContentArray;
   
   IBOutlet IVParameterController  *ivParameterController;
-  IBOutlet NSPopUpButton          *naturePopUp;
-  IBOutlet NSPopUpButton          *abilityPopUp;
-  IBOutlet NSPopUpButton          *genderPopUp;
-  IBOutlet NSPopUpButton          *genderRatioPopUp;
-  IBOutlet NSPopUpButton          *characteristicPopUp;
   
+  // adjacents tab
+  uint32_t  secondsVariance;
+  uint32_t  timer0Variance;
   
-  IBOutlet NSTextField            *adjacentsTimeVarianceField;
-  IBOutlet NSTextField            *adjacentsFrameVarianceField;
-  IBOutlet NSTextField            *adjacentsFrameField;
-  IBOutlet NSButton               *adjacentsUseInitialPIDOffsetButton;
+  BOOL      matchOffsetFromInitialFrame;
+  uint32_t  targetFrame;
+  uint32_t  targetFrameVariance;
   
   IBOutlet NSTableView            *adjacentsTableView;
   IBOutlet NSArrayController      *adjacentsContentArray;
-  
-  NSData    *currentSeed;
-  
-  uint32_t  cardNature;
-  uint32_t  cardAbility;
-  BOOL      cardAlwaysShiny;
-  uint32_t  cardGender;
-  uint32_t  cardGenderRatio;
 }
 
-@property uint32_t  cardNature;
-@property uint32_t  cardAbility;
-@property BOOL      cardAlwaysShiny;
-@property uint32_t  cardGender;
-@property uint32_t  cardGenderRatio;
+@property (copy) NSDate    *startDate;
+@property (copy) NSNumber  *startHour, *startMinute, *startSecond;
+@property (copy) NSNumber  *timer0, *vcount, *vframe;
+
+@property        uint32_t  button1, button2, button3;
+
+@property (copy) NSNumber  *rawSeed;
+@property (copy) NSNumber  *initialFrame;
+
+@property pprng::Nature::Type               cardNature;
+@property pprng::Ability::Type              cardAbility;
+@property pprng::Gender::Type               cardGender;
+@property pprng::Gender::Ratio              cardGenderRatio;
+@property pprng::WonderCardShininess::Type  cardShininess;
+@property (copy) NSNumber                   *cardTID, *cardSID;
+
+@property BOOL  natureSearchable, abilitySearchable;
+@property BOOL  genderSearchable, shininessSearchable;
+
+@property BOOL      startFromInitialFrame;
+@property uint32_t  minFrame, maxFrame;
+
+@property uint32_t  secondsVariance;
+@property uint32_t  timer0Variance;
+
+@property BOOL      matchOffsetFromInitialFrame;
+@property uint32_t  targetFrame;
+@property uint32_t  targetFrameVariance;
 
 
-- (IBAction)calculateSeed:(id)sender;
-- (IBAction)toggleUseInitialPID:(id)sender;
+- (IBAction)seedParameterChanged:(id)sender;
+- (IBAction)seedValueChanged:(id)sender;
+
 - (IBAction)generateFrames:(id)sender;
 - (IBAction)generateAdjacents:(id)sender;
 
-// take HashedSeed from NSData pointer
-- (void)setSeed:(NSData*)seedData;
+- (void)setSeedFromResult:(id <HashedSeedResultParameters>)result;
+- (void)setSeed:(const pprng::HashedSeed&)seed;
 
-// for updating initial PID frame when user types a new seed value
-- (void)controlTextDidEndEditing:(NSNotification*)notification;
+- (void)selectAndShowFrame:(uint32_t)frame;
 
 @end

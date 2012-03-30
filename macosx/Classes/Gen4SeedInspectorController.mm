@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -332,6 +332,9 @@ void AddESVRows(NSMutableArray *dest,
 
 - (IBAction)generateFrames:(id)sender
 {
+  if (!EndEditing([self window]))
+    return;
+  
   if ([[seedField stringValue] length] == 0)
     return;
   
@@ -491,6 +494,9 @@ void AddESVRows(NSMutableArray *dest,
 
 - (IBAction)calculateTimes:(id)sender
 {
+  if (!EndEditing([self window]))
+    return;
+  
   if (([[seedField stringValue] length] == 0) ||
       ([[timeFinderYearField stringValue] length] == 0))
     return;
@@ -537,6 +543,9 @@ void AddESVRows(NSMutableArray *dest,
 {
   using namespace boost::gregorian;
   using namespace boost::posix_time;
+  
+  if (!EndEditing([self window]))
+    return;
   
   if ([[seedField stringValue] length] == 0)
     return;

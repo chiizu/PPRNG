@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -42,6 +42,7 @@ struct DS
 {
   enum Type
   {
+    None = -1,
     DSPhat = 0,
     DSLite,
     DSi,
@@ -68,6 +69,7 @@ struct Button
 {
   enum Binary
   {
+    NO_BUTTON = 0,
     A_BUTTON = 0x1,
     B_BUTTON = 0x2,
     SELECT_BUTTON = 0x4,
@@ -102,7 +104,7 @@ struct Button
   
   typedef std::vector<uint32_t>  List;
   
-  static std::string ToString(uint32_t keys);
+  static std::string ToString(uint32_t buttons);
   
   static const List& SingleButtons();
   static const List& TwoButtonCombos();
@@ -113,6 +115,8 @@ struct Game
 {
   enum Version
   {
+    None = -1,
+    
     ThirdGenStart = 0,
     
     Emerald = ThirdGenStart,
@@ -167,6 +171,8 @@ struct Nature
 {
   enum Type
   {
+    NONE = -1,
+    
     HARDY = 0,
     LONELY,
     BRAVE,
@@ -198,8 +204,9 @@ struct Nature
     // used when setting search criteria
     ANY = NUM_TYPES,
     
-    // returned from FromString if the string given is not a nature
-    UNKNOWN
+    // used to indicate synchronize/everstone was activated
+    SYNCHRONIZE,
+    EVERSTONE
   };
   
   static const std::string& ToString(Type t);
@@ -211,6 +218,7 @@ struct Ability
 {
   enum Type
   {
+    NONE = -1,
     ZERO = 0,
     ONE,
     HIDDEN,
@@ -224,15 +232,17 @@ struct Gender
 {
   enum Type
   {
+    NONE = -1,
     FEMALE = 0,
     MALE,
-    NEUTRAL,
+    GENDERLESS,
     
     ANY
   };
   
   enum Ratio
   {
+    NO_RATIO = -1,
     ONE_EIGHTH_FEMALE = 0,
     ONE_FOURTH_FEMALE,
     ONE_HALF_FEMALE,
@@ -240,38 +250,79 @@ struct Gender
     FEMALE_ONLY,
     MALE_ONLY,
     
-    UNSPECIFIED
+    ANY_RATIO
   };
+  
+  enum Threshold
+  {
+    MALE_ONLY_THRESHOLD = 0,
+    ONE_EIGHTH_FEMALE_THRESHOLD = 31,
+    ONE_FOURTH_FEMALE_THRESHOLD = 63,
+    ONE_HALF_FEMALE_THRESHOLD = 127,
+    THREE_FOURTHS_FEMALE_THRESHOLD = 191,
+    SEVEN_EIGHTHS_FEMALE_THRESHOLD = 223,
+    FEMALE_ONLY_THRESHOLD = 254,
+    GENDERLESS_THRESHOLD = 255
+  };
+  
+  static Threshold GetThreshold(Ratio r)
+  {
+    switch (r)
+    {
+    case MALE_ONLY:
+      return MALE_ONLY_THRESHOLD;
+    case ONE_EIGHTH_FEMALE:
+      return ONE_EIGHTH_FEMALE_THRESHOLD;
+    case ONE_FOURTH_FEMALE:
+      return ONE_FOURTH_FEMALE_THRESHOLD;
+    case ONE_HALF_FEMALE:
+      return ONE_HALF_FEMALE_THRESHOLD;
+    case THREE_FOURTHS_FEMALE:
+      return THREE_FOURTHS_FEMALE_THRESHOLD;
+    case FEMALE_ONLY:
+      return FEMALE_ONLY_THRESHOLD;
+    case NO_RATIO:
+    default:
+      return GENDERLESS_THRESHOLD;
+    }
+  }
   
   static bool GenderValueMatches(uint32_t value, Type t, Ratio r)
   {
-    uint32_t  dividingPoint;
-    
-    if ((t == ANY) || (r == UNSPECIFIED))
+    if ((t == ANY) || (r == ANY_RATIO))
       return true;
     
+    uint32_t  threshold = GetThreshold(r);
+    
+    return (t == FEMALE) ? (value < threshold) : (value >= threshold);
+  }
+  
+  static uint32_t MakeGenderValue(Type t, Ratio r, uint64_t randomValue)
+  {
     switch (r)
     {
-    case ONE_EIGHTH_FEMALE:
-      dividingPoint = 31;
-      break;
-    case ONE_FOURTH_FEMALE:
-      dividingPoint = 63;
-      break;
-    case ONE_HALF_FEMALE:
-      dividingPoint = 127;
-      break;
-    case THREE_FOURTHS_FEMALE:
-      dividingPoint = 191;
-      break;
-    case UNSPECIFIED:
-      return true;
+    case FEMALE_ONLY:
+      return ((randomValue * 0x8) >> 32) + 1;
+      
+    case MALE_ONLY:
+      return ((randomValue * 0xF6) >> 32) + 8;
+      
     default:
-      return false;
-      break;
+      Threshold  th = GetThreshold(r);
+      
+      switch (t)
+      {
+      case FEMALE:
+        return ((randomValue * (th - 1)) >> 32) + 1;
+        
+      case MALE:
+        return ((randomValue * (0xFE - th)) >> 32) + th;
+        
+      case GENDERLESS:
+      default:
+        return randomValue;
+      }
     }
-    
-    return (t == FEMALE) ? (value < dividingPoint) : (value >= dividingPoint);
   }
 };
 
@@ -323,6 +374,8 @@ struct Element
 {
   enum Type
   {
+    NONE = -1,
+    
     NORMAL = 0,
     FIGHTING,
     FLYING,
@@ -341,20 +394,18 @@ struct Element
     DRAGON,
     DARK,
     
-    
     NUM_TYPES,
     
     // used when setting search criteria
-    ANY = NUM_TYPES,
-    
-    // returned from FromString if the string given is not an elemental type
-    UNKNOWN
+    ANY = NUM_TYPES
   };
   
   static const std::string& ToString(Type t);
   static Type FromString(const std::string &name);
 };
 
+
+struct OptionalIVs;
 
 // structure holding the 6 individual values
 struct IndividualValues
@@ -433,6 +484,12 @@ struct IndividualValues
   { return ivs.betterThan(*this); }
   bool worseThanOrEqual(const IndividualValues &ivs) const
   { return ivs.betterThanOrEqual(*this); }
+  
+  // and for optional IVs
+  bool betterThan(const OptionalIVs &oivs) const;
+  bool betterThanOrEqual(const OptionalIVs &oivs) const;
+  bool worseThan(const OptionalIVs &oivs) const;
+  bool worseThanOrEqual(const OptionalIVs &oivs) const;
   
   uint32_t hp() const { return (word & HP_MASK) >> HP_SHIFT; }
   void hp(uint32_t iv)
@@ -573,6 +630,165 @@ inline bool operator!=(const IVs &ivs1, const IVs &ivs2)
 { return ivs1.word != ivs2.word; }
 
 
+// for breeding, when not all of a parent's IVs are set
+struct OptionalIVs
+{
+  OptionalIVs() : values(), setIVs(0) {}
+  
+  // this does not check value ranges - assumes user passes valid IV values
+  OptionalIVs(uint32_t hp, uint32_t at, uint32_t df,
+              uint32_t sa, uint32_t sd, uint32_t sp)
+    : values(hp, at, df, sa, sd, sp), setIVs(0x3f)
+  {}
+  
+  OptionalIVs(const OptionalIVs &ivs)
+    : values(ivs.values), setIVs(ivs.setIVs)
+  {}
+  
+  OptionalIVs(const IVs &ivs) : values(ivs), setIVs(0x3f) {}
+  
+  OptionalIVs& operator=(const OptionalIVs &ivs)
+  {
+    values = ivs.values;
+    setIVs = ivs.setIVs;
+    return *this;
+  }
+  
+  uint32_t hp() const { return values.hp(); }
+  uint32_t at() const { return values.at(); }
+  uint32_t df() const { return values.df(); }
+  uint32_t sa() const { return values.sa(); }
+  uint32_t sd() const { return values.sd(); }
+  uint32_t sp() const { return values.sp(); }
+  
+  uint32_t iv(int i) const throw (IVs::BadIVIndexException)
+  { return values.iv(i); }
+  
+  void hp(uint32_t iv)
+  { values.hp(iv); setIVs |= 0x1 << IVs::HP; }
+  
+  void at(uint32_t iv)
+  { values.at(iv); setIVs |= 0x1 << IVs::AT; }
+  
+  void df(uint32_t iv)
+  { values.df(iv); setIVs |= 0x1 << IVs::DF; }
+  
+  void sa(uint32_t iv)
+  { values.sa(iv); setIVs |= 0x1 << IVs::SA; }
+  
+  void sd(uint32_t iv)
+  { values.sd(iv); setIVs |= 0x1 << IVs::SD; }
+  
+  void sp(uint32_t iv)
+  { values.sp(iv); setIVs |= 0x1 << IVs::SP; }
+  
+  void setIV(int i, uint32_t iv) throw (IVs::BadIVIndexException)
+  {
+    values.setIV(i, iv);
+    setIVs |= 0x1 << i;
+  }
+  
+  void clearIV(int i) throw (IVs::BadIVIndexException)
+  {
+    values.setIV(i, 0);
+    setIVs &= ~(0x1 << i);
+  }
+  
+  bool isSet(int i) const
+  { return (setIVs & (0x1 << i)) != 0; }
+  
+  bool allSet() const
+  { return setIVs == 0x3f; }
+  
+  bool betterThan(const OptionalIVs &oivs) const
+  {
+    return allSet() && oivs.allSet() && values.betterThan(oivs.values);
+  }
+  
+  bool betterThanOrEqual(const OptionalIVs &oivs) const
+  {
+    return allSet() && oivs.allSet() && values.betterThanOrEqual(oivs.values);
+  }
+  
+  bool worseThan(const OptionalIVs &oivs) const
+  {
+    return allSet() && oivs.allSet() && values.worseThan(oivs.values);
+  }
+  
+  bool worseThanOrEqual(const OptionalIVs &oivs) const
+  {
+    return allSet() && oivs.allSet() && values.worseThanOrEqual(oivs.values);
+  }
+  
+  // to guarantee absolute better than or worse than, all IVs must be set
+  bool betterThan(const IVs &ivs) const
+  { return allSet() && values.betterThan(ivs); }
+  
+  bool worseThan(const IVs &ivs) const
+  { return allSet() && values.worseThan(ivs); }
+  
+  // if equality is also allowed, unset IVs satisfy if the IV being compared
+  // agaist is min / max value
+  bool betterThanOrEqual(const IVs &ivs) const
+  {
+    if (allSet())
+      return values.betterThanOrEqual(ivs);
+    
+    // unset IVs ok if other IV is 0 (guaranteed better than or equal)
+    bool  result = true;
+    for (uint32_t iv = 0; iv < 6; ++iv)
+    {
+      uint32_t  otherIV = ivs.iv(iv);
+      
+      if (isSet(iv) ? (values.iv(iv) < otherIV) : (otherIV > 0))
+      {
+        result = false;
+        break;
+      }
+    }
+    
+    return result;
+  }
+  
+  bool worseThanOrEqual(const IVs &ivs) const
+  {
+    if (allSet())
+      return values.worseThanOrEqual(ivs);
+    
+    // unset IVs ok if other IV is 31 (guaranteed worse than or equal)
+    bool  result = true;
+    for (uint32_t iv = 0; iv < 6; ++iv)
+    {
+      uint32_t  otherIV = ivs.iv(iv);
+      
+      if (isSet(iv) ? (values.iv(iv) > otherIV) : (otherIV < 31))
+      {
+        result = false;
+        break;
+      }
+    }
+    
+    return result;
+  }
+  
+  IVs      values;
+  uint8_t  setIVs;
+};
+
+// define comparisons declared in IVs
+inline bool IVs::betterThan(const OptionalIVs &oivs) const
+{ return oivs.worseThan(*this); }
+
+inline bool IVs::betterThanOrEqual(const OptionalIVs &oivs) const
+{ return oivs.worseThanOrEqual(*this); }
+
+inline bool IVs::worseThan(const OptionalIVs &oivs) const
+{ return oivs.betterThan(*this); }
+
+inline bool IVs::worseThanOrEqual(const OptionalIVs &oivs) const
+{ return oivs.betterThanOrEqual(*this); }
+
+
 struct IVPattern
 {
   enum Type
@@ -594,6 +810,8 @@ struct Characteristic
 {
   enum Type
   {
+    NONE = -1,
+    
     // HP
     LOVES_TO_EAT = 0,        // 0 or 5
     OFTEN_DOZES_OFF,         // 1 or 6
@@ -638,9 +856,7 @@ struct Characteristic
     
     NUM_CHARACTERISTICS,
     
-    ANY = NUM_CHARACTERISTICS,
-    
-    UNKNOWN
+    ANY = NUM_CHARACTERISTICS
   };
   
   static Type Get(PID pid, IVs ivs);
@@ -648,15 +864,44 @@ struct Characteristic
 };
 
 
-// encounter slots
+struct EncounterLead
+{
+  enum Ability
+  {
+    NONE = -1,
+    
+    OTHER = 0,
+    SYNCHRONIZE,
+    CUTE_CHARM,
+    COMPOUND_EYES,
+    SUCTION_CUPS,
+    
+    NUM_ABILITIES,
+    
+    ANY = NUM_ABILITIES
+  };
+};
+
+
 struct EncounterSlot
 {
-  enum Value
+  enum Mask
   {
     TYPE_MASK = 0xf0,
-    SLOT_MASK = 0x0f,
-    
+    SLOT_MASK = 0x0f
+  };
+  
+  enum Type
+  {
     LAND_TYPE = 0x00,
+    SURF_TYPE = 0x10,
+    OLD_ROD_TYPE = 0x20,
+    GOOD_ROD_TYPE = 0x30,
+    SUPER_ROD_TYPE = 0x40
+  };
+  
+  enum Value
+  {
     LAND_0 = LAND_TYPE,
     LAND_1,
     LAND_2,
@@ -669,41 +914,41 @@ struct EncounterSlot
     LAND_9,
     LAND_10,
     LAND_11,
+    SWARM,
     
-    SURF_TYPE = 0x10,
     SURF_0 = SURF_TYPE,
     SURF_1,
     SURF_2,
     SURF_3,
     SURF_4,
     
-    OLD_ROD_TYPE = 0x20,
     OLD_ROD_0 = OLD_ROD_TYPE,
     OLD_ROD_1,
     OLD_ROD_2,
     OLD_ROD_3,
     OLD_ROD_4,
     
-    GOOD_ROD_TYPE = 0x30,
     GOOD_ROD_0 = GOOD_ROD_TYPE,
     GOOD_ROD_1,
     GOOD_ROD_2,
     GOOD_ROD_3,
     GOOD_ROD_4,
     
-    SUPER_ROD_TYPE = 0x40,
     SUPER_ROD_0 = SUPER_ROD_TYPE,
     SUPER_ROD_1,
     SUPER_ROD_2,
     SUPER_ROD_3,
-    SUPER_ROD_4
+    SUPER_ROD_4,
+    
+    // can't be -1 because of special bit meanings
+    NO_SLOT
   };
   
-  static Value MakeESV(Value type, uint32_t slot)
+  static Value MakeESV(Type type, uint32_t slot)
   { return Value(type | slot); }
   
-  static Value Type(Value esv)
-  { return Value(esv & TYPE_MASK); }
+  static Type SlotType(Value esv)
+  { return Type(esv & TYPE_MASK); }
   
   static uint32_t Slot(Value esv)
   { return esv & SLOT_MASK; }
@@ -726,6 +971,70 @@ struct EncounterSlot
 
 typedef EncounterSlot  ESV;
 
+
+// type of item found in swirling dust or bridge shadows
+struct EncounterItem
+{
+  enum Type
+  {
+    NONE = 0,
+    
+    SWIRLING_DUST_ITEM_START,
+    
+    SWIRLING_DUST_STONE_START = SWIRLING_DUST_ITEM_START,
+    SUN_STONE = SWIRLING_DUST_STONE_START,
+    MOON_STONE,
+    FIRE_STONE,
+    THUNDER_STONE,
+    WATER_STONE,
+    LEAF_STONE,
+    SHINY_STONE,
+    DUSK_STONE,
+    DAWN_STONE,
+    OVAL_STONE,
+    
+    SWIRLING_DUST_GEM_START,
+    FIRE_GEM = SWIRLING_DUST_GEM_START,
+    WATER_GEM,
+    ELECTRIC_GEM,
+    GRASS_GEM,
+    ICE_GEM,
+    FIGHTING_GEM,
+    POISON_GEM,
+    GROUND_GEM,
+    FLYING_GEM,
+    PSYCHIC_GEM,
+    BUG_GEM,
+    ROCK_GEM,
+    GHOST_GEM,
+    DRAGON_GEM,
+    DARK_GEM,
+    STEEL_GEM,
+    NORMAL_GEM,
+    
+    SWIRLING_DUST_RARE_ITEM_START,
+    EVERSTONE = SWIRLING_DUST_RARE_ITEM_START,
+    KINGS_ROCK,
+    
+    NUM_DUST_ITEMS,
+    
+    
+    BRIDGE_SHADOW_ITEM_START = NUM_DUST_ITEMS,
+    
+    HEALTH_WING = BRIDGE_SHADOW_ITEM_START,
+    MUSCLE_WING,
+    RESIST_WING,
+    GENIUS_WING,
+    CLEVER_WING,
+    SWIFT_WING,
+    PRETTY_WING,
+    
+    NUM_BRIDGE_SHADOW_ITEMS = PRETTY_WING - BRIDGE_SHADOW_ITEM_START + 1
+  };
+  
+  static std::string ToString(Type t);
+};
+
 // type of item a wild pokemon might hold
 struct HeldItem
 {
@@ -744,12 +1053,39 @@ struct FemaleParent
 {
   enum Type
   {
+    OTHER = -1,
     NIDORAN_FEMALE = 0,
-    ILLUMISE,
-    
-    OTHER = -1
+    ILLUMISE
   };
 };
+
+// special eggs when breeding with special mothers (see above)
+struct EggSpecies
+{
+  enum Type
+  {
+    OTHER = -1,
+    
+    NIDORAN_F,
+    NIDORAN_M,
+    VOLBEAT,
+    ILLUMISE,
+    
+    ANY
+  };
+};
+
+
+struct WonderCardShininess
+{
+  enum Type
+  {
+    NEVER_SHINY = 0,
+    MAY_BE_SHINY,
+    ALWAYS_SHINY
+  };
+};
+
 
 struct CoinFlips
 {

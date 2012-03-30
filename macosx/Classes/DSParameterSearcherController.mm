@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -20,41 +20,61 @@
 
 
 #import "DSParameterSearcherController.h"
+
+#import "SearchResultProtocols.h"
+
 #include "InitialSeedSearcher.h"
 #include "LinearCongruentialRNG.h"
 #include "Utilities.h"
 
 using namespace pprng;
 
+@interface DSParameterSearchResult :
+  NSObject <HashedSeedResultParameters, IVResult>
+{
+  DECLARE_HASHED_SEED_RESULT_PARAMETERS_VARIABLES();
+  
+  uint32_t       ivFrame;
+  DECLARE_IV_RESULT_VARIABLES();
+}
+
+@property uint32_t       ivFrame;
+
+@end
+
+@implementation DSParameterSearchResult
+
+SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
+
+@synthesize ivFrame;
+SYNTHESIZE_IV_RESULT_PROPERTIES();
+
+@end
+
 namespace
 {
 
 struct ResultHandler
 {
-  ResultHandler(SearcherController *c)
-    : controller(c)
+  ResultHandler(SearcherController *c, bool isRoamer)
+    : m_controller(c), m_isRoamer(isRoamer)
   {}
   
   void operator()(const HashedIVFrame &frame)
   {
-    NSMutableDictionary  *row =
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedLongLong: frame.seed.rawSeed], @"seed",
-        [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
-          frame.seed.hour, frame.seed.minute, frame.seed.second], @"time",
-				[NSNumber numberWithUnsignedInt: frame.seed.timer0], @"timer0",
-				[NSNumber numberWithUnsignedInt: frame.seed.vcount], @"vcount",
-				[NSNumber numberWithUnsignedInt: frame.seed.vframe], @"vframe",
-        [NSData dataWithBytes: &frame.seed length: sizeof(HashedSeed)],
-          @"fullSeed",
-        nil];
+    DSParameterSearchResult  *row = [[DSParameterSearchResult alloc] init];
     
-    [controller performSelectorOnMainThread: @selector(addResult:)
-                withObject: row
-                waitUntilDone: NO];
+    SetHashedSeedResultParameters(row, frame.seed);
+    row.ivFrame = frame.number;
+    SetIVResult(row, frame.ivs, m_isRoamer);
+    
+    [m_controller performSelectorOnMainThread: @selector(addResult:)
+                  withObject: row
+                  waitUntilDone: NO];
   }
   
-  SearcherController  *controller;
+  SearcherController  *m_controller;
+  const bool          m_isRoamer;
 };
 
 
@@ -80,7 +100,9 @@ struct ProgressHandler
 
 @implementation DSParameterSearcherController
 
-@synthesize useStandardParameterRanges;
+@synthesize timer0Low, timer0High, vcountLow, vcountHigh, vframeLow, vframeHigh;
+@synthesize startDate, startHour, startMinute, startSecond;
+@synthesize button1, button2, button3;
 
 - (NSString *)windowNibName
 {
@@ -96,13 +118,33 @@ struct ProgressHandler
   [searcherController setDoSearchWithCriteriaSelector:
                       @selector(doSearchWithCriteria:)];
   
-  [startDate setObjectValue: [NSDate date]];
+  DS::Type  dsType = [gen5ConfigController dsType];
+  if ((dsType == DS::DSPhat) || (dsType == DS::DSLite))
+  {
+    self.timer0Low = 0xC00;
+    self.timer0High = 0xCFF;
+    self.vcountLow = 0x50;
+    self.vcountHigh = 0x6F;
+    self.vframeLow = 0x0;
+    self.vframeHigh = 0xF;
+  }
+  else
+  {
+    self.timer0Low = 0x1100;
+    self.timer0High = 0x1300;
+    self.vcountLow = 0x78;
+    self.vcountHigh = 0x98;
+    self.vframeLow = 0x0;
+    self.vframeHigh = 0xF;
+  }
   
-  [[[[[searcherController tableView] tableColumnWithIdentifier: @"seed"]
-    dataCell] formatter]
-   setFormatWidth: 16];
-  
-  self.useStandardParameterRanges = YES;
+  self.startDate = [NSDate date];
+  self.startHour = 0;
+  self.startMinute = 0;
+  self.startSecond = 0;
+  self.button1 = 0;
+  self.button2 = 0;
+  self.button3 = 0;
 }
 
 - (void)windowWillClose:(NSNotification *)notification
@@ -121,6 +163,9 @@ struct ProgressHandler
   using namespace boost::gregorian;
   using namespace boost::posix_time;
   
+  if (!EndEditing([self window]))
+    return nil;
+  
   InitialIVSeedSearcher::Criteria  criteria;
   
   criteria.seedParameters.macAddress.low = [gen5ConfigController macAddressLow];
@@ -129,59 +174,27 @@ struct ProgressHandler
   criteria.seedParameters.version = [gen5ConfigController version];
   criteria.seedParameters.dsType = [gen5ConfigController dsType];
   
-  if (useStandardParameterRanges)
-  {
-    if ((criteria.seedParameters.dsType == DS::DSPhat) ||
-        (criteria.seedParameters.dsType == DS::DSLite))
-    {
-      criteria.seedParameters.timer0Low = 0xC00;
-      criteria.seedParameters.timer0High = 0xCFF;
-      
-      criteria.seedParameters.vcountLow = 0x50;
-      criteria.seedParameters.vcountHigh = 0x6F;
-      
-      criteria.seedParameters.vframeLow = 0x0;
-      criteria.seedParameters.vframeHigh = 0xF;
-    }
-    else
-    {
-      criteria.seedParameters.timer0Low = 0x1100;
-      criteria.seedParameters.timer0High = 0x1300;
-      
-      criteria.seedParameters.vcountLow = 0x78;
-      criteria.seedParameters.vcountHigh = 0x98;
-      
-      criteria.seedParameters.vframeLow = 0x0;
-      criteria.seedParameters.vframeHigh = 0xF;
-    }
-  }
-  else
-  {
-    criteria.seedParameters.timer0Low = [timer0LowField intValue];
-    criteria.seedParameters.timer0High = [timer0HighField intValue];
-    
-    criteria.seedParameters.vcountLow = [vcountLowField intValue];
-    criteria.seedParameters.vcountHigh = [vcountHighField intValue];
-    
-    criteria.seedParameters.vframeLow = [frameLowField intValue];
-    criteria.seedParameters.vframeHigh = [frameHighField intValue];
-  }
+  criteria.seedParameters.timer0Low = timer0Low;
+  criteria.seedParameters.timer0High = timer0High;
   
-  ptime  startTime = ptime(NSDateToBoostDate([startDate objectValue]),
-                           hours([startHour intValue]) +
-                           minutes([startMinute intValue]) +
-                           seconds([startSecond intValue]));
+  criteria.seedParameters.vcountLow = vcountLow;
+  criteria.seedParameters.vcountHigh = vcountHigh;
+  
+  criteria.seedParameters.vframeLow = vframeLow;
+  criteria.seedParameters.vframeHigh = vframeHigh;
+  
+  ptime  startTime = ptime(NSDateToBoostDate(startDate),
+                           hours(startHour) + minutes(startMinute) +
+                           seconds(startSecond));
 
   criteria.seedParameters.fromTime = startTime - seconds(5);
   criteria.seedParameters.toTime = startTime + seconds(10);
   
-  criteria.seedParameters.heldButtons.push_back
-    ([[keyOnePopUp selectedItem] tag] |
-     [[keyTwoPopUp selectedItem] tag] |
-     [[keyThreePopUp selectedItem] tag]);
+  criteria.seedParameters.heldButtons.push_back(button1 | button2 | button3);
   
-  criteria.minIVs = [ivParameterController minIVs];
-  criteria.maxIVs = [ivParameterController maxIVs];
+  criteria.minIVs = ivParameterController.minIVs;
+  criteria.maxIVs = ivParameterController.maxIVs;
+  criteria.isRoamer = ivParameterController.isRoamer;
   criteria.maxSkippedFrames = 50;
   
   if (criteria.ExpectedNumberOfResults() > 1000)
@@ -214,7 +227,8 @@ struct ProgressHandler
   
   InitialIVSeedSearcher  searcher;
   
-  searcher.Search(*criteria, ResultHandler(searcherController),
+  searcher.Search(*criteria,
+                  ResultHandler(searcherController, criteria->isRoamer),
                   ProgressHandler(searcherController));
 }
 

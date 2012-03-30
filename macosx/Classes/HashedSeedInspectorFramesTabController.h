@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -20,32 +20,34 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "PPRNGTypes.h"
+#include "FrameGenerator.h"
+
 #import "Gen5ConfigurationController.h"
 #import "IVParameterController.h"
 
+@class HashedSeedInspectorController;
+
 @interface HashedSeedInspectorFramesTabController : NSObject
 {
-  IBOutlet NSWindow                     *owner;
+  IBOutlet HashedSeedInspectorController  *inspectorController;
+  IBOutlet Gen5ConfigurationController    *gen5ConfigController;
   
-  IBOutlet Gen5ConfigurationController  *gen5ConfigController;
+  pprng::Gen5PIDFrameGenerator::FrameType  encounterFrameType;
+  pprng::EncounterLead::Ability            encounterLeadAbility;
   
-  IBOutlet NSTextField                  *seedField;
+  BOOL                  genderRequired;
+  pprng::Gender::Type   targetGender;
+  BOOL                  genderRatioRequired;
+  pprng::Gender::Ratio  targetGenderRatio;
   
-  IBOutlet NSPopUpButton                *pidFrameTypeMenu;
-  IBOutlet NSButton                     *useCompoundEyesCheckBox;
-  IBOutlet NSButton                     *useInitialPIDButton;
-  IBOutlet NSTextField                  *minPIDFrameField;
-  IBOutlet NSTextField                  *maxPIDFrameField;
+  BOOL      startFromInitialPIDFrame;
+  uint32_t  minPIDFrame, maxPIDFrame;
   
   IBOutlet NSTableView                  *pidFrameTableView;
   IBOutlet NSArrayController            *pidFrameContentArray;
   
-  IBOutlet NSButton                     *shinyCheckBox;
-  IBOutlet NSPopUpButton                *natureMenu;
-  
-  
-  IBOutlet NSTextField                  *minIVFrameField;
-  IBOutlet NSTextField                  *maxIVFrameField;
+  uint32_t  minIVFrame, maxIVFrame;
   
   IBOutlet NSTableView                  *ivFrameTableView;
   IBOutlet NSArrayController            *ivFrameContentArray;
@@ -53,8 +55,24 @@
   IBOutlet IVParameterController        *ivParameterController;
 }
 
-- (IBAction)toggleUseInitialPID:(id)sender;
+@property pprng::Gen5PIDFrameGenerator::FrameType  encounterFrameType;
+@property pprng::EncounterLead::Ability            encounterLeadAbility;
+
+@property BOOL                  genderRequired;
+@property pprng::Gender::Type   targetGender;
+@property BOOL                  genderRatioRequired;
+@property pprng::Gender::Ratio  targetGenderRatio;
+
+@property BOOL      startFromInitialPIDFrame;
+@property uint32_t  minPIDFrame, maxPIDFrame;
+
+@property uint32_t   minIVFrame, maxIVFrame;
+@property (readonly) IVParameterController  *ivParameterController;
+
 - (IBAction)generatePIDFrames:(id)sender;
 - (IBAction)generateIVFrames:(id)sender;
+
+- (void)selectAndShowPIDFrame:(uint32_t)frame;
+- (void)selectAndShowIVFrame:(uint32_t)frame;
 
 @end

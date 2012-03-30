@@ -42,6 +42,21 @@
 		C0B53D011451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */; };
 		C0CB379F14BDBD270043877C /* HashedSeedQuickSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0CB379D14BDBD270043877C /* HashedSeedQuickSearcher.cpp */; };
 		C0D1A3B8136C2C3100D6E2DA /* Utilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */; };
+		C0DA49A41507B1AB0011A473 /* ElementTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49A11507B1AB0011A473 /* ElementTransformer.mm */; };
+		C0DA49A51507B1AB0011A473 /* NatureTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49A31507B1AB0011A473 /* NatureTransformer.mm */; };
+		C0DA49BD1507B4CC0011A473 /* AbilityTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49AE1507B4CC0011A473 /* AbilityTransformer.mm */; };
+		C0DA49BE1507B4CC0011A473 /* ButtonsTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49B01507B4CC0011A473 /* ButtonsTransformer.mm */; };
+		C0DA49BF1507B4CC0011A473 /* CharacteristicTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49B21507B4CC0011A473 /* CharacteristicTransformer.mm */; };
+		C0DA49C01507B4CC0011A473 /* UInt32DateTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49B41507B4CC0011A473 /* UInt32DateTransformer.mm */; };
+		C0DA49C11507B4CC0011A473 /* EncounterLeadTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49B61507B4CC0011A473 /* EncounterLeadTransformer.mm */; };
+		C0DA49C21507B4CC0011A473 /* EncounterSlotTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49B81507B4CC0011A473 /* EncounterSlotTransformer.mm */; };
+		C0DA49C31507B4CC0011A473 /* GenderTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49BA1507B4CC0011A473 /* GenderTransformer.mm */; };
+		C0DA49C41507B4CC0011A473 /* UInt32TimeTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49BC1507B4CC0011A473 /* UInt32TimeTransformer.mm */; };
+		C0DA4C1A150C6B290011A473 /* SearchResultProtocols.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA4C19150C6B290011A473 /* SearchResultProtocols.mm */; };
+		C0DA4C74150CF4760011A473 /* HeldItemTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA4C73150CF4760011A473 /* HeldItemTransformer.mm */; };
+		C0DA4C8B150CF7770011A473 /* ShinyTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA4C8A150CF7770011A473 /* ShinyTransformer.mm */; };
+		C0DA4D48150E4ADA0011A473 /* ChatotPitchTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA4D47150E4ADA0011A473 /* ChatotPitchTransformer.mm */; };
+		C0DA4F6315149BAB0011A473 /* BoolToCheckmarkTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA4F6215149BAB0011A473 /* BoolToCheckmarkTransformer.mm */; };
 		C0DAED071356A9CC008D00D5 /* TrainerIDSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */; };
 		C0E3041B1346343400C56C1A /* PPRNGTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303F81346343400C56C1A /* PPRNGTypes.cpp */; };
 		C0E3041C1346343400C56C1A /* CGearSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0E303FB1346343400C56C1A /* CGearSeedSearcher.cpp */; };
@@ -137,6 +152,36 @@
 		C0CB379E14BDBD270043877C /* HashedSeedQuickSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashedSeedQuickSearcher.h; sourceTree = "<group>"; };
 		C0D1A3B6136C2C3100D6E2DA /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Utilities.mm; sourceTree = "<group>"; };
+		C0DA49A01507B1AB0011A473 /* ElementTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElementTransformer.h; sourceTree = "<group>"; };
+		C0DA49A11507B1AB0011A473 /* ElementTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ElementTransformer.mm; sourceTree = "<group>"; };
+		C0DA49A21507B1AB0011A473 /* NatureTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NatureTransformer.h; sourceTree = "<group>"; };
+		C0DA49A31507B1AB0011A473 /* NatureTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NatureTransformer.mm; sourceTree = "<group>"; };
+		C0DA49AD1507B4CC0011A473 /* AbilityTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbilityTransformer.h; sourceTree = "<group>"; };
+		C0DA49AE1507B4CC0011A473 /* AbilityTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AbilityTransformer.mm; sourceTree = "<group>"; };
+		C0DA49AF1507B4CC0011A473 /* ButtonsTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonsTransformer.h; sourceTree = "<group>"; };
+		C0DA49B01507B4CC0011A473 /* ButtonsTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ButtonsTransformer.mm; sourceTree = "<group>"; };
+		C0DA49B11507B4CC0011A473 /* CharacteristicTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharacteristicTransformer.h; sourceTree = "<group>"; };
+		C0DA49B21507B4CC0011A473 /* CharacteristicTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CharacteristicTransformer.mm; sourceTree = "<group>"; };
+		C0DA49B31507B4CC0011A473 /* UInt32DateTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UInt32DateTransformer.h; sourceTree = "<group>"; };
+		C0DA49B41507B4CC0011A473 /* UInt32DateTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UInt32DateTransformer.mm; sourceTree = "<group>"; };
+		C0DA49B51507B4CC0011A473 /* EncounterLeadTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EncounterLeadTransformer.h; sourceTree = "<group>"; };
+		C0DA49B61507B4CC0011A473 /* EncounterLeadTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EncounterLeadTransformer.mm; sourceTree = "<group>"; };
+		C0DA49B71507B4CC0011A473 /* EncounterSlotTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EncounterSlotTransformer.h; sourceTree = "<group>"; };
+		C0DA49B81507B4CC0011A473 /* EncounterSlotTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EncounterSlotTransformer.mm; sourceTree = "<group>"; };
+		C0DA49B91507B4CC0011A473 /* GenderTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenderTransformer.h; sourceTree = "<group>"; };
+		C0DA49BA1507B4CC0011A473 /* GenderTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GenderTransformer.mm; sourceTree = "<group>"; };
+		C0DA49BB1507B4CC0011A473 /* UInt32TimeTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UInt32TimeTransformer.h; sourceTree = "<group>"; };
+		C0DA49BC1507B4CC0011A473 /* UInt32TimeTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UInt32TimeTransformer.mm; sourceTree = "<group>"; };
+		C0DA4C0A150BA4C40011A473 /* SearchResultProtocols.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchResultProtocols.h; sourceTree = "<group>"; };
+		C0DA4C19150C6B290011A473 /* SearchResultProtocols.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SearchResultProtocols.mm; sourceTree = "<group>"; };
+		C0DA4C72150CF4760011A473 /* HeldItemTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeldItemTransformer.h; sourceTree = "<group>"; };
+		C0DA4C73150CF4760011A473 /* HeldItemTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HeldItemTransformer.mm; sourceTree = "<group>"; };
+		C0DA4C89150CF7770011A473 /* ShinyTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShinyTransformer.h; sourceTree = "<group>"; };
+		C0DA4C8A150CF7770011A473 /* ShinyTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ShinyTransformer.mm; sourceTree = "<group>"; };
+		C0DA4D46150E4ADA0011A473 /* ChatotPitchTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatotPitchTransformer.h; sourceTree = "<group>"; };
+		C0DA4D47150E4ADA0011A473 /* ChatotPitchTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ChatotPitchTransformer.mm; sourceTree = "<group>"; };
+		C0DA4F6115149BAB0011A473 /* BoolToCheckmarkTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoolToCheckmarkTransformer.h; sourceTree = "<group>"; };
+		C0DA4F6215149BAB0011A473 /* BoolToCheckmarkTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BoolToCheckmarkTransformer.mm; sourceTree = "<group>"; };
 		C0DAED051356A9CC008D00D5 /* TrainerIDSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrainerIDSearcher.cpp; sourceTree = "<group>"; };
 		C0DAED061356A9CC008D00D5 /* TrainerIDSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerIDSearcher.h; sourceTree = "<group>"; };
 		C0E303F81346343400C56C1A /* PPRNGTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPRNGTypes.cpp; sourceTree = "<group>"; };
@@ -276,6 +321,8 @@
 				C0B352A21428C76800935815 /* ProfElmResponsesTransformer.mm */,
 				C0E304431346349900C56C1A /* SearcherController.h */,
 				C0E304441346349900C56C1A /* SearcherController.mm */,
+				C0DA4C0A150BA4C40011A473 /* SearchResultProtocols.h */,
+				C0DA4C19150C6B290011A473 /* SearchResultProtocols.mm */,
 				C0821516136EE9F600B6E0E5 /* TrainerIDFormatter.h */,
 				C0821517136EE9F600B6E0E5 /* TrainerIDFormatter.m */,
 				C0E304451346349900C56C1A /* TrainerIDSearcherController.h */,
@@ -325,6 +372,7 @@
 			children = (
 				C0E303F71346343400C56C1A /* libpprng */,
 				080E96DDFE201D6D7F000001 /* Classes */,
+				C0DA499F1507B1AB0011A473 /* Transformers */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -377,6 +425,41 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		C0DA499F1507B1AB0011A473 /* Transformers */ = {
+			isa = PBXGroup;
+			children = (
+				C0DA49AD1507B4CC0011A473 /* AbilityTransformer.h */,
+				C0DA49AE1507B4CC0011A473 /* AbilityTransformer.mm */,
+				C0DA4F6115149BAB0011A473 /* BoolToCheckmarkTransformer.h */,
+				C0DA4F6215149BAB0011A473 /* BoolToCheckmarkTransformer.mm */,
+				C0DA49AF1507B4CC0011A473 /* ButtonsTransformer.h */,
+				C0DA49B01507B4CC0011A473 /* ButtonsTransformer.mm */,
+				C0DA49B11507B4CC0011A473 /* CharacteristicTransformer.h */,
+				C0DA49B21507B4CC0011A473 /* CharacteristicTransformer.mm */,
+				C0DA4D46150E4ADA0011A473 /* ChatotPitchTransformer.h */,
+				C0DA4D47150E4ADA0011A473 /* ChatotPitchTransformer.mm */,
+				C0DA49A01507B1AB0011A473 /* ElementTransformer.h */,
+				C0DA49A11507B1AB0011A473 /* ElementTransformer.mm */,
+				C0DA49B51507B4CC0011A473 /* EncounterLeadTransformer.h */,
+				C0DA49B61507B4CC0011A473 /* EncounterLeadTransformer.mm */,
+				C0DA49B71507B4CC0011A473 /* EncounterSlotTransformer.h */,
+				C0DA49B81507B4CC0011A473 /* EncounterSlotTransformer.mm */,
+				C0DA49B91507B4CC0011A473 /* GenderTransformer.h */,
+				C0DA49BA1507B4CC0011A473 /* GenderTransformer.mm */,
+				C0DA4C72150CF4760011A473 /* HeldItemTransformer.h */,
+				C0DA4C73150CF4760011A473 /* HeldItemTransformer.mm */,
+				C0DA49A21507B1AB0011A473 /* NatureTransformer.h */,
+				C0DA49A31507B1AB0011A473 /* NatureTransformer.mm */,
+				C0DA4C89150CF7770011A473 /* ShinyTransformer.h */,
+				C0DA4C8A150CF7770011A473 /* ShinyTransformer.mm */,
+				C0DA49B31507B4CC0011A473 /* UInt32DateTransformer.h */,
+				C0DA49B41507B4CC0011A473 /* UInt32DateTransformer.mm */,
+				C0DA49BB1507B4CC0011A473 /* UInt32TimeTransformer.h */,
+				C0DA49BC1507B4CC0011A473 /* UInt32TimeTransformer.mm */,
+			);
+			path = Transformers;
+			sourceTree = "<group>";
+		};
 		C0E303F71346343400C56C1A /* libpprng */ = {
 			isa = PBXGroup;
 			children = (
@@ -393,10 +476,10 @@
 				C0E304001346343400C56C1A /* FrameGenerator.cpp */,
 				C0E304011346343400C56C1A /* FrameGenerator.h */,
 				C0E304021346343400C56C1A /* FrameSearcher.h */,
-				C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */,
-				C0B53D001451CEBC00C62866 /* Gen4QuickSeedSearcher.h */,
 				C0E304031346343400C56C1A /* Gen34SeedSearcher.cpp */,
 				C0E304041346343400C56C1A /* Gen34SeedSearcher.h */,
+				C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */,
+				C0B53D001451CEBC00C62866 /* Gen4QuickSeedSearcher.h */,
 				C0E304051346343400C56C1A /* HashedSeed.cpp */,
 				C0E304061346343400C56C1A /* HashedSeed.h */,
 				C05B86FF14626E42009166E0 /* HashedSeedMessage.cpp */,
@@ -405,9 +488,9 @@
 				C0CB379E14BDBD270043877C /* HashedSeedQuickSearcher.h */,
 				C0E304071346343400C56C1A /* HashedSeedSearcher.cpp */,
 				C0E304081346343400C56C1A /* HashedSeedSearcher.h */,
+				C0E3040B1346343400C56C1A /* IVRNG.h */,
 				C0E304091346343400C56C1A /* InitialSeedSearcher.cpp */,
 				C0E3040A1346343400C56C1A /* InitialSeedSearcher.h */,
-				C0E3040B1346343400C56C1A /* IVRNG.h */,
 				C0E3040C1346343400C56C1A /* LinearCongruentialRNG.h */,
 				C082189D13895C1D00B6E0E5 /* MersenneTwisterRNG.cpp */,
 				C082189E13895C1D00B6E0E5 /* MersenneTwisterRNG.h */,
@@ -557,6 +640,21 @@
 				C05B870114626E42009166E0 /* HashedSeedMessage.cpp in Sources */,
 				C03B40FE1463D21100AD59B0 /* Gen4ConfigurationController.mm in Sources */,
 				C0CB379F14BDBD270043877C /* HashedSeedQuickSearcher.cpp in Sources */,
+				C0DA49A41507B1AB0011A473 /* ElementTransformer.mm in Sources */,
+				C0DA49A51507B1AB0011A473 /* NatureTransformer.mm in Sources */,
+				C0DA49BD1507B4CC0011A473 /* AbilityTransformer.mm in Sources */,
+				C0DA49BE1507B4CC0011A473 /* ButtonsTransformer.mm in Sources */,
+				C0DA49BF1507B4CC0011A473 /* CharacteristicTransformer.mm in Sources */,
+				C0DA49C01507B4CC0011A473 /* UInt32DateTransformer.mm in Sources */,
+				C0DA49C11507B4CC0011A473 /* EncounterLeadTransformer.mm in Sources */,
+				C0DA49C21507B4CC0011A473 /* EncounterSlotTransformer.mm in Sources */,
+				C0DA49C31507B4CC0011A473 /* GenderTransformer.mm in Sources */,
+				C0DA49C41507B4CC0011A473 /* UInt32TimeTransformer.mm in Sources */,
+				C0DA4C1A150C6B290011A473 /* SearchResultProtocols.mm in Sources */,
+				C0DA4C74150CF4760011A473 /* HeldItemTransformer.mm in Sources */,
+				C0DA4C8B150CF7770011A473 /* ShinyTransformer.mm in Sources */,
+				C0DA4D48150E4ADA0011A473 /* ChatotPitchTransformer.mm in Sources */,
+				C0DA4F6315149BAB0011A473 /* BoolToCheckmarkTransformer.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

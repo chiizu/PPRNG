@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -69,7 +69,6 @@ private:
 
 
 // standard IVRNG for 5th gen
-// uses the shifting functionality of the IVs class to do its own buffering
 template <class RNG>
 class Gen5BufferingIVRNG
 {
@@ -83,59 +82,55 @@ public:
   };
   
   Gen5BufferingIVRNG(RNG &rng, FrameType frameType)
-    : m_RNG(rng), m_IVs(),
+    : m_RNG(rng), m_word(0),
       m_IVWordGenerator((frameType == Normal) ?
                         &Gen5BufferingIVRNG::NextNormalIVWord :
                         &Gen5BufferingIVRNG::NextRoamerIVWord)
   {
-    if (frameType == Normal)
+    if (frameType == Roamer)
+      m_RNG.Next();  // unknown call
+    
+    uint32_t  word = 0;
+    for (uint32_t i = 0; i < 5; ++i)
     {
-      m_IVs.word = ((m_RNG.Next() >> LowBitOffset) << IVs::AT_SHIFT) |
-                   ((m_RNG.Next() >> LowBitOffset) << IVs::DF_SHIFT) |
-                   ((m_RNG.Next() >> LowBitOffset) << IVs::SA_SHIFT) |
-                   ((m_RNG.Next() >> LowBitOffset) << IVs::SD_SHIFT) |
-                   ((m_RNG.Next() >> LowBitOffset) << IVs::SP_SHIFT);
+      word = (word >> 5) | ((m_RNG.Next() >> LowBitOffset) << 25);
     }
-    else
-    {
-      // unknown call
-      m_RNG.Next();
-      
-      m_IVs.word = ((m_RNG.Next() >> LowBitOffset) << IVs::AT_SHIFT) |
-                   ((m_RNG.Next() >> LowBitOffset) << IVs::DF_SHIFT) |
-                   ((m_RNG.Next() >> LowBitOffset) << IVs::SD_SHIFT) |
-                   ((m_RNG.Next() >> LowBitOffset) << IVs::SP_SHIFT) |
-                   ((m_RNG.Next() >> LowBitOffset) << IVs::SA_SHIFT);
-    }
+    m_word = word;
   }
   
   uint32_t NextIVWord()
   {
-    return (this->*m_IVWordGenerator)();
+    uint32_t  word = (m_word >> 5) | ((m_RNG.Next() >> LowBitOffset) << 25);
+    m_word = word;
+    
+    return (this->*m_IVWordGenerator)(word);
   }
   
 private:
-  typedef uint32_t (Gen5BufferingIVRNG::*IVWordGenerator)();
+  typedef uint32_t (Gen5BufferingIVRNG::*IVWordGenerator)(uint32_t buffer);
   
   const IVWordGenerator  m_IVWordGenerator;
   
-  uint32_t NextNormalIVWord()
+  uint32_t NextNormalIVWord(uint32_t buffer)
   {
-    m_IVs.ShiftDownNormal(m_RNG.Next() >> LowBitOffset);
-    
-    return m_IVs.word;
+    uint32_t  result = (buffer & 0x7fff) |
+                       ((buffer & 0x01ff8000) << 6) |
+                       ((buffer & 0x3e000000) >> 9);
+    return result;
   }
   
-  uint32_t NextRoamerIVWord()
+  uint32_t NextRoamerIVWord(uint32_t buffer)
   {
-    m_IVs.ShiftDownRoamer(m_RNG.Next() >> LowBitOffset);
-    
-    return m_IVs.word;
+    uint32_t  result = (buffer & 0x7fff) |
+                       ((buffer & 0x000f8000) << 11) |
+                       ((buffer & 0x3ff00000) >> 4);
+    return result;
   }
   
-  RNG  &m_RNG;
-  IVs  m_IVs;
+  RNG       &m_RNG;
+  uint32_t  m_word;
 };
+
 
 // for use in cases when the RNG passed in will handle any buffering needed
 // - generally used in cases where IV generation is part of a larger sequence

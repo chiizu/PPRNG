@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -48,7 +48,7 @@ struct FrameChecker
 
   bool CheckHiddenPower(const IVs &ivs) const
   {
-    if (m_criteria.ivs.hiddenType == Element::UNKNOWN)
+    if (m_criteria.ivs.hiddenType == Element::NONE)
     {
       return true;
     }
@@ -96,7 +96,7 @@ uint64_t HashedSeedSearcher::Criteria::ExpectedNumberOfResults() const
   uint64_t  numResults = numIVFrames * numSeeds * numIVs /
                            (32 * 32 * 32 * 32 * 32 * 32);
   
-  if (ivs.hiddenType != Element::UNKNOWN)
+  if (ivs.hiddenType != Element::NONE)
   {
     numResults = IVs::AdjustExpectedResultsForHiddenPower
       (numResults, ivs.min, ivs.max, ivs.hiddenType, ivs.minHiddenPower);

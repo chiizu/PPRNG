@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -20,8 +20,11 @@
 
 #import "HashedSeedInspectorAdjacentsTabController.h"
 
+#import "HashedSeedInspectorController.h"
+
 #include "HashedSeed.h"
 #include "FrameGenerator.h"
+#include "SearchResultProtocols.h"
 #include "Utilities.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -29,89 +32,195 @@
 
 using namespace pprng;
 
+
+@interface HashedSeedInspectorAdjacentFrame :
+  NSObject <HashedSeedResultParameters, IVResult, PIDResult>
+{
+  DECLARE_HASHED_SEED_RESULT_PARAMETERS_VARIABLES();
+  
+  DECLARE_IV_RESULT_VARIABLES();
+  
+  uint32_t              startFrame, pidFrame;
+  DECLARE_PID_RESULT_VARIABLES();
+  ESV::Value            esv;
+  HeldItem::Type        heldItem;
+  Characteristic::Type  characteristic;
+  NSString              *details;
+}
+
+@property uint32_t              startFrame, pidFrame;
+@property ESV::Value            esv;
+@property HeldItem::Type        heldItem;
+@property Characteristic::Type  characteristic;
+@property (copy) NSString       *details;
+
+@end
+
+@implementation HashedSeedInspectorAdjacentFrame
+
+SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
+SYNTHESIZE_IV_RESULT_PROPERTIES();
+@synthesize startFrame, pidFrame;
+SYNTHESIZE_PID_RESULT_PROPERTIES();
+@synthesize esv;
+@synthesize heldItem;
+@synthesize characteristic;
+@synthesize details;
+
+@end
+
+
 @implementation HashedSeedInspectorAdjacentsTabController
+
+@synthesize secondsVariance, timer0Variance;
+@synthesize matchOffsetFromInitialPIDFrame;
+@synthesize ivFrame, isRoamer;
+@synthesize pidFrame, pidFrameVariance;
+@synthesize encounterFrameType, encounterLeadAbility;
+@synthesize genderRequired, targetGender;
+@synthesize genderRatioRequired, targetGenderRatio;
+
+- (void)checkGenderSettingsRequired
+{
+  self.genderRequired =
+    (encounterLeadAbility == EncounterLead::CUTE_CHARM) ||
+    (encounterFrameType == Gen5PIDFrameGenerator::EntraLinkFrame);
+  
+  if (!genderRequired)
+    self.targetGender = Gender::GENDERLESS;
+  
+  self.genderRatioRequired = genderRequired &&
+                             (targetGender != Gender::GENDERLESS);
+}
+
+- (void)setEncounterFrameType:(Gen5PIDFrameGenerator::FrameType)newFrameType
+{
+  if (newFrameType != encounterFrameType)
+  {
+    encounterFrameType = newFrameType;
+    [self checkGenderSettingsRequired];
+  }
+}
+
+- (void)setEncounterLeadAbility:(EncounterLead::Ability)newAbility
+{
+  if (newAbility != encounterLeadAbility)
+  {
+    encounterLeadAbility = newAbility;
+    [self checkGenderSettingsRequired];
+  }
+}
+
+- (void)setTargetGender:(Gender::Type)newGender
+{
+  if (newGender != targetGender)
+  {
+    targetGender = newGender;
+    if (targetGender == Gender::GENDERLESS)
+    {
+      self.targetGenderRatio = Gender::ANY_RATIO;
+      self.genderRatioRequired = NO;
+    }
+    else
+    {
+      self.genderRatioRequired = YES;
+    }
+  }
+}
+
+- (void)awakeFromNib
+{
+  self.secondsVariance = self.timer0Variance = 1;
+  self.matchOffsetFromInitialPIDFrame = YES;
+  self.ivFrame = 1;
+  self.isRoamer = NO;
+  self.pidFrame = 50;
+  self.pidFrameVariance = 10;
+  self.encounterFrameType = Gen5PIDFrameGenerator::GrassCaveFrame;
+  self.encounterLeadAbility = EncounterLead::SYNCHRONIZE;
+  self.targetGender = Gender::GENDERLESS;
+  self.targetGenderRatio = Gender::NO_RATIO;
+}
 
 - (IBAction)generateAdjacents:(id)sender
 {
   using namespace boost::gregorian;
   using namespace boost::posix_time;
   
-  if (currentSeed == nil)
-  {
+  if (!EndEditing([inspectorController window]))
     return;
-  }
   
-  HashedSeed  targetSeed;
-  [currentSeed getBytes: &targetSeed length: sizeof(HashedSeed)];
-  
-  if (targetSeed.rawSeed != [[seedField objectValue] unsignedLongLongValue])
-  {
+  if (!inspectorController.startDate || !inspectorController.startHour ||
+      !inspectorController.startMinute || !inspectorController.startSecond ||
+      !inspectorController.timer0 || !inspectorController.vcount ||
+      !inspectorController.vframe)
     return;
-  }
+  
+  HashedSeed::Parameters  targetSeedParams;
+  
+  targetSeedParams.version = [gen5ConfigController version];
+  targetSeedParams.dsType = [gen5ConfigController dsType];
+  targetSeedParams.macAddress = [gen5ConfigController macAddress];
+  targetSeedParams.gxStat = HashedSeed::HardResetGxStat;
+  targetSeedParams.vcount = [inspectorController.vcount unsignedIntValue];
+  targetSeedParams.vframe = [inspectorController.vframe unsignedIntValue];
+  targetSeedParams.timer0 = [inspectorController.timer0 unsignedIntValue];
+  targetSeedParams.date = NSDateToBoostDate(inspectorController.startDate);
+  targetSeedParams.hour = [inspectorController.startHour unsignedIntValue];
+  targetSeedParams.minute = [inspectorController.startMinute unsignedIntValue];
+  targetSeedParams.second = [inspectorController.startSecond unsignedIntValue];
+  targetSeedParams.heldButtons = inspectorController.button1 |
+                                 inspectorController.button2 |
+                                 inspectorController.button3;
+  HashedSeed  targetSeed(targetSeedParams);
   
   [adjacentsContentArray setContent: [NSMutableArray array]];
   
-  uint32_t  timer0Low = targetSeed.timer0 - 1;
-  uint32_t  timer0High = targetSeed.timer0 + 1;
+  uint32_t  timer0Low = targetSeedParams.timer0 - timer0Variance;
+  uint32_t  timer0High = targetSeedParams.timer0 + timer0Variance;
   
-  if (targetSeed.timer0 == 0)
-  {
+  if (targetSeedParams.timer0 < timer0Variance)
     timer0Low = 0;
-  }
-  if (targetSeed.timer0 == 0xffffffff)
-  {
+  
+  if (targetSeedParams.timer0 > (0xffffffff - timer0Variance))
     timer0High = 0xffffffff;
-  }
   
-  uint32_t  secondVariance = [adjacentsTimeVarianceField intValue];
-  
-  ptime     seedTime(date(targetSeed.year(), targetSeed.month(),
-                     targetSeed.day()),
-                     hours(targetSeed.hour) + minutes(targetSeed.minute) +
-                     seconds(targetSeed.second));
+  ptime     seedTime(targetSeedParams.date, hours(targetSeedParams.hour) +
+                                            minutes(targetSeedParams.minute) +
+                                            seconds(targetSeedParams.second));
   ptime     dt = seedTime;
-  ptime     endTime = dt + seconds(secondVariance);
-  dt = dt - seconds(secondVariance);
+  ptime     endTime = dt + seconds(secondsVariance);
+  dt = dt - seconds(secondsVariance);
   
-  uint32_t  ivFrameNum = [adjacentsIVFrameField intValue];
-  bool      isRoamer = [adjacentsRoamerButton state];
+  uint32_t  pidFrameOffset = matchOffsetFromInitialPIDFrame ?
+    (pidFrame - targetSeed.GetSkippedPIDFrames() - 1) : pidFrame;
   
-  uint32_t  pidFrameNum = [adjacentsPIDFrameField intValue];
-  BOOL      useInitialPIDOffset = [adjacentsUseInitialPIDOffsetButton state];
-  uint32_t  pidFrameOffset = useInitialPIDOffset ?
-       (pidFrameNum - targetSeed.GetSkippedPIDFrames() - 1) : pidFrameNum;
-  uint32_t  pidFrameVariance = [adjacentsPIDFrameVarianceField intValue];
+  if (pidFrameOffset > pidFrame)
+    pidFrameOffset = pidFrame;
   
-  HashedSeed::Parameters  seedParams;
-  seedParams.version = targetSeed.version;
-  seedParams.dsType = targetSeed.dsType;
-  seedParams.macAddress = targetSeed.macAddress;
-  seedParams.gxStat = targetSeed.gxStat;
-  seedParams.vcount = targetSeed.vcount;
-  seedParams.vframe = targetSeed.vframe;
-  seedParams.heldButtons = targetSeed.heldButtons;
+  HashedSeed::Parameters  seedParams = targetSeedParams;
   
   Gen5PIDFrameGenerator::Parameters  pidFrameParams;
-  pidFrameParams.frameType = Gen5PIDFrameGenerator::FrameType
-                              ([[adjacentsPIDFrameTypeMenu selectedItem] tag]);
-  pidFrameParams.useCompoundEyes = false;
+  pidFrameParams.frameType = encounterFrameType;
+  pidFrameParams.leadAbility = encounterLeadAbility;
+  pidFrameParams.targetGender = targetGender;
+  
+  pidFrameParams.targetRatio = genderRequired ?
+    targetGenderRatio : Gender::ANY_RATIO;
+  
   pidFrameParams.tid = [gen5ConfigController tid];
   pidFrameParams.sid = [gen5ConfigController sid];
+  pidFrameParams.startFromLowestFrame = matchOffsetFromInitialPIDFrame;
   
   NSMutableArray  *rowArray =
     [NSMutableArray arrayWithCapacity:
-      (timer0High - timer0Low + 1) * ((2 * secondVariance) + 1)];
+      (timer0High - timer0Low + 1) * ((2 * secondsVariance) + 1)];
   
   for (; dt <= endTime; dt = dt + seconds(1))
   {
     seedParams.date = dt.date();
     
     time_duration  t = dt.time_of_day();
-    
-    NSString  *timeStr = (dt == seedTime) ?
-      [NSString stringWithFormat:@"%.2d:%.2d:%.2d",
-                                 t.hours(), t.minutes(), t.seconds()] :
-      [NSString stringWithFormat:@"%+dsec", (dt - seedTime).total_seconds()];
     
     seedParams.hour = t.hours();
     seedParams.minute = t.minutes();
@@ -128,83 +237,76 @@ using namespace pprng;
                                            HashedIVFrameGenerator::Roamer :
                                            HashedIVFrameGenerator::Normal));
       
-      for (uint32_t j = 0; j < ivFrameNum; ++j)
+      for (uint32_t j = 0; j < ivFrame; ++j)
         ivGenerator.AdvanceFrame();
       
       IVs  ivs = ivGenerator.CurrentFrame().ivs;
       
-      uint32_t  adjacentPIDFrameNum = useInitialPIDOffset ?
+      uint32_t  adjacentPIDFrameNum = matchOffsetFromInitialPIDFrame ?
         (seed.GetSkippedPIDFrames() + 1 + pidFrameOffset) :
-        pidFrameNum;
-      uint32_t  pidStartFrameNum =
-        (adjacentPIDFrameNum < (pidFrameVariance + 1)) ?
-          1 : (adjacentPIDFrameNum - pidFrameVariance);
+        pidFrame;
+      
+      uint32_t  skippedFrames;
+      if (matchOffsetFromInitialPIDFrame)
+      {
+        if (pidFrameOffset < (pidFrameVariance + 1))
+          skippedFrames = 0;
+        else
+          skippedFrames = pidFrameOffset - pidFrameVariance - 1;
+      }
+      else
+      {
+        if (adjacentPIDFrameNum < (pidFrameVariance + 1))
+          skippedFrames = 0;
+        else
+          skippedFrames = adjacentPIDFrameNum - pidFrameVariance - 1;
+      }
+      
       uint32_t  pidEndFrameNum = adjacentPIDFrameNum + pidFrameVariance;
       
       Gen5PIDFrameGenerator  pidGenerator(seed, pidFrameParams);
-      bool  generatesESV = pidGenerator.GeneratesESV();
-      bool  generatesIsEncounter = pidGenerator.GeneratesIsEncounter();
       
-      for (uint32_t j = 0; j < (pidStartFrameNum - 1); ++j)
+      for (uint32_t j = 0; j < skippedFrames; ++j)
         pidGenerator.AdvanceFrame();
       
-      for (pidFrameNum = pidStartFrameNum;
-           pidFrameNum <= pidEndFrameNum;
-           ++pidFrameNum)
+      for (uint32_t f = pidGenerator.CurrentFrame().number;
+           f < pidEndFrameNum;
+           ++f)
       {
         pidGenerator.AdvanceFrame();
         
         Gen5PIDFrame  frame = pidGenerator.CurrentFrame();
-        uint32_t      genderValue = frame.pid.GenderValue();
         
-        [rowArray addObject:
-        [NSMutableDictionary dictionaryWithObjectsAndKeys:
-          timeStr, @"time",
-          [NSNumber numberWithUnsignedInt: timer0], @"timer0",
-          [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1],
-            @"startFrame",
-          [NSNumber numberWithUnsignedInt: frame.number], @"pidFrame",
-          (frame.pid.IsShiny(pidFrameParams.tid, pidFrameParams.sid) ?
-            @"★" : @""), @"shiny",
-          [NSString stringWithFormat: @"%s",
-            Nature::ToString(frame.nature).c_str()], @"nature",
-          [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
-          ((genderValue < 31) ? @"♀" : @"♂"), @"gender18",
-          ((genderValue < 63) ? @"♀" : @"♂"), @"gender14",
-          ((genderValue < 127) ? @"♀" : @"♂"), @"gender12",
-          ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
-          (frame.synched ? @"Y" : @""), @"sync",
-          (generatesESV ? [NSString stringWithFormat: @"%d", frame.esv] : @""),
-            @"esv",
-          HeldItemString(frame.heldItem), @"heldItem",
-          ((generatesIsEncounter && frame.isEncounter) ? @"Y" : @""),
-            @"isEncounter",
-          [NSNumber numberWithUnsignedInt: ivs.hp()], @"hp",
-          [NSNumber numberWithUnsignedInt: ivs.at()], @"atk",
-          [NSNumber numberWithUnsignedInt: ivs.df()], @"def",
-          [NSNumber numberWithUnsignedInt: ivs.sa()], @"spa",
-          [NSNumber numberWithUnsignedInt: ivs.sd()], @"spd",
-          [NSNumber numberWithUnsignedInt: ivs.sp()], @"spe",
-          [NSString stringWithFormat: @"%s",
-            Element::ToString(ivs.HiddenType()).c_str()], @"hiddenType",
-          [NSString stringWithFormat: @"%s",
-              Characteristic::ToString
-                (Characteristic::Get(frame.pid, ivs)).c_str()],
-            @"characteristic",
-          nil]];
+        HashedSeedInspectorAdjacentFrame  *result =
+          [[HashedSeedInspectorAdjacentFrame alloc] init];
+        
+        SetHashedSeedResultParameters(result, seed);
+        
+        SetIVResult(result, ivs, isRoamer);
+        
+        result.startFrame = seed.GetSkippedPIDFrames() + 1;
+        result.pidFrame = frame.number;
+        
+        SetGen5PIDResult(result,
+          frame.nature, frame.pid, pidFrameParams.tid, pidFrameParams.sid,
+          pidFrameParams.targetGender,
+          ((pidFrameParams.leadAbility == EncounterLead::CUTE_CHARM) &&
+           (pidFrameParams.frameType != Gen5PIDFrameGenerator::EntraLinkFrame))?
+             (frame.abilityActivated ? pidFrameParams.targetRatio :
+                                       Gender::ANY_RATIO) :
+             pidFrameParams.targetRatio);
+        
+        result.esv = frame.esv;
+        result.heldItem = frame.heldItem;
+        result.characteristic = Characteristic::Get(frame.pid, ivs);
+        result.details = GetGen5PIDFrameDetails(frame, pidFrameParams);
+        
+        [rowArray addObject: result];
       }
     }
   }
   
   [adjacentsContentArray addObjects: rowArray];
-}
-
-- (void)setSeed:(NSData*)seedData
-{
-  if (seedData != currentSeed)
-  {
-    currentSeed = seedData;
-  }
 }
 
 @end

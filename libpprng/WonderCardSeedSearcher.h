@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -41,6 +41,7 @@ public:
     WonderCardFrameGenerator::Parameters  frameParameters;
     SearchCriteria::IVCriteria            ivs;
     SearchCriteria::PIDCriteria           pid;
+    bool                                  shinyOnly;
     SearchCriteria::FrameRange            frame;
     
     Criteria()

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -36,6 +36,8 @@ namespace pprng
 namespace
 {
 
+static const std::string  EmptyString;
+
 static const char *DSTypeNameArray[] =
 { "DS", "DS Lite", "DSi", "DSi XL/LL", "3DS", "Unknown DS Type" };
 
@@ -57,21 +59,19 @@ static const std::vector<std::string>  GameVersionName
                     (sizeof(GameVersionNameArray) / sizeof(const char *)));
 
 static const char *NatureNameArray[] =
-{ "HARDY", "LONELY", "BRAVE", "ADAMANT", "NAUGHTY", "BOLD", "DOCILE", "RELAXED",
-  "IMPISH", "LAX", "TIMID", "HASTY", "SERIOUS", "JOLLY", "NAIVE", "MODEST",
-  "MILD", "QUIET", "BASHFUL", "RASH", "CALM", "GENTLE", "SASSY", "CAREFUL",
-  "QUIRKY",
-  "ANY", "UNKNOWN" };
+{ "Hardy", "Lonely", "Brave", "Adamant", "Naughty", "Bold", "Docile", "Relaxed",
+  "Impish", "Lax", "Timid", "Hasty", "Serious", "Jolly", "Naive", "Modest",
+  "Mild", "Quiet", "Bashful", "Rash", "Calm", "Gentle", "Sassy", "Careful",
+  "Quirky", "Any", "<SYNC>", "<ES>" };
 
 static const std::vector<std::string>  NatureName
   (NatureNameArray, NatureNameArray +
                     (sizeof(NatureNameArray) / sizeof(const char *)));
 
 static const char *ElementNameArray[] =
-{ "NORMAL", "FIGHTING", "FLYING", "POISON", "GROUND", "ROCK", "BUG", "GHOST",
-  "STEEL", "FIRE", "WATER", "GRASS", "ELECTRIC", "PSYCHIC", "ICE", "DRAGON",
-  "DARK",
-  "ANY", "UNKNOWN" };
+{ "Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost",
+  "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon",
+  "Dark", "Any" };
 
 static const std::vector<std::string>  ElementName
   (ElementNameArray, ElementNameArray +
@@ -113,12 +113,28 @@ static const char *CharacteristicNameArray[] =
   "Mischievous", "Thoroughly cunning", "Often lost in thought", "Very finicky",
   "Strong willed", "Somewhat vain", "Strongly defiant", "Hates to lose",
   "Somewhat stubborn", "Likes to run", "Alert to sounds", "Impetuous and silly",
-  "Somewhat of a clown", "Quick to flee", "Unknown Characteristic" };
+  "Somewhat of a clown", "Quick to flee", "Any" };
 
 static const std::vector<std::string>  CharacteristicName
   (CharacteristicNameArray,
    CharacteristicNameArray +
      (sizeof(CharacteristicNameArray) / sizeof(const char *)));
+
+static const char *EncounterItemNameArray[] =
+{ "None",
+  "Sun Stone", "Moon Stone", "Fire Stone", "Thunder Stone", "Water Stone",
+  "Leaf Stone", "Shiny Stone", "Dusk Stone", "Dawn Stone", "Oval Stone",
+  "Fire Gem", "Water Gem", "Electric Gem", "Grass Gem", "Ice Gem",
+  "Fighting Gem", "Poison Gem", "Ground Gem", "Flying Gem", "Psychic Gem",
+  "Bug Gem", "Rock Gem", "Ghost Gem", "Dragon Gem", "Dark Gem", "Steel Gem",
+  "Normal Gem", "Everstone", "King's Rock",
+  "Health Wing", "Muscle Wing", "Resist Wing", "Genius Wing", "Clever Wing",
+  "Swift Wing", "Pretty Wing" };
+
+static const std::vector<std::string>  EncounterItemName
+  (EncounterItemNameArray,
+   EncounterItemNameArray +
+     (sizeof(EncounterItemNameArray) / sizeof(const char *)));
 
 static std::string MakeBadIVIndexExceptionString(int i)
 {
@@ -128,7 +144,6 @@ static std::string MakeBadIVIndexExceptionString(int i)
 }
 
 }
-
 
 std::string DS::ToString(DS::Type t)
 {
@@ -277,13 +292,13 @@ std::string Game::ToString(Game::Version v)
 
 const std::string& Nature::ToString(Nature::Type t)
 {
-  if ((t >= HARDY) && (t <= UNKNOWN))
+  if ((t >= HARDY) && (t <= EVERSTONE))
   {
     return NatureName[t];
   }
   else
   {
-    return NatureName[UNKNOWN];
+    return EmptyString;
   }
 }
 
@@ -302,19 +317,19 @@ Nature::Type Nature::FromString(const std::string &name)
   }
   else
   {
-    return UNKNOWN;
+    return NONE;
   }
 }
 
 const std::string& Element::ToString(Element::Type t)
 {
-  if ((t >= NORMAL) && (t <= UNKNOWN))
+  if ((t >= NORMAL) && (t <= ANY))
   {
     return ElementName[t];
   }
   else
   {
-    return ElementName[UNKNOWN];
+    return EmptyString;
   }
 }
 
@@ -333,7 +348,7 @@ Element::Type Element::FromString(const std::string &name)
   }
   else
   {
-    return UNKNOWN;
+    return NONE;
   }
 }
 
@@ -511,7 +526,8 @@ uint64_t IVs::AdjustExpectedResultsForHiddenPower
 {
   static const Type  IVOrdering[] = { HP, AT, DF, SP, SA, SD };
   
-  if (type == Element::UNKNOWN)  return numResults;
+  if ((type == Element::ANY) || (type == Element::NONE))
+    return numResults;
   
   uint32_t  addend = 0x1;
   uint64_t  numIVCombos = 1;
@@ -696,18 +712,18 @@ Characteristic::Type Characteristic::Get(PID pid, IVs ivs)
     ++count;
   }
   
-  return UNKNOWN;
+  return NONE;
 }
 
 const std::string& Characteristic::ToString(Characteristic::Type c)
 {
-  if ((c >= LOVES_TO_EAT) && (c <= UNKNOWN))
+  if ((c >= LOVES_TO_EAT) && (c < NUM_CHARACTERISTICS))
   {
     return CharacteristicName[c];
   }
   else
   {
-    return CharacteristicName[UNKNOWN];
+    return EmptyString;
   }
 }
 
@@ -730,6 +746,7 @@ static ESVNameMap::value_type ESVNameData[] =
   ESVNameMap::value_type(ESV::LAND_9, "Land 9"),
   ESVNameMap::value_type(ESV::LAND_10, "Land 10"),
   ESVNameMap::value_type(ESV::LAND_11, "Land 11"),
+  ESVNameMap::value_type(ESV::SWARM, "Swarm"),
   ESVNameMap::value_type(ESV::SURF_0, "Surf 0"),
   ESVNameMap::value_type(ESV::SURF_1, "Surf 1"),
   ESVNameMap::value_type(ESV::SURF_2, "Surf 2"),
@@ -854,6 +871,19 @@ EncounterSlot::Value EncounterSlot::Gen5Fishing(uint32_t percent)
 EncounterSlot::Value EncounterSlot::Gen5WaterSpot(uint32_t percent)
 {
   return Value(GetESV(percent, GoodSuperFishingESVThresholdK) | GOOD_ROD_TYPE);
+}
+
+
+std::string EncounterItem::ToString(EncounterItem::Type t)
+{
+  if ((t >= EncounterItem::NONE) && (t <= EncounterItem::PRETTY_WING))
+  {
+    return EncounterItemName[t];
+  }
+  else
+  {
+    return "Unknown Item";
+  }
 }
 
 

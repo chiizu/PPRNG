@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -67,7 +67,7 @@
 #ifndef LAZY_MERSENNE_TWISTER_RNG_H
 #define LAZY_MERSENNE_TWISTER_RNG_H
 
-#include "PPRNGTypes.h"
+#include <stdint.h>
 
 namespace pprng
 {

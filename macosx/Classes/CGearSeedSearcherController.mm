@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -21,47 +21,59 @@
 
 #import "CGearSeedSearcherController.h"
 
+#import "SearchResultProtocols.h"
+#import "Utilities.h"
+
 #include "CGearSeedSearcher.h"
 #include "CGearSeedInspectorController.h"
 
 using namespace pprng;
+
+@interface CGearSeedSearchResult : NSObject <IVResult>
+{
+  uint32_t  seed, delay, frame;
+  DECLARE_IV_RESULT_VARIABLES();
+}
+
+@property uint32_t  seed, delay, frame;
+
+@end
+
+@implementation CGearSeedSearchResult
+
+@synthesize seed, delay, frame;
+SYNTHESIZE_IV_RESULT_PROPERTIES();
+
+@end
 
 namespace
 {
 
 struct ResultHandler
 {
-  ResultHandler(SearcherController *c, uint32_t macAddrLow)
-    : controller(c), macAddressLow(macAddrLow)
+  ResultHandler(SearcherController *c, uint32_t macAddrLow, bool isRoamer)
+    : m_controller(c), m_macAddressLow(macAddrLow), m_isRoamer(isRoamer)
   {}
   
   void operator()(const CGearIVFrame &frame)
   {
-    CGearSeed  seed(frame.seed, macAddressLow);
+    CGearSeed  seed(frame.seed, m_macAddressLow);
     
-    NSMutableDictionary  *result =
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedInt: seed.m_rawSeed], @"seed",
-				[NSNumber numberWithUnsignedInt: seed.BaseDelay()], @"delay",
-				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
-        [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
-        [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sa()], @"spa",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sd()], @"spd",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sp()], @"spe",
-        [NSString stringWithFormat: @"%s",
-          Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
-        [NSNumber numberWithUnsignedInt: frame.ivs.HiddenPower()], @"hiddenPower",
-        nil];
+    CGearSeedSearchResult  *result = [[CGearSeedSearchResult alloc] init];
     
-    [controller performSelectorOnMainThread: @selector(addResult:)
+    result.seed = seed.m_rawSeed;
+    result.delay = seed.BaseDelay();
+    result.frame = frame.number;
+    SetIVResult(result, frame.ivs, m_isRoamer);
+    
+    [m_controller performSelectorOnMainThread: @selector(addResult:)
                 withObject: result
                 waitUntilDone: NO];
   }
   
-  SearcherController  *controller;
-  const uint32_t      macAddressLow;
+  SearcherController  *m_controller;
+  const uint32_t      m_macAddressLow;
+  const bool          m_isRoamer;
 };
 
 struct ProgressHandler
@@ -86,6 +98,8 @@ struct ProgressHandler
 
 @implementation CGearSeedSearcherController
 
+@synthesize minFrame, maxFrame, minDelay, maxDelay;
+
 - (NSString *)windowNibName
 {
 	return @"CGearSeedSearcher";
@@ -100,11 +114,13 @@ struct ProgressHandler
   [searcherController setDoSearchWithCriteriaSelector:
                       @selector(doSearchWithCriteria:)];
   
-  [[[[[searcherController tableView] tableColumnWithIdentifier: @"seed"]
-    dataCell] formatter]
-   setFormatWidth: 8];
-  
+  [[searcherController tableView] setTarget: self];
   [[searcherController tableView] setDoubleAction: @selector(inspectSeed:)];
+  
+  self.minFrame = 21;
+  self.maxFrame = 26;
+  self.minDelay = 1800;
+  self.maxDelay = 3000;
 }
 
 - (void)windowWillClose:(NSNotification *)notification
@@ -119,18 +135,31 @@ struct ProgressHandler
   
   if (rowNum >= 0)
   {
-    NSDictionary  *row =
+    CGearSeedSearchResult  *row =
       [[[searcherController arrayController] arrangedObjects]
         objectAtIndex: rowNum];
     
     if (row != nil)
     {
-      uint32_t  seed = [[row objectForKey: @"seed"] unsignedIntValue];
-      
       CGearSeedInspectorController  *inspector =
         [[CGearSeedInspectorController alloc] init];
+      [inspector window];
+      
+      inspector.seed = [NSNumber numberWithUnsignedInt: row.seed];
+      inspector.maxIVFrame = row.frame + 20;
+      inspector.ivFrameParameterController.isRoamer = row.isRoamer;
+      [inspector generateIVFrames: self];
+      [inspector selectAndShowFrame: row.frame];
+      
+      if (row.frame <= 5)
+        inspector.adjacentsMinIVFrame = 1;
+      else
+        inspector.adjacentsMinIVFrame = row.frame - 5;
+      
+      inspector.adjacentsMaxIVFrame = row.frame + 5;
+      inspector.adjacentsIVParameterController.isRoamer = row.isRoamer;
+      
       [inspector showWindow: self];
-      [inspector setSeed: seed];
     }
   }
 }
@@ -142,29 +171,32 @@ struct ProgressHandler
 
 - (NSValue*)getValidatedSearchCriteria
 {
+  if (!EndEditing([self window]))
+    return nil;
+  
   CGearSeedSearcher::Criteria  criteria;
     
   criteria.macAddressLow = [gen5ConfigController macAddressLow];
   
-  criteria.minDelay = [minDelayField intValue];
-  criteria.maxDelay = [maxDelayField intValue];
-  criteria.frameRange.min = [minFrameField intValue];
-  criteria.frameRange.max = [maxFrameField intValue];
+  criteria.minDelay = minDelay;
+  criteria.maxDelay = maxDelay;
+  criteria.frameRange.min = minFrame;
+  criteria.frameRange.max = maxFrame;
   
-  criteria.ivs.min = [ivParameterController minIVs];
-  criteria.ivs.max = [ivParameterController maxIVs];
+  criteria.ivs.min = ivParameterController.minIVs;
+  criteria.ivs.max = ivParameterController.maxIVs;
   criteria.ivs.shouldCheckMax =
     (criteria.ivs.max != IVs(31, 31, 31, 31, 31, 31));
-  criteria.ivs.isRoamer = [ivParameterController isRoamer];
+  criteria.ivs.isRoamer = ivParameterController.isRoamer;
   
-  if ([ivParameterController considerHiddenPower])
+  if (ivParameterController.considerHiddenPower)
   {
-    criteria.ivs.hiddenType = [ivParameterController hiddenType];
-    criteria.ivs.minHiddenPower = [ivParameterController minHiddenPower];
+    criteria.ivs.hiddenType = ivParameterController.hiddenType;
+    criteria.ivs.minHiddenPower = ivParameterController.minHiddenPower;
   }
   else
   {
-    criteria.ivs.hiddenType = Element::UNKNOWN;
+    criteria.ivs.hiddenType = Element::NONE;
   }
   
   if (criteria.ExpectedNumberOfResults() > 10000)
@@ -198,7 +230,9 @@ struct ProgressHandler
   CGearSeedSearcher  searcher;
   
   searcher.Search(*criteria,
-                  ResultHandler(searcherController, criteria->macAddressLow),
+                  ResultHandler(searcherController,
+                                criteria->macAddressLow,
+                                criteria->ivs.isRoamer),
                   ProgressHandler(searcherController));
 }
 

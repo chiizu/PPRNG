@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -21,12 +21,28 @@
 
 #import "AppDelegate.h"
 
+#include "EggSeedSearcher.h"
+
 #import "Gen5ConfigurationController.h"
 
+#import "AbilityTransformer.h"
+#import "BoolToCheckmarkTransformer.h"
+#import "ButtonsTransformer.h"
+#import "CharacteristicTransformer.h"
+#import "ChatotPitchTransformer.h"
 #import "CoinFlipsTransformer.h"
 #import "DSTypeTransformer.h"
+#import "ElementTransformer.h"
+#import "EncounterLeadTransformer.h"
+#import "EncounterSlotTransformer.h"
+#import "GenderTransformer.h"
+#import "HeldItemTransformer.h"
 #import "HGSSRoamerLocationsTransformer.h"
+#import "NatureTransformer.h"
 #import "ProfElmResponsesTransformer.h"
+#import "ShinyTransformer.h"
+#import "UInt32DateTransformer.h"
+#import "UInt32TimeTransformer.h"
 #import "VersionTransformer.h"
 
 #import "VersionCheckURL.h"
@@ -35,16 +51,48 @@
 
 + (void)initialize
 {
+  [NSValueTransformer setValueTransformer: [[AbilityTransformer alloc] init]
+                      forName: @"AbilityTransformer"];
+  [NSValueTransformer setValueTransformer:
+                        [[BoolToCheckmarkTransformer alloc] init]
+                      forName: @"BoolToCheckmarkTransformer"];
+  [NSValueTransformer setValueTransformer: [[ButtonsTransformer alloc] init]
+                      forName: @"ButtonsTransformer"];
+  [NSValueTransformer setValueTransformer:
+                        [[CharacteristicTransformer alloc] init]
+                      forName: @"CharacteristicTransformer"];
+  [NSValueTransformer setValueTransformer: [[ChatotPitchTransformer alloc] init]
+                      forName: @"ChatotPitchTransformer"];
   [NSValueTransformer setValueTransformer: [[CoinFlipsTransformer alloc] init]
                       forName: @"CoinFlipsTransformer"];
   [NSValueTransformer setValueTransformer: [[DSTypeTransformer alloc] init]
                       forName: @"DSTypeTransformer"];
-  [NSValueTransformer
-   setValueTransformer: [[HGSSRoamerLocationsTransformer alloc] init]
-   forName: @"HGSSRoamerLocationsTransformer"];
-  [NSValueTransformer
-   setValueTransformer: [[ProfElmResponsesTransformer alloc] init]
-   forName: @"ProfElmResponsesTransformer"];
+  [NSValueTransformer setValueTransformer: [[ElementTransformer alloc] init]
+                      forName: @"ElementTransformer"];
+  [NSValueTransformer setValueTransformer:
+                        [[EncounterLeadTransformer alloc] init]
+                      forName: @"EncounterLeadTransformer"];
+  [NSValueTransformer setValueTransformer:
+                        [[EncounterSlotTransformer alloc] init]
+                      forName: @"EncounterSlotTransformer"];
+  [NSValueTransformer setValueTransformer: [[GenderTransformer alloc] init]
+                      forName: @"GenderTransformer"];
+  [NSValueTransformer setValueTransformer: [[HeldItemTransformer alloc] init]
+                      forName: @"HeldItemTransformer"];
+  [NSValueTransformer setValueTransformer:
+                        [[HGSSRoamerLocationsTransformer alloc] init]
+                      forName: @"HGSSRoamerLocationsTransformer"];
+  [NSValueTransformer setValueTransformer: [[NatureTransformer alloc] init]
+                      forName: @"NatureTransformer"];
+  [NSValueTransformer setValueTransformer:
+                        [[ProfElmResponsesTransformer alloc] init]
+                      forName: @"ProfElmResponsesTransformer"];
+  [NSValueTransformer setValueTransformer: [[ShinyTransformer alloc] init]
+                      forName: @"ShinyTransformer"];
+  [NSValueTransformer setValueTransformer: [[UInt32DateTransformer alloc] init]
+                      forName: @"UInt32DateTransformer"];
+  [NSValueTransformer setValueTransformer: [[UInt32TimeTransformer alloc] init]
+                      forName: @"UInt32TimeTransformer"];
   [NSValueTransformer setValueTransformer: [[VersionTransformer alloc] init]
                       forName: @"VersionTransformer"];
 }
@@ -133,9 +181,22 @@
 // start up
 - (void)applicationDidFinishLaunching:(NSNotification*)notification
 {
+  NSString  *appPath = [[[NSBundle mainBundle] bundlePath]
+                        stringByDeletingLastPathComponent];
+  
+  pprng::EggSeedSearcher::SetCacheDirectory([appPath UTF8String]);
+  
   launcherController = [[LauncherController alloc] init];
   [launcherController showWindow:self];
   [self performSelectorInBackground:@selector(checkVersion) withObject:nil];
+}
+
+// shutdown
+- (void)applicationWillTerminate:(NSNotification *)aNotification
+{
+  [[NSApp windows] makeObjectsPerformSelector: @selector(close)];
+  
+  pprng::EggSeedSearcher::EnsureSeedCacheReleased();
 }
 
 @end

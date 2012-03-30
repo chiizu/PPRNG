@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -20,11 +20,13 @@
 
 
 #import <Cocoa/Cocoa.h>
+
 #import "VertResizeOnlyWindowController.h"
 #import "SearcherController.h"
 #import "IVParameterController.h"
 #import "Gen5ConfigurationController.h"
 
+#include "PPRNGTypes.h"
 
 @interface WonderCardSeedSearcherController : VertResizeOnlyWindowController
 {
@@ -32,44 +34,50 @@
   IBOutlet IVParameterController        *ivParameterController;
   IBOutlet SearcherController           *searcherController;
   
-  IBOutlet NSDatePicker   *fromDateField;
-  IBOutlet NSDatePicker   *toDateField;
+  IBOutlet NSPopUpButton  *natureDropDown;
   
-  IBOutlet NSButton       *noKeyHeldButton;
-  IBOutlet NSButton       *oneKeyHeldButton;
-  IBOutlet NSButton       *twoKeysHeldButton;
-  IBOutlet NSButton       *threeKeysHeldButton;
+  NSDate    *fromDate, *toDate;
+  BOOL      noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
   
-  IBOutlet NSPopUpButton  *naturePopUp;
-  IBOutlet NSPopUpButton  *abilityPopUp;
-  IBOutlet NSPopUpButton  *genderPopUp;
-  IBOutlet NSPopUpButton  *genderRatioPopUp;
+  pprng::Nature::Type               cardNature;
+  pprng::Ability::Type              cardAbility;
+  pprng::Gender::Type               cardGender;
+  pprng::Gender::Ratio              cardGenderRatio;
+  pprng::WonderCardShininess::Type  cardShininess;
+  NSNumber                          *cardTID, *cardSID;
   
-  IBOutlet NSButton       *useInitialPIDButton;
-  IBOutlet NSTextField    *minFrameField;
-  IBOutlet NSTextField    *maxFrameField;
+  BOOL  natureSearchable, abilitySearchable;
+  BOOL  genderSearchable, shininessSearchable;
   
-  uint32_t  cardNature;
-  uint32_t  cardAbility;
-  BOOL      cardAlwaysShiny;
-  uint32_t  cardGender;
-  uint32_t  cardGenderRatio;
+  BOOL                  showShinyOnly;
+  pprng::Ability::Type  ability;
+  pprng::Gender::Type   gender;
   
-  BOOL      natureSearchable;
-  BOOL      abilitySearchable;
-  BOOL      genderSearchable;
+  BOOL      startFromInitialFrame;
+  uint32_t  minFrame, maxFrame;
 }
 
-@property uint32_t  cardNature;
-@property uint32_t  cardAbility;
-@property BOOL      cardAlwaysShiny;
-@property uint32_t  cardGender;
-@property uint32_t  cardGenderRatio;
+@property (copy) NSDate  *fromDate, *toDate;
 
-@property BOOL      natureSearchable;
-@property BOOL      abilitySearchable;
-@property BOOL      genderSearchable;
+@property BOOL  noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
 
-- (IBAction)toggleUseInitialPID:(id)sender;
+@property pprng::Nature::Type               cardNature;
+@property pprng::Ability::Type              cardAbility;
+@property pprng::Gender::Type               cardGender;
+@property pprng::Gender::Ratio              cardGenderRatio;
+@property pprng::WonderCardShininess::Type  cardShininess;
+@property (copy) NSNumber                   *cardTID, *cardSID;
+
+@property BOOL  natureSearchable, abilitySearchable;
+@property BOOL  genderSearchable, shininessSearchable;
+
+@property BOOL                  showShinyOnly;
+@property pprng::Ability::Type  ability;
+@property pprng::Gender::Type   gender;
+
+@property BOOL      startFromInitialFrame;
+@property uint32_t  minFrame, maxFrame;
+
+- (IBAction)toggleDropDownChoice:(id)sender;
 
 @end

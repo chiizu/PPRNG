@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -95,15 +95,18 @@ struct Gen5PIDFrame
 {
   Gen5PIDFrame(const HashedSeed &s) : seed(s) {}
   
-  const HashedSeed  seed;
-  uint32_t          number;  
-  PID               pid;
-  Nature::Type      nature;
-  bool              synched;
-  bool              isSwarm;
-  ESV::Value        esv;
-  HeldItem::Type    heldItem;
-  bool              isEncounter;
+  const HashedSeed        seed;
+  uint32_t                number;
+  uint32_t                chatotPitch;
+  bool                    isEncounter;
+  EncounterItem::Type     encounterItem;
+  EncounterLead::Ability  leadAbility;
+  bool                    abilityActivated;
+  PID                     pid;
+  Nature::Type            nature;
+  ESV::Value              esv;
+  HeldItem::Type          heldItem;
+  uint32_t                ticks;
 };
 
 struct CGearIVFrame
@@ -128,8 +131,10 @@ struct WonderCardFrame
   
   const HashedSeed  seed;
   uint32_t          number;
+  uint32_t          chatotPitch;
   PID               pid;
   Nature::Type      nature;
+  bool              hasHiddenAbility;
   IVs               ivs;
 };
 
@@ -139,8 +144,8 @@ struct Gen5TrainerIDFrame
   
   const HashedSeed  seed;
   uint32_t          number;
-  uint32_t          tid;
-  uint32_t          sid;
+  uint32_t          tid, sid;
+  bool              wildShiny, giftShiny, eggShiny;
 };
 
 struct Gen5BreedingFrame
@@ -153,9 +158,10 @@ struct Gen5BreedingFrame
   
   const HashedSeed  seed;
   uint32_t          number;
+  uint32_t          chatotPitch;
   bool              everstoneActivated;
   bool              inheritsHiddenAbility;
-  uint32_t          species;
+  EggSpecies::Type  species;
   Nature::Type      nature;
   PID               pid;
   
@@ -178,10 +184,12 @@ struct Gen5BreedingFrame
 struct Gen5EggFrame : public Gen5BreedingFrame
 {
   Gen5EggFrame(const Gen5BreedingFrame &f, uint32_t ivFrame, IVs baseIVs,
-               IVs parentXIVs, IVs parentYIVs);
+               const OptionalIVs &parentXIVs, const OptionalIVs &parentYIVs);
+  
+  typedef Gen5BreedingFrame::Inheritance  Inheritance;
   
   uint32_t              ivFrameNumber;
-  IVs                   ivs;
+  OptionalIVs           ivs;
   Characteristic::Type  characteristic;
 };
 

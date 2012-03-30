@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -40,32 +40,11 @@ struct FrameChecker
     if (m_criteria.hasTID && (frame.tid != m_criteria.tid))
       return false;
     
-    if (m_criteria.hasShinyPID)
-    {
-      if (m_criteria.giftShiny &&
-          !m_criteria.shinyPID.IsShiny(frame.tid, frame.sid))
-        return false;
-      
-      if (m_criteria.wildShiny)
-      {
-        uint32_t  pidWord = m_criteria.shinyPID.word;
-        
-        if ((frame.tid ^ frame.sid ^ pidWord) & 0x1)
-        {
-          pidWord = pidWord | 0x80000000;
-        }
-        else
-        {
-          pidWord = pidWord & 0x7fffffff;
-        }
-        
-        if (!PID(pidWord).IsShiny(frame.tid, frame.sid))
-          return false;
-      }
-      
-      if (m_criteria.eggShiny && !m_eggPID.IsShiny(frame.tid, frame.sid))
-          return false;
-    }
+    if (m_criteria.hasShinyPID &&
+        ((m_criteria.giftShiny && !frame.giftShiny) ||
+         (m_criteria.wildShiny && !frame.wildShiny) ||
+         (m_criteria.eggShiny && !frame.eggShiny)))
+      return false;
     
     return true;
   }
@@ -78,10 +57,16 @@ struct FrameGeneratorFactory
 {
   typedef Gen5TrainerIDFrameGenerator  FrameGenerator;
   
+  FrameGeneratorFactory(const PID &shinyPID)
+    : m_ShinyPID(shinyPID)
+  {}
+  
   Gen5TrainerIDFrameGenerator operator()(const HashedSeed &seed) const
   {
-    return Gen5TrainerIDFrameGenerator(seed);
+    return Gen5TrainerIDFrameGenerator(seed, m_ShinyPID);
   }
+  
+  const PID m_ShinyPID;
 };
 
 }
@@ -104,7 +89,7 @@ void TrainerIDSearcher::Search
    const SearchRunner::ProgressCallback &progressHandler)
 {
   HashedSeedGenerator    seedGenerator(criteria.seedParameters);
-  FrameGeneratorFactory  frameGeneratorFactory;
+  FrameGeneratorFactory  frameGeneratorFactory(criteria.shinyPID);
   
   SeedFrameSearcher<FrameGeneratorFactory>  seedSearcher(frameGeneratorFactory,
                                                          criteria.frame);

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -28,64 +28,72 @@
 {
   IBOutlet Gen5ConfigurationController  *gen5ConfigController;
   
+  NSNumber  *ivSeed;
   
-  IBOutlet NSTextField                  *pidSeedField;
-  IBOutlet NSTextField                  *pidMinFrameField;
-  IBOutlet NSTextField                  *pidMaxFrameField;
+  BOOL      startFromInitialPIDFrame;
+  uint32_t  minPIDFrame, maxPIDFrame;
   
-  IBOutlet NSTableView                  *pidFrameTableView;
-  IBOutlet NSArrayController            *pidFrameContentArray;
-  
-  
-  IBOutlet NSDatePicker                 *tidSidFromDateField;
-  IBOutlet NSDatePicker                 *tidSidToDateField;
-  
-  IBOutlet NSButton                     *tidSidNoKeyHeldButton;
-  IBOutlet NSButton                     *tidSidOneKeyHeldButton;
-  IBOutlet NSButton                     *tidSidTwoKeysHeldButton;
-  IBOutlet NSButton                     *tidSidThreeKeysHeldButton;
-  
-  IBOutlet NSTextField                  *tidSidMinFrameField;
-  IBOutlet NSTextField                  *tidSidMaxFrameField;
-  
-  IBOutlet NSButton                     *tidSidWildShinyButton;
-  IBOutlet NSButton                     *tidSidGiftShinyButton;
-  IBOutlet NSButton                     *tidSidEggShinyButton;
-  
-  IBOutlet NSButton                     *tidSidEnableDesiredTidButton;
-  IBOutlet NSTextField                  *tidSidDesiredTidField;
-  
-  IBOutlet SearcherController           *tidSidSearcherController;
+  IBOutlet NSTableView        *pidFrameTableView;
+  IBOutlet NSArrayController  *pidFrameContentArray;
   
   
-  IBOutlet NSTextField                  *idFrameTrainerIDField;
+  NSDate    *fromDate, *toDate;
+  BOOL      noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
   
-  IBOutlet NSDatePicker                 *idFrameDateField;
+  uint32_t  minTIDFrame, maxTIDFrame;
+  BOOL      wildShiny, giftShiny, eggShiny;
   
-  IBOutlet NSButton                     *idFrameEnableHourButton;
-  IBOutlet NSTextField                  *idFrameStartHour;
-  IBOutlet NSStepper                    *idFrameHourStepper;
+  NSNumber  *desiredTID;
   
-  IBOutlet NSButton                     *idFrameEnableMinuteButton;
-  IBOutlet NSTextField                  *idFrameStartMinute;
-  IBOutlet NSStepper                    *idFrameMinuteStepper;
+  IBOutlet SearcherController  *tidSidSearcherController;
   
-  IBOutlet NSButton                     *idFrameEnableSecondButton;
-  IBOutlet NSTextField                  *idFrameStartSecond;
-  IBOutlet NSStepper                    *idFrameSecondStepper;
+  NSNumber  *foundTID;
+  NSDate    *startDate;
   
-  IBOutlet NSPopUpButton                *idFrameKeyOnePopUp;
-  IBOutlet NSPopUpButton                *idFrameKeyTwoPopUp;
-  IBOutlet NSPopUpButton                *idFrameKeyThreePopUp;
+  BOOL      considerHour;
+  uint32_t  startHour;
   
-  IBOutlet NSTextField                  *idFrameMinFrameField;
-  IBOutlet NSTextField                  *idFrameMaxFrameField;
+  BOOL      considerMinute;
+  uint32_t  startMinute;
   
-  IBOutlet SearcherController           *idFrameSearcherController;
+  BOOL      considerSecond;
+  uint32_t  startSecond;
+  
+  uint32_t  button1, button2, button3;
+  
+  uint32_t  minFoundTIDFrame, maxFoundTIDFrame;
+  
+  IBOutlet SearcherController  *idFrameSearcherController;
 }
 
+@property (copy) NSNumber  *ivSeed;
+  
+@property BOOL      startFromInitialPIDFrame;
+@property uint32_t  minPIDFrame, maxPIDFrame;
+
+@property (copy) NSDate  *fromDate, *toDate;
+@property BOOL  noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
+
+@property uint32_t  minTIDFrame, maxTIDFrame;
+@property BOOL      wildShiny, giftShiny, eggShiny;
+@property (copy) NSNumber  *desiredTID;
+
+@property (copy) NSNumber  *foundTID;
+@property (copy) NSDate    *startDate;
+  
+@property BOOL      considerHour;
+@property uint32_t  startHour;
+  
+@property BOOL      considerMinute;
+@property uint32_t  startMinute;
+  
+@property BOOL      considerSecond;
+@property uint32_t  startSecond;
+  
+@property uint32_t  button1, button2, button3;
+  
+@property uint32_t  minFoundTIDFrame, maxFoundTIDFrame;
+
 - (IBAction) generatePIDFrames:(id)sender;
-- (IBAction) toggleTID:(id)sender;
-- (IBAction) toggleTime:(id)sender;
 
 @end

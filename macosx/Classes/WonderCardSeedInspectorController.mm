@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -30,13 +30,84 @@
 
 using namespace pprng;
 
+@interface WonderCardSeedInspectorFrame : NSObject <PIDResult, IVResult>
+{
+  uint32_t              frame;
+  uint32_t              chatotPitch;
+  DECLARE_PID_RESULT_VARIABLES();
+  DECLARE_IV_RESULT_VARIABLES();
+  Characteristic::Type  characteristic;
+}
+
+@property uint32_t              frame;
+@property uint32_t              chatotPitch;
+@property Characteristic::Type  characteristic;
+
+@end
+
+@implementation WonderCardSeedInspectorFrame
+
+@synthesize frame;
+@synthesize chatotPitch;
+SYNTHESIZE_PID_RESULT_PROPERTIES();
+SYNTHESIZE_IV_RESULT_PROPERTIES();
+@synthesize characteristic;
+
+@end
+
+
+
+@interface WonderCardSeedInspectorAdjacentFrame :
+  NSObject <HashedSeedResultParameters, PIDResult, IVResult>
+{
+  DECLARE_HASHED_SEED_RESULT_PARAMETERS_VARIABLES();
+  uint32_t              startFrame, frame;
+  DECLARE_PID_RESULT_VARIABLES();
+  DECLARE_IV_RESULT_VARIABLES();
+  Characteristic::Type  characteristic;
+}
+
+@property uint32_t              startFrame, frame;
+@property Characteristic::Type  characteristic;
+
+@end
+
+@implementation WonderCardSeedInspectorAdjacentFrame
+
+SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
+@synthesize startFrame, frame;
+SYNTHESIZE_PID_RESULT_PROPERTIES();
+SYNTHESIZE_IV_RESULT_PROPERTIES();
+@synthesize characteristic;
+
+@end
+
+
+
 @implementation WonderCardSeedInspectorController
 
-@synthesize cardNature;
-@synthesize cardAbility;
-@synthesize cardAlwaysShiny;
-@synthesize cardGender;
-@synthesize cardGenderRatio;
+@synthesize startDate, startHour, startMinute, startSecond;
+@synthesize timer0, vcount, vframe;
+
+@synthesize button1, button2, button3;
+
+@synthesize rawSeed;
+@synthesize initialFrame;
+
+@synthesize cardNature, cardAbility;
+@synthesize cardGender, cardGenderRatio;
+@synthesize cardShininess, cardTID, cardSID;
+
+@synthesize natureSearchable, abilitySearchable;
+@synthesize shininessSearchable, genderSearchable;
+
+@synthesize startFromInitialFrame;
+@synthesize minFrame, maxFrame;
+
+@synthesize secondsVariance, timer0Variance;
+
+@synthesize matchOffsetFromInitialFrame;
+@synthesize targetFrame, targetFrameVariance;
 
 - (NSString *)windowNibName
 {
@@ -47,77 +118,255 @@ using namespace pprng;
 {
   [super awakeFromNib];
   
-  [[seedField formatter] setFormatWidth: 16];
-  [startDate setObjectValue: [NSDate date]];
+  self.startDate = [NSDate date];
+  self.button1 = 0;
+  self.button2 = 0;
+  self.button3 = 0;
   
   self.cardNature = Nature::ANY;
   self.cardAbility = Ability::ANY;
-  self.cardAlwaysShiny = NO;
   self.cardGender = Gender::ANY;
-  self.cardGenderRatio = Gender::UNSPECIFIED;
+  self.cardGenderRatio = Gender::ANY_RATIO;
+  self.cardShininess = WonderCardShininess::NEVER_SHINY;
+  self.cardTID = nil;
+  self.cardSID = [NSNumber numberWithUnsignedInt: 0];
+  
+  self.startFromInitialFrame = YES;
+  self.minFrame = 50;
+  self.maxFrame = 200;
+  
+  self.secondsVariance = 1;
+  self.timer0Variance = 1;
+  self.matchOffsetFromInitialFrame = YES;
+  self.targetFrame = 50;
+  self.targetFrameVariance = 10;
 }
 
-- (IBAction)toggleUseInitialPID:(id)sender
+- (void)setCardNature:(Nature::Type)newValue
 {
-  BOOL enabled = [useInitialPIDButton state];
-  [minFrameField setEnabled: !enabled];
+  if (cardNature != newValue)
+  {
+    cardNature = newValue;
+    
+    self.natureSearchable = (newValue == Nature::ANY);
+  }
 }
 
-- (IBAction)calculateSeed:(id)sender
+- (void)setCardAbility:(Ability::Type)newValue
 {
+  if (cardAbility != newValue)
+  {
+    cardAbility = newValue;
+    
+    self.abilitySearchable = (newValue == Ability::ANY);
+  }
+}
+
+- (void)setCardShininess:(WonderCardShininess::Type)newValue
+{
+  if (cardShininess != newValue)
+  {
+    cardShininess = newValue;
+    
+    self.shininessSearchable = (newValue == 1);
+  }
+}
+
+- (void)setCardGender:(Gender::Type)newValue
+{
+  if (cardGender != newValue)
+  {
+    cardGender = newValue;
+    
+    self.genderSearchable = (newValue == Gender::ANY);
+  }
+}
+
+- (NSNumber*)calcRawSeed
+{
+  if (!startDate || !startHour || !startMinute || !startSecond ||
+      !timer0 || !vcount || !vframe)
+  {
+    return nil;
+  }
+  
   HashedSeed::Parameters  p;
   
   p.version = [gen5ConfigController version];
   p.dsType = [gen5ConfigController dsType];
   p.macAddress = [gen5ConfigController macAddress];
   p.gxStat = HashedSeed::HardResetGxStat;
-  p.vcount = [vcountField intValue];
-  p.vframe = [vframeField intValue];
-  p.timer0 = [timer0Field intValue];
-  p.date = NSDateToBoostDate([startDate objectValue]);
-  p.hour = [startHour intValue];
-  p.minute = [startMinute intValue];
-  p.second = [startSecond intValue];
-  p.heldButtons = [[key1Menu selectedItem] tag] |
-                  [[key2Menu selectedItem] tag] |
-                  [[key3Menu selectedItem] tag];
+  p.vcount = [vcount unsignedIntValue];
+  p.vframe = [vframe unsignedIntValue];
+  p.timer0 = [timer0 unsignedIntValue];
+  p.date = NSDateToBoostDate(startDate);
+  p.hour = [startHour unsignedIntValue];
+  p.minute = [startMinute unsignedIntValue];
+  p.second = [startSecond unsignedIntValue];
+  p.heldButtons = button1 | button2 | button3;
   
-  HashedSeed  seed(p);
+  HashedSeed  s(p);
   
-  currentSeed = [NSData dataWithBytes: &seed length: sizeof(HashedSeed)];
+  return [NSNumber numberWithUnsignedLongLong: s.rawSeed];
+}
+
+- (IBAction)seedParameterChanged:(id)sender
+{
+  self.rawSeed = [self calcRawSeed];
+}
+
+- (IBAction) seedValueChanged:(id)sender
+{
+  NSNumber  *paramSeed = [self calcRawSeed];
   
-  [seedField setObjectValue:
-    [NSNumber numberWithUnsignedLongLong: seed.rawSeed]];
-  [initialPIDFrameField setObjectValue:
-    [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
+  if ((paramSeed == nil) || ![paramSeed isEqualToNumber: rawSeed])
+  {
+    self.startDate = [NSDate date];
+    self.startHour = nil;
+    self.startMinute = nil;
+    self.startSecond = nil;
+    self.timer0 = nil;
+    self.vcount = nil;
+    self.vframe = nil;
+    self.button1 = 0;
+    self.button2 = 0;
+    self.button3 = 0;
+  }
+}
+
+- (void)setButton1:(uint32_t)newButton
+{
+  if (newButton != button1)
+  {
+    button1 = newButton;
+    [self seedParameterChanged:self];
+  }
+}
+
+- (void)setButton2:(uint32_t)newButton
+{
+  if (newButton != button2)
+  {
+    button2 = newButton;
+    [self seedParameterChanged:self];
+  }
+}
+
+- (void)setButton3:(uint32_t)newButton
+{
+  if (newButton != button3)
+  {
+    button3 = newButton;
+    [self seedParameterChanged:self];
+  }
+}
+
+- (void)setSeedFromResult:(id <HashedSeedResultParameters>)result
+{
+  HashedSeed::Parameters  p;
+  
+  p.timer0 = result.timer0;
+  p.vcount = result.vcount;
+  p.vframe = result.vframe;
+  p.date = UInt32DateToBoostDate(result.date);
+  p.hour = GetUInt32TimeHour(result.time);
+  p.minute = GetUInt32TimeMinute(result.time);
+  p.second = GetUInt32TimeSecond(result.time);
+  p.heldButtons = result.heldButtons;
+  
+  [self setSeed: HashedSeed(p, result.rawSeed)];
+}
+
+- (void)setSeed:(const pprng::HashedSeed&)seed
+{
+  self.startDate = MakeNSDate(seed.year(), seed.month(), seed.day());
+  self.startHour = [NSNumber numberWithUnsignedInt: seed.hour];
+  self.startMinute = [NSNumber numberWithUnsignedInt: seed.minute];
+  self.startSecond = [NSNumber numberWithUnsignedInt: seed.second];
+  
+  self.timer0 = [NSNumber numberWithUnsignedInt: seed.timer0];
+  self.vcount = [NSNumber numberWithUnsignedInt: seed.vcount];
+  self.vframe = [NSNumber numberWithUnsignedInt: seed.vframe];
+  
+  uint32_t  button[3] = { 0, 0, 0 };
+  uint32_t  i = 0;
+  uint32_t  dpadPress = seed.heldButtons & Button::DPAD_MASK;
+  uint32_t  buttonPress = seed.heldButtons & Button::SINGLE_BUTTON_MASK;
+  
+  if (dpadPress != 0)
+  {
+    button[0] = dpadPress;
+    ++i;
+  }
+  
+  uint32_t  j = 1;
+  while ((buttonPress != 0) && (i < 3))
+  {
+    if (buttonPress & 0x1)
+    {
+      button[i++] = j;
+    }
+    
+    buttonPress >>= 1;
+    j <<= 1;
+  }
+  
+  self.button1 = button[0];
+  self.button2 = button[1];
+  self.button3 = button[2];
+  
+  [self seedParameterChanged:self];
+}
+
+- (void)setRawSeed:(NSNumber*)newSeed
+{
+  if (newSeed != rawSeed)
+  {
+    if (newSeed == nil)
+    {
+      self.initialFrame = nil;
+    }
+    else
+    {
+      HashedSeed  seed([newSeed unsignedLongLongValue]);
+      self.initialFrame =
+        [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1];
+    }
+    
+    rawSeed = newSeed;
+  }
 }
 
 
 - (IBAction)generateFrames:(id)sender
 {
-  if ([[seedField stringValue] length] == 0)
-  {
+  if (!EndEditing([self window]))
     return;
-  }
+  
+  if (!rawSeed)
+    return;
   
   [frameContentArray setContent: [NSMutableArray array]];
   
-  HashedSeed  seed([[seedField objectValue] unsignedLongLongValue]);
+  BOOL  hidePIDInfo = !cardTID || !cardSID;
+  [[frameTableView tableColumnWithIdentifier:@"pid"] setHidden: hidePIDInfo];
+  [[frameTableView tableColumnWithIdentifier:@"characteristic"]
+   setHidden: hidePIDInfo];
   
-  uint32_t  minFrame = [minFrameField intValue];
-  uint32_t  maxFrame = [maxFrameField intValue];
+  HashedSeed  seed([rawSeed unsignedLongLongValue]);
+  
   uint32_t  frameNum = 0;
   
   WonderCardFrameGenerator::Parameters  p;
   
-  p.startFromLowestFrame = [useInitialPIDButton state];
-  p.cardNature = Nature::Type(cardNature);
+  p.startFromLowestFrame = startFromInitialFrame;
+  p.cardNature = cardNature;
   p.cardAbility = cardAbility;
-  p.cardAlwaysShiny = cardAlwaysShiny;
-  p.cardGender = Gender::Type(cardGender);
-  p.cardGenderRatio = Gender::Ratio(cardGenderRatio);
-  p.tid = [gen5ConfigController tid];
-  p.sid = [gen5ConfigController sid];
+  p.cardGender = cardGender;
+  p.cardGenderRatio = cardGenderRatio;
+  p.cardShininess = cardShininess;
+  p.cardTID = [cardTID unsignedIntValue];
+  p.cardSID = [cardSID unsignedIntValue];
   
   WonderCardFrameGenerator  generator(seed, p);
   
@@ -139,51 +388,51 @@ using namespace pprng;
   NSMutableArray  *rowArray =
     [NSMutableArray arrayWithCapacity: maxFrame - minFrame + 1];
   
-  BOOL  showGender = cardGender == Gender::ANY;
-  
   while (frameNum < maxFrame)
   {
     generator.AdvanceFrame();
     ++frameNum;
     
     WonderCardFrame  frame = generator.CurrentFrame();
-    uint32_t         genderValue = frame.pid.GenderValue();
     
-    [rowArray addObject:
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        [NSString stringWithFormat: @"%s",
-          Nature::ToString((p.cardNature != Nature::ANY) ?
-                           p.cardNature : frame.nature).c_str()],
-          @"nature",
-        ((cardAbility == Ability::HIDDEN) ?
-          @"DW" :
-          [NSString stringWithFormat: @"%d",
-            ((cardAbility == Ability::ANY) ?
-              frame.pid.Gen5Ability() : cardAbility)]),
-          @"ability",
-        (showGender ? ((genderValue < 31) ? @"♀" : @"♂") : @""), @"gender18",
-        (showGender ? ((genderValue < 63) ? @"♀" : @"♂") : @""), @"gender14",
-        (showGender ? ((genderValue < 127) ? @"♀" : @"♂") : @""), @"gender12",
-        (showGender ? ((genderValue < 191) ? @"♀" : @"♂") : @""), @"gender34",
-        [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
-        [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
-        [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sa()], @"spa",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sd()], @"spd",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sp()], @"spe",
-        [NSString stringWithFormat: @"%s",
-          Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
-        [NSNumber numberWithUnsignedInt: frame.ivs.HiddenPower()],
-          @"hiddenPower",
-        [NSString stringWithFormat: @"%s",
-            Characteristic::ToString
-              (Characteristic::Get(frame.pid, frame.ivs)).c_str()],
-          @"characteristic",
-        nil]];
+    WonderCardSeedInspectorFrame  *row =
+      [[WonderCardSeedInspectorFrame alloc] init];
+    
+    row.frame = frame.number;
+    row.chatotPitch = frame.chatotPitch;
+    
+    SetGen5PIDResult(row, frame.nature, frame.pid, p.cardTID, p.cardSID,
+                     p.cardGender, p.cardGenderRatio);
+    if (frame.hasHiddenAbility)
+      row.ability = Ability::HIDDEN;
+    
+    SetIVResult(row, frame.ivs, NO);
+    
+    row.characteristic = Characteristic::Get(frame.pid, frame.ivs);
+    
+    [rowArray addObject: row];
   }
   
   [frameContentArray addObjects: rowArray];
+}
+
+- (void)selectAndShowFrame:(uint32_t)frame
+{
+  NSArray  *rows = [frameContentArray arrangedObjects];
+  if (rows && ([rows count] > 0))
+  {
+    WonderCardSeedInspectorFrame  *row = [rows objectAtIndex: 0];
+    
+    if (row.frame <= frame)
+    {
+      NSInteger  rowNum = frame - row.frame;
+      
+      [frameTableView
+        selectRowIndexes: [NSIndexSet indexSetWithIndex: rowNum]
+        byExtendingSelection: NO];
+      [frameTableView scrollRowToVisible: rowNum];
+    }
+  }
 }
 
 
@@ -192,23 +441,37 @@ using namespace pprng;
   using namespace boost::gregorian;
   using namespace boost::posix_time;
   
-  if (currentSeed == nil)
-  {
+  if (!EndEditing([self window]))
     return;
-  }
   
-  HashedSeed  targetSeed;
-  [currentSeed getBytes: &targetSeed length: sizeof(HashedSeed)];
-  
-  if (targetSeed.rawSeed != [[seedField objectValue] unsignedLongLongValue])
-  {
+  if (!startDate || !startHour || !startMinute || !startSecond ||
+      !timer0 || !vcount || !vframe)
     return;
-  }
   
   [adjacentsContentArray setContent: [NSMutableArray array]];
   
-  uint32_t  timer0Low = targetSeed.timer0 - 1;
-  uint32_t  timer0High = targetSeed.timer0 + 1;
+  BOOL  hidePIDInfo = !cardTID || !cardSID;
+  [[adjacentsTableView tableColumnWithIdentifier:@"characteristic"]
+   setHidden: hidePIDInfo];
+  
+  HashedSeed::Parameters  targetSeedParams;
+  
+  targetSeedParams.version = [gen5ConfigController version];
+  targetSeedParams.dsType = [gen5ConfigController dsType];
+  targetSeedParams.macAddress = [gen5ConfigController macAddress];
+  targetSeedParams.gxStat = HashedSeed::HardResetGxStat;
+  targetSeedParams.vcount = [vcount unsignedIntValue];
+  targetSeedParams.vframe = [vframe unsignedIntValue];
+  targetSeedParams.timer0 = [timer0 unsignedIntValue];
+  targetSeedParams.date = NSDateToBoostDate(startDate);
+  targetSeedParams.hour = [startHour unsignedIntValue];
+  targetSeedParams.minute = [startMinute unsignedIntValue];
+  targetSeedParams.second = [startSecond unsignedIntValue];
+  targetSeedParams.heldButtons = button1 | button2 | button3;
+  HashedSeed  targetSeed(targetSeedParams);
+  
+  uint32_t  timer0Low = targetSeed.timer0 - timer0Variance;
+  uint32_t  timer0High = targetSeed.timer0 + timer0Variance;
   
   if (targetSeed.timer0 == 0)
   {
@@ -219,21 +482,16 @@ using namespace pprng;
     timer0High = 0xffffffff;
   }
   
-  uint32_t  secondVariance = [adjacentsTimeVarianceField intValue];
-  
   ptime  seedTime(date(targetSeed.year(), targetSeed.month(), targetSeed.day()),
                   hours(targetSeed.hour) + minutes(targetSeed.minute) +
                   seconds(targetSeed.second));
   ptime  dt = seedTime;
-  ptime  endTime = dt + seconds(secondVariance);
-  dt = dt - seconds(secondVariance);
+  ptime  endTime = dt + seconds(secondsVariance);
+  dt = dt - seconds(secondsVariance);
   
-  uint32_t  targetFrameNum = [adjacentsFrameField intValue];
-  BOOL      useInitialPIDOffset = [adjacentsUseInitialPIDOffsetButton state];
-  uint32_t  frameOffset = useInitialPIDOffset ?
-       (targetFrameNum - targetSeed.GetSkippedPIDFrames() - 1) :
-       targetFrameNum - 1;
-  uint32_t  frameVariance = [adjacentsFrameVarianceField intValue];
+  uint32_t  frameOffset = matchOffsetFromInitialFrame ?
+       (targetFrame - targetSeed.GetSkippedPIDFrames() - 1) :
+       targetFrame - 1;
   
   HashedSeed::Parameters  seedParams;
   seedParams.macAddress = targetSeed.macAddress;
@@ -245,20 +503,18 @@ using namespace pprng;
   seedParams.heldButtons = targetSeed.heldButtons;
   
   WonderCardFrameGenerator::Parameters  frameParams;
-  frameParams.startFromLowestFrame = useInitialPIDOffset;
-  frameParams.cardNature = Nature::Type(cardNature);
+  frameParams.startFromLowestFrame = matchOffsetFromInitialFrame;
+  frameParams.cardNature = cardNature;
   frameParams.cardAbility = cardAbility;
-  frameParams.cardAlwaysShiny = cardAlwaysShiny;
-  frameParams.cardGender = Gender::Type(cardGender);
-  frameParams.cardGenderRatio = Gender::Ratio(cardGenderRatio);
-  frameParams.tid = [gen5ConfigController tid];
-  frameParams.sid = [gen5ConfigController sid];
+  frameParams.cardGender = cardGender;
+  frameParams.cardGenderRatio = cardGenderRatio;
+  frameParams.cardShininess = cardShininess;
+  frameParams.cardTID = [cardTID unsignedIntValue];
+  frameParams.cardSID = [cardSID unsignedIntValue];
   
   NSMutableArray  *rowArray =
     [NSMutableArray arrayWithCapacity:
-      (timer0High - timer0Low + 1) * ((2 * secondVariance) + 1)];
-  
-  BOOL  showGender = cardGender == Gender::ANY;
+      (timer0High - timer0Low + 1) * ((2 * secondsVariance) + 1)];
   
   for (; dt <= endTime; dt = dt + seconds(1))
   {
@@ -266,159 +522,74 @@ using namespace pprng;
     
     time_duration  t = dt.time_of_day();
     
-    NSString  *timeStr = (dt == seedTime) ?
-      [NSString stringWithFormat:@"%.2d:%.2d:%.2d",
-                                 t.hours(), t.minutes(), t.seconds()] :
-      [NSString stringWithFormat:@"%+dsec", (dt - seedTime).total_seconds()];
-    
     seedParams.hour = t.hours();
     seedParams.minute = t.minutes();
     seedParams.second = t.seconds();
     
-    for (uint32_t timer0 = timer0Low; timer0 <= timer0High; ++timer0)
+    for (uint32_t t0 = timer0Low; t0 <= timer0High; ++t0)
     {
-      seedParams.timer0 = timer0;
+      seedParams.timer0 = t0;
       
       HashedSeed  seed(seedParams);
       
-      uint32_t  adjacentFrameNum = useInitialPIDOffset ?
+      uint32_t  adjacentFrameNum = matchOffsetFromInitialFrame ?
         (seed.GetSkippedPIDFrames() + 1 + frameOffset) :
-        targetFrameNum;
-      uint32_t  startFrameNum =
-        (adjacentFrameNum < (frameVariance + 1)) ?
-          1 : (adjacentFrameNum - frameVariance);
-      uint32_t  endFrameNum = adjacentFrameNum + frameVariance;
-      uint32_t  initialFrame = seed.GetSkippedPIDFrames() + 1;
+        targetFrame;
       
-      if (startFrameNum < initialFrame)
-        startFrameNum = initialFrame;
+      uint32_t  skippedFrames;
+      if (matchOffsetFromInitialFrame)
+      {
+        if (frameOffset < (targetFrameVariance + 1))
+          skippedFrames = 0;
+        else
+          skippedFrames = frameOffset - targetFrameVariance - 1;
+      }
+      else
+      {
+        if (adjacentFrameNum < (targetFrameVariance + 1))
+          skippedFrames = 0;
+        else
+          skippedFrames = adjacentFrameNum - targetFrameVariance - 1;
+      }
+      
+      uint32_t  endFrameNum = adjacentFrameNum + targetFrameVariance;
       
       WonderCardFrameGenerator  generator(seed, frameParams);
       
-      uint32_t  limit = (startFrameNum - 1);
-      while (generator.CurrentFrame().number < limit)
+      for (uint32_t j = 0; j < skippedFrames; ++j)
         generator.AdvanceFrame();
       
-      for (uint32_t frameNum = startFrameNum;
-           frameNum <= endFrameNum;
-           ++frameNum)
+      for (uint32_t f = generator.CurrentFrame().number;
+           f < endFrameNum;
+           ++f)
       {
         generator.AdvanceFrame();
         WonderCardFrame  frame = generator.CurrentFrame();
-        uint32_t         genderValue = frame.pid.GenderValue();
         
-        [rowArray addObject:
-        [NSMutableDictionary dictionaryWithObjectsAndKeys:
-          timeStr, @"time",
-          [NSNumber numberWithUnsignedInt: timer0], @"timer0",
-          [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1],
-            @"startFrame",
-          [NSNumber numberWithUnsignedInt: frame.number], @"frame",
-          [NSString stringWithFormat: @"%s",
-            Nature::ToString((frameParams.cardNature != Nature::ANY) ?
-                             frameParams.cardNature : frame.nature).c_str()],
-            @"nature",
-          ((cardAbility == Ability::HIDDEN) ?
-            @"DW" :
-            [NSString stringWithFormat: @"%d",
-              ((cardAbility == Ability::ANY) ?
-                frame.pid.Gen5Ability() : cardAbility)]),
-            @"ability",
-          (showGender ? ((genderValue < 31) ? @"♀" : @"♂") : @""), @"gender18",
-          (showGender ? ((genderValue < 63) ? @"♀" : @"♂") : @""), @"gender14",
-          (showGender ? ((genderValue < 127) ? @"♀" : @"♂") : @""), @"gender12",
-          (showGender ? ((genderValue < 191) ? @"♀" : @"♂") : @""), @"gender34",
-          [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
-          [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
-          [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
-          [NSNumber numberWithUnsignedInt: frame.ivs.sa()], @"spa",
-          [NSNumber numberWithUnsignedInt: frame.ivs.sd()], @"spd",
-          [NSNumber numberWithUnsignedInt: frame.ivs.sp()], @"spe",
-          [NSString stringWithFormat: @"%s",
-            Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
-          [NSString stringWithFormat: @"%s",
-              Characteristic::ToString
-                (Characteristic::Get(frame.pid, frame.ivs)).c_str()],
-            @"characteristic",
-          nil]];
+        WonderCardSeedInspectorAdjacentFrame  *row =
+          [[WonderCardSeedInspectorAdjacentFrame alloc] init];
+        
+        SetHashedSeedResultParameters(row, seed);
+        
+        row.startFrame = seed.GetSkippedPIDFrames() + 1;
+        row.frame = frame.number;
+        
+        SetGen5PIDResult(row, frame.nature, frame.pid,
+                         frameParams.cardTID, frameParams.cardSID,
+                         frameParams.cardGender, frameParams.cardGenderRatio);
+        if (frame.hasHiddenAbility)
+          row.ability = Ability::HIDDEN;
+        
+        SetIVResult(row, frame.ivs, NO);
+        
+        row.characteristic = Characteristic::Get(frame.pid, frame.ivs);
+        
+        [rowArray addObject: row];
       }
     }
   }
   
   [adjacentsContentArray addObjects: rowArray];
-}
-
-
-- (void)setSeed:(NSData*)seedData
-{
-  if (seedData != currentSeed)
-  {
-    currentSeed = seedData;
-    
-    HashedSeed  seed;
-    [currentSeed getBytes: &seed length: sizeof(HashedSeed)];
-    
-    NSDate  *now = [NSDate date];
-    NSRange  timeZoneOffsetRange;
-    timeZoneOffsetRange.location = 20;
-    timeZoneOffsetRange.length = 5;
-    NSString  *dateTime =
-      [NSString stringWithFormat: @"%.4d-%.2d-%.2d %.2d:%.2d:%.2d %@",
-        seed.year(), seed.month(), seed.day(),
-        seed.hour, seed.minute, seed.second,
-        [[now description] substringWithRange: timeZoneOffsetRange]];
-    
-    [startDate setObjectValue: [NSDate dateWithString: dateTime]];
-    [startHour setIntValue: seed.hour];
-    [startMinute setIntValue: seed.minute];
-    [startSecond setIntValue: seed.second];
-    
-    [timer0Field setIntValue: seed.timer0];
-    [vcountField setIntValue: seed.vcount];
-    [vframeField setIntValue: seed.vframe];
-    
-    NSPopUpButton  *keyMenu[3] = { key1Menu, key2Menu, key3Menu };
-    uint32_t  i = 0;
-    uint32_t  dpadPress = seed.heldButtons & Button::DPAD_MASK;
-    uint32_t  buttonPress = seed.heldButtons & Button::SINGLE_BUTTON_MASK;
-    
-    if (dpadPress != 0)
-    {
-      [key1Menu selectItemWithTag: dpadPress];
-      ++i;
-    }
-    
-    uint32_t  j = 1;
-    while ((buttonPress != 0) && (i < 3))
-    {
-      if (buttonPress & 0x1)
-      {
-        [keyMenu[i++] selectItemWithTag: j];
-      }
-      
-      buttonPress >>= 1;
-      j <<= 1;
-    }
-    
-    [seedField setObjectValue:
-      [NSNumber numberWithUnsignedLongLong: seed.rawSeed]];
-    [initialPIDFrameField setObjectValue:
-      [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
-  }
-}
-
-- (void)controlTextDidEndEditing:(NSNotification*)notification
-{
-  if ([[seedField stringValue] length] == 0)
-  {
-    [initialPIDFrameField setObjectValue: nil];
-  }
-  else
-  {
-    HashedSeed  seed([[seedField objectValue] unsignedLongLongValue]);
-    [initialPIDFrameField setObjectValue:
-        [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1]];
-  }
 }
 
 @end

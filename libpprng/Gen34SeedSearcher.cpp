@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -44,7 +44,6 @@ struct FrameChecker
   bool CheckNature(const PID &pid) const
   {
     return (m_criteria.nature == Nature::ANY) ||
-           (m_criteria.nature == Nature::UNKNOWN) ||
            (m_criteria.nature == pid.Gen34Nature());
   }
   
@@ -57,7 +56,7 @@ struct FrameChecker
 
   bool CheckHiddenPower(const IVs &ivs) const
   {
-    if (m_criteria.hiddenType == Element::UNKNOWN)
+    if (m_criteria.hiddenType == Element::NONE)
     {
       return true;
     }
@@ -94,17 +93,6 @@ uint64_t Gen34SeedSearcher::Criteria::ExpectedNumberOfResults()
   
   uint64_t  numFrames = maxFrame - minFrame + 1;
   
-  uint64_t  hpDivisor = 1;
-  if (hiddenType != Element::UNKNOWN)
-  {
-    hpDivisor = 40; // number of power levels
-    
-    if (hiddenType != Element::ANY)
-    {
-      hpDivisor *= 16;
-    }
-  }
-  
   IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
   
   uint32_t  numIVs = (maxIVs.hp() - minIVs.hp() + 1) *
@@ -116,8 +104,16 @@ uint64_t Gen34SeedSearcher::Criteria::ExpectedNumberOfResults()
   
   uint64_t  natureDivisor = (nature != Nature::ANY) ? 25 : 1;
   
-  return numFrames * numSeeds * numIVs /
-         (32 * 32 * 32 * 32 * 32 * 32 * natureDivisor * hpDivisor);
+  uint64_t  numResults = numFrames * numSeeds * numIVs /
+                           (32 * 32 * 32 * 32 * 32 * 32 * natureDivisor);
+  
+  if (hiddenType != Element::NONE)
+  {
+    numResults = IVs::AdjustExpectedResultsForHiddenPower
+      (numResults, minIVs, maxIVs, hiddenType, minHiddenPower);
+  }
+  
+  return numResults;
 }
 
 void Gen34SeedSearcher::Search

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -61,6 +61,7 @@ public:
     
     IVs                       minIVs;
     IVs                       maxIVs;
+    bool                      isRoamer;
     uint32_t                  maxSkippedFrames;
     
     Criteria()

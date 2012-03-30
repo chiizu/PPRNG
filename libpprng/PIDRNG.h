@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -66,116 +66,138 @@ private:
   RNG  &m_RNG;
 };
 
-template <class RNG>
-class Gen5PIDRNG
+
+struct Gen5PIDRNG
 {
-public:
-  enum Type
+  template <class RNG>
+  static uint32_t NextWildPIDWord(RNG &rng, uint32_t tid, uint32_t sid)
   {
-    WildPID = 0,
-    ZekReshVicPID,
-    GiftPID,
-    GiftNoShinyPID,
-    RoamerPID,
-    EntraLinkPID,
-    EggPID
-  };
-  
-  Gen5PIDRNG(RNG &rng, Type type, uint32_t tid, uint32_t sid)
-    : m_RNG(rng),
-      m_PIDWordGenerator(GeneratorForType(type)),
-      m_idLowBitsDiffer((tid ^ sid) & 0x1),
-      m_fullId((sid << 16) | tid)
-  {}
-  
-  uint32_t NextPIDWord()
-  {
-    return (this->*m_PIDWordGenerator)();
+    return TIDBitTwiddle(FlipAbility(NextRawPIDWord(rng)), tid, sid);
   }
   
-private:
-  typedef uint32_t (Gen5PIDRNG::*PIDWordGenerator)();
-  
-  const PIDWordGenerator  m_PIDWordGenerator;
-  
-  uint32_t NextWildPIDWord()
+  template <class RNG>
+  static uint32_t NextGiftPIDWord(RNG &rng)
   {
-    uint32_t  result = (m_RNG.Next() >> 32) ^ 0x00010000;
-    
-    if ((m_idLowBitsDiffer ^ result) & 0x1)
+    return FlipAbility(NextRawPIDWord(rng));
+  }
+  
+  template <class RNG>
+  static uint32_t NextNonShinyPIDWord(RNG &rng, uint32_t tid, uint32_t sid)
+  {
+    return ForceNonShiny(FlipAbility(NextRawPIDWord(rng)), tid, sid);
+  }
+  
+  template <class RNG>
+  static uint32_t NextRoamerPIDWord(RNG &rng)
+  {
+    return NextRawPIDWord(rng);
+  }
+  
+  template <class RNG>
+  static uint32_t NextEggPIDWord(RNG &rng)
+  {
+    return (NextRawPIDWord(rng) * 0xFFFFFFFFULL) >> 32;
+  }
+  
+  template <class RNG>
+  static uint32_t NextEntraLinkPIDWord(RNG &rng,
+                                       Gender::Type gender, Gender::Ratio ratio,
+                                       uint32_t tid, uint32_t sid)
+  {
+    return ForceNonShiny(ClearAbility(ForceGender(NextRawPIDWord(rng),
+                                                  gender, ratio, rng)),
+                         tid, sid);
+  }
+  
+  template <class RNG>
+  static uint32_t NextCuteCharmPIDWord(RNG &rng,
+                                       Gender::Type gender, Gender::Ratio ratio,
+                                       uint32_t tid, uint32_t sid)
+  {
+    return TIDBitTwiddle(FlipAbility(ForceGender(NextRawPIDWord(rng),
+                                                 gender, ratio, rng)),
+                         tid, sid);
+  }
+  
+  template <class RNG>
+  static uint32_t NextRawPIDWord(RNG &rng)
+  {
+    return rng.Next() >> 32;
+  }
+  
+  static uint32_t FlipAbility(uint32_t pid)
+  {
+    return pid ^ 0x00010000;
+  }
+  
+  static uint32_t ClearAbility(uint32_t pid)
+  {
+    return pid & ~0x00010000;
+  }
+  
+  static uint32_t TIDBitTwiddle(uint32_t pid, uint32_t tid, uint32_t sid)
+  {
+    if ((tid ^ sid ^ pid) & 0x1)
     {
-      result = result | 0x80000000;
+      return pid | 0x80000000;
     }
     else
     {
-      result = result & 0x7fffffff;
+      return pid & 0x7fffffff;
     }
-    
-    return result;
   }
   
-  uint32_t NextNonShinyPIDWord()
+  static uint32_t ForceAbility(uint32_t pid, Ability::Type ability)
   {
-    uint32_t  result = (m_RNG.Next() >> 32) ^ 0x00010000;
-    uint32_t  temp = result ^ m_fullId;
-    
-    // force non-shiny
-    if (((temp >> 16) ^ (temp & 0xffff)) < 8)
+    switch (ability)
     {
-      result = result ^ 0x10000000;
-    }
-    
-    return result;
-  }
-  
-  uint32_t NextGiftPIDWord()
-  {
-    return (m_RNG.Next() >> 32) ^ 0x00010000;
-  }
-  
-  uint32_t NextRoamerPIDWord()
-  {
-    return m_RNG.Next() >> 32;
-  }
-  
-  uint32_t NextEggPIDWord()
-  {
-    return ((m_RNG.Next() >> 32) * 0xFFFFFFFFULL) >> 32;
-  }
-  
-  RNG             &m_RNG;
-  const uint32_t  m_idLowBitsDiffer;
-  const uint32_t  m_fullId;
-  
-  static PIDWordGenerator GeneratorForType(Type type)
-  {
-    switch (type)
-    {
-    case WildPID:
-      return &Gen5PIDRNG::NextWildPIDWord;
-      break;
-    case ZekReshVicPID:
-      return &Gen5PIDRNG::NextNonShinyPIDWord;
-      break;
-    case GiftPID:
-      return &Gen5PIDRNG::NextGiftPIDWord;
-      break;
-    case GiftNoShinyPID:
-      return &Gen5PIDRNG::NextNonShinyPIDWord;
-      break;
-    case RoamerPID:
-      return &Gen5PIDRNG::NextRoamerPIDWord;
-      break;
-    case EntraLinkPID:
-      return &Gen5PIDRNG::NextWildPIDWord;
-      break;
-    case EggPID:
-      return &Gen5PIDRNG::NextEggPIDWord;
-      break;
+    case Ability::NONE:
+    case Ability::ANY:
     default:
-      return &Gen5PIDRNG::NextWildPIDWord;
+      return pid;
+      break;
+      
+    case Ability::ZERO:
+      return pid & ~0x00010000;
+      break;
+      
+    case Ability::ONE:
+      return pid | 0x00010000;
+      break;
+      
+    case Ability::HIDDEN:
+      return pid & ~0x00010000;
       break;
     }
+  }
+  
+  static uint32_t ForceShiny(uint32_t pid, uint32_t tid, uint32_t sid)
+  {
+    uint32_t  lowByte = pid & 0x000000ff;
+    
+    return ((lowByte ^ tid ^ sid) << 16) | lowByte;
+  }
+  
+  static uint32_t ForceNonShiny(uint32_t pid, uint32_t tid, uint32_t sid)
+  {
+    if (((pid >> 16) ^ (pid & 0xffff) ^ sid ^ tid) < 8)
+    {
+      pid = pid ^ 0x10000000;
+    }
+    
+    return pid;
+  }
+  
+  template <class RNG>
+  static uint32_t ForceGender(uint32_t pid,
+                              Gender::Type gender, Gender::Ratio ratio,
+                              RNG &rng)
+  {
+    if ((gender == Gender::GENDERLESS) || (gender == Gender::ANY))
+      return pid;
+    
+    return (pid & 0xFFFFFF00) |
+           Gender::MakeGenderValue(gender, ratio, (rng.Next() >> 32));
   }
 };
 

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -196,16 +196,6 @@ public:
   
   //uint32_t CurrentSeed() { return m_RNG.PeekNext(); }
   
-  bool GeneratesESV() const
-  { return m_parameters.encounterType != StationaryEncounter; }
-  
-  bool GeneratesIsEncounter() const
-  {
-    return (m_parameters.encounterType == OldRodFishingEncounter) ||
-           (m_parameters.encounterType == GoodRodFishingEncounter) ||
-           (m_parameters.encounterType == SuperRodFishingEncounter);
-  }
-  
 private:
   bool IsFishingEncounter(uint32_t threshold)
   {
@@ -299,6 +289,57 @@ private:
   Frame           m_frame;
 };
 
+// design blatantly stolen from RNG Reporter
+class CGearFrameTimeGenerator
+{
+public:
+  CGearFrameTimeGenerator()
+    : m_state(StartState), m_totalTicks(0), m_currentTicks(0)
+  {}
+  
+  uint32_t GetTicks() { return m_currentTicks; }
+  
+  void AdvanceFrame(uint64_t rawRNGValue)
+  {
+    switch (m_state)
+    {
+    case StartState:
+      m_currentTicks = m_totalTicks = 21;
+      m_state = SkippedState;
+      break;
+      
+    case SkippedState:
+    default:
+      m_currentTicks = 0;
+      m_state = LongState;
+      break;
+      
+    case LongState:
+      m_currentTicks = m_totalTicks += (((rawRNGValue >> 32) * 152) >> 32) + 60;
+      m_state = ShortState;
+      break;
+      
+    case ShortState:
+      m_currentTicks = m_totalTicks += (((rawRNGValue >> 32) * 40) >> 32) + 60;
+      m_state = SkippedState;
+      break;
+    }
+  }
+  
+private:
+  enum State
+  {
+    StartState,
+    SkippedState,
+    LongState,
+    ShortState
+  };
+  
+  State     m_state;
+  uint32_t  m_totalTicks;
+  uint32_t  m_currentTicks;
+};
+
 class HashedIVFrameGenerator
 {
 public:
@@ -331,8 +372,7 @@ class Gen5PIDFrameGenerator
 public:
   typedef HashedSeed              Seed;
   typedef Gen5PIDFrame            Frame;
-  typedef BufferedRNG<LCRNG5, 7>  RNG;
-  typedef Gen5PIDRNG<RNG>         PIDRNG;
+  typedef BufferedRNG<LCRNG5, 8>  RNG;
   
   enum FrameType
   {
@@ -347,7 +387,7 @@ public:
     WaterSpotFishingFrame,
     EntraLinkFrame,
     StationaryFrame,
-    ZekReshVicFrame,
+    NonShinyStationaryFrame,
     StarterFossilGiftFrame,
     RoamerFrame,
     
@@ -356,12 +396,17 @@ public:
   
   struct Parameters
   {
-    FrameType  frameType;
-    bool       useCompoundEyes;
-    uint32_t   tid, sid;
+    FrameType               frameType;
+    EncounterLead::Ability  leadAbility;
+    Gender::Type            targetGender;
+    Gender::Ratio           targetRatio;
+    uint32_t                tid, sid;
+    bool                    startFromLowestFrame;
     
     Parameters()
-      : frameType(GrassCaveFrame), useCompoundEyes(false), tid(0), sid(0)
+      : frameType(GrassCaveFrame), leadAbility(EncounterLead::SYNCHRONIZE),
+        targetGender(Gender::ANY), targetRatio(Gender::ANY_RATIO),
+        tid(0), sid(0), startFromLowestFrame(false)
     {}
   };
   
@@ -371,10 +416,14 @@ public:
   
   const Frame& CurrentFrame() const { return m_frame; }
   
-  bool GeneratesESV() const;
-  bool GeneratesIsEncounter() const;
+  FrameType GetFrameType() const { return m_parameters.frameType; }
   
 private:
+  typedef void (Gen5PIDFrameGenerator::*PIDGenerator)();
+  
+  const PIDGenerator  m_PIDGenerator;
+  
+  
   typedef void (Gen5PIDFrameGenerator::*PIDFrameGenerator)();
   
   const PIDFrameGenerator  m_PIDFrameGenerator;
@@ -386,12 +435,18 @@ private:
   
   struct FrameGeneratorInfo
   {
-    PIDRNG::Type       pidType;
+    PIDGenerator       pidGenerator;
     PIDFrameGenerator  pidFrameGenerator;
     ESVGenerator       esvGenerator;
   };
   
   static const FrameGeneratorInfo  s_FrameGeneratorInfo[NumFrameTypes];
+  
+  void NextWildPID();
+  void NextEntraLinkPID();
+  void NextNonShinyPID();
+  void NextGiftPID();
+  void NextRoamerPID();
   
   void NextWildFrame();
   void NextFishingFrame();
@@ -399,47 +454,50 @@ private:
   void NextDustFrame();
   void NextShadowFrame();
   void NextStationaryFrame();
+  void NextEntraLinkFrame();
   void NextSimpleFrame();
   
-  void NextSync();
+  void CheckLeadAbility();
+  void ApplySync();
   
   void LandESV();
-  void WaterESV();
+  void SurfESV();
+  void FishingESV();
   void NoESV();
   
   void NextHeldItem();
   
-  RNG         m_RNG;
-  PIDRNG      m_PIDRNG;
-  Frame       m_frame;
-  const bool  m_useCompoundEyes;
+  RNG                      m_RNG;
+  Frame                    m_frame;
+  const Parameters         m_parameters;
+  CGearFrameTimeGenerator  m_cgearFrameTimeGenerator;
 };
+
 
 class WonderCardFrameGenerator
 {
 public:
   typedef HashedSeed               Seed;
   typedef WonderCardFrame          Frame;
-  typedef BufferedRNG<LCRNG5, 15>  RNG;
+  typedef BufferedRNG<LCRNG5, 7>   RNG;
   typedef Gen5BufferingIVRNG<RNG>  IVRNG;
-  typedef Gen5PIDRNG<RNG>          PIDRNG;
   
   struct Parameters
   {
-    Nature::Type   cardNature;
-    uint32_t       cardAbility;
-    bool           cardAlwaysShiny;
-    Gender::Type   cardGender;
-    Gender::Ratio  cardGenderRatio;
+    Nature::Type               cardNature;
+    Ability::Type              cardAbility;
+    Gender::Type               cardGender;
+    Gender::Ratio              cardGenderRatio;
+    WonderCardShininess::Type  cardShininess;
+    uint32_t                   cardTID, cardSID;
     
     bool           startFromLowestFrame;
-    uint32_t       tid, sid;
     
     Parameters()
       : cardNature(Nature::ANY), cardAbility(Ability::ANY),
-        cardAlwaysShiny(false), cardGender(Gender::ANY),
-        cardGenderRatio(Gender::UNSPECIFIED),
-        startFromLowestFrame(false), tid(0), sid(0)
+        cardGender(Gender::ANY), cardGenderRatio(Gender::ANY_RATIO),
+        cardShininess(WonderCardShininess::NEVER_SHINY),
+        cardTID(0), cardSID(0), startFromLowestFrame(false)
     {}
   };
   
@@ -451,14 +509,13 @@ public:
   const Frame& CurrentFrame() { return m_frame; }
   
 private:
-  RNG             m_RNG;
-  IVRNG           m_IVRNG;
-  PIDRNG          m_PIDRNG;
-  Frame           m_frame;
-  const uint32_t  m_ivSkip;
-  const uint32_t  m_pidSkip;
-  const uint32_t  m_natureSkip;
+  RNG               m_RNG;
+  IVRNG             m_IVRNG;
+  Frame             m_frame;
+  const Parameters  m_parameters;
+  const bool        m_isGLAN;
 };
+
 
 class Gen5TrainerIDFrameGenerator
 {
@@ -467,8 +524,9 @@ public:
   typedef Gen5TrainerIDFrame  Frame;
   typedef LCRNG5              RNG;
   
-  Gen5TrainerIDFrameGenerator(const HashedSeed &seed)
-    : m_RNG(seed.rawSeed),
+  Gen5TrainerIDFrameGenerator(const HashedSeed &seed, const PID &shinyPID)
+    : m_RNG(seed.rawSeed), m_ShinyPID(shinyPID),
+      m_EggPID((uint64_t(shinyPID.word) * 0xFFFFFFFFULL) >> 32),
       m_frame(seed)
   {
     m_frame.number = 0;
@@ -481,13 +539,20 @@ public:
     uint32_t  fullID = ((m_RNG.Next() >> 32) * 0xFFFFFFFFULL) >> 32;
     m_frame.tid = fullID & 0xffff;
     m_frame.sid = fullID >> 16;
+    m_frame.wildShiny =
+      PID(Gen5PIDRNG::TIDBitTwiddle(m_ShinyPID.word, m_frame.tid, m_frame.sid))
+        .IsShiny(m_frame.tid, m_frame.sid);
+    m_frame.giftShiny = m_ShinyPID.IsShiny(m_frame.tid, m_frame.sid);
+    m_frame.eggShiny = m_EggPID.IsShiny(m_frame.tid, m_frame.sid);
   }
   
   const Frame& CurrentFrame() { return m_frame; }
   
 private:
-  RNG       m_RNG;
-  Frame     m_frame;
+  RNG        m_RNG;
+  const PID  m_ShinyPID;
+  const PID  m_EggPID;
+  Frame      m_frame;
 };
 
 class Gen5BreedingFrameGenerator
@@ -495,15 +560,15 @@ class Gen5BreedingFrameGenerator
 public:
   typedef HashedSeed         Seed;
   typedef Gen5BreedingFrame  Frame;
-  typedef QueuedRNG<LCRNG5>  RNG;
-  typedef Gen5PIDRNG<RNG>    PIDRNG;
+  typedef LCRNG5             RNG;
   
   struct Parameters
   {
-    bool      usingEverstone;
-    bool      usingDitto;
-    bool      internationalParents;
-    uint32_t  tid, sid;
+    FemaleParent::Type  femaleSpecies;
+    bool                usingEverstone;
+    bool                usingDitto;
+    bool                internationalParents;
+    uint32_t            tid, sid;
   };
   
   Gen5BreedingFrameGenerator(const HashedSeed &seed,
@@ -516,9 +581,9 @@ public:
 private:
   const Parameters  m_parameters;
   
-  RNG       m_RNG;
-  PIDRNG    m_PIDRNG;
-  Frame     m_frame;
+  RNG::SeedType  m_NextSeed;
+  RNG            m_RNG;
+  Frame          m_frame;
 };
 
 }

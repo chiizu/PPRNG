@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -123,9 +123,9 @@ void InitialIVSeedSearcher::Search
   c.ivs.shouldCheckMax = true;
   c.ivs.min = criteria.minIVs;
   c.ivs.max = criteria.maxIVs;
-  c.ivs.hiddenType = Element::UNKNOWN;
+  c.ivs.hiddenType = Element::ANY;
   c.ivs.minHiddenPower = 30;
-  c.ivs.isRoamer = false;
+  c.ivs.isRoamer = criteria.isRoamer;
   
   HashedSeedSearcher  searcher;
   

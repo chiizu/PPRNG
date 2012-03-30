@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -31,38 +31,40 @@
   IBOutlet IVParameterController        *ivParameterController;
   IBOutlet SearcherController           *searcherController;
   
-  IBOutlet NSButton       *noKeyHeldButton;
-  IBOutlet NSButton       *oneKeyHeldButton;
-  IBOutlet NSButton       *twoKeysHeldButton;
-  IBOutlet NSButton       *threeKeysHeldButton;
+  IBOutlet NSPopUpButton  *leadAbilityDropDown;
+  IBOutlet NSPopUpButton  *natureDropDown;
+  IBOutlet NSPopUpButton  *requiredEncountersDropDown;
+  IBOutlet NSPopUpButton  *landESVDropDown;
+  IBOutlet NSPopUpButton  *surfESVDropDown;
+  IBOutlet NSPopUpButton  *fishESVDropDown;
   
-  IBOutlet NSTextField    *minIVFrameField;
-  IBOutlet NSTextField    *maxIVFrameField;
+  NSDate  *fromDate, *toDate;
+  BOOL    noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
   
-  IBOutlet NSDatePicker   *fromDateField;
-  IBOutlet NSDatePicker   *toDateField;
+  uint32_t  minIVFrame, maxIVFrame;
   
-  IBOutlet NSButton       *shinyOnlyCheckbox;
-  IBOutlet NSPopUpButton  *shinyEncounterTypePopUp;
-  IBOutlet NSButton       *shinyFromFirstPIDCheckBox;
-  IBOutlet NSTextField    *minPIDFrameField;
-  IBOutlet NSTextField    *maxPIDFrameField;
-  IBOutlet NSPopUpButton  *shinyNaturePopUp;
-  IBOutlet NSPopUpButton  *shinyAbilityPopUp;
-  IBOutlet NSPopUpButton  *shinyGenderPopUp;
-  IBOutlet NSPopUpButton  *shinyGenderRatioPopUp;
-  IBOutlet NSButton       *shinySyncACheckBox;
-  IBOutlet NSButton       *shinySyncBCheckBox;
-  IBOutlet NSButton       *shinySyncCCheckBox;
-  IBOutlet NSPopUpButton  *shinyLandESVPopUp;
-  IBOutlet NSPopUpButton  *shinyWaterESVPopUp;
-  IBOutlet NSButton       *shinyIsSwarmPokeCheckBox;
-  IBOutlet NSButton       *shinyCanFishCheckBox;
-  IBOutlet NSButton       *shinyDustIsPokeCheckBox;
-  IBOutlet NSButton       *shinyShadowIsPokeCheckBox;
+  BOOL                  showShinyOnly;
+  pprng::Ability::Type  ability;
+  pprng::Gender::Type   gender;
+  pprng::Gender::Ratio  genderRatio;
+  
+  BOOL      startFromInitialPIDFrame;
+  uint32_t  minPIDFrame, maxPIDFrame;
 }
 
-- (IBAction)toggleSearchFromStartFrame:(id)sender;
-- (IBAction)toggleESVChoice:(id)sender;
+@property (copy) NSDate  *fromDate, *toDate;
+@property BOOL  noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
+
+@property uint32_t  minIVFrame, maxIVFrame;
+
+@property BOOL                  showShinyOnly;
+@property pprng::Ability::Type  ability;
+@property pprng::Gender::Type   gender;
+@property pprng::Gender::Ratio  genderRatio;
+
+@property BOOL      startFromInitialPIDFrame;
+@property uint32_t  minPIDFrame, maxPIDFrame;
+
+- (IBAction)toggleDropDownChoice:(id)sender;
 
 @end

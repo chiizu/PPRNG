@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -20,45 +20,59 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "PPRNGTypes.h"
+
 #import "Gen5ConfigurationController.h"
+
+@class HashedSeedInspectorController;
 
 @interface HashedSeedInspectorEggsTabController : NSObject
 {
-  IBOutlet Gen5ConfigurationController  *gen5ConfigController;
+  IBOutlet HashedSeedInspectorController  *inspectorController;
+  IBOutlet Gen5ConfigurationController    *gen5ConfigController;
   
-  IBOutlet NSTextField            *seedField;
+  BOOL      internationalParents;
+  BOOL      usingEverstone;
+  BOOL      usingDitto;
   
-  IBOutlet NSButton               *eggsInternationalButton;
-  IBOutlet NSButton               *eggsUseEverstoneButton;
-  IBOutlet NSButton               *eggsUseDittoButton;
+  BOOL      enableIVs;
+  uint32_t  ivFrame;
   
-  IBOutlet NSButton               *eggsEnableIVsButton;
-  IBOutlet NSTextField            *eggsIVFrameField;
+  BOOL      startFromInitialPIDFrame;
+  uint32_t  minPIDFrame, maxPIDFrame;
   
-  IBOutlet NSButton               *eggsUseInitialPIDButton;
-  IBOutlet NSTextField            *eggsMinPIDFrameField;
-  IBOutlet NSTextField            *eggsMaxPIDFrameField;
-  
-  IBOutlet NSPopUpButton          *eggsFemaleSpeciesPopup;
-  
-  IBOutlet NSTableView            *eggsTableView;
-  IBOutlet NSArrayController      *eggsContentArray;
+  pprng::FemaleParent::Type  femaleSpecies;
   
   BOOL      enableParentIVs;
   NSNumber  *femaleHP, *femaleAT, *femaleDF, *femaleSA, *femaleSD, *femaleSP;
   NSNumber  *maleHP, *maleAT, *maleDF, *maleSA, *maleSD, *maleSP;
+  
+  IBOutlet NSTableView            *eggsTableView;
+  IBOutlet NSArrayController      *eggsContentArray;
 }
 
+@property BOOL      internationalParents;
+@property BOOL      usingEverstone;
+@property BOOL      usingDitto;
+
+@property BOOL      enableIVs;
+@property uint32_t  ivFrame;
+
+@property BOOL      startFromInitialPIDFrame;
+@property uint32_t  minPIDFrame, maxPIDFrame;
+
+@property pprng::FemaleParent::Type  femaleSpecies;
+
 @property BOOL  enableParentIVs;
-
 @property (copy)
-NSNumber  *femaleHP, *femaleAT, *femaleDF, *femaleSA, *femaleSD, *femaleSP;
+NSNumber  *femaleHP, *femaleAT, *femaleDF, *femaleSA, *femaleSD, *femaleSP,
+          *maleHP, *maleAT, *maleDF, *maleSA, *maleSD, *maleSP;
 
-@property (copy)
-NSNumber  *maleHP, *maleAT, *maleDF, *maleSA, *maleSD, *maleSP;
+- (void)setFemaleIVs:(const pprng::OptionalIVs&)ivs;
+- (void)setMaleIVs:(const pprng::OptionalIVs&)ivs;
 
-- (IBAction)toggleUseInitialPID:(id)sender;
-- (IBAction)toggleEggIVs:(id)sender;
 - (IBAction)generateEggs:(id)sender;
+
+- (void)selectAndShowEggFrame:(uint32_t)frame;
 
 @end

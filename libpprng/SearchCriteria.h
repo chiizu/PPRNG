@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -32,30 +32,48 @@ struct SearchCriteria
 {
   struct PIDCriteria
   {
-    Nature::Type   nature;
+    uint32_t       natureMask;
     Ability::Type  ability;
     Gender::Type   gender;
     Gender::Ratio  genderRatio;
-    bool           searchFromInitialFrame;
+    bool           startFromLowestFrame;
     
     PIDCriteria()
-      : nature(Nature::ANY), ability(Ability::ANY),
-        gender(Gender::ANY), genderRatio(Gender::UNSPECIFIED),
-        searchFromInitialFrame(false)
+      : natureMask(0), ability(Ability::ANY),
+        gender(Gender::ANY), genderRatio(Gender::ANY_RATIO),
+        startFromLowestFrame(false)
     {}
+    
+    bool CheckNature(Nature::Type nature) const
+    {
+      return (natureMask == 0) || (((0x1 << nature) & natureMask) != 0);
+    }
+    
+    uint32_t NumNatures() const
+    {
+      uint32_t  c = 0, n = natureMask;
+      while (n != 0)
+      {
+        n &= n - 1;
+        ++c;
+      }
+      
+      return c;
+    }
   };
   
   struct IVCriteria
   {
-    bool           shouldCheckMax;
-    IVs            min, max;
-    Element::Type  hiddenType;
-    uint32_t       minHiddenPower;
-    bool           isRoamer;
+    IVPattern::Type  pattern;
+    bool             shouldCheckMax;
+    IVs              min, max;
+    Element::Type    hiddenType;
+    uint32_t         minHiddenPower;
+    bool             isRoamer;
     
     IVCriteria()
       : shouldCheckMax(true), min(), max(),
-        hiddenType(Element::UNKNOWN), minHiddenPower(30), isRoamer(false)
+        hiddenType(Element::ANY), minHiddenPower(30), isRoamer(false)
     {}
   };
   

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -164,10 +164,11 @@ Gen4Frame::Gen4Frame(const Gen34Frame &baseFrame)
 namespace
 {
 
-static IVs GetEggIVs(const Gen5BreedingFrame &frame,
-                     IVs baseIVs, IVs parentXIVs, IVs parentYIVs)
+static OptionalIVs GetEggIVs(const Gen5BreedingFrame &frame, IVs baseIVs,
+                             const OptionalIVs &parentXIVs,
+                             const OptionalIVs &parentYIVs)
 {
-  IVs  ivs;
+  OptionalIVs  ivs;
   
   for (uint32_t i = 0; i < 6; ++i)
   {
@@ -178,10 +179,12 @@ static IVs GetEggIVs(const Gen5BreedingFrame &frame,
       ivs.setIV(i, baseIVs.iv(i));
       break;
     case Gen5BreedingFrame::ParentX:
-      ivs.setIV(i, parentXIVs.iv(i));
+      if (parentXIVs.isSet(i))
+        ivs.setIV(i, parentXIVs.iv(i));
       break;
     case Gen5BreedingFrame::ParentY:
-      ivs.setIV(i, parentYIVs.iv(i));
+      if (parentYIVs.isSet(i))
+        ivs.setIV(i, parentYIVs.iv(i));
       break;
     }
   }
@@ -193,10 +196,16 @@ static IVs GetEggIVs(const Gen5BreedingFrame &frame,
 
 Gen5EggFrame::Gen5EggFrame(const Gen5BreedingFrame &f,
                            uint32_t ivFrame, IVs baseIVs,
-                           IVs parentXIVs, IVs parentYIVs)
+                           const OptionalIVs &parentXIVs,
+                           const OptionalIVs &parentYIVs)
   : Gen5BreedingFrame(f),
     ivFrameNumber(ivFrame), ivs(GetEggIVs(f, baseIVs, parentXIVs, parentYIVs)),
-    characteristic(Characteristic::Get(f.pid, ivs))
-{}
+    characteristic(ivs.allSet() ?
+                    Characteristic::Get(f.pid, ivs.values) :
+                    Characteristic::NONE)
+{
+  //for (uint32_t i = 0; i < 6; ++i)
+    //inheritance[i] = f.inheritance[i];
+}
 
 }

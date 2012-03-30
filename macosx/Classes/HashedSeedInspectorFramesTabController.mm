@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -20,64 +20,172 @@
 
 #import "HashedSeedInspectorFramesTabController.h"
 
+#import "HashedSeedInspectorController.h"
+#import "SearchResultProtocols.h"
+
 #include "HashedSeed.h"
 #include "FrameGenerator.h"
 #include "Utilities.h"
 
 using namespace pprng;
 
+@interface HashedSeedInspectorPIDFrame : NSObject <PIDResult>
+{
+  uint32_t        frame;
+  uint32_t        chatotPitch;
+  DECLARE_PID_RESULT_VARIABLES();
+  ESV::Value      esv;
+  HeldItem::Type  heldItem;
+  NSString        *details;
+}
+
+@property uint32_t         frame;
+@property uint32_t         chatotPitch;
+@property ESV::Value       esv;
+@property HeldItem::Type   heldItem;
+@property (copy) NSString  *details;
+
+@end
+
+@implementation HashedSeedInspectorPIDFrame
+
+@synthesize frame;
+@synthesize chatotPitch;
+SYNTHESIZE_PID_RESULT_PROPERTIES();
+@synthesize esv;
+@synthesize heldItem;
+@synthesize details;
+
+@end
+
+
+@interface HashedSeedInspectorIVFrame : NSObject <IVResult>
+{
+  uint32_t  frame;
+  DECLARE_IV_RESULT_VARIABLES();
+}
+
+@property uint32_t  frame;
+
+@end
+
+@implementation HashedSeedInspectorIVFrame
+
+@synthesize frame;
+SYNTHESIZE_IV_RESULT_PROPERTIES();
+
+@end
+
+
+
 @implementation HashedSeedInspectorFramesTabController
+
+@synthesize encounterFrameType, encounterLeadAbility;
+@synthesize genderRequired, targetGender;
+@synthesize genderRatioRequired, targetGenderRatio;
+@synthesize startFromInitialPIDFrame;
+@synthesize minPIDFrame, maxPIDFrame;
+@synthesize minIVFrame, maxIVFrame;
+@synthesize ivParameterController;
+
+- (void)checkGenderSettingsRequired
+{
+  self.genderRequired =
+    (encounterLeadAbility == EncounterLead::CUTE_CHARM) ||
+    (encounterFrameType == Gen5PIDFrameGenerator::EntraLinkFrame);
+  
+  if (!genderRequired)
+    self.targetGender = Gender::GENDERLESS;
+  
+  self.genderRatioRequired = genderRequired &&
+                             (targetGender != Gender::GENDERLESS);
+}
+
+- (void)setEncounterFrameType:(Gen5PIDFrameGenerator::FrameType)newFrameType
+{
+  if (newFrameType != encounterFrameType)
+  {
+    encounterFrameType = newFrameType;
+    [self checkGenderSettingsRequired];
+  }
+}
+
+- (void)setEncounterLeadAbility:(EncounterLead::Ability)newAbility
+{
+  if (newAbility != encounterLeadAbility)
+  {
+    encounterLeadAbility = newAbility;
+    [self checkGenderSettingsRequired];
+  }
+}
+
+- (void)setTargetGender:(Gender::Type)newGender
+{
+  if (newGender != targetGender)
+  {
+    targetGender = newGender;
+    if (targetGender == Gender::GENDERLESS)
+    {
+      self.targetGenderRatio = Gender::NO_RATIO;
+      self.genderRatioRequired = NO;
+    }
+    else
+    {
+      self.genderRatioRequired = YES;
+    }
+  }
+}
 
 - (void)awakeFromNib
 {
-  [[[[pidFrameTableView tableColumnWithIdentifier: @"pid"] dataCell] formatter]
-   setFormatWidth: 8];
-}
-
-- (IBAction)toggleUseInitialPID:(id)sender
-{
-  BOOL enabled = [useInitialPIDButton state];
-  [minPIDFrameField setEnabled: !enabled];
+  self.encounterFrameType = Gen5PIDFrameGenerator::GrassCaveFrame;
+  self.encounterLeadAbility = EncounterLead::SYNCHRONIZE;
+  self.targetGender = Gender::GENDERLESS;
+  self.targetGenderRatio = Gender::NO_RATIO;
+  self.startFromInitialPIDFrame = YES;
+  self.minPIDFrame = 50;
+  self.maxPIDFrame = 500;
+  self.minIVFrame = 1;
+  self.maxIVFrame = 100;
 }
 
 - (IBAction)generatePIDFrames:(id)sender
 {
-  if ([[seedField stringValue] length] == 0)
-  {
+  if (!EndEditing([inspectorController window]))
     return;
-  }
+  
+  if (!inspectorController.rawSeed)
+    return;
   
   [pidFrameContentArray setContent: [NSMutableArray array]];
   
-  HashedSeed  seed([[seedField objectValue] unsignedLongLongValue]);
+  HashedSeed  seed([inspectorController.rawSeed unsignedLongLongValue]);
   
-  uint32_t  minPIDFrame = [useInitialPIDButton state] ?
-                          (seed.GetSkippedPIDFrames() + 1) :
-                          [minPIDFrameField intValue];
-  uint32_t  maxPIDFrame = [maxPIDFrameField intValue];
-  uint32_t  frameNum = 0, limitFrame = minPIDFrame - 1;
+  uint32_t  minFrame = startFromInitialPIDFrame ? 0 : minPIDFrame - 1;
+  uint32_t  frameNum = 0;
   
   Gen5PIDFrameGenerator::Parameters  p;
   
-  p.frameType = 
-    Gen5PIDFrameGenerator::FrameType([[pidFrameTypeMenu selectedItem] tag]);
-  p.useCompoundEyes = [useCompoundEyesCheckBox state];
+  p.frameType = encounterFrameType;
+  p.leadAbility = encounterLeadAbility;
+  p.targetGender = targetGender;
+  p.targetRatio = genderRequired ? targetGenderRatio : Gender::ANY_RATIO;
+  
   p.tid = [gen5ConfigController tid];
   p.sid = [gen5ConfigController sid];
   
+  p.startFromLowestFrame = startFromInitialPIDFrame;
+  
   Gen5PIDFrameGenerator  generator(seed, p);
   
-  bool  generatesESV = generator.GeneratesESV();
-  bool  generatesIsEncounter = generator.GeneratesIsEncounter();
-  
-  while (frameNum < limitFrame)
+  while (frameNum < minFrame)
   {
     generator.AdvanceFrame();
     ++frameNum;
   }
   
   NSMutableArray  *rowArray =
-    [NSMutableArray arrayWithCapacity: maxPIDFrame - minPIDFrame + 1];
+    [NSMutableArray arrayWithCapacity: maxPIDFrame - minFrame];
   
   while (frameNum < maxPIDFrame)
   {
@@ -85,29 +193,21 @@ using namespace pprng;
     ++frameNum;
     
     Gen5PIDFrame  frame = generator.CurrentFrame();
-    uint32_t      genderValue = frame.pid.GenderValue();
     
-    NSMutableDictionary  *result =
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        [NSNumber numberWithUnsignedInt: frame.pid.word], @"pid",
-        (frame.pid.IsShiny(p.tid, p.sid) ? @"★" : @""), @"shiny",
-        [NSString stringWithFormat: @"%s",
-          Nature::ToString(frame.nature).c_str()], @"nature",
-        [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
-        ((genderValue < 31) ? @"♀" : @"♂"), @"gender18",
-        ((genderValue < 63) ? @"♀" : @"♂"), @"gender14",
-        ((genderValue < 127) ? @"♀" : @"♂"), @"gender12",
-        ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
-        (frame.synched ? @"Y" : @""), @"sync",
-        (generatesESV ?
-          (frame.isSwarm ? @"Sw" :
-            [NSString stringWithFormat: @"%d", ESV::Slot(frame.esv)]) : @""),
-          @"esv",
-        HeldItemString(frame.heldItem), @"heldItem",
-        ((generatesIsEncounter && frame.isEncounter) ? @"Y" : @""),
-          @"isEncounter",
-        nil];
+    HashedSeedInspectorPIDFrame  *result =
+      [[HashedSeedInspectorPIDFrame alloc] init];
+    
+    result.frame = frame.number;
+    result.chatotPitch = frame.chatotPitch;
+    SetGen5PIDResult(result, frame.nature, frame.pid, p.tid, p.sid, p.targetGender,
+                     ((p.leadAbility == EncounterLead::CUTE_CHARM) &&
+                      (p.frameType != Gen5PIDFrameGenerator::EntraLinkFrame)) ?
+                        (frame.abilityActivated ? p.targetRatio :
+                                                  Gender::ANY_RATIO) :
+                        p.targetRatio);
+    result.esv = frame.esv;
+    result.heldItem = frame.heldItem;
+    result.details = GetGen5PIDFrameDetails(frame, p);
     
     [rowArray addObject: result];
   }
@@ -115,23 +215,42 @@ using namespace pprng;
   [pidFrameContentArray addObjects: rowArray];
 }
 
+- (void)selectAndShowPIDFrame:(uint32_t)frame
+{
+  NSArray  *rows = [pidFrameContentArray arrangedObjects];
+  if (rows && ([rows count] > 0))
+  {
+    HashedSeedInspectorPIDFrame  *row = [rows objectAtIndex: 0];
+    
+    if (row.frame <= frame)
+    {
+      NSInteger  rowNum = frame - row.frame;
+      
+      [pidFrameTableView
+        selectRowIndexes: [NSIndexSet indexSetWithIndex: rowNum]
+        byExtendingSelection: NO];
+      [pidFrameTableView scrollRowToVisible: rowNum];
+    }
+  }
+}
+
 
 - (IBAction)generateIVFrames:(id)sender
 {
-  if ([[seedField stringValue] length] == 0)
-  {
+  if (!EndEditing([inspectorController window]))
     return;
-  }
+  
+  if (!inspectorController.rawSeed)
+    return;
   
   [ivFrameContentArray setContent: [NSMutableArray array]];
   
-  HashedSeed  seed([[seedField objectValue] unsignedLongLongValue]);
+  HashedSeed  seed([inspectorController.rawSeed unsignedLongLongValue]);
   
-  uint32_t  minIVFrame = [minIVFrameField intValue];
-  uint32_t  maxIVFrame = [maxIVFrameField intValue];
   uint32_t  frameNum = 0, limitFrame = minIVFrame - 1;
+  bool      isRoamer = [ivParameterController isRoamer];
   
-  HashedIVFrameGenerator  generator(seed, [ivParameterController isRoamer] ?
+  HashedIVFrameGenerator  generator(seed, isRoamer ?
                                           HashedIVFrameGenerator::Roamer :
                                           HashedIVFrameGenerator::Normal);
   
@@ -151,25 +270,35 @@ using namespace pprng;
     
     HashedIVFrame  frame = generator.CurrentFrame();
     
-    NSMutableDictionary  *result =
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
-        [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
-        [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sa()], @"spa",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sd()], @"spd",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sp()], @"spe",
-        [NSString stringWithFormat: @"%s",
-          Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
-        [NSNumber numberWithUnsignedInt: frame.ivs.HiddenPower()],
-          @"hiddenPower",
-        nil];
+    HashedSeedInspectorIVFrame  *result =
+      [[HashedSeedInspectorIVFrame alloc] init];
+    
+    result.frame = frame.number;
+    SetIVResult(result, frame.ivs, isRoamer);
     
     [rowArray addObject: result];
   }
   
   [ivFrameContentArray addObjects: rowArray];
+}
+
+- (void)selectAndShowIVFrame:(uint32_t)frame
+{
+  NSArray  *rows = [ivFrameContentArray arrangedObjects];
+  if (rows && ([rows count] > 0))
+  {
+    HashedSeedInspectorIVFrame  *row = [rows objectAtIndex: 0];
+    
+    if (row.frame <= frame)
+    {
+      NSInteger  rowNum = frame - row.frame;
+      
+      [ivFrameTableView
+        selectRowIndexes: [NSIndexSet indexSetWithIndex: rowNum]
+        byExtendingSelection: NO];
+      [ivFrameTableView scrollRowToVisible: rowNum];
+    }
+  }
 }
 
 @end

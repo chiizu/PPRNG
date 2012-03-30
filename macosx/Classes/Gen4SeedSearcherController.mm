@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -20,6 +20,8 @@
 
 
 #import "Gen4SeedSearcherController.h"
+
+#import "Utilities.h"
 
 #include "Gen4QuickSeedSearcher.h"
 #import "Gen4SeedInspectorController.h"
@@ -166,6 +168,7 @@ struct ProgressHandler
                       @selector(doSearchWithCriteria:)];
   
   NSTableView  *resultsTableView = [searcherController tableView];
+  [resultsTableView setTarget: self];
   [resultsTableView setDoubleAction: @selector(inspectSeed:)];
   
   [[[[resultsTableView tableColumnWithIdentifier: @"seed"] dataCell] formatter]
@@ -194,7 +197,7 @@ struct ProgressHandler
   self.nature = Nature::ANY;
   self.ability = Ability::ANY;
   self.gender = Gender::ANY;
-  self.genderRatio = Gender::UNSPECIFIED;
+  self.genderRatio = Gender::ANY_RATIO;
   self.minFrame = 1;
   self.maxFrame = 120;
   self.minDelay = 600;
@@ -300,6 +303,9 @@ struct ProgressHandler
 
 - (NSValue*)getValidatedSearchCriteria
 {
+  if (!EndEditing([self window]))
+    return nil;
+  
   Gen4QuickSeedSearcher::Criteria  criteria;
   
   criteria.version = [gen4ConfigController version];
@@ -323,20 +329,20 @@ struct ProgressHandler
   criteria.goodRodESVs = GetESVBitmaskForTypeMask(0x30, esvPopUp);
   criteria.superRodESVs = GetESVBitmaskForTypeMask(0x40, esvPopUp);
   
-  criteria.minIVs = [ivParameterController minIVs];
-  criteria.maxIVs = [ivParameterController maxIVs];
+  criteria.minIVs = ivParameterController.minIVs;
+  criteria.maxIVs = ivParameterController.maxIVs;
   criteria.shouldCheckMaxIVs =
     (criteria.maxIVs != IVs(31, 31, 31, 31, 31, 31));
   
-  if ([ivParameterController considerHiddenPower])
+  if (ivParameterController.considerHiddenPower)
   {
-    criteria.hiddenType = [ivParameterController hiddenType];
-    criteria.minHiddenPower = [ivParameterController minHiddenPower];
+    criteria.hiddenType = ivParameterController.hiddenType;
+    criteria.minHiddenPower = ivParameterController.minHiddenPower;
     criteria.maxHiddenPower = 70;
   }
   else
   {
-    criteria.hiddenType = Element::UNKNOWN;
+    criteria.hiddenType = Element::NONE;
   }
   
   if (criteria.ExpectedNumberOfResults() > 10000)

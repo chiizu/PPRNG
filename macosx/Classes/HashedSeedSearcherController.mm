@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -23,65 +23,121 @@
 
 #include "HashedSeedQuickSearcher.h"
 #include "FrameGenerator.h"
+#include "SearchResultProtocols.h"
 #include "Utilities.h"
 
 #import "HashedSeedInspectorController.h"
 
+#include <map>
+#include <vector>
 #include <memory>
 
 using namespace pprng;
 
+@interface HashedSeedSearchResult :
+  NSObject <HashedSeedResultParameters, IVResult, PIDResult>
+{
+  DECLARE_HASHED_SEED_RESULT_PARAMETERS_VARIABLES();
+  
+  uint32_t       ivFrame;
+  DECLARE_IV_RESULT_VARIABLES();
+  
+  EncounterLead::Ability  leadAbility;
+  
+  DECLARE_PID_RESULT_VARIABLES();
+  
+  uint32_t  requiredEncountersMask;
+  uint32_t  pidStartFrame, giftFrame, grassCaveSurfSpotFrame;
+  uint32_t  swarmFrame, dustFrame, shadowFrame;
+  uint32_t  stationaryFrame, fishFrame;
+  
+  ESV::Value  landESV, surfESV, fishESV;
+}
+
+@property uint32_t       ivFrame;
+
+@property EncounterLead::Ability  leadAbility;
+
+@property uint32_t  requiredEncountersMask;
+@property uint32_t  pidStartFrame, giftFrame, grassCaveSurfSpotFrame;
+@property uint32_t  swarmFrame, dustFrame, shadowFrame;
+@property uint32_t  stationaryFrame, fishFrame;
+@property ESV::Value  landESV, surfESV, fishESV;
+
+@end
+
+@implementation HashedSeedSearchResult
+
+- (id)init
+{
+  if (self = [super init])
+  {
+    leadAbility = EncounterLead::NONE;
+    nature = Nature::NONE;
+    ability = Ability::NONE;
+    gender18 = Gender::NONE;
+    gender14 = Gender::NONE;
+    gender12 = Gender::NONE;
+    gender34 = Gender::NONE;
+    landESV = ESV::NO_SLOT;
+    surfESV = ESV::NO_SLOT;
+    fishESV = ESV::NO_SLOT;
+  }
+  
+  return self;
+}
+
+SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
+
+@synthesize ivFrame;
+SYNTHESIZE_IV_RESULT_PROPERTIES();
+
+@synthesize leadAbility;
+
+SYNTHESIZE_PID_RESULT_PROPERTIES();
+
+@synthesize requiredEncountersMask;
+@synthesize pidStartFrame, giftFrame, grassCaveSurfSpotFrame;
+@synthesize swarmFrame, dustFrame, shadowFrame;
+@synthesize stationaryFrame, fishFrame;
+@synthesize landESV, surfESV, fishESV;
+
+@end
+
+
 namespace
 {
 
-uint32_t GetESVBitmask(NSPopUpButton *esvMenu)
+bool CheckBitMask(uint32_t mask, uint32_t bit)
 {
-  uint32_t   mask = 0;
-  NSInteger  numItems = [esvMenu numberOfItems];
-  NSInteger  i;
-  
-  for (i = 0; i < numItems; ++i)
+  return (mask & (0x1 << bit)) != 0;
+}
+
+uint32_t CountBitMaskBits(uint32_t mask)
+{
+  uint32_t  count = 0;
+  for (uint32_t i = 0; i < 32; ++i)
   {
-    NSMenuItem  *item = [esvMenu itemAtIndex: i];
-    NSInteger   tag = [item tag];
-    
-    if ((tag >= 0) && ([item state] == NSOnState))
-    {
-      mask |= 0x1 << tag;
-    }
+    count += mask & 0x1;
+    mask >>= 1;
   }
   
-  return mask;
+  return count;
 }
+
 
 struct GUICriteria : public HashedSeedQuickSearcher::Criteria
 {
-  enum EncounterType
-  {
-    WildEncounter = 0,
-    GiftEncounter,
-    BothEncounters,
-    AnyEncounter = -1
-  };
-  
   uint32_t       tid, sid;
   bool           shinyOnly;
-  EncounterType  encounterType;
-  bool           startFromLowestPID;
-  uint32_t       minPIDFrame, maxPIDFrame;
-  Nature::Type   nature;
-  uint32_t       ability;
-  Gender::Type   gender;
-  Gender::Ratio  genderRatio;
-  bool           syncA;
-  bool           syncB;
-  bool           syncC;
-  uint32_t       esvMaskLand;
-  uint32_t       esvMaskWater;
-  bool           isSwarmPoke;
-  bool           canFish;
-  bool           dustIsPoke;
-  bool           shadowIsPoke;
+  
+  uint32_t       leadAbilityMask;
+  
+  PIDCriteria    pid;
+  FrameRange     pidFrame;
+  
+  uint32_t       requiredEncountersMask;
+  std::map<ESV::Type, uint32_t>  esvMask;
   
   
   uint64_t ExpectedNumberOfResults() const
@@ -91,22 +147,64 @@ struct GUICriteria : public HashedSeedQuickSearcher::Criteria
     
     uint64_t  pidFrameMultiplier = 1;
     uint64_t  shinyDivisor = 1;
-    uint64_t  natureDivisor = 1;
+    uint64_t  natureMultiplier = 1, natureDivisor = 1;
     
     if (shinyOnly)
     {
       shinyDivisor = 8192;
-      pidFrameMultiplier = maxPIDFrame - minPIDFrame + 1;
+      pidFrameMultiplier = pidFrame.max - pidFrame.min + 1;
       
-      if ((nature != Nature::ANY) && (nature != Nature::UNKNOWN))
-      {
-        natureDivisor = 25;
-      }
+      natureMultiplier = pid.NumNatures();
+      natureDivisor = 25;
     }
     
-    return (result  * pidFrameMultiplier) / (shinyDivisor * natureDivisor);
+    return (result  * pidFrameMultiplier * natureMultiplier) /
+           (shinyDivisor * natureDivisor);
   }
 };
+
+static const uint32_t  OtherFrameTypes =
+  (0x1 << Gen5PIDFrameGenerator::GrassCaveFrame) |
+  (0x1 << Gen5PIDFrameGenerator::SurfingFrame) |
+  (0x1 << Gen5PIDFrameGenerator::SwarmFrame) |
+  (0x1 << Gen5PIDFrameGenerator::FishingFrame) |
+  (0x1 << Gen5PIDFrameGenerator::SwirlingDustFrame) |
+  (0x1 << Gen5PIDFrameGenerator::BridgeShadowFrame) |
+  (0x1 << Gen5PIDFrameGenerator::WaterSpotFishingFrame) |
+  (0x1 << Gen5PIDFrameGenerator::StationaryFrame) |
+  (0x1 << Gen5PIDFrameGenerator::StarterFossilGiftFrame);
+
+
+static const uint32_t  SyncFrameTypes =
+  (0x1 << Gen5PIDFrameGenerator::GrassCaveFrame) |
+  (0x1 << Gen5PIDFrameGenerator::SurfingFrame) |
+  (0x1 << Gen5PIDFrameGenerator::SwarmFrame) |
+  (0x1 << Gen5PIDFrameGenerator::FishingFrame) |
+  (0x1 << Gen5PIDFrameGenerator::SwirlingDustFrame) |
+  (0x1 << Gen5PIDFrameGenerator::WaterSpotFishingFrame) |
+  (0x1 << Gen5PIDFrameGenerator::BridgeShadowFrame) |
+  (0x1 << Gen5PIDFrameGenerator::StationaryFrame);
+
+
+static const uint32_t  CuteCharmFrameTypes =
+  (0x1 << Gen5PIDFrameGenerator::GrassCaveFrame) |
+  (0x1 << Gen5PIDFrameGenerator::SurfingFrame) |
+  (0x1 << Gen5PIDFrameGenerator::WaterSpotFishingFrame) |
+  (0x1 << Gen5PIDFrameGenerator::SwarmFrame) |
+  (0x1 << Gen5PIDFrameGenerator::FishingFrame) |
+  (0x1 << Gen5PIDFrameGenerator::SwirlingDustFrame) |
+  (0x1 << Gen5PIDFrameGenerator::BridgeShadowFrame) |
+  (0x1 << Gen5PIDFrameGenerator::StationaryFrame);
+
+
+static const uint32_t  CompoundEyesFrameTypes =
+  (0x1 << Gen5PIDFrameGenerator::SwirlingDustFrame) |
+  (0x1 << Gen5PIDFrameGenerator::BridgeShadowFrame);
+
+
+static const uint32_t  SuctionCupsFrameTypes =
+  (0x1 << Gen5PIDFrameGenerator::FishingFrame);
+
 
 struct ResultHandler
 {
@@ -114,211 +212,325 @@ struct ResultHandler
     : controller(c), m_criteria(criteria)
   {}
   
+  struct PIDEncounterData
+  {
+    Nature::Type            nature;
+    EncounterLead::Ability  leadAbility;
+    Gender::Type            gender;
+    Gender::Ratio           genderRatio;
+    
+    typedef std::map<ESV::Type, ESV::Value>  ESVMap;
+    ESVMap    esv;
+    
+    typedef std::map<Gen5PIDFrameGenerator::FrameType, uint32_t>  FrameMap;
+    FrameMap  frame;
+  };
+  
+  void SearchEncounters
+    (const HashedSeed &seed,
+     const Gen5PIDFrameGenerator::Parameters &frameParameters,
+     uint32_t frameTypesMask,
+     std::map<uint32_t, PIDEncounterData> &resultMap)
+  {
+    Gen5PIDFrameGenerator::Parameters  parameters = frameParameters;
+    
+    for (uint32_t f = 0; f < 32; ++f)
+    {
+      if ((frameTypesMask & (0x1 << f)) != 0)
+      {
+        parameters.frameType = Gen5PIDFrameGenerator::FrameType(f);
+        Gen5PIDFrameGenerator  generator(seed, parameters);
+        
+        uint32_t  minFrame = m_criteria.pid.startFromLowestFrame ?
+                               0 : m_criteria.pidFrame.min - 1;
+        uint32_t  frameNum = 0;
+        
+        while (frameNum < minFrame)
+        {
+          generator.AdvanceFrame();
+          ++frameNum;
+        }
+        
+        while (frameNum < m_criteria.pidFrame.max)
+        {
+          generator.AdvanceFrame();
+          ++frameNum;
+          
+          Gen5PIDFrame  frame = generator.CurrentFrame();
+          
+          if (frame.isEncounter && frame.abilityActivated &&
+              frame.pid.IsShiny(m_criteria.tid, m_criteria.sid) &&
+              ((parameters.leadAbility == EncounterLead::SYNCHRONIZE) ||
+               m_criteria.pid.CheckNature(frame.nature)) &&
+              ((m_criteria.pid.ability == Ability::ANY) ||
+               (m_criteria.pid.ability == frame.pid.Gen5Ability())) &&
+              Gender::GenderValueMatches(frame.pid.GenderValue(),
+                                         m_criteria.pid.gender,
+                                         m_criteria.pid.genderRatio) &&
+              ((parameters.frameType ==
+                Gen5PIDFrameGenerator::StarterFossilGiftFrame) ||
+               (parameters.frameType ==
+                Gen5PIDFrameGenerator::StationaryFrame) ||
+               ((parameters.frameType == Gen5PIDFrameGenerator::SwarmFrame) &&
+                (frame.esv == ESV::SWARM)) ||
+               ((m_criteria.esvMask.find(ESV::SlotType(frame.esv))->second &
+                 (0x1 << ESV::Slot(frame.esv))) != 0)))
+          {
+            PIDEncounterData  *data;
+            std::map<uint32_t, PIDEncounterData>::iterator  it;
+            
+            it = resultMap.find(frame.pid.word);
+            if (it == resultMap.end())
+            {
+              data = &resultMap[frame.pid.word];
+              data->nature = frame.nature;
+              data->leadAbility = frame.leadAbility;
+              data->gender = parameters.targetGender;
+              data->genderRatio = parameters.targetRatio;
+            }
+            else
+            {
+              data = &it->second;
+            }
+            
+            if ((parameters.frameType !=
+                 Gen5PIDFrameGenerator::StarterFossilGiftFrame) &&
+                (parameters.frameType !=
+                 Gen5PIDFrameGenerator::SwarmFrame) &&
+                (parameters.frameType !=
+                 Gen5PIDFrameGenerator::StationaryFrame))
+            {
+              data->esv[ESV::SlotType(frame.esv)] = frame.esv;
+            }
+            data->frame[generator.GetFrameType()] = frame.number;
+          }
+        }
+      }
+    }
+  }
+  
+  bool AddResults(const std::map<uint32_t, PIDEncounterData> &resultMap,
+                  HashedSeedSearchResult *ivResult)
+  {
+    bool resultAdded = false;
+    
+    std::map<uint32_t, PIDEncounterData>::const_iterator  eit;
+    for (eit = resultMap.begin(); eit != resultMap.end(); ++eit)
+    {
+      const PIDEncounterData            &data(eit->second);
+      const PIDEncounterData::FrameMap  &frameMap(data.frame);
+      
+      bool hasRequiredEncounters = true;
+      
+      if (m_criteria.requiredEncountersMask != 0)
+      {
+        for (uint32_t i = 0; i < Gen5PIDFrameGenerator::NumFrameTypes; ++i)
+        {
+          if (CheckBitMask(m_criteria.requiredEncountersMask, i) &&
+              (frameMap.find(Gen5PIDFrameGenerator::FrameType(i)) ==
+               frameMap.end()))
+          {
+            hasRequiredEncounters = false;
+            break;
+          }
+        }
+      }
+      
+      if (hasRequiredEncounters)
+      {
+        PID  pid(eit->first);
+        
+        HashedSeedSearchResult  *pidResult = NSCopyObject(ivResult, 0, NULL);
+        
+        pidResult.leadAbility = data.leadAbility;
+        
+        SetGen5PIDResult(pidResult, data.nature, pid,
+                         m_criteria.tid, m_criteria.sid,
+                         data.gender, data.genderRatio);
+        
+        pidResult.requiredEncountersMask = m_criteria.requiredEncountersMask;
+        
+        PIDEncounterData::FrameMap::const_iterator  it;
+        
+        if ((it = frameMap.find(Gen5PIDFrameGenerator::GrassCaveFrame)) !=
+            frameMap.end())
+        {
+          pidResult.grassCaveSurfSpotFrame = uint32_t(it->second);
+          pidResult.landESV = ESV::Value(data.esv.find(ESV::LAND_TYPE)->second);
+          pidResult.surfESV = ESV::Value(data.esv.find(ESV::SURF_TYPE)->second);
+          pidResult.fishESV =
+            ESV::Value(data.esv.find(ESV::GOOD_ROD_TYPE)->second);
+        }
+        
+        if ((it = frameMap.find(Gen5PIDFrameGenerator::SwarmFrame)) !=
+            frameMap.end())
+        {
+          pidResult.swarmFrame = uint32_t(it->second);
+        }
+        
+        if ((it = frameMap.find(Gen5PIDFrameGenerator::SwirlingDustFrame)) !=
+            frameMap.end())
+        {
+          pidResult.dustFrame = uint32_t(it->second);
+        }
+        
+        if ((it = frameMap.find(Gen5PIDFrameGenerator::BridgeShadowFrame)) !=
+            frameMap.end())
+        {
+          pidResult.shadowFrame = uint32_t(it->second);
+        }
+        
+        if ((it = frameMap.find(Gen5PIDFrameGenerator::StationaryFrame)) !=
+            frameMap.end())
+        {
+          pidResult.stationaryFrame = uint32_t(it->second);
+        }
+        
+        if ((it = frameMap.find(Gen5PIDFrameGenerator::FishingFrame)) !=
+            frameMap.end())
+        {
+          pidResult.fishFrame = uint32_t(it->second);
+          pidResult.fishESV =
+            ESV::Value(data.esv.find(ESV::GOOD_ROD_TYPE)->second);
+        }
+        
+        if ((it = frameMap.find(Gen5PIDFrameGenerator::StarterFossilGiftFrame)) !=
+            frameMap.end())
+        {
+          pidResult.giftFrame = uint32_t(it->second);
+        }
+        
+        [controller performSelectorOnMainThread: @selector(addResult:)
+                    withObject: pidResult
+                    waitUntilDone: NO];
+        
+        resultAdded = true;
+      }
+    }
+    
+    return resultAdded;
+  }
+  
   void operator()(const HashedIVFrame &frame)
   {
-    NSMutableDictionary  *pidResult = nil;
+    HashedSeedSearchResult  *result = [[HashedSeedSearchResult alloc] init];
+    
+    SetHashedSeedResultParameters(result, frame.seed);
+    
+    result.ivFrame = frame.number;
+    SetIVResult(result, frame.ivs, m_criteria.ivs.isRoamer);
+    
+    result.pidStartFrame = frame.seed.GetSkippedPIDFrames() + 1;
+    
+    bool  shinyFound = false;
     
     Gen5PIDFrameGenerator::Parameters  frameParameters;
     
-    frameParameters.useCompoundEyes = false;
+    frameParameters.targetGender = m_criteria.pid.gender;
+    frameParameters.targetRatio = m_criteria.pid.genderRatio;
     frameParameters.tid = m_criteria.tid;
     frameParameters.sid = m_criteria.sid;
+    frameParameters.startFromLowestFrame = m_criteria.pid.startFromLowestFrame;
     
-    frameParameters.frameType = Gen5PIDFrameGenerator::GrassCaveFrame;
-    Gen5PIDFrameGenerator  gcGenerator(frame.seed, frameParameters);
-    
-    frameParameters.frameType = Gen5PIDFrameGenerator::SwarmFrame;
-    Gen5PIDFrameGenerator  swGenerator(frame.seed, frameParameters);
-    
-    frameParameters.frameType = Gen5PIDFrameGenerator::FishingFrame;
-    Gen5PIDFrameGenerator  fsGenerator(frame.seed, frameParameters);
-    
-    frameParameters.frameType = Gen5PIDFrameGenerator::SwirlingDustFrame;
-    Gen5PIDFrameGenerator  sdGenerator(frame.seed, frameParameters);
-    
-    frameParameters.frameType = Gen5PIDFrameGenerator::BridgeShadowFrame;
-    Gen5PIDFrameGenerator  bsGenerator(frame.seed, frameParameters);
-    
-    frameParameters.frameType = Gen5PIDFrameGenerator::StationaryFrame;
-    Gen5PIDFrameGenerator  stGenerator(frame.seed, frameParameters);
-    
-    frameParameters.frameType = Gen5PIDFrameGenerator::StarterFossilGiftFrame;
-    Gen5PIDFrameGenerator  pidGenerator(frame.seed, frameParameters);
-    
-        
-    // get the PIDs in sync
-    gcGenerator.AdvanceFrame();
-    stGenerator.AdvanceFrame();
-    stGenerator.AdvanceFrame();
-    stGenerator.AdvanceFrame();
-    pidGenerator.AdvanceFrame();
-    pidGenerator.AdvanceFrame();
-    pidGenerator.AdvanceFrame();
-    pidGenerator.AdvanceFrame();
-    
-    bool      found = false;
-    uint32_t  minFrame = m_criteria.minPIDFrame - 1;
-    
-    if (m_criteria.startFromLowestPID)
-      minFrame = frame.seed.GetSkippedPIDFrames();
-    
-    while (fsGenerator.CurrentFrame().number < minFrame)
+    if (CheckBitMask(m_criteria.leadAbilityMask, EncounterLead::OTHER))
     {
-      gcGenerator.AdvanceFrame();
-      swGenerator.AdvanceFrame();
-      fsGenerator.AdvanceFrame();
-      sdGenerator.AdvanceFrame();
-      bsGenerator.AdvanceFrame();
-      stGenerator.AdvanceFrame();
-      pidGenerator.AdvanceFrame();
+      std::map<uint32_t, PIDEncounterData>  resultMap;
+      
+      frameParameters.leadAbility = EncounterLead::OTHER;
+      SearchEncounters(frame.seed, frameParameters, OtherFrameTypes, resultMap);
+      shinyFound = AddResults(resultMap, result);
     }
     
-    bool  wildShiny, giftShiny;
-    
-    while ((fsGenerator.CurrentFrame().number < m_criteria.maxPIDFrame) &&
-           !found)
+    if (CheckBitMask(m_criteria.leadAbilityMask, EncounterLead::SYNCHRONIZE))
     {
-      gcGenerator.AdvanceFrame();
-      swGenerator.AdvanceFrame();
-      fsGenerator.AdvanceFrame();
-      sdGenerator.AdvanceFrame();
-      bsGenerator.AdvanceFrame();
-      stGenerator.AdvanceFrame();
-      pidGenerator.AdvanceFrame();
+      std::map<uint32_t, PIDEncounterData>  resultMap;
       
-      Gen5PIDFrame  gcFrame = gcGenerator.CurrentFrame();
-      Gen5PIDFrame  swFrame = swGenerator.CurrentFrame();
-      Gen5PIDFrame  fsFrame = fsGenerator.CurrentFrame();
-      Gen5PIDFrame  sdFrame = sdGenerator.CurrentFrame();
-      Gen5PIDFrame  bsFrame = bsGenerator.CurrentFrame();
-      Gen5PIDFrame  stFrame = stGenerator.CurrentFrame();
-      Gen5PIDFrame  pidFrame = pidGenerator.CurrentFrame();
+      frameParameters.leadAbility = EncounterLead::SYNCHRONIZE;
+      SearchEncounters(frame.seed, frameParameters, SyncFrameTypes, resultMap);
+      shinyFound = AddResults(resultMap, result) || shinyFound;
+    }
+    
+    if (CheckBitMask(m_criteria.leadAbilityMask, EncounterLead::COMPOUND_EYES))
+    {
+      std::map<uint32_t, PIDEncounterData>  resultMap;
       
-      wildShiny = gcGenerator.CurrentFrame().pid.IsShiny(m_criteria.tid,
-                                                         m_criteria.sid);
-      giftShiny = pidGenerator.CurrentFrame().pid.IsShiny(m_criteria.tid,
-                                                          m_criteria.sid);
-      bool  shinyFound = false;
+      frameParameters.leadAbility = EncounterLead::COMPOUND_EYES;
+      SearchEncounters(frame.seed, frameParameters, CompoundEyesFrameTypes,
+                      resultMap);
+      shinyFound = AddResults(resultMap, result) || shinyFound;
+    }
+    
+    if (CheckBitMask(m_criteria.leadAbilityMask, EncounterLead::SUCTION_CUPS))
+    {
+      std::map<uint32_t, PIDEncounterData>  resultMap;
       
-      switch (m_criteria.encounterType)
+      frameParameters.leadAbility = EncounterLead::SUCTION_CUPS;
+      SearchEncounters(frame.seed, frameParameters, SuctionCupsFrameTypes,
+                      resultMap);
+      shinyFound = AddResults(resultMap, result) || shinyFound;
+    }
+    
+    if (CheckBitMask(m_criteria.leadAbilityMask, EncounterLead::CUTE_CHARM))
+    {
+      std::map<uint32_t, PIDEncounterData>  resultMap;
+      
+      frameParameters.leadAbility = EncounterLead::CUTE_CHARM;
+      
+      if (m_criteria.pid.genderRatio != Gender::ANY_RATIO)
       {
-      case GUICriteria::WildEncounter:
-        shinyFound = wildShiny;
-        break;
-      case GUICriteria::GiftEncounter:
-        shinyFound = giftShiny;
-        break;
-      case GUICriteria::BothEncounters:
-        shinyFound = wildShiny && giftShiny;
-        break;
-      case GUICriteria::AnyEncounter:
-      default:
-        shinyFound = wildShiny || giftShiny;
-        break;
+        if (m_criteria.pid.gender != Gender::ANY)
+        {
+          std::map<uint32_t, PIDEncounterData>  resultMap;
+          
+          SearchEncounters(frame.seed, frameParameters, CuteCharmFrameTypes,
+                           resultMap);
+          shinyFound = AddResults(resultMap, result) || shinyFound;
+        }
+        else
+        {
+          std::map<uint32_t, PIDEncounterData>  resultMap;
+          
+          frameParameters.targetGender = Gender::FEMALE;
+          SearchEncounters(frame.seed, frameParameters, CuteCharmFrameTypes,
+                           resultMap);
+          shinyFound = AddResults(resultMap, result) || shinyFound;
+          
+          resultMap.clear();
+          frameParameters.targetGender = Gender::MALE;
+          SearchEncounters(frame.seed, frameParameters, CuteCharmFrameTypes,
+                           resultMap);
+          shinyFound = AddResults(resultMap, result) || shinyFound;
+        }
       }
-      
-      if (shinyFound &&
-          ((m_criteria.nature == Nature::ANY) ||
-           (pidFrame.nature == m_criteria.nature)) &&
-          ((m_criteria.ability == Ability::ANY) ||
-           (m_criteria.ability == pidFrame.pid.Gen5Ability())) &&
-          Gender::GenderValueMatches(pidFrame.pid.GenderValue(),
-                                     m_criteria.gender,
-                                     m_criteria.genderRatio) &&
-          (!m_criteria.syncA || gcFrame.synched) &&
-          (!m_criteria.syncB || fsFrame.synched) &&
-          (!m_criteria.syncC || stFrame.synched) &&
-          ((m_criteria.esvMaskLand == 0) ||
-           ((m_criteria.esvMaskLand & (0x1 << ESV::Slot(gcFrame.esv))) != 0)) &&
-          ((m_criteria.esvMaskWater == 0) ||
-           ((m_criteria.esvMaskWater & (0x1 << ESV::Slot(fsFrame.esv))) != 0))&&
-          (!m_criteria.isSwarmPoke || swFrame.isSwarm) &&
-          (!m_criteria.canFish || fsFrame.isEncounter) &&
-          (!m_criteria.dustIsPoke || sdFrame.isEncounter) &&
-          (!m_criteria.shadowIsPoke || bsFrame.isEncounter))
+      else
       {
-        found = true;
+        for (uint32_t t = Gender::FEMALE; t <= Gender::MALE; ++t)
+        {
+          for (uint32_t r = Gender::ONE_EIGHTH_FEMALE;
+               r <= Gender::THREE_FOURTHS_FEMALE;
+               ++r)
+          {
+            frameParameters.targetGender = Gender::Type(t);
+            frameParameters.targetRatio = Gender::Ratio(r);
+            
+            std::map<uint32_t, PIDEncounterData>  resultMap;
+            
+            SearchEncounters(frame.seed, frameParameters, CuteCharmFrameTypes,
+                             resultMap);
+            shinyFound = AddResults(resultMap, result) || shinyFound;
+          }
+        }
       }
     }
     
-    if (found)
+    if (!shinyFound && !m_criteria.shinyOnly)
     {
-      Gen5PIDFrame  gcFrame = gcGenerator.CurrentFrame();
-      Gen5PIDFrame  swFrame = swGenerator.CurrentFrame();
-      Gen5PIDFrame  fsFrame = fsGenerator.CurrentFrame();
-      Gen5PIDFrame  sdFrame = sdGenerator.CurrentFrame();
-      Gen5PIDFrame  bsFrame = bsGenerator.CurrentFrame();
-      Gen5PIDFrame  stFrame = stGenerator.CurrentFrame();
-      Gen5PIDFrame  pidFrame = pidGenerator.CurrentFrame();
-      
-      uint32_t  genderValue = pidFrame.pid.GenderValue();
-      
-      pidResult = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedInt: sdFrame.number], @"shinyFrame",
-        (wildShiny ? @"Y" : @""), @"wildIsShiny",
-        (giftShiny ? @"Y" : @""), @"giftIsShiny",
-        [NSString stringWithFormat: @"%s",
-          Nature::ToString(pidFrame.nature).c_str()], @"shinyNature",
-        [NSNumber numberWithUnsignedInt: pidFrame.pid.Gen5Ability()],
-          @"shinyAbility",
-        ((genderValue < 31) ? @"♀" : @"♂"), @"gender18",
-        ((genderValue < 63) ? @"♀" : @"♂"), @"gender14",
-        ((genderValue < 127) ? @"♀" : @"♂"), @"gender12",
-        ((genderValue < 191) ? @"♀" : @"♂"), @"gender34",
-        (gcFrame.synched ? @"Y" : @""), @"shinySyncA",
-        (fsFrame.synched ? @"Y" : @""), @"shinySyncB",
-        (stFrame.synched ? @"Y" : @""), @"shinySyncC",
-        [NSString stringWithFormat: @"%d", ESV::Slot(gcFrame.esv)],
-          @"shinyLandESV",
-        [NSString stringWithFormat: @"%d", ESV::Slot(fsFrame.esv)],
-          @"shinyWaterESV",
-        (swFrame.isSwarm ? @"Y" : @""), @"isSwarm",
-        (fsFrame.isEncounter ? @"Y" : @""), @"canFish",
-        (sdFrame.isEncounter ? @"Y" : @""), @"dustIsPoke",
-        (bsFrame.isEncounter ? @"Y" : @""), @"shadowIsPoke",
-        nil];
+      [controller performSelectorOnMainThread: @selector(addResult:)
+                  withObject: result
+                  waitUntilDone: NO];
     }
-    else if (m_criteria.shinyOnly)
-    {
-      return;
-    }
-    
-    NSMutableDictionary  *result =
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
-          frame.seed.year(), frame.seed.month(), frame.seed.day()], @"date",
-        [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
-          frame.seed.hour, frame.seed.minute, frame.seed.second], @"time",
-        [NSNumber numberWithUnsignedInt: frame.seed.timer0], @"timer0",
-				[NSString stringWithFormat: @"%s",
-          Button::ToString(frame.seed.heldButtons).c_str()], @"keys",
-				[NSNumber numberWithUnsignedInt: frame.number], @"frame",
-        [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
-        [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
-        [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sa()], @"spa",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sd()], @"spd",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sp()], @"spe",
-        [NSString stringWithFormat: @"%s",
-          Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
-        [NSNumber numberWithUnsignedInt: frame.ivs.HiddenPower()],
-          @"hiddenPower",
-        [NSNumber numberWithUnsignedInt: frame.seed.GetSkippedPIDFrames() + 1],
-          @"startFrame",
-        [NSData dataWithBytes: &frame.seed length: sizeof(HashedSeed)],
-          @"fullSeed",
-        nil];
-    
-    if (pidResult)
-    {
-      [result addEntriesFromDictionary: pidResult];
-    }
-    
-    [controller performSelectorOnMainThread: @selector(addResult:)
-                withObject: result
-                waitUntilDone: NO];
   }
-  
+    
   SearcherController  *controller;
   const GUICriteria   &m_criteria;
 };
@@ -346,6 +558,16 @@ struct ProgressHandler
 
 @implementation HashedSeedSearcherController
 
+@synthesize fromDate, toDate;
+@synthesize noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
+
+@synthesize minIVFrame, maxIVFrame;
+
+@synthesize showShinyOnly;
+@synthesize ability, gender, genderRatio;
+@synthesize startFromInitialPIDFrame;
+@synthesize minPIDFrame, maxPIDFrame;
+
 - (NSString *)windowNibName
 {
 	return @"HashedSeedSearcher";
@@ -358,11 +580,28 @@ struct ProgressHandler
   [searcherController setDoSearchWithCriteriaSelector:
                       @selector(doSearchWithCriteria:)];
   
+  [[searcherController tableView] setTarget: self];
   [[searcherController tableView] setDoubleAction: @selector(inspectSeed:)];
   
   NSDate  *now = [NSDate date];
-  [fromDateField setObjectValue: now];
-  [toDateField setObjectValue: now];
+  self.fromDate = now;
+  self.toDate = now;
+  
+  self.noButtonHeld = YES;
+  self.oneButtonHeld = YES;
+  self.twoButtonsHeld = NO;
+  self.threeButtonsHeld = NO;
+  
+  self.minIVFrame = 1;
+  self.maxIVFrame = 6;
+  
+  self.showShinyOnly = NO;
+  self.ability = Ability::ANY;
+  self.gender = Gender::ANY;
+  self.genderRatio = Gender::ANY_RATIO;
+  self.startFromInitialPIDFrame = YES;
+  self.minPIDFrame = 50;
+  self.maxPIDFrame = 500;
 }
 
 - (void)windowWillClose:(NSNotification *)notification
@@ -371,60 +610,9 @@ struct ProgressHandler
     [searcherController startStop: self];
 }
 
-- (IBAction)toggleSearchFromStartFrame:(id)sender
+- (IBAction)toggleDropDownChoice:(id)sender
 {
-  BOOL  enabled = [sender state];
-  
-  [minPIDFrameField setEnabled: !enabled];
-}
-
-- (IBAction)toggleESVChoice:(id)sender
-{
-  NSMenuItem  *selectedItem = [sender selectedItem];
-  
-  if ([selectedItem tag] >= 0)
-  {
-    [selectedItem setState: ![selectedItem state]];
-  }
-  else if ([selectedItem tag] != -5)
-  {
-    NSInteger  action = [selectedItem tag];
-    NSInteger  numItems = [sender numberOfItems];
-    NSInteger  i;
-    
-    for (i = 0; i < numItems; ++i)
-    {
-      NSMenuItem  *item = [sender itemAtIndex: i];
-      NSInteger   tag = [item tag];
-      
-      if (tag >= 0)
-      {
-        switch (action)
-        {
-        case -1:
-          [item setState: NSOnState];
-          break;
-        case -2:
-          if (tag & 0x1)
-            [item setState: NSOnState];
-          else
-            [item setState: NSOffState];
-          break;
-        case -3:
-          if (tag & 0x1)
-            [item setState: NSOffState];
-          else
-            [item setState: NSOnState];
-          break;
-        case -4:
-          [item setState: NSOffState];
-          break;
-        default:
-          break;
-        }
-      }
-    }
-  }
+  HandleComboMenuItemChoice(sender);
 }
 
 - (void)inspectSeed:(id)sender
@@ -433,18 +621,178 @@ struct ProgressHandler
   
   if (rowNum >= 0)
   {
-    NSDictionary  *row =
+    HashedSeedSearchResult  *row =
       [[[searcherController arrayController] arrangedObjects]
         objectAtIndex: rowNum];
     
     if (row != nil)
     {
-      NSData  *seed = [row objectForKey: @"fullSeed"];
-      
       HashedSeedInspectorController  *inspector =
         [[HashedSeedInspectorController alloc] init];
+      [inspector window];
+      
+      [inspector setSeedFromResult: row];
+      
+      HashedSeedInspectorFramesTabController *framesTab =
+        inspector.framesTabController;
+      HashedSeedInspectorAdjacentsTabController *adjacentsTab =
+        inspector.adjacentsTabController;
+      
+      uint32_t  targetFrame = 0;
+      
+      if (row.leadAbility == EncounterLead::NONE)
+      {
+        targetFrame = row.pidStartFrame;
+      }
+      else
+      {
+        framesTab.encounterLeadAbility = row.leadAbility;
+        adjacentsTab.encounterLeadAbility = row.leadAbility;
+        
+        if (row.leadAbility == EncounterLead::CUTE_CHARM)
+        {
+          if (row.gender18 != Gender::NONE)
+          {
+            framesTab.targetGender = row.gender18;
+            framesTab.targetGenderRatio = Gender::ONE_EIGHTH_FEMALE;
+            adjacentsTab.targetGender = row.gender18;
+            adjacentsTab.targetGenderRatio = Gender::ONE_EIGHTH_FEMALE;
+          }
+          else if (row.gender14 != Gender::NONE)
+          {
+            framesTab.targetGender = row.gender14;
+            framesTab.targetGenderRatio = Gender::ONE_FOURTH_FEMALE;
+            adjacentsTab.targetGender = row.gender14;
+            adjacentsTab.targetGenderRatio = Gender::ONE_FOURTH_FEMALE;
+          }
+          else if (row.gender12 != Gender::NONE)
+          {
+            framesTab.targetGender = row.gender12;
+            framesTab.targetGenderRatio = Gender::ONE_HALF_FEMALE;
+            adjacentsTab.targetGender = row.gender12;
+            adjacentsTab.targetGenderRatio = Gender::ONE_HALF_FEMALE;
+          }
+          else if (row.gender34 != Gender::NONE)
+          {
+            framesTab.targetGender = row.gender34;
+            framesTab.targetGenderRatio = Gender::THREE_FOURTHS_FEMALE;
+            adjacentsTab.targetGender = row.gender34;
+            adjacentsTab.targetGenderRatio = Gender::THREE_FOURTHS_FEMALE;
+          }
+        }
+        
+        if (row.requiredEncountersMask != 0)
+        {
+          uint32_t  f = 0;
+          while ((row.requiredEncountersMask & (0x1 << f)) == 0)
+            ++f;
+          
+          framesTab.encounterFrameType = Gen5PIDFrameGenerator::FrameType(f);
+          adjacentsTab.encounterFrameType = Gen5PIDFrameGenerator::FrameType(f);
+          
+          switch (f)
+          {
+          case Gen5PIDFrameGenerator::GrassCaveFrame:
+            targetFrame = row.grassCaveSurfSpotFrame;
+            break;
+          case Gen5PIDFrameGenerator::FishingFrame:
+            targetFrame = row.fishFrame;
+            break;
+          case Gen5PIDFrameGenerator::SwarmFrame:
+            targetFrame = row.swarmFrame;
+            break;
+          case Gen5PIDFrameGenerator::SwirlingDustFrame:
+            targetFrame = row.dustFrame;
+            break;
+          case Gen5PIDFrameGenerator::BridgeShadowFrame:
+            targetFrame = row.shadowFrame;
+            break;
+          case Gen5PIDFrameGenerator::StationaryFrame:
+            targetFrame = row.stationaryFrame;
+            break;
+          case Gen5PIDFrameGenerator::StarterFossilGiftFrame:
+            targetFrame = row.giftFrame;
+            break;
+          default:
+            break;
+          }
+        }
+        else if (row.grassCaveSurfSpotFrame > 0)
+        {
+          targetFrame = row.grassCaveSurfSpotFrame;
+          framesTab.encounterFrameType = Gen5PIDFrameGenerator::GrassCaveFrame;
+          adjacentsTab.encounterFrameType =
+            Gen5PIDFrameGenerator::GrassCaveFrame;
+        }
+        else if (row.fishFrame > 0)
+        {
+          targetFrame = row.fishFrame;
+          framesTab.encounterFrameType = Gen5PIDFrameGenerator::FishingFrame;
+          adjacentsTab.encounterFrameType = Gen5PIDFrameGenerator::FishingFrame;
+        }
+        else if (row.swarmFrame > 0)
+        {
+          targetFrame = row.swarmFrame;
+          framesTab.encounterFrameType = Gen5PIDFrameGenerator::SwarmFrame;
+          adjacentsTab.encounterFrameType = Gen5PIDFrameGenerator::SwarmFrame;
+        }
+        else if (row.dustFrame > 0)
+        {
+          targetFrame = row.dustFrame;
+          framesTab.encounterFrameType =
+            Gen5PIDFrameGenerator::SwirlingDustFrame;
+          adjacentsTab.encounterFrameType =
+            Gen5PIDFrameGenerator::SwirlingDustFrame;
+        }
+        else if (row.shadowFrame > 0)
+        {
+          targetFrame = row.shadowFrame;
+          framesTab.encounterFrameType =
+            Gen5PIDFrameGenerator::BridgeShadowFrame;
+          adjacentsTab.encounterFrameType =
+            Gen5PIDFrameGenerator::BridgeShadowFrame;
+        }
+        else if (row.stationaryFrame > 0)
+        {
+          targetFrame = row.stationaryFrame;
+          framesTab.encounterFrameType = Gen5PIDFrameGenerator::StationaryFrame;
+          adjacentsTab.encounterFrameType =
+            Gen5PIDFrameGenerator::StationaryFrame;
+        }
+        else if (row.giftFrame > 0)
+        {
+          targetFrame = row.giftFrame;
+          framesTab.encounterFrameType =
+            Gen5PIDFrameGenerator::StarterFossilGiftFrame;
+          adjacentsTab.encounterFrameType =
+            Gen5PIDFrameGenerator::StarterFossilGiftFrame;
+        }
+        
+        if (targetFrame != 0)
+        {
+          if (targetFrame < row.pidStartFrame)
+          {
+            framesTab.startFromInitialPIDFrame = NO;
+            framesTab.minPIDFrame = 1;
+            adjacentsTab.matchOffsetFromInitialPIDFrame = NO;
+          }
+          
+          adjacentsTab.pidFrame = targetFrame;
+          framesTab.maxPIDFrame = targetFrame + 20;
+        }
+      }
+      
+      [framesTab generatePIDFrames: self];
+      [framesTab selectAndShowPIDFrame: targetFrame];
+      
+      [framesTab.ivParameterController setIsRoamer: row.isRoamer];
+      [framesTab generateIVFrames: self];
+      [framesTab selectAndShowIVFrame: row.ivFrame];
+      
+      adjacentsTab.isRoamer = row.isRoamer;
+      adjacentsTab.ivFrame = row.ivFrame;
+      
       [inspector showWindow: self];
-      [inspector setSeed: seed];
     }
   }
 }
@@ -458,7 +806,10 @@ struct ProgressHandler
 {
   using namespace boost::gregorian;
   using namespace boost::posix_time;
-
+  
+  if (!EndEditing([self window]))
+    return nil;
+  
   GUICriteria  criteria;
   
   criteria.seedParameters.macAddress = [gen5ConfigController macAddress];
@@ -475,25 +826,25 @@ struct ProgressHandler
   criteria.seedParameters.vframeLow = [gen5ConfigController vframeLow];
   criteria.seedParameters.vframeHigh = [gen5ConfigController vframeHigh];
   
-  if ([noKeyHeldButton state])
+  if (noButtonHeld)
   {
     criteria.seedParameters.heldButtons.push_back(0);  // no keys
   }
-  if ([oneKeyHeldButton state])
+  if (oneButtonHeld)
   {
     criteria.seedParameters.heldButtons.insert
       (criteria.seedParameters.heldButtons.end(),
        Button::SingleButtons().begin(),
        Button::SingleButtons().end());
   }
-  if ([twoKeysHeldButton state])
+  if (twoButtonsHeld)
   {
     criteria.seedParameters.heldButtons.insert
       (criteria.seedParameters.heldButtons.end(),
        Button::TwoButtonCombos().begin(),
        Button::TwoButtonCombos().end());
   }
-  if ([threeKeysHeldButton state])
+  if (threeButtonsHeld)
   {
     criteria.seedParameters.heldButtons.insert
       (criteria.seedParameters.heldButtons.end(),
@@ -502,55 +853,51 @@ struct ProgressHandler
   }
   
   criteria.seedParameters.fromTime =
-    ptime(NSDateToBoostDate([fromDateField objectValue]), seconds(0));
+    ptime(NSDateToBoostDate(fromDate), seconds(0));
   
   criteria.seedParameters.toTime =
-    ptime(NSDateToBoostDate([toDateField objectValue]),
-                            hours(23) + minutes(59) + seconds(59));
+    ptime(NSDateToBoostDate(toDate), hours(23) + minutes(59) + seconds(59));
   
-  criteria.ivPattern = [ivParameterController ivPattern];
+  criteria.ivs.pattern = ivParameterController.ivPattern;
   
-  criteria.ivFrame.min = [minIVFrameField intValue];
-  criteria.ivFrame.max = [maxIVFrameField intValue];
+  criteria.ivFrame.min = minIVFrame;
+  criteria.ivFrame.max = maxIVFrame;
   
-  criteria.ivs.min = [ivParameterController minIVs];
-  criteria.ivs.max = [ivParameterController maxIVs];
+  criteria.ivs.min = ivParameterController.minIVs;
+  criteria.ivs.max = ivParameterController.maxIVs;
   criteria.ivs.shouldCheckMax =
     (criteria.ivs.max != IVs(31, 31, 31, 31, 31, 31));
-  criteria.ivs.isRoamer = [ivParameterController isRoamer];
+  criteria.ivs.isRoamer = ivParameterController.isRoamer;
   
-  if ([ivParameterController considerHiddenPower])
+  if (ivParameterController.considerHiddenPower)
   {
-    criteria.ivs.hiddenType = [ivParameterController hiddenType];
-    criteria.ivs.minHiddenPower = [ivParameterController minHiddenPower];
+    criteria.ivs.hiddenType = ivParameterController.hiddenType;
+    criteria.ivs.minHiddenPower = ivParameterController.minHiddenPower;
   }
   else
   {
-    criteria.ivs.hiddenType = Element::UNKNOWN;
+    criteria.ivs.hiddenType = Element::NONE;
   }
   
   criteria.tid = [gen5ConfigController tid];
   criteria.sid = [gen5ConfigController sid];
-  criteria.shinyOnly = [shinyOnlyCheckbox state];
-  criteria.encounterType =
-    GUICriteria::EncounterType([[shinyEncounterTypePopUp selectedItem] tag]);
-  criteria.startFromLowestPID = [shinyFromFirstPIDCheckBox state];
-  criteria.minPIDFrame = [minPIDFrameField intValue];
-  criteria.maxPIDFrame = [maxPIDFrameField intValue];
-  criteria.nature = Nature::Type([[shinyNaturePopUp selectedItem] tag]);
-  criteria.ability = [[shinyAbilityPopUp selectedItem] tag];
-  criteria.gender = Gender::Type([[shinyGenderPopUp selectedItem] tag]);
-  criteria.genderRatio =
-    Gender::Ratio([[shinyGenderRatioPopUp selectedItem] tag]);
-  criteria.syncA = [shinySyncACheckBox state];
-  criteria.syncB = [shinySyncBCheckBox state];
-  criteria.syncC = [shinySyncCCheckBox state];
-  criteria.esvMaskLand = GetESVBitmask(shinyLandESVPopUp);
-  criteria.esvMaskWater = GetESVBitmask(shinyWaterESVPopUp);
-  criteria.isSwarmPoke = [shinyIsSwarmPokeCheckBox state];
-  criteria.canFish = [shinyCanFishCheckBox state];
-  criteria.dustIsPoke = [shinyDustIsPokeCheckBox state];
-  criteria.shadowIsPoke = [shinyShadowIsPokeCheckBox state];
+  criteria.shinyOnly = showShinyOnly;
+  criteria.leadAbilityMask = GetComboMenuBitMask(leadAbilityDropDown);
+  
+  criteria.pid.natureMask = GetComboMenuBitMask(natureDropDown);
+  criteria.pid.ability = ability;
+  criteria.pid.gender = gender;
+  criteria.pid.genderRatio = genderRatio;
+  
+  criteria.pid.startFromLowestFrame = startFromInitialPIDFrame;
+  criteria.pidFrame.min = minPIDFrame;
+  criteria.pidFrame.max = maxPIDFrame;
+  
+  criteria.requiredEncountersMask =
+    GetComboMenuBitMask(requiredEncountersDropDown);
+  criteria.esvMask[ESV::LAND_TYPE] = GetComboMenuBitMask(landESVDropDown);
+  criteria.esvMask[ESV::SURF_TYPE] = GetComboMenuBitMask(surfESVDropDown);
+  criteria.esvMask[ESV::GOOD_ROD_TYPE] = GetComboMenuBitMask(fishESVDropDown);
   
   if (CheckExpectedResults(criteria, 10000,
                            @"The current search parameters are expected to return more than 10,000 results. Please set more specific IVs, limit the date range, use fewer held keys, or other similar settings to reduce the number of expected results.",

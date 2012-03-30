@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -20,34 +20,58 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "PPRNGTypes.h"
+#include "FrameGenerator.h"
+
 #import "Gen5ConfigurationController.h"
+
+@class HashedSeedInspectorController;
 
 @interface HashedSeedInspectorAdjacentsTabController : NSObject
 {
-  IBOutlet Gen5ConfigurationController  *gen5ConfigController;
+  IBOutlet HashedSeedInspectorController  *inspectorController;
+  IBOutlet Gen5ConfigurationController    *gen5ConfigController;
   
-  IBOutlet NSTextField            *seedField;
+  uint32_t  secondsVariance;
+  uint32_t  timer0Variance;
+  BOOL      matchOffsetFromInitialPIDFrame;
   
-  IBOutlet NSPopUpButton          *adjacentsPIDFrameTypeMenu;
+  uint32_t  ivFrame;
+  BOOL      isRoamer;
   
-  IBOutlet NSTextField            *adjacentsTimeVarianceField;
+  uint32_t  pidFrame;
+  uint32_t  pidFrameVariance;
   
-  IBOutlet NSTextField            *adjacentsPIDFrameField;
-  IBOutlet NSTextField            *adjacentsPIDFrameVarianceField;
-  IBOutlet NSButton               *adjacentsUseInitialPIDOffsetButton;
+  pprng::Gen5PIDFrameGenerator::FrameType  encounterFrameType;
+  pprng::EncounterLead::Ability            encounterLeadAbility;
   
-  IBOutlet NSTextField            *adjacentsIVFrameField;
-  IBOutlet NSButton               *adjacentsRoamerButton;
+  BOOL                  genderRequired;
+  pprng::Gender::Type   targetGender;
+  BOOL                  genderRatioRequired;
+  pprng::Gender::Ratio  targetGenderRatio;
   
   IBOutlet NSTableView            *adjacentsTableView;
   IBOutlet NSArrayController      *adjacentsContentArray;
-  
-  NSData  *currentSeed;
 }
 
-- (IBAction)generateAdjacents:(id)sender;
+@property uint32_t  secondsVariance;
+@property uint32_t  timer0Variance;
+@property BOOL      matchOffsetFromInitialPIDFrame;
 
-// take HashedSeed from NSData pointer
-- (void)setSeed:(NSData*)seedData;
+@property uint32_t  ivFrame;
+@property BOOL      isRoamer;
+
+@property uint32_t  pidFrame;
+@property uint32_t  pidFrameVariance;
+
+@property pprng::Gen5PIDFrameGenerator::FrameType  encounterFrameType;
+@property pprng::EncounterLead::Ability            encounterLeadAbility;
+
+@property BOOL                  genderRequired;
+@property pprng::Gender::Type   targetGender;
+@property BOOL                  genderRatioRequired;
+@property pprng::Gender::Ratio  targetGenderRatio;
+
+- (IBAction)generateAdjacents:(id)sender;
 
 @end

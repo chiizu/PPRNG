@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -25,37 +25,24 @@
 
 @interface IVParameterController : NSObject
 {
-  IBOutlet NSPopUpButton  *ivPatternMenu;
-  IBOutlet NSPopUpButton  *hiddenTypeMenu;
-  
-  uint32_t  minHP, minAT, minDF, minSA, minSD, minSP;
-  uint32_t  maxHP, maxAT, maxDF, maxSA, maxSD, maxSP;
-  BOOL      considerHiddenPower;
-  uint32_t  hiddenPowerType;
-  uint32_t  minHiddenPower;
-  BOOL      isRoamer;
+  pprng::IVPattern::Type  ivPattern;
+  uint32_t                minHP, minAT, minDF, minSA, minSD, minSP;
+  uint32_t                maxHP, maxAT, maxDF, maxSA, maxSD, maxSP;
+  BOOL                    considerHiddenPower;
+  pprng::Element::Type    hiddenType;
+  uint32_t                minHiddenPower;
+  BOOL                    isRoamer;
 }
 
-@property uint32_t  minHP, minAT, minDF, minSA, minSD, minSP;
-@property uint32_t  maxHP, maxAT, maxDF, maxSA, maxSD, maxSP;
-@property BOOL      considerHiddenPower;
-@property uint32_t  hiddenPowerType;
-@property uint32_t  minHiddenPower;
-@property BOOL      isRoamer;
+@property pprng::IVPattern::Type  ivPattern;
+@property uint32_t                minHP, minAT, minDF, minSA, minSD, minSP;
+@property uint32_t                maxHP, maxAT, maxDF, maxSA, maxSD, maxSP;
+@property BOOL                    considerHiddenPower;
+@property pprng::Element::Type    hiddenType;
+@property uint32_t                minHiddenPower;
+@property BOOL                    isRoamer;
 
-- (IBAction)switchIVPattern:(id)sender;
-
-- (pprng::IVs)minIVs;
-- (void)setMinIVs:(pprng::IVs)ivs;
-
-- (pprng::IVs)maxIVs;
-- (void)setMaxIVs:(pprng::IVs)ivs;
-
-- (pprng::Element::Type)hiddenType;
-- (void)setHiddenType:(pprng::Element::Type)type;
-
-- (pprng::IVPattern::Type)ivPattern;
-- (void)setIVPattern:(pprng::IVPattern::Type)ivPattern;
+@property pprng::IVs  minIVs, maxIVs;
 
 - (uint32_t)numberOfIVCombinations;
 

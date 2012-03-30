@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -59,8 +59,8 @@ public:
     
     ITBlackNazo = 0x02215FB0,
     ITWhiteNazo = 0x02215FD0,
-    ITBlackDSiNazo = 0x02761150,
-    ITWhiteDSiNazo = 0x02761150,
+    ITBlackDSiNazo = 0x027601d0,
+    ITWhiteDSiNazo = 0x027601d0,
     
     KRBlackNazo = 0x022167B0,
     KRWhiteNazo = 0x022167B0,

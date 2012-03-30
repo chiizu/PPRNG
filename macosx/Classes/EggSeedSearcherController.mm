@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -22,81 +22,152 @@
 #import "EggSeedSearcherController.h"
 
 #import "HashedSeedInspectorController.h"
+#import "SearchResultProtocols.h"
 
 #include "EggSeedSearcher.h"
 #include "Utilities.h"
 
 using namespace pprng;
 
+@interface EggSeedSearchResult :
+  NSObject <HashedSeedResultParameters, PIDResult>
+{
+  DECLARE_HASHED_SEED_RESULT_PARAMETERS_VARIABLES();
+  
+  OptionalIVs  femaleIVs, maleIVs;
+  BOOL         internationalParents, usingEverstone, usingDitto;
+  
+  uint32_t  startFrame, pidFrame;
+  DECLARE_PID_RESULT_VARIABLES();
+  BOOL      inheritsHiddenAbility;
+  
+  uint32_t       ivFrame;
+  id             hp, atk, def, spa, spd, spe;
+  Element::Type  hiddenType;
+  NSNumber       *hiddenPower;
+  
+  FemaleParent::Type  femaleSpecies;
+  NSString            *eggSpecies;
+}
+
+@property OptionalIVs  femaleIVs, maleIVs;
+@property BOOL  internationalParents, usingEverstone, usingDitto;
+
+@property uint32_t  startFrame, pidFrame;
+@property BOOL      inheritsHiddenAbility;
+
+@property uint32_t         ivFrame;
+@property (copy) id        hp, atk, def, spa, spd, spe;
+@property Element::Type    hiddenType;
+@property (copy) NSNumber  *hiddenPower;
+
+@property FemaleParent::Type  femaleSpecies;
+@property (copy) NSString     *eggSpecies;
+
+@end
+
+@implementation EggSeedSearchResult
+
+SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
+
+@synthesize femaleIVs, maleIVs;
+@synthesize internationalParents, usingEverstone, usingDitto;
+
+@synthesize startFrame, pidFrame;
+SYNTHESIZE_PID_RESULT_PROPERTIES();
+@synthesize inheritsHiddenAbility;
+
+@synthesize ivFrame;
+@synthesize hp, atk, def, spa, spd, spe;
+@synthesize hiddenType, hiddenPower;
+@synthesize femaleSpecies, eggSpecies;
+
+@end
+
 namespace
 {
 
+static id GetEggIV(const Gen5EggFrame &frame, IVs::Type iv)
+{
+  if (frame.ivs.isSet(iv))
+    return [NSNumber numberWithUnsignedInt: frame.ivs.iv(iv)];
+  
+  switch (frame.inheritance[iv])
+  {
+  default:
+  case Gen5EggFrame::NotInherited:
+    return @"??";
+    
+  case Gen5EggFrame::ParentX:
+    return @"♀";
+    
+  case Gen5EggFrame::ParentY:
+    return @"♂";
+  }
+}
+
 struct ResultHandler
 {
-  ResultHandler(SearcherController *c, uint32_t tid, uint32_t sid,
-                bool usingEverstone, FemaleParent::Type femaleSpecies)
-    : controller(c), m_tid(tid), m_sid(sid), m_usingEverstone(usingEverstone),
-      m_femaleSpecies(femaleSpecies)
+  ResultHandler(SearcherController *co, const EggSeedSearcher::Criteria &cr)
+    : controller(co), m_criteria(cr)
   {}
   
   void operator()(const Gen5EggFrame &frame)
   {
-    uint32_t  genderValue = frame.pid.GenderValue();
+    EggSeedSearchResult  *result = [[EggSeedSearchResult alloc] init];
     
-    NSMutableDictionary  *result =
-      [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        [NSNumber numberWithUnsignedLongLong: frame.seed.rawSeed], @"seed",
-        [NSString stringWithFormat: @"%.4d/%.2d/%.2d",
-          frame.seed.year(), frame.seed.month(), frame.seed.day()], @"date",
-        [NSString stringWithFormat: @"%.2d:%.2d:%.2d",
-          frame.seed.hour, frame.seed.minute, frame.seed.second], @"time",
-        [NSNumber numberWithUnsignedInt: frame.seed.timer0], @"timer0",
-				[NSString stringWithFormat: @"%s",
-          Button::ToString(frame.seed.heldButtons).c_str()], @"keys",
-        [NSNumber numberWithUnsignedInt: frame.seed.GetSkippedPIDFrames() + 1],
-          @"startFrame",
-				[NSNumber numberWithUnsignedInt: frame.number], @"pidFrame",
-        frame.pid.IsShiny(m_tid, m_sid) ? @"★" : @"", @"shiny",
-        (m_usingEverstone && frame.everstoneActivated) ?
-            @"<ES>" :
-            [NSString stringWithFormat: @"%s",
-              Nature::ToString(frame.nature).c_str()],
-          @"nature",
-        frame.inheritsHiddenAbility ? @"Y" : @"", @"dw",
-        [NSNumber numberWithUnsignedInt: frame.pid.Gen5Ability()], @"ability",
-        ((m_femaleSpecies == FemaleParent::OTHER) ?
-         ((genderValue < 31) ? @"♀" : @"♂") : @""), @"gender18",
-        ((m_femaleSpecies == FemaleParent::OTHER) ?
-         ((genderValue < 63) ? @"♀" : @"♂") : @""), @"gender14",
-        ((m_femaleSpecies == FemaleParent::OTHER) ?
-         ((genderValue < 127) ? @"♀" : @"♂") : @""), @"gender12",
-        ((m_femaleSpecies == FemaleParent::OTHER) ?
-         ((genderValue < 191) ? @"♀" : @"♂") : @""), @"gender34",
-				[NSNumber numberWithUnsignedInt: frame.ivFrameNumber], @"ivFrame",
-        [NSNumber numberWithUnsignedInt: frame.ivs.hp()], @"hp",
-        [NSNumber numberWithUnsignedInt: frame.ivs.at()], @"atk",
-        [NSNumber numberWithUnsignedInt: frame.ivs.df()], @"def",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sa()], @"spa",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sd()], @"spd",
-        [NSNumber numberWithUnsignedInt: frame.ivs.sp()], @"spe",
-        [NSString stringWithFormat: @"%s",
-          Element::ToString(frame.ivs.HiddenType()).c_str()], @"hiddenType",
-        [NSNumber numberWithUnsignedInt: frame.ivs.HiddenPower()],
-          @"hiddenPower",
-        SpeciesString(m_femaleSpecies, frame.species), @"species",
-        [NSData dataWithBytes: &frame.seed length: sizeof(HashedSeed)],
-          @"fullSeed",
-        nil];
+    SetHashedSeedResultParameters(result, frame.seed);
+    
+    result.femaleIVs = m_criteria.femaleIVs;
+    result.maleIVs = m_criteria.maleIVs;
+    
+    result.internationalParents =
+      m_criteria.frameParameters.internationalParents;
+    result.usingEverstone = m_criteria.frameParameters.usingEverstone;
+    result.usingDitto = m_criteria.frameParameters.usingDitto;
+    
+    result.startFrame = frame.seed.GetSkippedPIDFrames() + 1;
+    result.pidFrame = frame.number;
+    
+    SetGen5PIDResult(result, frame.nature, frame.pid,
+                     m_criteria.frameParameters.tid,
+                     m_criteria.frameParameters.sid, Gender::ANY,
+                     (m_criteria.frameParameters.femaleSpecies ==
+                      FemaleParent::OTHER) ?
+                       Gender::ANY_RATIO : Gender::NO_RATIO);
+    result.inheritsHiddenAbility = frame.inheritsHiddenAbility;
+    
+    result.ivFrame = frame.ivFrameNumber;
+    
+    result.hp = GetEggIV(frame, IVs::HP);
+    result.atk = GetEggIV(frame, IVs::AT);
+    result.def = GetEggIV(frame, IVs::DF);
+    result.spa = GetEggIV(frame, IVs::SA);
+    result.spd = GetEggIV(frame, IVs::SD);
+    result.spe = GetEggIV(frame, IVs::SP);
+    
+    if (frame.ivs.allSet())
+    {
+      result.hiddenType = frame.ivs.values.HiddenType();
+      result.hiddenPower =
+        [NSNumber numberWithUnsignedInt: frame.ivs.values.HiddenPower()];
+    }
+    else
+    {
+      result.hiddenType = Element::NONE;
+      result.hiddenPower = nil;
+    }
+    
+    result.femaleSpecies = m_criteria.frameParameters.femaleSpecies;
+    result.eggSpecies = SpeciesString(frame.species);
     
     [controller performSelectorOnMainThread: @selector(addResult:)
                 withObject: result
                 waitUntilDone: NO];
   }
   
-  SearcherController  *controller;
-  uint32_t            m_tid, m_sid;
-  bool                m_usingEverstone;
-  FemaleParent::Type  m_femaleSpecies;
+  SearcherController               *controller;
+  const EggSeedSearcher::Criteria  &m_criteria;
 };
 
 struct ProgressHandler
@@ -121,12 +192,73 @@ struct ProgressHandler
 
 @implementation EggSeedSearcherController
 
+@synthesize fromDate, toDate;
+@synthesize noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
+
+@synthesize femaleSpecies, isNidoranFemale;
+
 @synthesize femaleHP, femaleAT, femaleDF, femaleSA, femaleSD, femaleSP;
 @synthesize maleHP, maleAT, maleDF, maleSA, maleSD, maleSP;
+
+@synthesize usingEverstone, usingDitto, internationalParents;
+
+@synthesize startFromInitialPIDFrame;
+@synthesize minPIDFrame, maxPIDFrame;
+@synthesize minIVFrame, maxIVFrame;
+
+@synthesize showShinyOnly;
+@synthesize considerEggSpecies, eggSpecies;
+@synthesize ability, inheritsHiddenAbility;
+@synthesize gender, genderRatio;
+
+@synthesize seedFileStatus;
 
 - (NSString *)windowNibName
 {
 	return @"EggSeedSearcher";
+}
+
+- (void)loadSeedFile
+{
+  @synchronized (self)
+  {
+    EggSeedSearcher::CacheLoadResult  loadResult =
+      EggSeedSearcher::LoadSeedCache();
+    
+    switch (loadResult)
+    {
+    case EggSeedSearcher::LOADED:
+      seedCacheIsLoaded = YES;
+      self.seedFileStatus = @"Seed cache loaded successfully";
+      break;
+      
+    case EggSeedSearcher::NO_CACHE_FILE:
+      self.seedFileStatus = @"Failed to find seed cache file.  Please download the seed cache file and place it in the same directory as PPRNG to enable faster searching!";
+      break;
+      
+    case EggSeedSearcher::BAD_CACHE_FILE:
+      self.seedFileStatus = @"Seed cache file is corrupted or not of the correct format.  Please download the seed cache file again to enable faster searching!";
+      break;
+      
+    case EggSeedSearcher::NOT_ENOUGH_MEMORY:
+      self.seedFileStatus = @"There is not enough memory available to load the seed cache. Try closing other applications that might be using large amounts of resources.";
+      break;
+      
+    case EggSeedSearcher::UNKNOWN_ERROR:
+    default:
+      self.seedFileStatus = @"Unknown error when trying to load the seed cache file!";
+      break;
+    }
+  }
+}
+
+- (void)releaseSeedFile
+{
+  @synchronized (self)
+  {
+    if (seedCacheIsLoaded)
+      EggSeedSearcher::ReleaseSeedCache();
+  }
 }
 
 - (void)awakeFromNib
@@ -136,64 +268,92 @@ struct ProgressHandler
   [searcherController setDoSearchWithCriteriaSelector:
                       @selector(doSearchWithCriteria:)];
   
+  [[searcherController tableView] setTarget: self];
   [[searcherController tableView] setDoubleAction: @selector(inspectSeed:)];
   
-  NSDate  *now = [NSDate date];
-  [fromDateField setObjectValue: now];
-  [toDateField setObjectValue: now];
+  //[speciesPopUp setAutoenablesItems: NO];
   
-  [speciesPopUp setAutoenablesItems: NO];
+  NSDate  *now = [NSDate date];
+  self.fromDate = now;
+  self.toDate = now;
+  
+  self.noButtonHeld = YES;
+  self.oneButtonHeld = YES;
+  self.twoButtonsHeld = NO;
+  self.threeButtonsHeld = NO;
+  
+  self.femaleSpecies = FemaleParent::OTHER;
+  self.isNidoranFemale = NO;
+  
+  self.femaleHP = nil;
+  self.femaleAT = nil;
+  self.femaleDF = nil;
+  self.femaleSA = nil;
+  self.femaleSD = nil;
+  self.femaleSP = nil;
+  self.maleHP = nil;
+  self.maleAT = nil;
+  self.maleDF = nil;
+  self.maleSA = nil;
+  self.maleSD = nil;
+  self.maleSP = nil;
+  
+  self.internationalParents = NO;
+  self.usingEverstone = NO;
+  self.usingDitto = NO;
+  
+  self.startFromInitialPIDFrame = YES;
+  self.minPIDFrame = 50;
+  self.maxPIDFrame = 300;
+  self.minIVFrame = 8;
+  self.maxIVFrame = 8;
+  
+  self.showShinyOnly = YES;
+  self.considerEggSpecies = NO;
+  self.eggSpecies = EggSpecies::ANY;
+  self.ability = Ability::ANY;
+  self.inheritsHiddenAbility = NO;
+  self.gender = Gender::ANY;
+  self.genderRatio = Gender::NO_RATIO;
+  
+  seedCacheIsLoaded = NO;
+  self.seedFileStatus = @"Loading seed cache file...";
+  [self performSelectorInBackground: @selector(loadSeedFile) withObject: nil];
 }
 
 - (void)windowWillClose:(NSNotification *)notification
 {
   if ([searcherController isSearching])
     [searcherController startStop: self];
+  
+  [self performSelectorInBackground: @selector(releaseSeedFile) withObject:nil];
 }
 
-- (IBAction)onFemaleSpeciesChange:(id)sender
+- (void)setFemaleSpecies:(FemaleParent::Type)newFemaleSpecies
 {
-  FemaleParent::Type  species =
-    FemaleParent::Type([[femaleSpeciesPopUp selectedItem] tag]);
-  
-  if (species == FemaleParent::OTHER)
+  if (newFemaleSpecies != femaleSpecies)
   {
-    [speciesPopUp setEnabled: NO];
-    [speciesPopUp selectItemWithTag: -1];
-    [genderPopUp setEnabled: YES];
-    [genderRatioPopUp setEnabled: YES];
-  }
-  else
-  {
-    [speciesPopUp setEnabled: YES];
-    [genderPopUp setEnabled: NO];
-    [genderPopUp selectItemWithTag: -1];
-    [genderRatioPopUp setEnabled: NO];
-    [genderRatioPopUp selectItemWithTag: -1];
+    femaleSpecies = newFemaleSpecies;
     
-    BOOL  isNidoranFemale = (species == FemaleParent::NIDORAN_FEMALE);
-    
-    [[speciesPopUp itemAtIndex: [speciesPopUp indexOfItemWithTag: 0]]
-      setEnabled: isNidoranFemale];
-    [[speciesPopUp itemAtIndex: [speciesPopUp indexOfItemWithTag: 1]]
-      setEnabled: isNidoranFemale];
-    [[speciesPopUp itemAtIndex: [speciesPopUp indexOfItemWithTag: 2]]
-      setEnabled: !isNidoranFemale];
-    [[speciesPopUp itemAtIndex: [speciesPopUp indexOfItemWithTag: 3]]
-      setEnabled: !isNidoranFemale];
-    
-    if (![[speciesPopUp selectedItem] isEnabled])
+    if (newFemaleSpecies == FemaleParent::OTHER)
     {
-      [speciesPopUp selectItemWithTag: -1];
+      self.considerEggSpecies = NO;
     }
+    else
+    {
+      self.considerEggSpecies = YES;
+      self.isNidoranFemale = (newFemaleSpecies == FemaleParent::NIDORAN_FEMALE);
+    }
+    
+    self.gender = Gender::ANY;
+    self.genderRatio = Gender::NO_RATIO;
+    self.eggSpecies = EggSpecies::ANY;
   }
 }
 
-- (IBAction)toggleSearchFromStartFrame:(id)sender
+- (IBAction)toggleDropDownChoice:(id)sender
 {
-  BOOL  enabled = [sender state];
-  
-  [minPIDFrameField setEnabled: !enabled];
+  HandleComboMenuItemChoice(sender);
 }
 
 - (void)inspectSeed:(id)sender
@@ -202,18 +362,47 @@ struct ProgressHandler
   
   if (rowNum >= 0)
   {
-    NSDictionary  *row =
+    EggSeedSearchResult  *row =
       [[[searcherController arrayController] arrangedObjects]
         objectAtIndex: rowNum];
     
     if (row != nil)
     {
-      NSData  *seed = [row objectForKey: @"fullSeed"];
-      
       HashedSeedInspectorController  *inspector =
         [[HashedSeedInspectorController alloc] init];
+      [inspector window];
+      
+      [inspector setSeedFromResult: row];
+      
+      inspector.selectedTabId = @"eggs";
+      
+      HashedSeedInspectorEggsTabController *eggsTab =
+        inspector.eggsTabController;
+      
+      eggsTab.internationalParents = row.internationalParents;
+      eggsTab.usingEverstone = row.usingEverstone;
+      eggsTab.usingDitto = row.usingDitto;
+      
+      eggsTab.enableIVs = YES;
+      eggsTab.ivFrame = row.ivFrame;
+      
+      if (row.pidFrame < row.startFrame)
+      {
+        eggsTab.startFromInitialPIDFrame = NO;
+        eggsTab.minPIDFrame = 1;
+      }
+      eggsTab.maxPIDFrame = row.pidFrame + 20;
+      
+      eggsTab.femaleSpecies = row.femaleSpecies;
+      
+      eggsTab.enableParentIVs = YES;
+      [eggsTab setFemaleIVs: row.femaleIVs];
+      [eggsTab setMaleIVs: row.maleIVs];
+      
+      [eggsTab generateEggs: self];
+      [eggsTab selectAndShowEggFrame: row.pidFrame];
+      
       [inspector showWindow: self];
-      [inspector setSeed: seed];
     }
   }
 }
@@ -223,30 +412,42 @@ struct ProgressHandler
         contextInfo:(void *)contextInfo
 {}
 
-- (IVs)femaleParentIVs
+- (OptionalIVs)femaleParentIVs
 {
-  IVs  result;
+  OptionalIVs  result;
   
-  result.hp([femaleHP intValue]);
-  result.at([femaleAT intValue]);
-  result.df([femaleDF intValue]);
-  result.sa([femaleSA intValue]);
-  result.sd([femaleSD intValue]);
-  result.sp([femaleSP intValue]);
+  if (femaleHP)
+    result.hp([femaleHP unsignedIntValue]);
+  if (femaleAT)
+    result.at([femaleAT unsignedIntValue]);
+  if (femaleDF)
+    result.df([femaleDF unsignedIntValue]);
+  if (femaleSA)
+    result.sa([femaleSA unsignedIntValue]);
+  if (femaleSD)
+    result.sd([femaleSD unsignedIntValue]);
+  if (femaleSP)
+    result.sp([femaleSP unsignedIntValue]);
   
   return result;
 }
 
-- (IVs)maleParentIVs
+- (OptionalIVs)maleParentIVs
 {
-  IVs  result;
+  OptionalIVs  result;
   
-  result.hp([maleHP intValue]);
-  result.at([maleAT intValue]);
-  result.df([maleDF intValue]);
-  result.sa([maleSA intValue]);
-  result.sd([maleSD intValue]);
-  result.sp([maleSP intValue]);
+  if (maleHP)
+    result.hp([maleHP unsignedIntValue]);
+  if (maleAT)
+    result.at([maleAT unsignedIntValue]);
+  if (maleDF)
+    result.df([maleDF unsignedIntValue]);
+  if (maleSA)
+    result.sa([maleSA unsignedIntValue]);
+  if (maleSD)
+    result.sd([maleSD unsignedIntValue]);
+  if (maleSP)
+    result.sp([maleSP unsignedIntValue]);
   
   return result;
 }
@@ -255,7 +456,10 @@ struct ProgressHandler
 {
   using namespace boost::gregorian;
   using namespace boost::posix_time;
-
+  
+  if (!EndEditing([self window]))
+    return nil;
+  
   EggSeedSearcher::Criteria  criteria;
   
   criteria.seedParameters.macAddress = [gen5ConfigController macAddress];
@@ -272,25 +476,25 @@ struct ProgressHandler
   criteria.seedParameters.vframeLow = [gen5ConfigController vframeLow];
   criteria.seedParameters.vframeHigh = [gen5ConfigController vframeHigh];
   
-  if ([noKeyHeldButton state])
+  if (noButtonHeld)
   {
     criteria.seedParameters.heldButtons.push_back(0);  // no keys
   }
-  if ([oneKeyHeldButton state])
+  if (oneButtonHeld)
   {
     criteria.seedParameters.heldButtons.insert
       (criteria.seedParameters.heldButtons.end(),
        Button::SingleButtons().begin(),
        Button::SingleButtons().end());
   }
-  if ([twoKeysHeldButton state])
+  if (twoButtonsHeld)
   {
     criteria.seedParameters.heldButtons.insert
       (criteria.seedParameters.heldButtons.end(),
        Button::TwoButtonCombos().begin(),
        Button::TwoButtonCombos().end());
   }
-  if ([threeKeysHeldButton state])
+  if (threeButtonsHeld)
   {
     criteria.seedParameters.heldButtons.insert
       (criteria.seedParameters.heldButtons.end(),
@@ -299,55 +503,54 @@ struct ProgressHandler
   }
   
   criteria.seedParameters.fromTime =
-    ptime(NSDateToBoostDate([fromDateField objectValue]), seconds(0));
+    ptime(NSDateToBoostDate(fromDate), seconds(0));
   
   criteria.seedParameters.toTime =
-    ptime(NSDateToBoostDate([toDateField objectValue]),
-                            hours(23) + minutes(59) + seconds(59));
+    ptime(NSDateToBoostDate(toDate), hours(23) + minutes(59) + seconds(59));
   
-  criteria.frameParameters.usingEverstone = [everstoneButton state];
-  criteria.frameParameters.usingDitto = [dittoButton state];
-  criteria.frameParameters.internationalParents = [internationalButton state];
+  criteria.frameParameters.usingEverstone = usingEverstone;
+  criteria.frameParameters.usingDitto = usingDitto;
+  criteria.frameParameters.internationalParents = internationalParents;
   criteria.frameParameters.tid = [gen5ConfigController tid];
   criteria.frameParameters.sid = [gen5ConfigController sid];
   
-  criteria.ivFrame.min = [minIVFrameField intValue];
-  criteria.ivFrame.max = [maxIVFrameField intValue];
+  criteria.ivs.pattern = ivParameterController.ivPattern;
   
-  criteria.ivs.min = [ivParameterController minIVs];
-  criteria.ivs.max = [ivParameterController maxIVs];
+  criteria.ivFrame.min = minIVFrame;
+  criteria.ivFrame.max = maxIVFrame;
+  
+  criteria.ivs.min = ivParameterController.minIVs;
+  criteria.ivs.max = ivParameterController.maxIVs;
   criteria.ivs.shouldCheckMax =
     (criteria.ivs.max != IVs(31, 31, 31, 31, 31, 31));
   criteria.ivs.isRoamer = false;
   
-  if ([ivParameterController considerHiddenPower])
+  if (ivParameterController.considerHiddenPower)
   {
-    criteria.ivs.hiddenType = [ivParameterController hiddenType];
-    criteria.ivs.minHiddenPower = [ivParameterController minHiddenPower];
+    criteria.ivs.hiddenType = ivParameterController.hiddenType;
+    criteria.ivs.minHiddenPower = ivParameterController.minHiddenPower;
   }
   else
   {
-    criteria.ivs.hiddenType = Element::UNKNOWN;
+    criteria.ivs.hiddenType = Element::NONE;
   }
   
   criteria.femaleIVs = [self femaleParentIVs];
   criteria.maleIVs = [self maleParentIVs];
-  criteria.femaleSpecies =
-    FemaleParent::Type([[femaleSpeciesPopUp selectedItem] tag]);
+  criteria.frameParameters.femaleSpecies = femaleSpecies;
   
-  criteria.pid.nature = Nature::Type([[naturePopUp selectedItem] tag]);
-  criteria.pid.ability = Ability::Type([[abilityPopUp selectedItem] tag]);
-  criteria.pid.gender = Gender::Type([[genderPopUp selectedItem] tag]);
-  criteria.pid.genderRatio =
-    Gender::Ratio([[genderRatioPopUp selectedItem] tag]);
-  criteria.pid.searchFromInitialFrame = [useInitialPIDFrameCheckBox state];
+  criteria.pid.natureMask = GetComboMenuBitMask(natureDropDown);
+  criteria.pid.ability = ability;
+  criteria.pid.gender = gender;
+  criteria.pid.genderRatio = genderRatio;
+  criteria.pid.startFromLowestFrame = startFromInitialPIDFrame;
   
-  criteria.inheritsHiddenAbility = [dreamworldButton state];
-  criteria.shinyOnly = [shinyButton state];
-  criteria.childSpecies = [[speciesPopUp selectedItem] tag] & 0x1;
+  criteria.inheritsHiddenAbility = inheritsHiddenAbility;
+  criteria.shinyOnly = showShinyOnly;
+  criteria.eggSpecies = eggSpecies;
   
-  criteria.pidFrame.min = [minPIDFrameField intValue];
-  criteria.pidFrame.max = [maxPIDFrameField intValue];
+  criteria.pidFrame.min = minPIDFrame;
+  criteria.pidFrame.max = maxPIDFrame;
   
   uint64_t  numResults = criteria.ExpectedNumberOfResults();
   
@@ -396,11 +599,7 @@ struct ProgressHandler
   EggSeedSearcher  searcher;
   
   searcher.Search(*criteria,
-                  ResultHandler(searcherController,
-                                criteria->frameParameters.tid,
-                                criteria->frameParameters.sid,
-                                criteria->frameParameters.usingEverstone,
-                                criteria->femaleSpecies),
+                  ResultHandler(searcherController, *criteria),
                   ProgressHandler(searcherController));
 }
 

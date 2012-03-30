@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -191,10 +191,17 @@ uint32_t SwapEndianess(uint32_t value)
 
 uint32_t ToBCD(uint32_t value)
 {
-  return (((value / 1000) % 10) << 12) |
-         (((value / 100) % 10) << 8) |
-         (((value / 10) % 10) << 4) |
-         (value % 10);
+  uint32_t  thousands = value / 1000;
+  uint32_t  allHundreds = value / 100;
+  uint32_t  allTens = value / 10;
+  
+  uint32_t  hundreds = allHundreds - (thousands * 10);
+  uint32_t  tens = allTens - (allHundreds * 10);
+  
+  return (thousands << 12) |
+         (hundreds << 8) |
+         (tens << 4) |
+         (value - (allTens * 10));
 }
 
 

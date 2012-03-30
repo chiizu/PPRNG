@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -41,7 +41,6 @@ public:
     HashedSeedGenerator::Parameters  seedParameters;
     SearchCriteria::IVCriteria       ivs;
     SearchCriteria::FrameRange       ivFrame;
-    IVPattern::Type                  ivPattern;
     
     Criteria()
       : SearchCriteria(), seedParameters(), ivs(), ivFrame()

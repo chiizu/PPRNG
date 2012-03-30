@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2011-2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -42,10 +42,11 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
 
 @implementation IVParameterController
 
+@synthesize  ivPattern;
 @synthesize  minHP, minAT, minDF, minSA, minSD, minSP;
 @synthesize  maxHP, maxAT, maxDF, maxSA, maxSD, maxSP;
 @synthesize  considerHiddenPower;
-@synthesize  hiddenPowerType;
+@synthesize  hiddenType;
 @synthesize  minHiddenPower;
 @synthesize  isRoamer;
 
@@ -55,19 +56,12 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
   [self setMaxIVs: IVs(31, 31, 31, 31, 31, 31)];
   
   self.considerHiddenPower = NO;
-  self.hiddenPowerType = Element::ANY;
+  self.hiddenType = Element::ANY;
   self.minHiddenPower = 70;
   self.isRoamer = NO;
 }
 
-- (IBAction)switchIVPattern:(id)sender
-{
-  uint32_t  patternNum = [[sender selectedItem] tag];
-  
-  [self setIVPattern: IVPattern::Type(patternNum)];
-}
-
-- (IVPattern::Type)ivPattern
+- (IVPattern::Type)determineIVPattern
 {
   IVs  minIVs = [self minIVs], maxIVs = [self maxIVs];
   
@@ -116,64 +110,69 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
   return IVPattern::CUSTOM;
 }
 
-- (void)setIVPattern:(pprng::IVPattern::Type)ivPattern
+- (void)setIvPattern:(IVPattern::Type)newIvPattern
 {
-  if (ivPattern != IVPattern::CUSTOM)
+  if (newIvPattern != ivPattern)
   {
-    BOOL shouldCheckHiddenPower = NO;
+    ivPattern = newIvPattern;
     
-    switch (ivPattern)
+    if (ivPattern != IVPattern::CUSTOM)
     {
-    case IVPattern::HEX_FLAWLESS:
-      [self setMinIVs: PerfectIVs];
-      [self setMaxIVs: PerfectIVs];
-      break;
+      BOOL shouldCheckHiddenPower = NO;
       
-    case IVPattern::HEX_FLAWLESS_TRICK:
-      [self setMinIVs: PerfectTrickIVs];
-      [self setMaxIVs: PerfectTrickIVs];
-      break;
+      switch (ivPattern)
+      {
+      case IVPattern::HEX_FLAWLESS:
+        [self setMinIVs: PerfectIVs];
+        [self setMaxIVs: PerfectIVs];
+        break;
+        
+      case IVPattern::HEX_FLAWLESS_TRICK:
+        [self setMinIVs: PerfectTrickIVs];
+        [self setMaxIVs: PerfectTrickIVs];
+        break;
+        
+      case IVPattern::PHYSICAL_FLAWLESS:
+        [self setMinIVs: PhysIVs];
+        [self setMaxIVs: PerfectIVs];
+        break;
+        
+      case IVPattern::PHYSICAL_FLAWLESS_TRICK:
+        [self setMinIVs: PhysTrickIVs];
+        [self setMaxIVs: PerfectTrickIVs];
+        break;
+        
+      case IVPattern::SPECIAL_FLAWLESS:
+        [self setMinIVs: SpecIVs];
+        [self setMaxIVs: PerfectIVs];
+        break;
+        
+      case IVPattern::SPECIAL_FLAWLESS_TRICK:
+        [self setMinIVs: SpecTrickIVs];
+        [self setMaxIVs: PerfectTrickIVs];
+        break;
+        
+      case IVPattern::SPECIAL_HIDDEN_POWER_FLAWLESS:
+        [self setMinIVs: HpLowIVs];
+        [self setMaxIVs: HpHighIVs];
+        shouldCheckHiddenPower = YES;
+        break;
+        
+      case IVPattern::SPECIAL_HIDDEN_POWER_FLAWLESS_TRICK:
+        [self setMinIVs: HpTrickLowIVs];
+        [self setMaxIVs: HpTrickHighIVs];
+        shouldCheckHiddenPower = YES;
+        break;
       
-    case IVPattern::PHYSICAL_FLAWLESS:
-      [self setMinIVs: PhysIVs];
-      [self setMaxIVs: PerfectIVs];
-      break;
+      case IVPattern::CUSTOM:
+      default:
+        return;
+        break;
+      }
       
-    case IVPattern::PHYSICAL_FLAWLESS_TRICK:
-      [self setMinIVs: PhysTrickIVs];
-      [self setMaxIVs: PerfectTrickIVs];
-      break;
-      
-    case IVPattern::SPECIAL_FLAWLESS:
-      [self setMinIVs: SpecIVs];
-      [self setMaxIVs: PerfectIVs];
-      break;
-      
-    case IVPattern::SPECIAL_FLAWLESS_TRICK:
-      [self setMinIVs: SpecTrickIVs];
-      [self setMaxIVs: PerfectTrickIVs];
-      break;
-      
-    case IVPattern::SPECIAL_HIDDEN_POWER_FLAWLESS:
-      [self setMinIVs: HpLowIVs];
-      [self setMaxIVs: HpHighIVs];
-      shouldCheckHiddenPower = YES;
-      break;
-      
-    case IVPattern::SPECIAL_HIDDEN_POWER_FLAWLESS_TRICK:
-      [self setMinIVs: HpTrickLowIVs];
-      [self setMaxIVs: HpTrickHighIVs];
-      shouldCheckHiddenPower = YES;
-      break;
-    
-    case IVPattern::CUSTOM:
-    default:
-      return;
-      break;
+      self.considerHiddenPower = shouldCheckHiddenPower;
+      self.minHiddenPower = 70;
     }
-    
-    [self setConsiderHiddenPower: shouldCheckHiddenPower];
-    [self setMinHiddenPower: 70];
   }
 }
 
@@ -188,7 +187,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.maxHP = newValue;
     }
     
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -203,7 +202,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.maxAT = newValue;
     }
     
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -218,7 +217,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.maxDF = newValue;
     }
     
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -233,7 +232,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.maxSA = newValue;
     }
     
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -248,7 +247,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.maxSD = newValue;
     }
     
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -263,7 +262,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.maxSP = newValue;
     }
     
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -302,7 +301,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.minHP = newValue;
     }
     
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -317,7 +316,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.minAT = newValue;
     }
     
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -332,7 +331,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.minDF = newValue;
     }
     
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -347,7 +346,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.minSA = newValue;
     }
     
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -362,7 +361,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.minSD = newValue;
     }
     
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -377,7 +376,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.minSP = newValue;
     }
     
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -410,18 +409,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
   if (considerHiddenPower != newValue)
   {
     considerHiddenPower = newValue;
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
-}
-
-- (Element::Type)hiddenType
-{
-  return static_cast<Element::Type>(hiddenPowerType);
-}
-
-- (void)setHiddenType:(Element::Type)type
-{
-  self.hiddenPowerType = type;
 }
 
 - (void)setMinHiddenPower:(uint32_t)newPower
@@ -429,7 +418,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
   if (minHiddenPower != newPower)
   {
     minHiddenPower = newPower;
-    [ivPatternMenu selectItemWithTag: [self ivPattern]];
+    self.ivPattern = [self determineIVPattern];
   }
 }
 
