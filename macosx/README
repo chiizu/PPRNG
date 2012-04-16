@@ -1,4 +1,4 @@
-PPRNG 1.9.0
+PPRNG 1.10.0
 
 Mac Requirements: Intel Mac with OS X 10.5 or greater.
 
@@ -21,27 +21,56 @@ In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
 on a result row to bring up the seed inspector for that specific seed.
 
 
-New in 1.9.0
+New in 1.10.0
 
-* The Standard Seed Searcher is now 75% faster than before for all common
-  searches.  As long as you choose one of the IV patterns from the drop down
-  menu (you can still set more specific IVs for, for example, a specific hidden
-  power) and you are searching within the first 6 IV frames (there is not much
-  reason to search for other frames unless you really want something on a
-  particular date), you will benefit from the fact that PPRNG has all useful
-  seeds of these types precalculated.  This reduces the search time for a 30-day
-  month with up to 3 key presses on my 2008 Mac Book Pro (2 cores) from 35
-  minutes to 9 minutes.  If you choose to search with other parameters, PPRNG
-  will revert to the slower (though still relatively fast!) search.
-* Support for French and Spanish games on DSi/3DS added.
-* Wonder Card and Egg Seed searches experienced minor speed increases.
-* Fixed a bug in the CGear IV generation code that caused slightly wrong IVs to
-  be generated for the first 6 frames.
-* Fixed a crash that occurred when opening any of the windows before setting a
-  DS Type in the configuration.
-* Fixed the problem with the Standard Seed Searcher not opening in OS 10.5.
-* Made various cosmetic and behind-the-scenes code changes to clean up the
-  project code base in preparation for source release.
+Added:
+* Added support for other encounter lead abilities in Gen 5 such as Cute Charm
+  and Suction Cups
+* Standard Seed Searcher now clearly shows which types of encounters are
+  possible on which frames for a given shiny seed and allows filtering on
+  desired encounter types
+* Added proper Entralink PID generation and frame timing to Standard Seed
+  Inspector
+* Added instant search for standard IV patterns on Entralink frames 21-26 to
+  C-Gear Seed Searcher
+* Added Entralink Nature Search to C-Gear Seed Inspector
+* 5th Gen Egg Seed Searcher now allows for the use of an optional seed cache
+  file, which allows searches to run in 1/3rd of the time normally required.
+  To use this, download the separate eggseeds.dat file and place it in the same
+  folder as PPRNG.
+* Added Chatot pitch info to Standard Seed Inspector and Wonder Card Seed
+  Inspector
+* Standard Seed Inspector now shows which item will be found in Swirling Dust
+  and Bridge Shadows when they are not encounters (distribution of Everstone and
+  King's Rock may not be correct, but others should be)
+* Wonder Card Seed Searcher & Inspector now support full specification of Wonder
+  Card parameters to ensure that the PID is correctly generated
+* Wonder Card Seed Searcher now supports searching for shinies for those cards
+  which allow it
+* Seed / frame details now filled in automatically when opening the seed
+  inspectors from the seed searchers for Standard Seeds, Egg Seeds, Wonder
+  Cards, and CGear Seeds for both IVs and Entralink Natures
+* Added support for Italian games on DSi / 3DS.  Only the Korean games are not
+  currently supported on DSi/XL/3DS.
+
+Updated:
+* Unset Parent IVs in the Egg Seed Searcher and Standard Seed Inspector's Eggs
+  tab no longer result in a 0 IV, instead giving an indication of which parent
+  is passing on the IV and preventing a potentially large number of false
+  positives when searching for Trick Room seeds
+* Fishing encounter slots now properly separated from Surfing encounter slots
+* Multiple natures can now be searched simultaneously in Gen 5
+* Trainer ID Searcher now gives a clearer indication of what kinds of encounters
+  are possible for a chosen PID frame from a given seed
+* Very small speed optimization for hashed seeds
+
+Fixed:
+* Fixed issue in Gen 5 Config panel where a config using a DS Phat did not
+  display the DS type correctly
+* Fixed an issue with the way that the IV search parameters checked for IV
+  patterns which could disable the faster searches unnecessarily
+* Edits in the current text cell are now properly recognized when a search is
+  started
 
 
 Known Issues in this version:
@@ -64,10 +93,33 @@ Known Issues in this version:
 
 Upcoming Features:
 
-* Generation 4 Support - Breeding (maybe some day...)
+* Generation 4 Support - Breeding (some day...)
+* Black / White 2 Support (pending research)
 
 
 Previous Releases:
+
+1.9.0
+
+* The Standard Seed Searcher is now 75% faster than before for all common
+  searches.  As long as you choose one of the IV patterns from the drop down
+  menu (you can still set more specific IVs for, for example, a specific hidden
+  power) and you are searching within the first 6 IV frames (there is not much
+  reason to search for other frames unless you really want something on a
+  particular date), you will benefit from the fact that PPRNG has all useful
+  seeds of these types precalculated.  This reduces the search time for a 30-day
+  month with up to 3 key presses on my 2008 Mac Book Pro (2 cores) from 35
+  minutes to 9 minutes.  If you choose to search with other parameters, PPRNG
+  will revert to the slower (though still relatively fast!) search.
+* Support for French and Spanish games on DSi/3DS added.
+* Wonder Card and Egg Seed searches experienced minor speed increases.
+* Fixed a bug in the CGear IV generation code that caused slightly wrong IVs to
+  be generated for the first 6 frames.
+* Fixed a crash that occurred when opening any of the windows before setting a
+  DS Type in the configuration.
+* Fixed the problem with the Standard Seed Searcher not opening in OS 10.5.
+* Made various cosmetic and behind-the-scenes code changes to clean up the
+  project code base in preparation for source release.
 
 1.8.2
 
