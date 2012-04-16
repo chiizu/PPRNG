@@ -22,7 +22,9 @@
 
 #import <Cocoa/Cocoa.h>
 #import "VertResizeOnlyWindowController.h"
+
 #import "Gen5ConfigurationController.h"
+#import "SearcherController.h"
 #import "IVParameterController.h"
 
 @interface CGearSeedInspectorController : VertResizeOnlyWindowController
@@ -56,6 +58,22 @@
   
   IBOutlet NSTableView            *adjacentsTableView;
   IBOutlet NSArrayController      *adjacentsContentArray;
+  
+  
+  BOOL      noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
+  
+  IBOutlet NSPopUpButton  *natureDropDown;
+  BOOL      isGenderless;
+  uint32_t  minClusterSize;
+  int32_t   secondsAdjustment;
+  
+  BOOL      startFromInitialPIDFrame;
+  uint32_t  minPIDFrame, maxPIDFrame;
+  
+  IBOutlet NSTableView         *naturesTableView;
+  IBOutlet NSArrayController   *naturesContentArray;
+  
+  IBOutlet SearcherController  *searcherController;
 }
 
 @property (copy) NSNumber  *seed, *baseDelay;
@@ -63,21 +81,34 @@
 @property uint32_t  minIVFrame, maxIVFrame;
 @property IVParameterController  *ivFrameParameterController;
 
+- (IBAction)generateIVFrames:(id)sender;
+
+- (void)selectAndShowFrame:(uint32_t)frame;
+
 @property uint32_t         year;
 @property (copy) NSNumber  *actualDelay;
 
 @property BOOL      considerSeconds;
 @property uint32_t  second;
 
+- (IBAction)calculateTimes:(id)sender;
+
 @property uint32_t  adjacentsDelayVariance, adjacentsTimeVariance;
 @property uint32_t  adjacentsMinIVFrame, adjacentsMaxIVFrame;
 @property IVParameterController  *adjacentsIVParameterController;
 
-- (IBAction)generateIVFrames:(id)sender;
-- (IBAction)calculateTimes:(id)sender;
 - (IBAction)generateAdjacents:(id)sender;
 - (IBAction)findAdjacent:(id)sender;
 
-- (void)selectAndShowFrame:(uint32_t)frame;
+@property BOOL  noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
+
+@property BOOL      isGenderless;
+@property uint32_t  minClusterSize;
+@property int32_t   secondsAdjustment;
+
+@property BOOL      startFromInitialPIDFrame;
+@property uint32_t  minPIDFrame, maxPIDFrame;
+
+- (IBAction)toggleDropDownChoice:(id)sender;
 
 @end

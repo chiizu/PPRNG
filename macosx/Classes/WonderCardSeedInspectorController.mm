@@ -231,7 +231,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
       [[WonderCardSeedInspectorFrame alloc] init];
     
     row.frame = frame.number;
-    row.chatotPitch = frame.chatotPitch;
+    row.chatotPitch = Chatot::Gen5Pitch(frame.rngValue);
     
     SetGen5PIDResult(row, frame.nature, frame.pid, p.cardTID, p.cardSID,
                      p.cardGender, p.cardGenderRatio);

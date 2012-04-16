@@ -23,8 +23,9 @@
 #import "CGearSeedInspectorController.h"
 
 #import "SearchResultProtocols.h"
+#import "StandardSeedInspectorController.h"
 
-#include "HashedSeed.h"
+#include "CGearNatureSearcher.h"
 #include "FrameGenerator.h"
 #include "Utilities.h"
 
@@ -83,6 +84,88 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
 @end
 
 
+@interface NatureSeedSearchResult : NSObject <HashedSeedResultParameters>
+{
+  DECLARE_HASHED_SEED_RESULT_PARAMETERS_VARIABLES();
+  
+  uint32_t      cgearTime;
+  Nature::Type  nature;
+  uint32_t      frame;
+  uint32_t      clusterSize;
+  BOOL          isGenderless;
+}
+
+@property uint32_t      cgearTime;
+@property Nature::Type  nature;
+@property uint32_t      frame;
+@property uint32_t      clusterSize;
+@property BOOL          isGenderless;
+
+@end
+
+@implementation NatureSeedSearchResult
+
+SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
+
+@synthesize cgearTime, nature, frame, clusterSize, isGenderless;
+
+@end
+
+
+namespace
+{
+
+struct ResultHandler
+{
+  ResultHandler(SearcherController *c, bool isGenderless)
+    : m_controller(c), m_isGenderless(isGenderless)
+  {}
+  
+  void operator()(const CGearNatureSearcher::CGearNatureFrame &frame)
+  {
+    NatureSeedSearchResult  *result = [[NatureSeedSearchResult alloc] init];
+    
+    SetHashedSeedResultParameters(result, frame.seed);
+    
+    result.cgearTime = MakeUInt32Time(frame.cgearTime.hour,
+                                      frame.cgearTime.minute,
+                                      frame.cgearTime.second);
+    result.nature = frame.nature;
+    result.frame = frame.number;
+    result.clusterSize = frame.clusterSize;
+    result.isGenderless = m_isGenderless;
+    
+    [m_controller performSelectorOnMainThread: @selector(addResult:)
+                  withObject: result
+                  waitUntilDone: NO];
+  }
+  
+  SearcherController  *m_controller;
+  const bool          m_isGenderless;
+};
+
+struct ProgressHandler
+{
+  ProgressHandler(SearcherController *c)
+    : controller(c)
+  {}
+  
+  bool operator()(double progressDelta)
+  {
+    [controller performSelectorOnMainThread: @selector(adjustProgress:)
+                withObject: [NSNumber numberWithDouble: progressDelta]
+                waitUntilDone: NO];
+    
+    return ![controller searchIsCanceled];
+  }
+  
+  SearcherController  *controller;
+};
+
+}
+
+
+
 @implementation CGearSeedInspectorController
 
 @synthesize seed, baseDelay;
@@ -95,6 +178,11 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
 @synthesize adjacentsDelayVariance, adjacentsTimeVariance;
 @synthesize adjacentsMinIVFrame, adjacentsMaxIVFrame;
 @synthesize adjacentsIVParameterController;
+
+@synthesize noButtonHeld, oneButtonHeld, twoButtonsHeld, threeButtonsHeld;
+@synthesize isGenderless, minClusterSize, secondsAdjustment;
+@synthesize startFromInitialPIDFrame;
+@synthesize minPIDFrame, maxPIDFrame;
 
 - (NSString *)windowNibName
 {
@@ -118,6 +206,33 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   self.adjacentsTimeVariance = 1;
   self.adjacentsMinIVFrame = 21;
   self.adjacentsMaxIVFrame = 26;
+  
+  [searcherController setGetValidatedSearchCriteriaSelector:
+                      @selector(getValidatedSearchCriteria)];
+  [searcherController setDoSearchWithCriteriaSelector:
+                      @selector(doSearchWithCriteria:)];
+  
+  [[searcherController tableView] setTarget: self];
+  [[searcherController tableView] setDoubleAction: @selector(inspectSeed:)];
+  
+  self.noButtonHeld = YES;
+  self.oneButtonHeld = NO;
+  self.twoButtonsHeld = NO;
+  self.threeButtonsHeld = NO;
+  
+  self.isGenderless = NO;
+  self.minClusterSize = 3;
+  self.secondsAdjustment = 0;
+  
+  self.startFromInitialPIDFrame = YES;
+  self.minPIDFrame = 50;
+  self.maxPIDFrame = 100;
+}
+
+- (void)windowWillClose:(NSNotification *)notification
+{
+  if ([searcherController isSearching])
+    [searcherController startStop: self];
 }
 
 - (void)updateActualDelay
@@ -165,6 +280,11 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
     year = newValue;
     [self updateActualDelay];
   }
+}
+
+- (IBAction)toggleDropDownChoice:(id)sender
+{
+  HandleComboMenuItemChoice(sender);
 }
 
 
@@ -400,5 +520,163 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
            contextInfo:nil];
   }
 }
+
+
+- (NSValue*)getValidatedSearchCriteria
+{
+  using namespace boost::gregorian;
+  using namespace boost::posix_time;
+  
+  if (!EndEditing([self window]))
+    return nil;
+  
+  if (!seed)
+    return nil;
+  
+  CGearNatureSearcher::Criteria  criteria;
+  
+  criteria.cgearSeed = [seed unsignedIntValue];
+  
+  criteria.hashedSeedParameters.macAddress = [gen5ConfigController macAddress];
+  
+  criteria.hashedSeedParameters.version = [gen5ConfigController version];
+  criteria.hashedSeedParameters.dsType = [gen5ConfigController dsType];
+  
+  criteria.hashedSeedParameters.timer0Low = [gen5ConfigController timer0Low];
+  criteria.hashedSeedParameters.timer0High = [gen5ConfigController timer0High];
+  
+  criteria.hashedSeedParameters.vcountLow = [gen5ConfigController vcountLow];
+  criteria.hashedSeedParameters.vcountHigh = [gen5ConfigController vcountHigh];
+  
+  criteria.hashedSeedParameters.vframeLow = [gen5ConfigController vframeLow];
+  criteria.hashedSeedParameters.vframeHigh = [gen5ConfigController vframeHigh];
+  
+  if (noButtonHeld)
+  {
+    criteria.hashedSeedParameters.heldButtons.push_back(0);  // no keys
+  }
+  if (oneButtonHeld)
+  {
+    criteria.hashedSeedParameters.heldButtons.insert
+      (criteria.hashedSeedParameters.heldButtons.end(),
+       Button::SingleButtons().begin(),
+       Button::SingleButtons().end());
+  }
+  if (twoButtonsHeld)
+  {
+    criteria.hashedSeedParameters.heldButtons.insert
+      (criteria.hashedSeedParameters.heldButtons.end(),
+       Button::TwoButtonCombos().begin(),
+       Button::TwoButtonCombos().end());
+  }
+  if (threeButtonsHeld)
+  {
+    criteria.hashedSeedParameters.heldButtons.insert
+      (criteria.hashedSeedParameters.heldButtons.end(),
+       Button::ThreeButtonCombos().begin(),
+       Button::ThreeButtonCombos().end());
+  }
+  
+  criteria.year = year;
+  
+  criteria.pid.natureMask = GetComboMenuBitMask(natureDropDown);
+  if (isGenderless)
+  {
+    criteria.pid.gender = Gender::GENDERLESS;
+    criteria.pid.genderRatio = Gender::NO_RATIO;
+  }
+  else
+  {
+    // just use any gender and ratio
+    criteria.pid.gender = Gender::FEMALE;
+    criteria.pid.genderRatio = Gender::ONE_HALF_FEMALE;
+  }
+  
+  criteria.pid.startFromLowestFrame = startFromInitialPIDFrame;
+  criteria.frameRange.min = minPIDFrame;
+  criteria.frameRange.max = maxPIDFrame;
+  
+  criteria.minClusterSize = minClusterSize;
+  criteria.secondsAdjustment = secondsAdjustment;
+  
+  return [NSValue valueWithPointer:new CGearNatureSearcher::Criteria(criteria)];
+}
+
+- (void)doSearchWithCriteria:(NSValue*)criteriaPtr
+{
+  std::auto_ptr<CGearNatureSearcher::Criteria> 
+    criteria(static_cast<CGearNatureSearcher::Criteria*>
+      ([criteriaPtr pointerValue]));
+  
+  CGearNatureSearcher  searcher;
+  
+  searcher.Search(*criteria,
+                  ResultHandler(searcherController,
+                                (criteria->pid.gender == Gender::GENDERLESS)),
+                  ProgressHandler(searcherController));
+}
+
+
+- (void)inspectSeed:(id)sender
+{
+  NSInteger  rowNum = [sender clickedRow];
+  
+  if (rowNum >= 0)
+  {
+    NatureSeedSearchResult  *row =
+      [[[searcherController arrayController] arrangedObjects]
+        objectAtIndex: rowNum];
+    
+    if (row != nil)
+    {
+      StandardSeedInspectorController  *inspector =
+        [[StandardSeedInspectorController alloc] init];
+      [inspector window];
+      
+      [inspector setSeedFromResult: row];
+      
+      HashedSeedInspectorFramesTabController *framesTab =
+        inspector.framesTabController;
+      HashedSeedInspectorAdjacentsTabController *adjacentsTab =
+        inspector.adjacentsTabController;
+      
+      framesTab.encounterLeadAbility = EncounterLead::OTHER;
+      adjacentsTab.encounterLeadAbility = EncounterLead::OTHER;
+      
+      if (row.isGenderless)
+      {
+        framesTab.targetGender = Gender::GENDERLESS;
+        framesTab.targetGenderRatio = Gender::NO_RATIO;
+      }
+      else
+      {
+        framesTab.targetGender = Gender::FEMALE;
+        framesTab.targetGenderRatio = Gender::ONE_HALF_FEMALE;
+      }
+      
+      adjacentsTab.targetGender = framesTab.targetGender;
+      adjacentsTab.targetGenderRatio = framesTab.targetGenderRatio;
+      
+      framesTab.encounterFrameType = Gen5PIDFrameGenerator::EntraLinkFrame;
+      adjacentsTab.encounterFrameType = Gen5PIDFrameGenerator::EntraLinkFrame;
+      
+      if (row.frame < [inspector.initialPIDFrame unsignedIntValue])
+      {
+        framesTab.startFromInitialPIDFrame = NO;
+        framesTab.minPIDFrame = 1;
+        adjacentsTab.matchOffsetFromInitialPIDFrame = NO;
+      }
+      
+      adjacentsTab.pidFrame = row.frame;
+      framesTab.maxPIDFrame = row.frame + 20;
+      
+      [framesTab generatePIDFrames: self];
+      [framesTab selectAndShowPIDFrame: row.frame];
+      
+      [inspector showWindow: self];
+    }
+  }
+}
+
 
 @end

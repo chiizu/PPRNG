@@ -97,7 +97,7 @@ struct Gen5PIDFrame
   
   const HashedSeed        seed;
   uint32_t                number;
-  uint32_t                chatotPitch;
+  uint64_t                rngValue;
   bool                    isEncounter;
   EncounterItem::Type     encounterItem;
   EncounterLead::Ability  leadAbility;
@@ -106,7 +106,6 @@ struct Gen5PIDFrame
   Nature::Type            nature;
   ESV::Value              esv;
   HeldItem::Type          heldItem;
-  uint32_t                ticks;
 };
 
 struct CGearIVFrame
@@ -131,7 +130,7 @@ struct WonderCardFrame
   
   const HashedSeed  seed;
   uint32_t          number;
-  uint32_t          chatotPitch;
+  uint64_t          rngValue;
   PID               pid;
   Nature::Type      nature;
   bool              hasHiddenAbility;
@@ -158,7 +157,7 @@ struct Gen5BreedingFrame
   
   const HashedSeed  seed;
   uint32_t          number;
-  uint32_t          chatotPitch;
+  uint64_t          rngValue;
   bool              everstoneActivated;
   bool              inheritsHiddenAbility;
   EggSpecies::Type  species;

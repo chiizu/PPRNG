@@ -44,6 +44,9 @@
   BOOL      startFromInitialPIDFrame;
   uint32_t  minPIDFrame, maxPIDFrame;
   
+  BOOL      isEntralink;
+  uint32_t  cgearStartOffset;
+  
   IBOutlet NSTableView                  *pidFrameTableView;
   IBOutlet NSArrayController            *pidFrameContentArray;
   
@@ -65,6 +68,9 @@
 
 @property BOOL      startFromInitialPIDFrame;
 @property uint32_t  minPIDFrame, maxPIDFrame;
+
+@property BOOL      isEntralink;
+@property uint32_t  cgearStartOffset;
 
 @property uint32_t   minIVFrame, maxIVFrame;
 @property (readonly) IVParameterController  *ivParameterController;

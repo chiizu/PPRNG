@@ -23,16 +23,6 @@
 
 using namespace pprng;
 
-namespace
-{
-
-static uint32_t CalcGen5ChatotPitch(uint64_t rawRNGValue)
-{
-  return ((rawRNGValue >> 32) * 0x1FFF) >> 32;
-}
-
-}
-
 namespace pprng
 {
 
@@ -51,6 +41,15 @@ CGearIVFrameGenerator::CGearIVFrameGenerator(uint32_t seed, FrameType frameType,
   }
 }
 
+void CGearIVFrameGenerator::SkipFrames(uint32_t numFrames)
+{
+  uint32_t  i = 0;
+  while (i++ < numFrames)
+    m_IVRNG.NextIVWord();
+  
+  m_frame.number += numFrames;
+}
+
 void CGearIVFrameGenerator::AdvanceFrame()
 {
   ++m_frame.number;
@@ -66,6 +65,15 @@ HashedIVFrameGenerator::HashedIVFrameGenerator
   m_frame.number = 0;
 }
 
+void HashedIVFrameGenerator::SkipFrames(uint32_t numFrames)
+{
+  uint32_t  i = 0;
+  while (i++ < numFrames)
+    m_IVRNG.NextIVWord();
+  
+  m_frame.number += numFrames;
+}
+
 void HashedIVFrameGenerator::AdvanceFrame()
 {
   ++m_frame.number;
@@ -79,18 +87,16 @@ Gen5PIDFrameGenerator::Gen5PIDFrameGenerator
     m_PIDFrameGenerator
       (s_FrameGeneratorInfo[parameters.frameType].pidFrameGenerator),
     m_ESVGenerator(s_FrameGeneratorInfo[parameters.frameType].esvGenerator),
-    m_RNG(seed.rawSeed), m_frame(seed), m_parameters(parameters),
-    m_cgearFrameTimeGenerator()
+    m_RNG(seed.rawSeed), m_frame(seed), m_parameters(parameters)
 {
   m_frame.number = 0;
-  m_frame.chatotPitch = 0;
+  m_frame.rngValue = 0;
   m_frame.leadAbility = parameters.leadAbility;
   m_frame.isEncounter = true;
   m_frame.encounterItem = EncounterItem::NONE;
   m_frame.abilityActivated = (parameters.frameType != EntraLinkFrame);
   m_frame.esv = ESV::NO_SLOT;
   m_frame.heldItem = HeldItem::NO_ITEM;
-  m_frame.ticks = 0;
   
   if (parameters.startFromLowestFrame)
   {
@@ -103,12 +109,21 @@ Gen5PIDFrameGenerator::Gen5PIDFrameGenerator
   }
 }
 
+void Gen5PIDFrameGenerator::SkipFrames(uint32_t numFrames)
+{
+  uint32_t  i = 0;
+  while (i++ < numFrames)
+    m_RNG.AdvanceBuffer();
+  
+  m_frame.number += numFrames;
+}
+
 void Gen5PIDFrameGenerator::AdvanceFrame()
 {
   m_RNG.AdvanceBuffer();
   
   ++m_frame.number;
-  m_frame.chatotPitch = CalcGen5ChatotPitch(m_RNG.PeekNext());
+  m_frame.rngValue = m_RNG.PeekNext();
   
   (this->*m_PIDFrameGenerator)();
 }
@@ -372,10 +387,14 @@ void Gen5PIDFrameGenerator::NextStationaryFrame()
 
 void Gen5PIDFrameGenerator::NextEntraLinkFrame()
 {
-  m_cgearFrameTimeGenerator.AdvanceFrame(m_RNG.PeekNext());
-  m_frame.ticks = m_cgearFrameTimeGenerator.GetTicks();
+  NextEntraLinkPID();
   
-  NextSimpleFrame();
+  // skip 3 frames for something...
+  m_RNG.Next();
+  m_RNG.Next();
+  m_RNG.Next();
+  
+  m_frame.nature = Nature::Type(((m_RNG.Next() >> 32) * 25) >> 32);
 }
 
 void Gen5PIDFrameGenerator::NextSimpleFrame()
@@ -494,12 +513,23 @@ WonderCardFrameGenerator::WonderCardFrameGenerator(const HashedSeed &seed,
   }
 }
 
+void WonderCardFrameGenerator::SkipFrames(uint32_t numFrames)
+{
+  uint32_t  i = 0;
+  while (i++ < numFrames)
+  {
+    m_RNG.AdvanceBuffer();
+    m_IVRNG.NextIVWord();
+  }
+  m_frame.number += numFrames;
+}
+
 void WonderCardFrameGenerator::AdvanceFrame()
 {
   m_RNG.AdvanceBuffer();
   
   ++m_frame.number;
-  m_frame.chatotPitch = CalcGen5ChatotPitch(m_RNG.PeekNext());
+  m_frame.rngValue = m_RNG.PeekNext();
   
   m_frame.ivs = m_IVRNG.NextIVWord();
   
@@ -578,8 +608,7 @@ void Gen5BreedingFrameGenerator::AdvanceFrame()
   
   ++m_frame.number;
   
-  uint64_t  rawRNGValue = m_RNG.Next();
-  m_frame.chatotPitch = CalcGen5ChatotPitch(rawRNGValue);
+  m_frame.rngValue = m_RNG.Next();
   
   switch (m_parameters.femaleSpecies)
   {
@@ -589,12 +618,12 @@ void Gen5BreedingFrameGenerator::AdvanceFrame()
     break;
     
   case FemaleParent::NIDORAN_FEMALE:
-    m_frame.species = (rawRNGValue >> 63) ?
+    m_frame.species = (m_frame.rngValue >> 63) ?
       EggSpecies::NIDORAN_M : EggSpecies::NIDORAN_F;
     break;
     
   case FemaleParent::ILLUMISE:
-    m_frame.species = (rawRNGValue >> 63) ?
+    m_frame.species = (m_frame.rngValue >> 63) ?
       EggSpecies::ILLUMISE : EggSpecies::VOLBEAT;
     break;
   }

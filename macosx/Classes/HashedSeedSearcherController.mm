@@ -530,7 +530,7 @@ struct ResultHandler
                   waitUntilDone: NO];
     }
   }
-    
+  
   SearcherController  *controller;
   const GUICriteria   &m_criteria;
 };

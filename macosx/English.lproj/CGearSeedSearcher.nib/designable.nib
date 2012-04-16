@@ -1383,6 +1383,7 @@
 											<string>allowsFloats</string>
 											<string>formatterBehavior</string>
 											<string>locale</string>
+											<string>maximum</string>
 											<string>minimum</string>
 											<string>negativeInfinitySymbol</string>
 											<string>nilSymbol</string>
@@ -1394,6 +1395,7 @@
 											<boolean value="YES"/>
 											<integer value="1040"/>
 											<reference ref="151620929"/>
+											<real value="65535"/>
 											<real value="0.0"/>
 											<string>-∞</string>
 											<string/>
@@ -1414,7 +1416,7 @@
 										<reference key="NSAttributes" ref="681606789"/>
 									</object>
 									<real value="0.0" key="NS.min"/>
-									<reference key="NS.max" ref="495098669"/>
+									<real value="65535" key="NS.max"/>
 									<object class="NSDecimalNumberHandler" key="NS.rounding">
 										<int key="NS.roundingmode">3</int>
 										<bool key="NS.raise.overflow">YES</bool>
@@ -1470,6 +1472,7 @@
 											<string>allowsFloats</string>
 											<string>formatterBehavior</string>
 											<string>locale</string>
+											<string>maximum</string>
 											<string>minimum</string>
 											<string>negativeInfinitySymbol</string>
 											<string>nilSymbol</string>
@@ -1481,6 +1484,7 @@
 											<boolean value="YES"/>
 											<integer value="1040"/>
 											<reference ref="151620929"/>
+											<real value="65535"/>
 											<real value="0.0"/>
 											<string>-∞</string>
 											<string/>
@@ -1501,7 +1505,7 @@
 										<reference key="NSAttributes" ref="681606789"/>
 									</object>
 									<real value="0.0" key="NS.min"/>
-									<reference key="NS.max" ref="495098669"/>
+									<real value="65535" key="NS.max"/>
 									<object class="NSDecimalNumberHandler" key="NS.rounding">
 										<int key="NS.roundingmode">3</int>
 										<bool key="NS.raise.overflow">YES</bool>

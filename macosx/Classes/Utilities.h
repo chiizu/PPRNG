@@ -53,7 +53,7 @@ extern boost::posix_time::ptime
 extern NSString* HeldItemString(pprng::HeldItem::Type t);
 extern NSString* GetGen5PIDFrameDetails
   (const pprng::Gen5PIDFrame &frame,
-   pprng::Gen5PIDFrameGenerator::Parameters &params);
+   pprng::Gen5PIDFrameGenerator::Parameters &params, uint32_t cgearTicks);
 extern NSString* GetCGearFrameTime(uint32_t ticks);
 extern NSString* SpeciesString(pprng::EggSpecies::Type eggSpecies);
 

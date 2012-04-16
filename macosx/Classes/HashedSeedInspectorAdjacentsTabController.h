@@ -50,6 +50,9 @@
   BOOL                  genderRatioRequired;
   pprng::Gender::Ratio  targetGenderRatio;
   
+  BOOL      isEntralink;
+  uint32_t  cgearStartOffset;
+  
   IBOutlet NSTableView            *adjacentsTableView;
   IBOutlet NSArrayController      *adjacentsContentArray;
 }
@@ -71,6 +74,9 @@
 @property pprng::Gender::Type   targetGender;
 @property BOOL                  genderRatioRequired;
 @property pprng::Gender::Ratio  targetGenderRatio;
+
+@property BOOL      isEntralink;
+@property uint32_t  cgearStartOffset;
 
 - (IBAction)generateAdjacents:(id)sender;
 

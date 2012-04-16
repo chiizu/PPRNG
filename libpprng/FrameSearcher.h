@@ -47,10 +47,9 @@ public:
     bool      found = false;
     
     limitFrame = frameRange.min - 1;
-    while (m_FrameGenerator.CurrentFrame().number < limitFrame)
-    {
-      m_FrameGenerator.AdvanceFrame();
-    }
+    if (m_FrameGenerator.CurrentFrame().number < limitFrame)
+      m_FrameGenerator.SkipFrames(limitFrame -
+                                  m_FrameGenerator.CurrentFrame().number);
     
     limitFrame = frameRange.max;
     while ((m_FrameGenerator.CurrentFrame().number < limitFrame) && !found)

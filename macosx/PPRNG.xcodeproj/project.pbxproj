@@ -90,6 +90,7 @@
 		C0E304631346349900C56C1A /* WonderCardSeedInspectorController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E3044E1346349900C56C1A /* WonderCardSeedInspectorController.mm */; };
 		C0E304641346349900C56C1A /* WonderCardSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */; };
 		C0E30466134634BF00C56C1A /* Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = C0E30465134634BF00C56C1A /* Icon.icns */; };
+		C0F864FF1529DB7A00E4FA89 /* CGearNatureSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0F864FD1529DB7A00E4FA89 /* CGearNatureSearcher.cpp */; };
 		C0FA492C14433018004DA9A3 /* Gen4ConfigurationEditController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0FA492B14433018004DA9A3 /* Gen4ConfigurationEditController.mm */; };
 /* End PBXBuildFile section */
 
@@ -257,6 +258,8 @@
 		C0E3044F1346349900C56C1A /* WonderCardSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderCardSeedSearcherController.h; sourceTree = "<group>"; };
 		C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WonderCardSeedSearcherController.mm; sourceTree = "<group>"; };
 		C0E30465134634BF00C56C1A /* Icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Icon.icns; sourceTree = "<group>"; };
+		C0F864FD1529DB7A00E4FA89 /* CGearNatureSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGearNatureSearcher.cpp; sourceTree = "<group>"; };
+		C0F864FE1529DB7A00E4FA89 /* CGearNatureSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGearNatureSearcher.h; sourceTree = "<group>"; };
 		C0FA492A14433018004DA9A3 /* Gen4ConfigurationEditController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4ConfigurationEditController.h; sourceTree = "<group>"; };
 		C0FA492B14433018004DA9A3 /* Gen4ConfigurationEditController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Gen4ConfigurationEditController.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -470,6 +473,8 @@
 			children = (
 				C0E303F81346343400C56C1A /* PPRNGTypes.cpp */,
 				C0E303F91346343400C56C1A /* PPRNGTypes.h */,
+				C0F864FD1529DB7A00E4FA89 /* CGearNatureSearcher.cpp */,
+				C0F864FE1529DB7A00E4FA89 /* CGearNatureSearcher.h */,
 				C0E303FA1346343400C56C1A /* CGearSeed.h */,
 				C0E303FB1346343400C56C1A /* CGearSeedSearcher.cpp */,
 				C0E303FC1346343400C56C1A /* CGearSeedSearcher.h */,
@@ -661,6 +666,7 @@
 				C0DA5AB9152598140011A473 /* ProfElmResponsesTransformer.mm in Sources */,
 				C0DA5ABC152598220011A473 /* VersionTransformer.mm in Sources */,
 				C0DA5ACA15259C630011A473 /* StandardSeedInspectorController.mm in Sources */,
+				C0F864FF1529DB7A00E4FA89 /* CGearNatureSearcher.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

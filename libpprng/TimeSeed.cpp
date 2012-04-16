@@ -30,7 +30,7 @@ namespace pprng
 TimeSeed::TimeElements
 TimeSeed::GetTimeElements(uint32_t year, uint32_t wantedSecond) const
 {
-  std::vector<TimeElement>  result;
+  TimeElements  result;
   
   uint32_t  seedMoDayMinSec = (m_seed >> 24) & 0xff;
   uint32_t  hour = Hour();
@@ -51,13 +51,15 @@ TimeSeed::GetTimeElements(uint32_t year, uint32_t wantedSecond) const
   {
     date  d(year, month, 1);
     
-    while (d.month() == month)
+    uint32_t  lastDay = d.end_of_month().day();
+    
+    for (uint32_t day = 1; day <= lastDay; ++day)
     {
       for (uint32_t minute = 0; minute < 60; ++minute)
       {
         for (uint32_t second = startSecond; second <= endSecond; ++second)
         {
-          uint32_t  moDayMinSec = ((month * d.day()) + minute + second) & 0xff;
+          uint32_t  moDayMinSec = ((month * day) + minute + second) & 0xff;
           
           if (seedMoDayMinSec == moDayMinSec)
           {
@@ -65,7 +67,7 @@ TimeSeed::GetTimeElements(uint32_t year, uint32_t wantedSecond) const
             
             element.year = year;
             element.month = month;
-            element.day = d.day();
+            element.day = day;
             element.hour = hour;
             element.minute = minute;
             element.second = second;
@@ -75,8 +77,6 @@ TimeSeed::GetTimeElements(uint32_t year, uint32_t wantedSecond) const
           }
         }
       }
-      
-      d = d + date_duration(1);
     }
   }
   

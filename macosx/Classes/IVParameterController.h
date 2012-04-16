@@ -26,6 +26,7 @@
 @interface IVParameterController : NSObject
 {
   pprng::IVPattern::Type  ivPattern;
+  BOOL                    isSettingPattern;
   uint32_t                minHP, minAT, minDF, minSA, minSD, minSP;
   uint32_t                maxHP, maxAT, maxDF, maxSA, maxSD, maxSP;
   BOOL                    considerHiddenPower;

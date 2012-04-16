@@ -49,6 +49,15 @@ public:
     m_frame.number = 0;
   }
   
+  void SkipFrames(uint32_t numFrames)
+  {
+    uint32_t  i = 0;
+    while (i++ < numFrames)
+      m_RNG.AdvanceBuffer();
+    
+    m_frame.number += numFrames;
+  }
+  
   void AdvanceFrame()
   {
     m_RNG.AdvanceBuffer();
@@ -279,6 +288,8 @@ public:
   CGearIVFrameGenerator(uint32_t seed, FrameType frameType,
                         bool skipFirstTwoFrames = true);
   
+  void SkipFrames(uint32_t numFrames);
+  
   void AdvanceFrame();
   
   const Frame& CurrentFrame() { return m_frame; }
@@ -289,56 +300,6 @@ private:
   Frame           m_frame;
 };
 
-// design blatantly stolen from RNG Reporter
-class CGearFrameTimeGenerator
-{
-public:
-  CGearFrameTimeGenerator()
-    : m_state(StartState), m_totalTicks(0), m_currentTicks(0)
-  {}
-  
-  uint32_t GetTicks() { return m_currentTicks; }
-  
-  void AdvanceFrame(uint64_t rawRNGValue)
-  {
-    switch (m_state)
-    {
-    case StartState:
-      m_currentTicks = m_totalTicks = 21;
-      m_state = SkippedState;
-      break;
-      
-    case SkippedState:
-    default:
-      m_currentTicks = 0;
-      m_state = LongState;
-      break;
-      
-    case LongState:
-      m_currentTicks = m_totalTicks += (((rawRNGValue >> 32) * 152) >> 32) + 60;
-      m_state = ShortState;
-      break;
-      
-    case ShortState:
-      m_currentTicks = m_totalTicks += (((rawRNGValue >> 32) * 40) >> 32) + 60;
-      m_state = SkippedState;
-      break;
-    }
-  }
-  
-private:
-  enum State
-  {
-    StartState,
-    SkippedState,
-    LongState,
-    ShortState
-  };
-  
-  State     m_state;
-  uint32_t  m_totalTicks;
-  uint32_t  m_currentTicks;
-};
 
 class HashedIVFrameGenerator
 {
@@ -355,6 +316,8 @@ public:
   };
   
   HashedIVFrameGenerator(const HashedSeed &seed, FrameType frameType);
+  
+  void SkipFrames(uint32_t numFrames);
   
   void AdvanceFrame();
   
@@ -411,6 +374,8 @@ public:
   };
   
   Gen5PIDFrameGenerator(const HashedSeed &seed, const Parameters &parameters);
+  
+  void SkipFrames(uint32_t numFrames);
   
   void AdvanceFrame();
   
@@ -470,7 +435,6 @@ private:
   RNG                      m_RNG;
   Frame                    m_frame;
   const Parameters         m_parameters;
-  CGearFrameTimeGenerator  m_cgearFrameTimeGenerator;
 };
 
 
@@ -504,6 +468,8 @@ public:
   WonderCardFrameGenerator(const HashedSeed &seed,
                            const Parameters &parameters);
   
+  void SkipFrames(uint32_t numFrames);
+  
   void AdvanceFrame();
   
   const Frame& CurrentFrame() { return m_frame; }
@@ -530,6 +496,15 @@ public:
       m_frame(seed)
   {
     m_frame.number = 0;
+  }
+  
+  void SkipFrames(uint32_t numFrames)
+  {
+    uint32_t  i = 0;
+    while (i++ < numFrames)
+      m_RNG.Next();
+    
+    m_frame.number += numFrames;
   }
   
   void AdvanceFrame()

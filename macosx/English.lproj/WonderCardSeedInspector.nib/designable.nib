@@ -22548,9 +22548,9 @@ IC0gMTAwJSk</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1274, 86}, {962, 727}}</string>
+					<string>{{-1228, 143}, {962, 727}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1274, 86}, {962, 727}}</string>
+					<string>{{-1228, 143}, {962, 727}}</string>
 					<integer value="1"/>
 					<string>{196, 240}</string>
 					<string>{{357, 418}, {480, 270}}</string>
@@ -23078,11 +23078,10 @@ IC0gMTAwJSk</string>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSMutableDictionary">
-						<string key="NS.key.0">ToolTip</string>
-						<object class="IBToolTipAttribute" key="NS.object.0">
-							<string key="name">ToolTip</string>
-							<reference key="object" ref="971762255"/>
-							<string key="toolTip">When set, PID frame search will start from the lowest possible PID frame for the given seed (generally somewhere in the range 40 - 60)</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<reference key="dict.sortedKeys" ref="0"/>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
 						</object>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -23786,7 +23785,7 @@ IC0gMTAwJSk</string>
 						<object class="IBToolTipAttribute" key="NS.object.0">
 							<string key="name">ToolTip</string>
 							<reference key="object" ref="456430572"/>
-							<string key="toolTip">Set this to the ability number that is set on the Wonder Card (if the Pokemon has more than one ability), or leave as 'Any' if there is not a fixed ability</string>
+							<string key="toolTip">Set this to the ability number that is set on the Wonder Card (if the Pokemon has more than one ability), or leave as 'Any' if there is not a fixed ability.  For Pokémon with only one ability, set this to 0.</string>
 						</object>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -23834,7 +23833,7 @@ IC0gMTAwJSk</string>
 						<object class="IBToolTipAttribute" key="NS.object.0">
 							<string key="name">ToolTip</string>
 							<reference key="object" ref="720787019"/>
-							<string key="toolTip">Set this to the ability number that is set on the Wonder Card (if the Pokemon has more than one ability), or leave as 'Any' if there is not a fixed ability</string>
+							<string key="toolTip">Set this to shininess setting of the Wonder Card.</string>
 						</object>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>

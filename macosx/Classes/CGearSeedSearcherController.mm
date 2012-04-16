@@ -119,8 +119,8 @@ struct ProgressHandler
   
   self.minFrame = 21;
   self.maxFrame = 26;
-  self.minDelay = 1800;
-  self.maxDelay = 3000;
+  self.minDelay = 6000;
+  self.maxDelay = 15000;
 }
 
 - (void)windowWillClose:(NSNotification *)notification
@@ -182,6 +182,8 @@ struct ProgressHandler
   criteria.maxDelay = maxDelay;
   criteria.frameRange.min = minFrame;
   criteria.frameRange.max = maxFrame;
+  
+  criteria.ivs.pattern = ivParameterController.ivPattern;
   
   criteria.ivs.min = ivParameterController.minIVs;
   criteria.ivs.max = ivParameterController.maxIVs;

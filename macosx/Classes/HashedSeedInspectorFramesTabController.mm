@@ -85,17 +85,22 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
 @synthesize genderRatioRequired, targetGenderRatio;
 @synthesize startFromInitialPIDFrame;
 @synthesize minPIDFrame, maxPIDFrame;
+@synthesize isEntralink, cgearStartOffset;
 @synthesize minIVFrame, maxIVFrame;
 @synthesize ivParameterController;
 
 - (void)checkGenderSettingsRequired
 {
   self.genderRequired =
-    (encounterLeadAbility == EncounterLead::CUTE_CHARM) ||
+    ((encounterLeadAbility == EncounterLead::CUTE_CHARM) &&
+     (encounterFrameType != Gen5PIDFrameGenerator::StarterFossilGiftFrame) &&
+     (encounterFrameType != Gen5PIDFrameGenerator::RoamerFrame)) ||
     (encounterFrameType == Gen5PIDFrameGenerator::EntraLinkFrame);
   
   if (!genderRequired)
     self.targetGender = Gender::GENDERLESS;
+  else if (!isEntralink && (targetGender == Gender::GENDERLESS))
+    self.targetGender = Gender::FEMALE;
   
   self.genderRatioRequired = genderRequired &&
                              (targetGender != Gender::GENDERLESS);
@@ -106,6 +111,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   if (newFrameType != encounterFrameType)
   {
     encounterFrameType = newFrameType;
+    self.isEntralink = (newFrameType == Gen5PIDFrameGenerator::EntraLinkFrame);
     [self checkGenderSettingsRequired];
   }
 }
@@ -142,6 +148,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   self.encounterLeadAbility = EncounterLead::SYNCHRONIZE;
   self.targetGender = Gender::GENDERLESS;
   self.targetGenderRatio = Gender::NO_RATIO;
+  self.cgearStartOffset = 3;
   self.startFromInitialPIDFrame = YES;
   self.minPIDFrame = 50;
   self.maxPIDFrame = 500;
@@ -176,13 +183,15 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   
   p.startFromLowestFrame = startFromInitialPIDFrame;
   
-  Gen5PIDFrameGenerator  generator(seed, p);
+  Gen5PIDFrameGenerator    generator(seed, p);
   
   while (frameNum < minFrame)
   {
     generator.AdvanceFrame();
     ++frameNum;
   }
+  
+  CGearFrameTime  cgearTime(cgearStartOffset);
   
   NSMutableArray  *rowArray =
     [NSMutableArray arrayWithCapacity: maxPIDFrame - minFrame];
@@ -194,11 +203,13 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
     
     Gen5PIDFrame  frame = generator.CurrentFrame();
     
+    cgearTime.AdvanceFrame(frame.rngValue);
+    
     HashedSeedInspectorPIDFrame  *result =
       [[HashedSeedInspectorPIDFrame alloc] init];
     
     result.frame = frame.number;
-    result.chatotPitch = frame.chatotPitch;
+    result.chatotPitch = Chatot::Gen5Pitch(frame.rngValue);
     SetGen5PIDResult(result, frame.nature, frame.pid, p.tid, p.sid, p.targetGender,
                      ((p.leadAbility == EncounterLead::CUTE_CHARM) &&
                       (p.frameType != Gen5PIDFrameGenerator::EntraLinkFrame)) ?
@@ -207,7 +218,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
                         p.targetRatio);
     result.esv = frame.esv;
     result.heldItem = frame.heldItem;
-    result.details = GetGen5PIDFrameDetails(frame, p);
+    result.details = GetGen5PIDFrameDetails(frame, p, cgearTime.GetTicks());
     
     [rowArray addObject: result];
   }

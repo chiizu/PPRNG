@@ -62,7 +62,7 @@ static const char *NatureNameArray[] =
 { "Hardy", "Lonely", "Brave", "Adamant", "Naughty", "Bold", "Docile", "Relaxed",
   "Impish", "Lax", "Timid", "Hasty", "Serious", "Jolly", "Naive", "Modest",
   "Mild", "Quiet", "Bashful", "Rash", "Calm", "Gentle", "Sassy", "Careful",
-  "Quirky", "Any", "<SYNC>", "<ES>" };
+  "Quirky", "Any", "<SYNC>", "<ES>", "<MIXED>" };
 
 static const std::vector<std::string>  NatureName
   (NatureNameArray, NatureNameArray +
@@ -292,7 +292,7 @@ std::string Game::ToString(Game::Version v)
 
 const std::string& Nature::ToString(Nature::Type t)
 {
-  if ((t >= HARDY) && (t <= EVERSTONE))
+  if ((t >= HARDY) && (t <= MIXED))
   {
     return NatureName[t];
   }

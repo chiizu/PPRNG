@@ -206,7 +206,8 @@ struct Nature
     
     // used to indicate synchronize/everstone was activated
     SYNCHRONIZE,
-    EVERSTONE
+    EVERSTONE,
+    MIXED
   };
   
   static const std::string& ToString(Type t);
@@ -1223,6 +1224,77 @@ struct HGSSRoamers
   uint32_t Location(Roamer r) const
   { return (word >> (LOCATION_BITS * r)) & LOCATION_MASK; }
 };
+
+
+struct Chatot
+{
+
+static uint32_t Gen5Pitch(uint64_t rawRNGValue)
+{
+  return ((rawRNGValue >> 32) * 0x1FFF) >> 32;
+}
+
+};
+
+
+// design blatantly stolen from RNG Reporter, with adjustment
+class CGearFrameTime
+{
+public:
+  CGearFrameTime(uint32_t startOffset)
+    : m_state(StartState), m_totalTicks(startOffset), m_currentTicks(0)
+  {}
+  
+  uint32_t GetTicks() { return m_currentTicks; }
+  
+  void AdvanceFrame(uint64_t rawRNGValue)
+  {
+    switch (m_state)
+    {
+    case StartState:
+      if (m_totalTicks > 0)
+      {
+        --m_totalTicks;
+      }
+      else
+      {
+        m_currentTicks = m_totalTicks = 21;
+        m_state = SkippedState;
+      }
+      break;
+      
+    case SkippedState:
+    default:
+      m_currentTicks = 0;
+      m_state = LongState;
+      break;
+      
+    case LongState:
+      m_currentTicks = m_totalTicks += (((rawRNGValue >> 32) * 152) >> 32) + 60;
+      m_state = ShortState;
+      break;
+      
+    case ShortState:
+      m_currentTicks = m_totalTicks += (((rawRNGValue >> 32) * 40) >> 32) + 60;
+      m_state = SkippedState;
+      break;
+    }
+  }
+  
+private:
+  enum State
+  {
+    StartState = 0,
+    SkippedState,
+    LongState,
+    ShortState
+  };
+  
+  State     m_state;
+  uint32_t  m_totalTicks;
+  uint32_t  m_currentTicks;
+};
+
 
 }
 

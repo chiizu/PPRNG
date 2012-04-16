@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="2"/>
+			<integer value="1"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1421,6 +1421,7 @@
 															<reference key="NSOnImage" ref="317631821"/>
 															<reference key="NSMixedImage" ref="464249196"/>
 															<string key="NSAction">_popUpItemAction:</string>
+															<int key="NSTag">-2</int>
 															<reference key="NSTarget" ref="232961412"/>
 														</object>
 														<object class="NSMenuItem" id="81610847">
@@ -1764,6 +1765,7 @@
 															<reference key="NSOnImage" ref="317631821"/>
 															<reference key="NSMixedImage" ref="464249196"/>
 															<string key="NSAction">_popUpItemAction:</string>
+															<int key="NSTag">-2</int>
 															<reference key="NSTarget" ref="887467472"/>
 														</object>
 														<object class="NSMenuItem" id="89699965">
@@ -1860,6 +1862,7 @@
 															<reference key="NSOnImage" ref="317631821"/>
 															<reference key="NSMixedImage" ref="464249196"/>
 															<string key="NSAction">_popUpItemAction:</string>
+															<int key="NSTag">-2</int>
 															<reference key="NSTarget" ref="887467472"/>
 														</object>
 														<object class="NSMenuItem" id="893716340">

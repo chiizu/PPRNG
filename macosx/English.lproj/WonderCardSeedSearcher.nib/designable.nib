@@ -6260,7 +6260,7 @@
 							<object class="NSTextFieldCell" key="NSTitleCell">
 								<int key="NSCellFlags">67239424</int>
 								<int key="NSCellFlags2">0</int>
-								<string key="NSContents">PID Attributes</string>
+								<string key="NSContents">Desired Attributes</string>
 								<reference key="NSSupport" ref="26"/>
 								<reference key="NSBackgroundColor" ref="240554737"/>
 								<object class="NSColor" key="NSTextColor">
@@ -12950,7 +12950,7 @@
 						<object class="IBToolTipAttribute" key="NS.object.0">
 							<string key="name">ToolTip</string>
 							<reference key="object" ref="523090112"/>
-							<string key="toolTip">Set this to the ability number that is set on the Wonder Card (if the Pokemon has more than one ability), or leave as 'Any' if there is not a fixed ability</string>
+							<string key="toolTip">Set this to the ability number that is set on the Wonder Card (if the Pokemon has more than one ability), or leave as 'Any' if there is not a fixed ability.  Set this to 0 if the Pokemon has only one ability.</string>
 						</object>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -13135,7 +13135,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-703, 430}, {107, 163}}</string>
+					<string>{{-754, 690}, {107, 163}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSMutableDictionary">
@@ -13260,11 +13260,10 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSMutableDictionary">
-						<string key="NS.key.0">ToolTip</string>
-						<object class="IBToolTipAttribute" key="NS.object.0">
-							<string key="name">ToolTip</string>
-							<reference key="object" ref="790340645"/>
-							<string key="toolTip">Set this to the ability number that is set on the Wonder Card (if the Pokemon has more than one ability), or leave as 'Any' if there is not a fixed ability</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<reference key="dict.sortedKeys" ref="0"/>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
 						</object>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -13296,7 +13295,7 @@
 						<object class="IBToolTipAttribute" key="NS.object.0">
 							<string key="name">ToolTip</string>
 							<reference key="object" ref="564296094"/>
-							<string key="toolTip">Set this to the ability number that is set on the Wonder Card (if the Pokemon has more than one ability), or leave as 'Any' if there is not a fixed ability</string>
+							<string key="toolTip">Set this to shininess setting of the Wonder Card.</string>
 						</object>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -13732,7 +13731,7 @@
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
-						<bytes key="NSTransformStruct">P4AAAL+AAABEEcAAw7WAAA</bytes>
+						<bytes key="NSTransformStruct">P4AAAL+AAABDvIAAwngAAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">

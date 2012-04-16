@@ -22,7 +22,7 @@
 #define TIME_SEED_H
 
 #include "PPRNGTypes.h"
-#include <vector>
+#include <list>
 
 namespace pprng
 {
@@ -39,7 +39,7 @@ struct TimeSeed
     uint32_t  second;
     uint32_t  delay;
   };
-  typedef std::vector<TimeElement>  TimeElements;
+  typedef std::list<TimeElement>  TimeElements;
   
   TimeSeed(uint32_t seed)
     : m_seed(seed)

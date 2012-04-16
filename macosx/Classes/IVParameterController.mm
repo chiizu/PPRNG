@@ -52,6 +52,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
 
 - (void)awakeFromNib
 {
+  isSettingPattern = NO;
   [self setMinIVs: IVs(0, 0, 0, 0, 0, 0)];
   [self setMaxIVs: IVs(31, 31, 31, 31, 31, 31)];
   
@@ -115,6 +116,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
   if (newIvPattern != ivPattern)
   {
     ivPattern = newIvPattern;
+    isSettingPattern = YES;
     
     if (ivPattern != IVPattern::CUSTOM)
     {
@@ -173,6 +175,7 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.considerHiddenPower = shouldCheckHiddenPower;
       self.minHiddenPower = 70;
     }
+    isSettingPattern = NO;
   }
 }
 
@@ -187,7 +190,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.maxHP = newValue;
     }
     
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -202,7 +206,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.maxAT = newValue;
     }
     
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -217,7 +222,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.maxDF = newValue;
     }
     
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -232,7 +238,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.maxSA = newValue;
     }
     
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -247,7 +254,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.maxSD = newValue;
     }
     
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -262,7 +270,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.maxSP = newValue;
     }
     
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -301,7 +310,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.minHP = newValue;
     }
     
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -316,7 +326,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.minAT = newValue;
     }
     
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -331,7 +342,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.minDF = newValue;
     }
     
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -346,7 +358,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.minSA = newValue;
     }
     
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -361,7 +374,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.minSD = newValue;
     }
     
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -376,7 +390,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
       self.minSP = newValue;
     }
     
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -409,7 +424,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
   if (considerHiddenPower != newValue)
   {
     considerHiddenPower = newValue;
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 
@@ -418,7 +434,8 @@ const IVs  HpTrickHighIVs(31, 31, 31, 31, 31, 3);
   if (minHiddenPower != newPower)
   {
     minHiddenPower = newPower;
-    self.ivPattern = [self determineIVPattern];
+    if (!isSettingPattern)
+      self.ivPattern = [self determineIVPattern];
   }
 }
 

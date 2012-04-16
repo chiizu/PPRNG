@@ -354,7 +354,7 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
       [[HashedSeedInspectorEggFrame alloc] init];
     
     result.frame = frame.number;
-    result.chatotPitch = frame.chatotPitch;
+    result.chatotPitch = Chatot::Gen5Pitch(frame.rngValue);
     
     SetGen5PIDResult(result, frame.nature, frame.pid, p.tid, p.sid,
                      Gender::ANY, Gender::ANY_RATIO);

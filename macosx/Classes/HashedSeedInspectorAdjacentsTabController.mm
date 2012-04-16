@@ -79,15 +79,20 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
 @synthesize encounterFrameType, encounterLeadAbility;
 @synthesize genderRequired, targetGender;
 @synthesize genderRatioRequired, targetGenderRatio;
+@synthesize isEntralink, cgearStartOffset;
 
 - (void)checkGenderSettingsRequired
 {
   self.genderRequired =
-    (encounterLeadAbility == EncounterLead::CUTE_CHARM) ||
+    ((encounterLeadAbility == EncounterLead::CUTE_CHARM) &&
+     (encounterFrameType != Gen5PIDFrameGenerator::StarterFossilGiftFrame) &&
+     (encounterFrameType != Gen5PIDFrameGenerator::RoamerFrame)) ||
     (encounterFrameType == Gen5PIDFrameGenerator::EntraLinkFrame);
   
   if (!genderRequired)
     self.targetGender = Gender::GENDERLESS;
+  else if (!isEntralink && (targetGender == Gender::GENDERLESS))
+    self.targetGender = Gender::FEMALE;
   
   self.genderRatioRequired = genderRequired &&
                              (targetGender != Gender::GENDERLESS);
@@ -98,6 +103,7 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   if (newFrameType != encounterFrameType)
   {
     encounterFrameType = newFrameType;
+    self.isEntralink = (newFrameType == Gen5PIDFrameGenerator::EntraLinkFrame);
     [self checkGenderSettingsRequired];
   }
 }
@@ -140,6 +146,7 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   self.encounterLeadAbility = EncounterLead::SYNCHRONIZE;
   self.targetGender = Gender::GENDERLESS;
   self.targetGenderRatio = Gender::NO_RATIO;
+  self.cgearStartOffset = 3;
 }
 
 - (IBAction)generateAdjacents:(id)sender
@@ -269,6 +276,8 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
       for (uint32_t j = 0; j < skippedFrames; ++j)
         pidGenerator.AdvanceFrame();
       
+      CGearFrameTime  cgearTime(cgearStartOffset);
+      
       for (uint32_t f = pidGenerator.CurrentFrame().number;
            f < pidEndFrameNum;
            ++f)
@@ -276,6 +285,8 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
         pidGenerator.AdvanceFrame();
         
         Gen5PIDFrame  frame = pidGenerator.CurrentFrame();
+        
+        cgearTime.AdvanceFrame(frame.rngValue);
         
         HashedSeedInspectorAdjacentFrame  *result =
           [[HashedSeedInspectorAdjacentFrame alloc] init];
@@ -299,7 +310,8 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
         result.esv = frame.esv;
         result.heldItem = frame.heldItem;
         result.characteristic = Characteristic::Get(frame.pid, ivs);
-        result.details = GetGen5PIDFrameDetails(frame, pidFrameParams);
+        result.details = GetGen5PIDFrameDetails(frame, pidFrameParams,
+                                                cgearTime.GetTicks());
         
         [rowArray addObject: result];
       }

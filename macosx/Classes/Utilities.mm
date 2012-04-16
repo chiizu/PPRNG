@@ -165,7 +165,8 @@ NSString* GetCGearFrameTime(uint32_t ticks)
 }
 
 NSString* GetGen5PIDFrameDetails(const Gen5PIDFrame &frame,
-                                 Gen5PIDFrameGenerator::Parameters &params)
+                                 Gen5PIDFrameGenerator::Parameters &params,
+                                 uint32_t cgearTicks)
 {
   switch (params.frameType)
   {
@@ -180,7 +181,7 @@ NSString* GetGen5PIDFrameDetails(const Gen5PIDFrame &frame,
     
     
   case Gen5PIDFrameGenerator::EntraLinkFrame:
-    return GetCGearFrameTime(frame.ticks);
+    return GetCGearFrameTime(cgearTicks);
     
   default:
     return @"";

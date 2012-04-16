@@ -520,7 +520,7 @@ void AddESVRows(NSMutableArray *dest,
   
   NSMutableArray  *rows = [NSMutableArray arrayWithCapacity: elements.size()];
   TimeSeed::TimeElements::iterator  i;
-  for (i = elements.begin(); i < elements.end(); ++i)
+  for (i = elements.begin(); i != elements.end(); ++i)
   {
     [rows addObject:
       [NSMutableDictionary dictionaryWithObjectsAndKeys:
