@@ -383,8 +383,9 @@ struct IDFrameSearchProgressHandler
       [[DesiredShinyPIDFrameResult alloc] init];
     
     row.frame = pidFrame.number;
-    SetGen5PIDResult(row, pidFrame.nature, pidFrame.pid, 0, 0,
-                     Gender::ANY, Gender::ANY_RATIO);
+    SetPIDResult(row, pidFrame.pid, 0, 0,
+                 pidFrame.nature, pidFrame.pid.Gen5Ability(),
+                 Gender::ANY, Gender::ANY_RATIO);
     
     if (gcFrame.number > skippedFrames)
     {

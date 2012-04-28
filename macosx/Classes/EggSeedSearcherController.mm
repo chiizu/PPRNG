@@ -129,12 +129,14 @@ struct ResultHandler
     result.startFrame = frame.seed.GetSkippedPIDFrames() + 1;
     result.pidFrame = frame.number;
     
-    SetGen5PIDResult(result, frame.nature, frame.pid,
-                     m_criteria.frameParameters.tid,
-                     m_criteria.frameParameters.sid, Gender::ANY,
-                     (m_criteria.frameParameters.femaleSpecies ==
-                      FemaleParent::OTHER) ?
-                       Gender::ANY_RATIO : Gender::NO_RATIO);
+    SetPIDResult(result, frame.pid,
+                 m_criteria.frameParameters.tid,
+                 m_criteria.frameParameters.sid, frame.nature,
+                 frame.pid.Gen5Ability(),
+                 Gender::ANY,
+                 (m_criteria.frameParameters.femaleSpecies ==
+                  FemaleParent::OTHER) ?
+                   Gender::ANY_RATIO : Gender::NO_RATIO);
     result.inheritsHiddenAbility = frame.inheritsHiddenAbility;
     
     result.ivFrame = frame.ivFrameNumber;

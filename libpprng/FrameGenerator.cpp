@@ -26,6 +26,15 @@ using namespace pprng;
 namespace pprng
 {
 
+
+const IVs::Type  Gen4BreedingFrameGenerator::DPPtRound1[6] =
+  { IVs::HP, IVs::AT, IVs::DF, IVs::SP, IVs::SA, IVs::SD };
+const IVs::Type  Gen4BreedingFrameGenerator::DPPtRound2[5] =
+  { IVs::AT, IVs::DF, IVs::SP, IVs::SA, IVs::SD };
+const IVs::Type  Gen4BreedingFrameGenerator::DPPtRound3[4] =
+  { IVs::AT, IVs::SP, IVs::SA, IVs::SD };
+
+
 CGearIVFrameGenerator::CGearIVFrameGenerator(uint32_t seed, FrameType frameType,
                                              bool skipFirstTwoFrames)
   : m_RNG(seed), m_IVRNG(m_RNG, IVRNG::FrameType(frameType))

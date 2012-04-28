@@ -62,6 +62,7 @@ private:
 // 3rd & 4th Generation RNGs
 typedef LinearCongruentialRNG<uint32_t, 0x41c64e6dUL, 0x6073UL>     LCRNG34;
 typedef LinearCongruentialRNG<uint32_t, 0xeeb9eb65UL, 0xa3561a1UL>  LCRNG34_R;
+typedef LinearCongruentialRNG<uint32_t, 0x6c078965UL, 1UL>          ARNG;
 
 // 5th Generation RNGs
 typedef LinearCongruentialRNG

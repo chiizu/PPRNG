@@ -90,6 +90,12 @@
 		C0E304631346349900C56C1A /* WonderCardSeedInspectorController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E3044E1346349900C56C1A /* WonderCardSeedInspectorController.mm */; };
 		C0E304641346349900C56C1A /* WonderCardSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */; };
 		C0E30466134634BF00C56C1A /* Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = C0E30465134634BF00C56C1A /* Icon.icns */; };
+		C0F6D6E015405F74007C58D1 /* Gen4EggPIDSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0F6D6DE15405F74007C58D1 /* Gen4EggPIDSeedSearcher.cpp */; };
+		C0F6D79D15444B9F007C58D1 /* Gen4EggPIDSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0F6D79B15444B9F007C58D1 /* Gen4EggPIDSeedSearcher.nib */; };
+		C0F6D7A015444BB6007C58D1 /* Gen4EggIVSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0F6D79E15444BB6007C58D1 /* Gen4EggIVSeedSearcher.nib */; };
+		C0F6D7A315444BED007C58D1 /* Gen4EggPIDSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0F6D7A215444BED007C58D1 /* Gen4EggPIDSeedSearcherController.mm */; };
+		C0F6D87615483DCE007C58D1 /* Gen4EggIVSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0F6D87515483DCE007C58D1 /* Gen4EggIVSeedSearcherController.mm */; };
+		C0F6D87D15483FC0007C58D1 /* Gen4EggIVSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0F6D87B15483FC0007C58D1 /* Gen4EggIVSeedSearcher.cpp */; };
 		C0F864FF1529DB7A00E4FA89 /* CGearNatureSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0F864FD1529DB7A00E4FA89 /* CGearNatureSearcher.cpp */; };
 		C0FA492C14433018004DA9A3 /* Gen4ConfigurationEditController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0FA492B14433018004DA9A3 /* Gen4ConfigurationEditController.mm */; };
 /* End PBXBuildFile section */
@@ -258,6 +264,16 @@
 		C0E3044F1346349900C56C1A /* WonderCardSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WonderCardSeedSearcherController.h; sourceTree = "<group>"; };
 		C0E304501346349900C56C1A /* WonderCardSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WonderCardSeedSearcherController.mm; sourceTree = "<group>"; };
 		C0E30465134634BF00C56C1A /* Icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Icon.icns; sourceTree = "<group>"; };
+		C0F6D6DE15405F74007C58D1 /* Gen4EggPIDSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Gen4EggPIDSeedSearcher.cpp; sourceTree = "<group>"; };
+		C0F6D6DF15405F74007C58D1 /* Gen4EggPIDSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4EggPIDSeedSearcher.h; sourceTree = "<group>"; };
+		C0F6D79C15444B9F007C58D1 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Gen4EggPIDSeedSearcher.nib; sourceTree = "<group>"; };
+		C0F6D79F15444BB6007C58D1 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Gen4EggIVSeedSearcher.nib; sourceTree = "<group>"; };
+		C0F6D7A115444BED007C58D1 /* Gen4EggPIDSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4EggPIDSeedSearcherController.h; sourceTree = "<group>"; };
+		C0F6D7A215444BED007C58D1 /* Gen4EggPIDSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Gen4EggPIDSeedSearcherController.mm; sourceTree = "<group>"; };
+		C0F6D87415483DCE007C58D1 /* Gen4EggIVSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4EggIVSeedSearcherController.h; sourceTree = "<group>"; };
+		C0F6D87515483DCE007C58D1 /* Gen4EggIVSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Gen4EggIVSeedSearcherController.mm; sourceTree = "<group>"; };
+		C0F6D87B15483FC0007C58D1 /* Gen4EggIVSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Gen4EggIVSeedSearcher.cpp; sourceTree = "<group>"; };
+		C0F6D87C15483FC0007C58D1 /* Gen4EggIVSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4EggIVSeedSearcher.h; sourceTree = "<group>"; };
 		C0F864FD1529DB7A00E4FA89 /* CGearNatureSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGearNatureSearcher.cpp; sourceTree = "<group>"; };
 		C0F864FE1529DB7A00E4FA89 /* CGearNatureSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGearNatureSearcher.h; sourceTree = "<group>"; };
 		C0FA492A14433018004DA9A3 /* Gen4ConfigurationEditController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4ConfigurationEditController.h; sourceTree = "<group>"; };
@@ -293,6 +309,10 @@
 				C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */,
 				C0FA492A14433018004DA9A3 /* Gen4ConfigurationEditController.h */,
 				C0FA492B14433018004DA9A3 /* Gen4ConfigurationEditController.mm */,
+				C0F6D87415483DCE007C58D1 /* Gen4EggIVSeedSearcherController.h */,
+				C0F6D87515483DCE007C58D1 /* Gen4EggIVSeedSearcherController.mm */,
+				C0F6D7A115444BED007C58D1 /* Gen4EggPIDSeedSearcherController.h */,
+				C0F6D7A215444BED007C58D1 /* Gen4EggPIDSeedSearcherController.mm */,
 				C0A0AD191423B9AB008C67F0 /* Gen4SeedInspectorController.h */,
 				C0A0AD1A1423B9AB008C67F0 /* Gen4SeedInspectorController.mm */,
 				C0E304331346349900C56C1A /* Gen4SeedSearcherController.h */,
@@ -396,6 +416,8 @@
 				C0AA903614B4A7E4003EC28F /* DSParameterSearcher.nib */,
 				C0AA903814B4A7E4003EC28F /* EggSeedSearcher.nib */,
 				C0AA903A14B4A7E4003EC28F /* Gen4Configuration.nib */,
+				C0F6D79E15444BB6007C58D1 /* Gen4EggIVSeedSearcher.nib */,
+				C0F6D79B15444B9F007C58D1 /* Gen4EggPIDSeedSearcher.nib */,
 				C0AA903C14B4A7E4003EC28F /* Gen4SeedInspector.nib */,
 				C0AA903E14B4A7E4003EC28F /* Gen4SeedSearcher.nib */,
 				C0AA904014B4A7E4003EC28F /* Gen5Configuration.nib */,
@@ -488,6 +510,10 @@
 				C0E304021346343400C56C1A /* FrameSearcher.h */,
 				C0E304031346343400C56C1A /* Gen34SeedSearcher.cpp */,
 				C0E304041346343400C56C1A /* Gen34SeedSearcher.h */,
+				C0F6D87B15483FC0007C58D1 /* Gen4EggIVSeedSearcher.cpp */,
+				C0F6D87C15483FC0007C58D1 /* Gen4EggIVSeedSearcher.h */,
+				C0F6D6DE15405F74007C58D1 /* Gen4EggPIDSeedSearcher.cpp */,
+				C0F6D6DF15405F74007C58D1 /* Gen4EggPIDSeedSearcher.h */,
 				C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */,
 				C0B53D001451CEBC00C62866 /* Gen4QuickSeedSearcher.h */,
 				C0E304051346343400C56C1A /* HashedSeed.cpp */,
@@ -591,6 +617,8 @@
 				C0AA905C14B4A7E4003EC28F /* TrainerIDSearcher.nib in Resources */,
 				C0AA905D14B4A7E4003EC28F /* WonderCardSeedInspector.nib in Resources */,
 				C0AA905E14B4A7E4003EC28F /* WonderCardSeedSearcher.nib in Resources */,
+				C0F6D79D15444B9F007C58D1 /* Gen4EggPIDSeedSearcher.nib in Resources */,
+				C0F6D7A015444BB6007C58D1 /* Gen4EggIVSeedSearcher.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -667,6 +695,10 @@
 				C0DA5ABC152598220011A473 /* VersionTransformer.mm in Sources */,
 				C0DA5ACA15259C630011A473 /* StandardSeedInspectorController.mm in Sources */,
 				C0F864FF1529DB7A00E4FA89 /* CGearNatureSearcher.cpp in Sources */,
+				C0F6D6E015405F74007C58D1 /* Gen4EggPIDSeedSearcher.cpp in Sources */,
+				C0F6D7A315444BED007C58D1 /* Gen4EggPIDSeedSearcherController.mm in Sources */,
+				C0F6D87615483DCE007C58D1 /* Gen4EggIVSeedSearcherController.mm in Sources */,
+				C0F6D87D15483FC0007C58D1 /* Gen4EggIVSeedSearcher.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -799,6 +831,22 @@
 				C0AA904F14B4A7E4003EC28F /* English */,
 			);
 			name = WonderCardSeedSearcher.nib;
+			sourceTree = "<group>";
+		};
+		C0F6D79B15444B9F007C58D1 /* Gen4EggPIDSeedSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0F6D79C15444B9F007C58D1 /* English */,
+			);
+			name = Gen4EggPIDSeedSearcher.nib;
+			sourceTree = "<group>";
+		};
+		C0F6D79E15444BB6007C58D1 /* Gen4EggIVSeedSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0F6D79F15444BB6007C58D1 /* English */,
+			);
+			name = Gen4EggIVSeedSearcher.nib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

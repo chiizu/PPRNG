@@ -233,8 +233,9 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
     row.frame = frame.number;
     row.chatotPitch = Chatot::Gen5Pitch(frame.rngValue);
     
-    SetGen5PIDResult(row, frame.nature, frame.pid, p.cardTID, p.cardSID,
-                     p.cardGender, p.cardGenderRatio);
+    SetPIDResult(row, frame.pid, p.cardTID, p.cardSID,
+                 frame.nature, frame.pid.Gen5Ability(),
+                 p.cardGender, p.cardGenderRatio);
     if (frame.hasHiddenAbility)
       row.ability = Ability::HIDDEN;
     
@@ -406,9 +407,9 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
         row.startFrame = seed.GetSkippedPIDFrames() + 1;
         row.frame = frame.number;
         
-        SetGen5PIDResult(row, frame.nature, frame.pid,
-                         frameParams.cardTID, frameParams.cardSID,
-                         frameParams.cardGender, frameParams.cardGenderRatio);
+        SetPIDResult(row, frame.pid, frameParams.cardTID, frameParams.cardSID,
+                     frame.nature, frame.pid.Gen5Ability(),
+                     frameParams.cardGender, frameParams.cardGenderRatio);
         if (frame.hasHiddenAbility)
           row.ability = Ability::HIDDEN;
         

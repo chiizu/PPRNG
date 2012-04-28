@@ -88,6 +88,22 @@
   uint32_t                    raikouLocationSearchValue;
   uint32_t                    enteiLocationSearchValue;
   uint32_t                    latiLocationSearchValue;
+  
+  uint32_t                    minEggPIDFrame, maxEggPIDFrame;
+  BOOL                        internationalParents;
+  
+  IBOutlet NSTableView        *eggPIDsTableView;
+  IBOutlet NSArrayController  *eggPIDsContentArray;
+  
+  
+  uint32_t                    minEggIVFrame, maxEggIVFrame;
+  
+  BOOL                        enableParentIVs;
+  NSNumber                    *aHP, *aAT, *aDF, *aSA, *aSD, *aSP;
+  NSNumber                    *bHP, *bAT, *bDF, *bSA, *bSD, *bSP;
+  
+  IBOutlet NSTableView        *eggIVsTableView;
+  IBOutlet NSArrayController  *eggIVsContentArray;
 }
 
 @property int       mode;
@@ -110,6 +126,13 @@
 @property uint32_t  raikouLocationSearchValue;
 @property uint32_t  enteiLocationSearchValue;
 @property uint32_t  latiLocationSearchValue;
+@property uint32_t  minEggPIDFrame, maxEggPIDFrame;
+@property BOOL      internationalParents;
+@property uint32_t  minEggIVFrame, maxEggIVFrame;
+@property BOOL      enableParentIVs;
+
+@property (copy) NSNumber  *aHP, *aAT, *aDF, *aSA, *aSD, *aSP;
+@property (copy) NSNumber  *bHP, *bAT, *bDF, *bSA, *bSD, *bSP;
 
 // for opening with a seed and Method 1 frame already set
 - (void)setSeed:(uint32_t)seed;
@@ -141,5 +164,13 @@
 
 - (IBAction)removeLastSearchItem:(id)sender;
 - (IBAction)resetSearch:(id)sender;
+
+// eggs
+- (IBAction)generateEggPIDFrames:(id)sender;
+
+- (void)setAIVs:(const pprng::OptionalIVs&)ivs;
+- (void)setBIVs:(const pprng::OptionalIVs&)ivs;
+
+- (IBAction)generateEggIVFrames:(id)sender;
 
 @end

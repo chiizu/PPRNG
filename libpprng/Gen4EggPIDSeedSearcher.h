@@ -18,58 +18,42 @@
   along with libpprng.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef C_GEAR_NATURE_SEARCHER_H
-#define C_GEAR_NATURE_SEARCHER_H
+#ifndef GEN_4_EGG_PID_SEED_SEARCHER_H
+#define GEN_4_EGG_PID_SEED_SEARCHER_H
 
 #include "PPRNGTypes.h"
-#include "SearchCriteria.h"
 #include "SearchRunner.h"
+#include "SearchCriteria.h"
 #include "SeedGenerator.h"
-#include "CGearSeed.h"
+#include "FrameGenerator.h"
 
 #include <boost/function.hpp>
 
 namespace pprng
 {
 
-class CGearNatureSearcher
+class Gen4EggPIDSeedSearcher
 {
 public:
-  struct Criteria : public SearchCriteria
+  struct Criteria
   {
-    uint32_t                         cgearSeed;
-    HashedSeedGenerator::Parameters  hashedSeedParameters;
-    uint32_t                         year;
-    SearchCriteria::PIDCriteria      pid;
-    SearchCriteria::FrameRange       frameRange;
-    uint32_t                         minClusterSize;
-    int32_t                          secondsAdjustment;
+    SearchCriteria::DelayRange            delay;
+    SearchCriteria::FrameRange            frame;
+    bool                                  shinyOnly;
+    SearchCriteria::PIDCriteria           pid;
+    Gen4EggPIDFrameGenerator::Parameters  frameParameters;
     
-    uint64_t ExpectedNumberOfResults() const;
+    uint64_t ExpectedNumberOfResults();
   };
   
-  struct CGearNatureFrame
-  {
-    CGearNatureFrame(const HashedSeed &s, const CGearSeed::TimeElement &cgt)
-      : seed(s), cgearTime(cgt)
-    {}
-    
-    const HashedSeed              seed;
-    const CGearSeed::TimeElement  cgearTime;
-    uint32_t                      number;
-    Nature::Type                  nature;
-    uint32_t                      clusterSize;
-  };
-  
-  typedef CGearNatureFrame                           ResultType;
+  typedef Gen4EggPIDFrameGenerator::Frame            ResultType;
   typedef boost::function<void (const ResultType&)>  ResultCallback;
   
-  CGearNatureSearcher() {}
+  Gen4EggPIDSeedSearcher() {}
   
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
               const SearchRunner::ProgressCallback &progressHandler);
 };
-
 
 }
 

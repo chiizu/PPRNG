@@ -164,9 +164,12 @@ Gen4Frame::Gen4Frame(const Gen34Frame &baseFrame)
 namespace
 {
 
-static OptionalIVs GetEggIVs(const Gen5BreedingFrame &frame, IVs baseIVs,
-                             const OptionalIVs &parentXIVs,
-                             const OptionalIVs &parentYIVs)
+template <class FrameType,
+          typename FrameType::Inheritance Parent1,
+          typename FrameType::Inheritance Parent2>
+static OptionalIVs GetEggIVs(const FrameType &frame, IVs baseIVs,
+                             const OptionalIVs &parent1IVs,
+                             const OptionalIVs &parent2IVs)
 {
   OptionalIVs  ivs;
   
@@ -175,16 +178,16 @@ static OptionalIVs GetEggIVs(const Gen5BreedingFrame &frame, IVs baseIVs,
     switch (frame.inheritance[i])
     {
     default:
-    case Gen5BreedingFrame::NotInherited:
+    case FrameType::NotInherited:
       ivs.setIV(i, baseIVs.iv(i));
       break;
-    case Gen5BreedingFrame::ParentX:
-      if (parentXIVs.isSet(i))
-        ivs.setIV(i, parentXIVs.iv(i));
+    case Parent1:
+      if (parent1IVs.isSet(i))
+        ivs.setIV(i, parent1IVs.iv(i));
       break;
-    case Gen5BreedingFrame::ParentY:
-      if (parentYIVs.isSet(i))
-        ivs.setIV(i, parentYIVs.iv(i));
+    case Parent2:
+      if (parent2IVs.isSet(i))
+        ivs.setIV(i, parent2IVs.iv(i));
       break;
     }
   }
@@ -194,18 +197,26 @@ static OptionalIVs GetEggIVs(const Gen5BreedingFrame &frame, IVs baseIVs,
 
 }
 
+Gen4EggIVFrame::Gen4EggIVFrame(const Gen4BreedingFrame &f,
+                               const OptionalIVs &parentAIVs,
+                               const OptionalIVs &parentBIVs)
+  : Gen4BreedingFrame(f),
+    ivs(GetEggIVs<Gen4BreedingFrame,
+                  Gen4BreedingFrame::ParentA, Gen4BreedingFrame::ParentB>
+          (f, f.baseIVs, parentAIVs, parentBIVs))
+{}
+
 Gen5EggFrame::Gen5EggFrame(const Gen5BreedingFrame &f,
                            uint32_t ivFrame, IVs baseIVs,
                            const OptionalIVs &parentXIVs,
                            const OptionalIVs &parentYIVs)
-  : Gen5BreedingFrame(f),
-    ivFrameNumber(ivFrame), ivs(GetEggIVs(f, baseIVs, parentXIVs, parentYIVs)),
+  : Gen5BreedingFrame(f), ivFrameNumber(ivFrame),
+    ivs(GetEggIVs<Gen5BreedingFrame,
+                  Gen5BreedingFrame::ParentX, Gen5BreedingFrame::ParentY>
+          (f, baseIVs, parentXIVs, parentYIVs)),
     characteristic(ivs.allSet() ?
                     Characteristic::Get(f.pid, ivs.values) :
                     Characteristic::NONE)
-{
-  //for (uint32_t i = 0; i < 6; ++i)
-    //inheritance[i] = f.inheritance[i];
-}
+{}
 
 }

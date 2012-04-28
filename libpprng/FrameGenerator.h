@@ -271,6 +271,178 @@ typedef Gen4EncounterFrameGenerator<MethodJ> DPPtEncounterFrameGenerator;
 typedef Gen4EncounterFrameGenerator<MethodK> HGSSEncounterFrameGenerator;
 
 
+class Gen4EggPIDFrameGenerator
+{
+public:
+  typedef uint32_t         Seed;
+  typedef Gen4EggPIDFrame  Frame;
+  typedef MTRNG            RNG;
+  
+  struct Parameters
+  {
+    bool      internationalParents;
+    uint32_t  tid, sid;
+    
+    Parameters() : internationalParents(false), tid(0), sid(0) {}
+  };
+  
+  Gen4EggPIDFrameGenerator(uint32_t seed, const Parameters &parameters)
+    : m_RNG(seed), m_parameters(parameters)
+  {
+    m_frame.seed = seed;
+    m_frame.number = 0;
+  }
+  
+  void SkipFrames(uint32_t numFrames)
+  {
+    uint32_t  i = 0;
+    while (i++ < numFrames)
+      m_RNG.Next();
+    
+    m_frame.number += numFrames;
+  }
+  
+  void AdvanceFrame()
+  {
+    ++m_frame.number;
+    m_frame.rngValue = m_RNG.Next();
+    m_frame.pid = m_frame.rngValue;
+    
+    if (m_parameters.internationalParents)
+    {
+      uint32_t  shinyChecks = 0;
+      while (!m_frame.pid.IsShiny(m_parameters.tid, m_parameters.sid) &&
+             (++shinyChecks < 4))
+      {
+        m_frame.pid = ARNG::NextForSeed(m_frame.pid.word);
+      }
+    }
+  }
+  
+  const Frame& CurrentFrame() { return m_frame; }
+  
+private:
+  const Parameters  m_parameters;
+  RNG               m_RNG;
+  Frame             m_frame;
+};
+
+
+class Gen4BreedingFrameGenerator
+{
+public:
+  typedef uint32_t                 Seed;
+  typedef Gen4BreedingFrame        Frame;
+  typedef BufferedRNG<LCRNG34, 8>  RNG;
+  typedef Gen34IVRNG<1, RNG>       IVRNG;
+  
+  Gen4BreedingFrameGenerator(uint32_t seed, Game::Version version)
+    : m_RNG(seed), m_IVRNG(m_RNG),
+      m_inheritanceGenerator(GeneratorForVersion(version))
+  {
+    m_frame.seed = seed;
+    m_frame.number = 0;
+  }
+  
+  void SkipFrames(uint32_t numFrames)
+  {
+    uint32_t  i = 0;
+    while (i++ < numFrames)
+      m_RNG.AdvanceBuffer();
+    
+    m_frame.number += numFrames;
+  }
+  
+  void AdvanceFrame()
+  {
+    m_RNG.AdvanceBuffer();
+    ++m_frame.number;
+    m_frame.rngValue = m_RNG.PeekNext();
+    
+    m_frame.baseIVs = m_IVRNG.NextIVWord();
+    
+    m_frame.ResetInheritance();
+    
+    (this->*m_inheritanceGenerator)();
+  }
+  
+  const Frame& CurrentFrame() { return m_frame; }
+  
+private:
+  void GenerateParents(IVs::Type inheritedIV[])
+  {
+    for (uint32_t i = 0; i < 3; ++i)
+    {
+      m_frame.inheritance[inheritedIV[i]] =
+        (((m_RNG.Next() >> 16) & 1) == 0) ?
+          Gen4BreedingFrame::ParentA :
+          Gen4BreedingFrame::ParentB;
+    }
+  }
+  
+  static const IVs::Type  DPPtRound1[6];
+  static const IVs::Type  DPPtRound2[5];
+  static const IVs::Type  DPPtRound3[4];
+  
+  void GenerateDPPt()
+  {
+    IVs::Type  inheritedIV[3];
+    
+    inheritedIV[0] = DPPtRound1[(m_RNG.Next() >> 16) % 6];
+    inheritedIV[1] = DPPtRound2[(m_RNG.Next() >> 16) % 5];
+    inheritedIV[2] = DPPtRound3[(m_RNG.Next() >> 16) % 4];
+    
+    GenerateParents(inheritedIV);
+  }
+  
+  void GenerateHGSS()
+  {
+    IVs::Type  inheritedIV[3];
+    IVs::Type  ivType[6] =
+      { IVs::HP, IVs::AT, IVs::DF, IVs::SP, IVs::SA, IVs::SD };
+    for (uint32_t i = 0; i < 3; ++i)
+    {
+      uint32_t  numTypes = 6 - i;
+      uint32_t  idx = (m_RNG.Next() >> 16) % numTypes;
+      
+      inheritedIV[i] = ivType[idx];
+      while (idx < (numTypes - 1))
+      {
+        ivType[idx] = ivType[idx + 1];
+        ++idx;
+      }
+    }
+    
+    GenerateParents(inheritedIV);
+  }
+  
+  typedef void (Gen4BreedingFrameGenerator::*InheritanceGenerator)();
+  
+  static InheritanceGenerator GeneratorForVersion(Game::Version version)
+  {
+    switch (version)
+    {
+    case Game::Diamond:
+    case Game::Pearl:
+    case Game::Platinum:
+      return &Gen4BreedingFrameGenerator::GenerateDPPt;
+      
+    case Game::HeartGold:
+    case Game::SoulSilver:
+      return &Gen4BreedingFrameGenerator::GenerateHGSS;
+    
+    default:
+      return &Gen4BreedingFrameGenerator::GenerateDPPt;
+    }
+  }
+  
+  const InheritanceGenerator  m_inheritanceGenerator;
+  RNG                         m_RNG;
+  IVRNG                       m_IVRNG;
+  Frame                       m_frame;
+};
+
+
 class CGearIVFrameGenerator
 {
 public:

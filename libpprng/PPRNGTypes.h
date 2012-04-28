@@ -1229,9 +1229,14 @@ struct HGSSRoamers
 struct Chatot
 {
 
+static uint32_t Gen4Pitch(uint32_t rawRNGValue)
+{
+  return (((rawRNGValue >> 16) & 0x1FFF) * 100) >> 13;
+}
+
 static uint32_t Gen5Pitch(uint64_t rawRNGValue)
 {
-  return ((rawRNGValue >> 32) * 0x1FFF) >> 32;
+  return (((rawRNGValue >> 32) * 0x1FFF) >> 32) / 82;
 }
 
 };

@@ -210,12 +210,13 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
     
     result.frame = frame.number;
     result.chatotPitch = Chatot::Gen5Pitch(frame.rngValue);
-    SetGen5PIDResult(result, frame.nature, frame.pid, p.tid, p.sid, p.targetGender,
-                     ((p.leadAbility == EncounterLead::CUTE_CHARM) &&
-                      (p.frameType != Gen5PIDFrameGenerator::EntraLinkFrame)) ?
-                        (frame.abilityActivated ? p.targetRatio :
-                                                  Gender::ANY_RATIO) :
-                        p.targetRatio);
+    SetPIDResult(result, frame.pid, p.tid, p.sid,
+                 frame.nature, frame.pid.Gen5Ability(), p.targetGender,
+                 ((p.leadAbility == EncounterLead::CUTE_CHARM) &&
+                  (p.frameType != Gen5PIDFrameGenerator::EntraLinkFrame)) ?
+                    (frame.abilityActivated ? p.targetRatio :
+                                              Gender::ANY_RATIO) :
+                    p.targetRatio);
     result.esv = frame.esv;
     result.heldItem = frame.heldItem;
     result.details = GetGen5PIDFrameDetails(frame, p, cgearTime.GetTicks());

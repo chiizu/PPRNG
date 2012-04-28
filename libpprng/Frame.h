@@ -91,6 +91,52 @@ struct Gen4EncounterFrame
   IVs                         ivs;
 };
 
+struct Gen4EggPIDFrame
+{
+  uint32_t  seed;
+  uint32_t  number;
+  uint32_t  rngValue;
+  PID       pid;
+};
+
+struct Gen4BreedingFrame
+{
+  Gen4BreedingFrame()
+  {
+    ResetInheritance();
+  }
+  
+  uint32_t  seed;
+  uint32_t  number;
+  uint32_t  rngValue;
+  IVs       baseIVs;
+  
+  enum Inheritance
+  {
+    NotInherited = 0,
+    ParentA,
+    ParentB
+  };
+  
+  Inheritance  inheritance[6];
+  
+  void ResetInheritance()
+  {
+    for (uint32_t i = 0; i < 6; ++i)
+      inheritance[i] = NotInherited;
+  }
+};
+
+struct Gen4EggIVFrame : public Gen4BreedingFrame
+{
+  Gen4EggIVFrame(const Gen4BreedingFrame &f, const OptionalIVs &parentAIVs,
+                 const OptionalIVs &parentBIVs);
+  
+  typedef Gen4BreedingFrame::Inheritance  Inheritance;
+  
+  OptionalIVs  ivs;
+};
+
 struct Gen5PIDFrame
 {
   Gen5PIDFrame(const HashedSeed &s) : seed(s) {}

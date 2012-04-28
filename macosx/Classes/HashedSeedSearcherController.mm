@@ -344,9 +344,9 @@ struct ResultHandler
         
         pidResult.leadAbility = data.leadAbility;
         
-        SetGen5PIDResult(pidResult, data.nature, pid,
-                         m_criteria.tid, m_criteria.sid,
-                         data.gender, data.genderRatio);
+        SetPIDResult(pidResult, pid, m_criteria.tid, m_criteria.sid,
+                     data.nature, pid.Gen5Ability(),
+                     data.gender, data.genderRatio);
         
         pidResult.requiredEncountersMask = m_criteria.requiredEncountersMask;
         

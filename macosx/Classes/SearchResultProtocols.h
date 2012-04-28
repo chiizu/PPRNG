@@ -90,7 +90,9 @@ extern void SetIVResult(id <IVResult> result, const pprng::IVs &ivs,
   @synthesize ability; \
   @synthesize gender18, gender14, gender12, gender34
 
-extern void SetGen5PIDResult(id <PIDResult> result, pprng::Nature::Type nature,
-                             const pprng::PID &pid, uint32_t tid, uint32_t sid,
-                             pprng::Gender::Type gender,
-                             pprng::Gender::Ratio genderRatio);
+extern void SetPIDResult(id <PIDResult> result,
+                         const pprng::PID &pid, uint32_t tid, uint32_t sid,
+                         pprng::Nature::Type nature,
+                         pprng::Ability::Type ability,
+                         pprng::Gender::Type gender,
+                         pprng::Gender::Ratio genderRatio);

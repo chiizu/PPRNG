@@ -20,6 +20,8 @@
 
 #import "Gen4SeedInspectorController.h"
 
+#import "SearchResultProtocols.h"
+
 #include "LinearCongruentialRNG.h"
 #include "TimeSeed.h"
 #include "FrameGenerator.h"
@@ -29,8 +31,112 @@
 
 using namespace pprng;
 
+
+@interface EggPIDResult : NSObject <PIDResult>
+{
+  uint32_t  frame;
+  uint32_t  coinFlip;
+  DECLARE_PID_RESULT_VARIABLES();
+}
+
+@property uint32_t  frame, coinFlip;
+
+@end
+
+@implementation EggPIDResult
+
+@synthesize frame, coinFlip;
+SYNTHESIZE_PID_RESULT_PROPERTIES();
+
+@end
+
+
+@interface EggIVResult : NSObject
+{
+  uint32_t       frame;
+  uint64_t       profElmResponse;
+  uint32_t       chatotPitch;
+  NSString       *hp, *atk, *def, *spa, *spd, *spe;
+  Element::Type  hiddenType;
+  NSNumber       *hiddenPower;
+}
+
+@property uint32_t         frame;
+@property uint64_t         profElmResponse;
+@property uint32_t         chatotPitch;
+@property (copy) NSString  *hp, *atk, *def, *spa, *spd, *spe;
+@property Element::Type    hiddenType;
+@property (copy) NSNumber  *hiddenPower;
+
+@end
+
+@implementation EggIVResult
+
+@synthesize frame;
+@synthesize profElmResponse, chatotPitch;
+@synthesize hp, atk, def, spa, spd, spe;
+@synthesize hiddenType, hiddenPower;
+
+@end
+
+
 namespace
 {
+static
+NSString* GetEggIV(Gen4BreedingFrame::Inheritance inheritance, uint32_t iv,
+                   bool isASet, uint32_t aIV,
+                   bool isBSet, uint32_t bIV, bool showParentIVs)
+{
+  switch (inheritance)
+  {
+  default:
+  case Gen4BreedingFrame::NotInherited:
+    return [NSString stringWithFormat:@"%d", iv];
+  case Gen4BreedingFrame::ParentA:
+    if (showParentIVs && isASet)
+      return [NSString stringWithFormat:@"%d", aIV];
+    else
+      return @"A";
+    break;
+  case Gen4BreedingFrame::ParentB:
+    if (showParentIVs && isBSet)
+      return [NSString stringWithFormat:@"%d", bIV];
+    else
+      return @"B";
+    break;
+  }
+}
+
+static
+OptionalIVs GetEggIVs(const Gen4BreedingFrame &frame,
+                      const OptionalIVs &aIVs, const OptionalIVs &bIVs)
+{
+  OptionalIVs  eggIVs;
+  uint32_t     i;
+  
+  for (i = 0; i < 6; ++i)
+  {
+    switch (frame.inheritance[i])
+    {
+    case Gen4BreedingFrame::ParentA:
+      if (aIVs.isSet(i))
+        eggIVs.setIV(i, aIVs.values.iv(i));
+      break;
+      
+    case Gen4BreedingFrame::ParentB:
+      if (bIVs.isSet(i))
+        eggIVs.setIV(i, bIVs.values.iv(i));
+      break;
+      
+    default:
+    case Gen4BreedingFrame::NotInherited:
+      eggIVs.setIV(i, frame.baseIVs.iv(i));
+      break;
+    }
+  }
+  
+  return eggIVs;
+}
 
 NSMutableDictionary* MakeMethod1Row(const Gen34Frame &frame)
 {
@@ -148,25 +254,23 @@ void AddESVRows(NSMutableArray *dest,
 @implementation Gen4SeedInspectorController
 
 @synthesize mode;
-@synthesize raikouLocation;
-@synthesize enteiLocation;
-@synthesize latiLocation;
-@synthesize nextRaikouLocation;
-@synthesize nextEnteiLocation;
-@synthesize nextLatiLocation;
+@synthesize raikouLocation, enteiLocation, latiLocation;
+@synthesize nextRaikouLocation, nextEnteiLocation, nextLatiLocation;
 @synthesize skippedFrames;
-@synthesize seedCoinFlips;
-@synthesize seedProfElmResponses;
-@synthesize encounterType;
-@synthesize syncNature;
+@synthesize seedCoinFlips, seedProfElmResponses;
+@synthesize encounterType, syncNature;
 @synthesize showRealFrame;
 @synthesize useSpecifiedSecond;
 @synthesize matchSeedDelayParity;
-@synthesize coinFlipsSearchValue;
-@synthesize profElmResponsesSearchValue;
+@synthesize coinFlipsSearchValue, profElmResponsesSearchValue;
 @synthesize raikouLocationSearchValue;
 @synthesize enteiLocationSearchValue;
 @synthesize latiLocationSearchValue;
+@synthesize minEggPIDFrame, maxEggPIDFrame, internationalParents;
+@synthesize minEggIVFrame, maxEggIVFrame;
+@synthesize enableParentIVs;
+@synthesize aHP, aAT, aDF, aSA, aSD, aSP;
+@synthesize bHP, bAT, bDF, bSA, bSD, bSP;
 
 - (NSString *)windowNibName
 {
@@ -221,6 +325,26 @@ void AddESVRows(NSMutableArray *dest,
   self.raikouLocationSearchValue = 0;
   self.enteiLocationSearchValue = 0;
   self.latiLocationSearchValue = 0;
+  
+  self.minEggPIDFrame = 1;
+  self.maxEggPIDFrame = 100;
+  self.internationalParents = NO;
+  
+  self.minEggIVFrame = 1;
+  self.maxEggIVFrame = 100;
+  self.enableParentIVs = NO;
+  self.aHP = nil;
+  self.aAT = nil;
+  self.aDF = nil;
+  self.aSA = nil;
+  self.aSD = nil;
+  self.aSP = nil;
+  self.bHP = nil;
+  self.bAT = nil;
+  self.bDF = nil;
+  self.bSA = nil;
+  self.bSD = nil;
+  self.bSP = nil;
 }
 
 - (void)setSeed:(uint32_t)seed
@@ -828,6 +952,198 @@ void AddESVRows(NSMutableArray *dest,
   self.raikouLocationSearchValue = 0;
   self.enteiLocationSearchValue = 0;
   self.latiLocationSearchValue = 0;
+}
+
+
+- (IBAction)generateEggPIDFrames:(id)sender
+{
+  if (!EndEditing([self window]))
+    return;
+  
+  if ([[seedField stringValue] length] == 0)
+    return;
+  
+  [eggPIDsContentArray setContent: [NSMutableArray array]];
+  
+  uint32_t  seed = [[seedField objectValue] unsignedIntValue];
+  uint32_t  frameNum = minEggPIDFrame - 1;
+  
+  NSMutableArray  *rows =
+    [NSMutableArray arrayWithCapacity: maxEggPIDFrame - minEggPIDFrame + 1];
+  
+  
+  Gen4EggPIDFrameGenerator::Parameters  p;
+  p.internationalParents = internationalParents;
+  p.tid = [gen4ConfigController tid];
+  p.sid = [gen4ConfigController sid];
+  
+  Gen4EggPIDFrameGenerator  generator(seed, p);
+  generator.SkipFrames(frameNum);
+  
+  while (frameNum < maxEggPIDFrame)
+  {
+    generator.AdvanceFrame();
+    ++frameNum;
+    
+    Gen4EggPIDFrame  frame = generator.CurrentFrame();
+    
+    EggPIDResult  *result = [[EggPIDResult alloc] init];
+    result.frame = frame.number;
+    
+    CoinFlips  flips;
+    flips.AddFlipResult(CoinFlips::CalcResult(frame.rngValue));
+    result.coinFlip = flips.word;
+    
+    SetPIDResult(result, frame.pid, p.tid, p.sid, frame.pid.Gen34Nature(),
+                 frame.pid.Gen34Ability(), Gender::ANY, Gender::ANY_RATIO);
+    
+    [rows addObject: result];
+  }
+  
+  [eggPIDsContentArray addObjects: rows];
+}
+
+- (void)setAIVs:(const pprng::OptionalIVs&)ivs
+{
+  self.aHP = ivs.isSet(IVs::HP) ?
+    [NSNumber numberWithUnsignedInt: ivs.hp()] : nil;
+  self.aAT = ivs.isSet(IVs::AT) ?
+    [NSNumber numberWithUnsignedInt: ivs.at()] : nil;
+  self.aDF = ivs.isSet(IVs::DF) ?
+    [NSNumber numberWithUnsignedInt: ivs.df()] : nil;
+  self.aSA = ivs.isSet(IVs::SA) ?
+    [NSNumber numberWithUnsignedInt: ivs.sa()] : nil;
+  self.aSD = ivs.isSet(IVs::SD) ?
+    [NSNumber numberWithUnsignedInt: ivs.sd()] : nil;
+  self.aSP = ivs.isSet(IVs::SP) ?
+    [NSNumber numberWithUnsignedInt: ivs.sp()] : nil;
+}
+
+- (void)setBIVs:(const pprng::OptionalIVs&)ivs
+{
+  self.bHP = ivs.isSet(IVs::HP) ?
+    [NSNumber numberWithUnsignedInt: ivs.hp()] : nil;
+  self.bAT = ivs.isSet(IVs::AT) ?
+    [NSNumber numberWithUnsignedInt: ivs.at()] : nil;
+  self.bDF = ivs.isSet(IVs::DF) ?
+    [NSNumber numberWithUnsignedInt: ivs.df()] : nil;
+  self.bSA = ivs.isSet(IVs::SA) ?
+    [NSNumber numberWithUnsignedInt: ivs.sa()] : nil;
+  self.bSD = ivs.isSet(IVs::SD) ?
+    [NSNumber numberWithUnsignedInt: ivs.sd()] : nil;
+  self.bSP = ivs.isSet(IVs::SP) ?
+    [NSNumber numberWithUnsignedInt: ivs.sp()] : nil;
+}
+
+- (IBAction)generateEggIVFrames:(id)sender
+{
+  if (!EndEditing([self window]))
+    return;
+  
+  if ([[seedField stringValue] length] == 0)
+    return;
+  
+  [[eggIVsTableView tableColumnWithIdentifier:@"profElmResponse"]
+    setHidden: !mode];
+  
+  [eggIVsContentArray setContent: [NSMutableArray array]];
+  
+  uint32_t  seed = [[seedField objectValue] unsignedIntValue];
+  uint32_t  frameNum = minEggIVFrame - 1;
+  
+  NSMutableArray  *rows =
+    [NSMutableArray arrayWithCapacity: maxEggIVFrame - minEggIVFrame + 1];
+  
+  Gen4BreedingFrameGenerator  generator(seed,
+                                        mode ? Game::HeartGold : Game::Diamond);
+  generator.SkipFrames(frameNum);
+  
+  OptionalIVs  aIVs, bIVs;
+  
+  if (enableParentIVs)
+  {
+    if (aHP)
+      aIVs.hp([aHP unsignedIntValue]);
+    if (aAT)
+      aIVs.at([aAT unsignedIntValue]);
+    if (aDF)
+      aIVs.df([aDF unsignedIntValue]);
+    if (aSA)
+      aIVs.sa([aSA unsignedIntValue]);
+    if (aSD)
+      aIVs.sd([aSD unsignedIntValue]);
+    if (aSP)
+      aIVs.sp([aSP unsignedIntValue]);
+    
+    if (bHP)
+      bIVs.hp([bHP unsignedIntValue]);
+    if (bAT)
+      bIVs.at([bAT unsignedIntValue]);
+    if (bDF)
+      bIVs.df([bDF unsignedIntValue]);
+    if (bSA)
+      bIVs.sa([bSA unsignedIntValue]);
+    if (bSD)
+      bIVs.sd([bSD unsignedIntValue]);
+    if (bSP)
+      bIVs.sp([bSP unsignedIntValue]);
+  }
+  
+  while (frameNum < maxEggIVFrame)
+  {
+    generator.AdvanceFrame();
+    ++frameNum;
+    
+    Gen4BreedingFrame  frame = generator.CurrentFrame();
+    
+    EggIVResult  *result = [[EggIVResult alloc] init];
+    
+    result.frame = frame.number;
+    
+    ProfElmResponses  profElmResponse;
+    profElmResponse.AddResponse(ProfElmResponses::CalcResponse(frame.rngValue));
+    result.profElmResponse = profElmResponse.word;
+    
+    result.chatotPitch = Chatot::Gen4Pitch(frame.rngValue);
+    
+    result.hp = GetEggIV(frame.inheritance[0], frame.baseIVs.hp(),
+                          aIVs.isSet(IVs::HP), aIVs.hp(),
+                          bIVs.isSet(IVs::HP), bIVs.hp(), enableParentIVs);
+    result.atk = GetEggIV(frame.inheritance[1], frame.baseIVs.at(),
+                          aIVs.isSet(IVs::AT), aIVs.at(),
+                          bIVs.isSet(IVs::AT), bIVs.at(), enableParentIVs);
+    result.def = GetEggIV(frame.inheritance[2], frame.baseIVs.df(),
+                          aIVs.isSet(IVs::DF), aIVs.df(),
+                          bIVs.isSet(IVs::DF), bIVs.df(), enableParentIVs);
+    result.spa = GetEggIV(frame.inheritance[3], frame.baseIVs.sa(),
+                          aIVs.isSet(IVs::SA), aIVs.sa(),
+                          bIVs.isSet(IVs::SA), bIVs.sa(), enableParentIVs);
+    result.spd = GetEggIV(frame.inheritance[4], frame.baseIVs.sd(),
+                          aIVs.isSet(IVs::SD), aIVs.sd(),
+                          bIVs.isSet(IVs::SD), bIVs.sd(), enableParentIVs);
+    result.spe = GetEggIV(frame.inheritance[5], frame.baseIVs.sp(),
+                          aIVs.isSet(IVs::SP), aIVs.sp(),
+                          bIVs.isSet(IVs::SP), bIVs.sp(), enableParentIVs);
+    
+    result.hiddenType = Element::NONE;
+    result.hiddenPower = nil;
+    
+    if (enableParentIVs)
+    {
+      OptionalIVs  eggIVs = GetEggIVs(frame, aIVs, bIVs);
+      
+      if (eggIVs.allSet())
+      {
+        result.hiddenType = eggIVs.values.HiddenType();
+        result.hiddenPower =
+          [NSNumber numberWithUnsignedInt: eggIVs.values.HiddenPower()];
+      }
+    }
+    
+    [rows addObject: result];
+  }
+  
+  [eggIVsContentArray addObjects: rows];
 }
 
 

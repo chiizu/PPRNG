@@ -298,8 +298,8 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
         result.startFrame = seed.GetSkippedPIDFrames() + 1;
         result.pidFrame = frame.number;
         
-        SetGen5PIDResult(result,
-          frame.nature, frame.pid, pidFrameParams.tid, pidFrameParams.sid,
+        SetPIDResult(result, frame.pid, pidFrameParams.tid, pidFrameParams.sid,
+          frame.nature, frame.pid.Gen5Ability(),
           pidFrameParams.targetGender,
           ((pidFrameParams.leadAbility == EncounterLead::CUTE_CHARM) &&
            (pidFrameParams.frameType != Gen5PIDFrameGenerator::EntraLinkFrame))?

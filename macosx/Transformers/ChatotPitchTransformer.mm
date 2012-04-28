@@ -50,7 +50,7 @@ using namespace pprng;
                          [value class]];
   }
   
-  uint32_t  chatotPitch = [value unsignedIntValue] / 82;
+  uint32_t  chatotPitch = [value unsignedIntValue];
   NSString  *formatString = nil;
   if (chatotPitch < 20)
     formatString = @"Lo (%.2d)";

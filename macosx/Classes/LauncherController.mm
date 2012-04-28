@@ -32,6 +32,8 @@
 #import "DSParameterSearcherController.h"
 #import "Gen5ConfigurationEditController.h"
 #import "Gen4SeedSearcherController.h"
+#import "Gen4EggPIDSeedSearcherController.h"
+#import "Gen4EggIVSeedSearcherController.h"
 #import "Gen4SeedInspectorController.h"
 #import "Gen4ConfigurationEditController.h"
 
@@ -71,6 +73,10 @@
       [Gen5ConfigurationEditController class],
         [launchGen5ConfigurationEdit title],
       [Gen4SeedSearcherController class], [launchGen4SeedSearcher title],
+      [Gen4EggPIDSeedSearcherController class],
+        [launchGen4EggPIDSeedSearcher title],
+      [Gen4EggIVSeedSearcherController class],
+        [launchGen4EggIVSeedSearcher title],
       [Gen4SeedInspectorController class], [launchGen4SeedInspector title],
       [Gen4ConfigurationEditController class],
         [launchGen4ConfigurationEdit title],

@@ -49,14 +49,15 @@ void SetIVResult(id <IVResult> result, const IVs &ivs, BOOL isRoamer)
   result.isRoamer = isRoamer;
 }
 
-void SetGen5PIDResult(id <PIDResult> result, Nature::Type nature,
-                      const PID &pid,  uint32_t tid, uint32_t sid,
-                      Gender::Type gender, Gender::Ratio genderRatio)
+void SetPIDResult(id <PIDResult> result,
+                  const PID &pid, uint32_t tid, uint32_t sid,
+                  Nature::Type nature, Ability::Type ability,
+                  Gender::Type gender, Gender::Ratio genderRatio)
 {
   result.pid = pid.word;
   result.shiny = pid.IsShiny(tid, sid);
   result.nature = nature;
-  result.ability = pid.Gen5Ability();
+  result.ability = ability;
   
   if (genderRatio == Gender::ANY_RATIO)
   {
@@ -92,3 +93,4 @@ void SetGen5PIDResult(id <PIDResult> result, Nature::Type nature,
                         gender : Gender::NONE;
   }
 }
+

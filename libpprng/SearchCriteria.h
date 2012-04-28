@@ -58,7 +58,7 @@ struct SearchCriteria
         ++c;
       }
       
-      return c;
+      return (c == 0) ? 25 : c;
     }
   };
   
@@ -77,14 +77,17 @@ struct SearchCriteria
     {}
   };
   
-  struct FrameRange
+  struct NumberRange
   {
-    FrameRange() : min(0), max(0) {}
-    FrameRange(uint32_t mi, uint32_t ma) : min(mi), max(ma) {}
+    NumberRange() : min(0), max(0) {}
+    NumberRange(uint32_t mi, uint32_t ma) : min(mi), max(ma) {}
     
     uint32_t  min;
     uint32_t  max;
   };
+  
+  typedef NumberRange  FrameRange;
+  typedef NumberRange  DelayRange;
   
   class ImpossibleMinMaxFrameRangeException : public Exception
   {

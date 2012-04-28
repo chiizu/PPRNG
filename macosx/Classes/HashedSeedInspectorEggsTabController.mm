@@ -356,8 +356,9 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
     result.frame = frame.number;
     result.chatotPitch = Chatot::Gen5Pitch(frame.rngValue);
     
-    SetGen5PIDResult(result, frame.nature, frame.pid, p.tid, p.sid,
-                     Gender::ANY, Gender::ANY_RATIO);
+    SetPIDResult(result, frame.pid, p.tid, p.sid,
+                 frame.nature, frame.pid.Gen5Ability(),
+                 Gender::ANY, Gender::ANY_RATIO);
     result.inheritsHiddenAbility = frame.inheritsHiddenAbility;
     
     result.hp = GetEggIV(frame.inheritance[0], ivs.hp(), enableIVs,

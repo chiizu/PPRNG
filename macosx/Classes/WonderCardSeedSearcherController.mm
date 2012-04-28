@@ -106,11 +106,12 @@ struct ResultHandler
     result.startFrame = frame.seed.GetSkippedPIDFrames() + 1;
     result.frame = frame.number;
     
-    SetGen5PIDResult(result, frame.nature, frame.pid,
-                     m_criteria.frameParameters.cardTID,
-                     m_criteria.frameParameters.cardSID,
-                     m_criteria.frameParameters.cardGender,
-                     m_criteria.frameParameters.cardGenderRatio);
+    SetPIDResult(result, frame.pid,
+                 m_criteria.frameParameters.cardTID,
+                 m_criteria.frameParameters.cardSID,
+                 frame.nature, frame.pid.Gen5Ability(),
+                 m_criteria.frameParameters.cardGender,
+                 m_criteria.frameParameters.cardGenderRatio);
     if (frame.hasHiddenAbility)
       result.ability = Ability::HIDDEN;
     
