@@ -109,8 +109,10 @@
   NSString  *currentVersion = [[[NSBundle mainBundle] infoDictionary]
                                objectForKey:(NSString*)kCFBundleVersionKey];
   
-  NSString       *urlString = [NSString stringWithFormat: @"%@?version=%@",
-                                 VERSION_CHECK_URL, currentVersion];
+  NSString       *urlString =
+    [NSString stringWithFormat: @"%@?version=%@&hasEggSeedCache=%d",
+       VERSION_CHECK_URL, currentVersion,
+       pprng::EggSeedSearcher::HasCacheFile() ? 1 : 0];
   
   NSURLRequest   *request =
     [NSURLRequest requestWithURL:[NSURL URLWithString: urlString]
@@ -124,8 +126,8 @@
                      returningResponse:&response error:&error];
   if (result == nil)
   {
-    NSLog(@"Unable to perform version check.  Error %@",
-          [error localizedDescription]);
+    NSLog(@"Unable to perform version check.\n  URL: %@\n  Error: %@",
+          urlString, [error localizedDescription]);
     return;
   }
   

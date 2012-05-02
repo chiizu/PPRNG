@@ -24,6 +24,7 @@
 
 #include <stdexcept>
 #include <vector>
+#include <fstream>
 #include <string.h>
 
 #include <boost/shared_ptr.hpp>
@@ -314,7 +315,12 @@ struct IVSeedSet
 
 static boost::shared_ptr<IVSeedSet>  s_IVSeedSet;
 
+static bool HasNamedCacheFile(const std::string &seedFile)
+{
+  return std::ifstream(seedFile.c_str());
+}
 
+static
 EggSeedSearcher::CacheLoadResult
 LoadSeeds(const std::string &seedFile, boost::shared_ptr<IVSeedSet> &seedSetPtr)
 {
@@ -579,6 +585,11 @@ void EggSeedSearcher::Search
 void EggSeedSearcher::SetCacheDirectory(const std::string &dir)
 {
   s_CacheDirectory = dir;
+}
+
+bool EggSeedSearcher::HasCacheFile()
+{
+  return HasNamedCacheFile("eggseeds.dat");
 }
 
 EggSeedSearcher::CacheLoadResult EggSeedSearcher::LoadSeedCache()

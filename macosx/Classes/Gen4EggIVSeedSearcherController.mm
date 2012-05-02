@@ -33,12 +33,14 @@ using namespace pprng;
 @interface Gen4EggIVSeedSearchResult : NSObject
 {
   uint32_t       seed, delay, frame;
+  OptionalIVs    aIVs, bIVs;
   id             hp, atk, def, spa, spd, spe;
   Element::Type  hiddenType;
   NSNumber       *hiddenPower;
 }
 
 @property uint32_t         seed, delay, frame;
+@property OptionalIVs      aIVs, bIVs;
 @property (copy) id        hp, atk, def, spa, spd, spe;
 @property Element::Type    hiddenType;
 @property (copy) NSNumber  *hiddenPower;
@@ -48,6 +50,7 @@ using namespace pprng;
 @implementation Gen4EggIVSeedSearchResult
 
 @synthesize seed, delay, frame;
+@synthesize aIVs, bIVs;
 @synthesize hp, atk, def, spa, spd, spe;
 @synthesize hiddenType, hiddenPower;
 
@@ -93,6 +96,9 @@ struct ResultHandler
     result.seed = frame.seed;
     result.delay = seed.BaseDelay();
     result.frame = frame.number;
+    
+    result.aIVs = m_criteria.aIVs;
+    result.bIVs = m_criteria.bIVs;
     
     result.hp = GetEggIV(frame, IVs::HP);
     result.atk = GetEggIV(frame, IVs::AT);
@@ -202,9 +208,19 @@ struct ProgressHandler
         [[Gen4SeedInspectorController alloc] init];
       [inspector window];
       
-      [inspector setMode: mode];
-      [inspector setSeed: row.seed];
-      [inspector setFrame: row.frame];
+      inspector.mode = mode;
+      inspector.seed = [NSNumber numberWithUnsignedInt: row.seed];
+      
+      inspector.selectedTabId = @"eggIVs";
+      
+      inspector.maxEggIVFrame = row.frame + 20;
+      
+      inspector.enableParentIVs = YES;
+      [inspector setAIVs: row.aIVs];
+      [inspector setBIVs: row.bIVs];
+      
+      [inspector generateEggIVFrames: self];
+      [inspector selectAndShowEggIVFrame: row.frame];
       
       [inspector showWindow: self];
     }

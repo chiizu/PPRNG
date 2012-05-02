@@ -73,6 +73,8 @@ public:
   // if not running from the command line, working directory may not be set
   static void SetCacheDirectory(const std::string &dir);
   
+  static bool HasCacheFile();
+  
   enum CacheLoadResult
   {
     LOADED = 0,
@@ -81,7 +83,6 @@ public:
     NOT_ENOUGH_MEMORY,
     UNKNOWN_ERROR
   };
-  
   static CacheLoadResult LoadSeedCache();
   static void ReleaseSeedCache();
   static void EnsureSeedCacheReleased();

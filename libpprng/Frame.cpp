@@ -122,11 +122,11 @@ static void UpdateEncounterData(Gen4Frame::EncounterData &encData,
 
 Gen4Frame::Gen4Frame(const Gen34Frame &baseFrame)
   : seed(baseFrame.seed), number(baseFrame.number),
-    pid(baseFrame.pid), ivs(baseFrame.ivs),
+    rngValue(baseFrame.rngValue), pid(baseFrame.pid), ivs(baseFrame.ivs),
     methodJ(), methodK()
 {
   Nature::Type  nature = baseFrame.pid.Gen34Nature();
-  LCRNG34_R     rng(baseFrame.frameSeed);
+  LCRNG34_R     rng(baseFrame.rngValue);
   int32_t       candidateFrameNumber = baseFrame.number - 1;
   uint32_t      randomValue3 = rng.Next();
   uint32_t      randomValue4 = rng.Next();

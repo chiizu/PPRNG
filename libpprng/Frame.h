@@ -33,7 +33,7 @@ struct Gen34Frame
 {
   uint32_t  seed;
   uint32_t  number;
-  uint32_t  frameSeed;
+  uint32_t  rngValue;
   PID       pid;
   IVs       ivs;
 };
@@ -44,6 +44,7 @@ struct Gen4Frame
   
   uint32_t  seed;
   uint32_t  number;
+  uint32_t  rngValue;
   PID       pid;
   IVs       ivs;
   
@@ -83,7 +84,7 @@ struct Gen4EncounterFrame
   uint32_t                    seed;
   uint32_t                    number;
   uint32_t                    method1Number;
-  ProfElmResponses::Response  profElmResponse;
+  uint32_t                    rngValue;
   bool                        isEncounter;
   ESV::Value                  esv;
   bool                        synched;

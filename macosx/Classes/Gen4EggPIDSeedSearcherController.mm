@@ -33,6 +33,7 @@ using namespace pprng;
 @interface Gen4EggPIDSeedSearchResult : NSObject <PIDResult>
 {
   uint32_t  seed, delay, frame;
+  BOOL      internationalParents;
   DECLARE_PID_RESULT_VARIABLES();
   
   uint32_t  initialFlips;
@@ -41,6 +42,7 @@ using namespace pprng;
 }
 
 @property uint32_t  seed, delay, frame;
+@property BOOL      internationalParents;
 @property uint32_t  initialFlips;
 @property uint32_t  taps;
 @property uint32_t  additionalFlips;
@@ -50,6 +52,7 @@ using namespace pprng;
 @implementation Gen4EggPIDSeedSearchResult
 
 @synthesize seed, delay, frame;
+@synthesize internationalParents;
 SYNTHESIZE_PID_RESULT_PROPERTIES();
 @synthesize initialFlips, taps, additionalFlips;
 
@@ -76,6 +79,9 @@ struct ResultHandler
     result.seed = frame.seed;
     result.delay = seed.BaseDelay();
     result.frame = frame.number;
+    
+    result.internationalParents =
+      m_criteria.frameParameters.internationalParents;
     
     SetPIDResult(result, frame.pid,
                  m_criteria.frameParameters.tid,
@@ -203,9 +209,16 @@ struct ProgressHandler
         [[Gen4SeedInspectorController alloc] init];
       [inspector window];
       
-      [inspector setMode: mode];
-      [inspector setSeed: row.seed];
-      [inspector setFrame: row.frame];
+      inspector.mode = mode;
+      inspector.seed = [NSNumber numberWithUnsignedInt: row.seed];
+      
+      inspector.selectedTabId = @"eggPIDs";
+      
+      inspector.maxEggPIDFrame = row.frame + 20;
+      inspector.internationalParents = row.internationalParents;
+      
+      [inspector generateEggPIDFrames: self];
+      [inspector selectAndShowEggPIDFrame: row.frame];
       
       [inspector showWindow: self];
     }

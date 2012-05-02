@@ -37,7 +37,7 @@ struct SeedChecker
   
   void operator()(const Gen34Frame &frame) const
   {
-    uint32_t  seed = frame.frameSeed;
+    uint32_t  seed = frame.rngValue;
     uint32_t  frameNumber = 0, limit = m_criteria.minFrame - 1;
     
     while (frameNumber < limit)

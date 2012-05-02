@@ -62,7 +62,7 @@ public:
   {
     m_RNG.AdvanceBuffer();
     
-    m_frame.frameSeed = m_RNG.PeekNext();
+    m_frame.rngValue = m_RNG.PeekNext();
     ++m_frame.number;
     
     m_frame.pid = m_PIDRNG.NextPIDWord();
@@ -89,7 +89,7 @@ class Gen4EncounterFrameGenerator
 public:
   typedef uint32_t             Seed;
   typedef Gen4EncounterFrame   Frame;
-  typedef QueuedRNG<LCRNG34>   RNG;
+  typedef LCRNG34              RNG;
   typedef Gen34PIDRNG<1, RNG>  PIDRNG;
   typedef Gen34IVRNG<1, RNG>   IVRNG;
   
@@ -122,7 +122,7 @@ public:
   };
   
   Gen4EncounterFrameGenerator(uint32_t seed, const Parameters &parameters)
-    : m_RNG(seed), m_PIDRNG(m_RNG), m_IVRNG(m_RNG), m_ProfElmResponseRNG(seed),
+    : m_NextSeed(seed), m_RNG(seed), m_PIDRNG(m_RNG), m_IVRNG(m_RNG),
       m_parameters(parameters)
   {
     m_frame.seed = seed;
@@ -130,17 +130,28 @@ public:
     m_frame.synched = false;
     m_frame.isEncounter = true;
     m_frame.esv = ESV::Value(0);
-    m_ProfElmResponseRNG.Next();
+  }
+  
+  void SkipFrames(uint32_t numFrames)
+  {
+    uint32_t  i = 0;
+    while (i++ < numFrames)
+      m_RNG.Next();
+    
+    m_NextSeed = m_RNG.Seed();
+    m_frame.number += numFrames;
   }
   
   void AdvanceFrame()
   {
-    m_RNG.AdvanceBuffer();
-    
     ++m_frame.number;
     m_frame.method1Number = m_frame.number;
-    m_frame.profElmResponse =
-      ProfElmResponses::CalcResponse(m_ProfElmResponseRNG.Next());
+    
+    m_RNG.Seed(m_NextSeed);
+    m_frame.rngValue = m_RNG.Next();
+    
+    m_RNG.Seed(m_NextSeed);
+    m_NextSeed = m_frame.rngValue;
     
     switch (m_parameters.encounterType)
     {
@@ -211,12 +222,12 @@ private:
     return Method::CalculatePercentage(m_RNG.Next()) < threshold;
   }
   
-  RNG         m_RNG;
-  PIDRNG      m_PIDRNG;
-  IVRNG       m_IVRNG;
-  LCRNG34     m_ProfElmResponseRNG;
-  Frame       m_frame;
-  Parameters  m_parameters;
+  RNG::SeedType  m_NextSeed;
+  RNG            m_RNG;
+  PIDRNG         m_PIDRNG;
+  IVRNG          m_IVRNG;
+  Frame          m_frame;
+  Parameters     m_parameters;
 };
 
 struct MethodJ

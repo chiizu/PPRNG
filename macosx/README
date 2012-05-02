@@ -1,10 +1,44 @@
-PPRNG 1.10.0
+PPRNG 1.11.0
 
 Mac Requirements: Intel Mac with OS X 10.5 or greater.
 
-DS Requirements: All DS types now supported for English, Japanese, and German
-language games. We still need to figure out details for the other languages, so
-in the meantime they are still stuck on the original DS or DS Lite only.
+DS Requirements: All DS types now supported for English, Japanese, French,
+German, Italian, and Spanish language games. We still need to figure out details
+for Korean, so in the meantime they are still stuck on the original DS or
+DS Lite only.
+
+New in 1.11.0
+
+* Added 4th Generation breeding support with the Egg PID and Egg IV searchers,
+  and corresponding tabs in the Generation 4 Seed Inspector
+* Seed / frame details now filled in automatically when opening the Gen 4 Seed
+  Inspector from a Gen 4 seed searcher
+* Added Chatot pitch info to Gen 4 Seed Inspector
+
+Known Issues in this version:
+
+* Aside from the C-Gear Seed Inspector, none of the 'Find' or 'Save' buttons in
+  the seed inspectors work. For now, you'll just have to scroll through
+  manually. 'Save' buttons in the searcher windows should properly save CSV
+  files of the results.
+* Copy / Paste will work on specific fields that you can type in, but at the
+  moment you can't copy other things such as result rows.
+* There is not much in the way of argument checking. If you set a minimum IV
+  that is greater than the corresponding maximum IV, it will try very hard to
+  find that impossible IV spread.
+* There is some funny behavior when editing the DS / Game Config with multiple
+  windows open. The selected config in other windows appears to change. It is a
+  minor annoyance, but for now just set your config again in the other window
+  from it's drop down menu. Down the line there will be a bit of an interface
+  change to deal with this.
+
+
+Upcoming Features:
+
+* Cute Charm encounters for Generation 4
+* Generation 4 TID / SID abuse
+* Black / White 2 Support (pending research)
+
 
 Quick Start:
 1. First, before doing anything else, open the DS / Game Config screen.
@@ -21,7 +55,9 @@ In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
 on a result row to bring up the seed inspector for that specific seed.
 
 
-New in 1.10.0
+Previous Releases:
+
+1.10.0
 
 Added:
 * Added support for other encounter lead abilities in Gen 5 such as Cute Charm
@@ -71,33 +107,6 @@ Fixed:
   patterns which could disable the faster searches unnecessarily
 * Edits in the current text cell are now properly recognized when a search is
   started
-
-
-Known Issues in this version:
-
-* Aside from the C-Gear Seed Inspector, none of the 'Find' or 'Save' buttons in
-  the seed inspectors work. For now, you'll just have to scroll through
-  manually. 'Save' buttons in the searcher windows should properly save CSV
-  files of the results.
-* Copy / Paste will work on specific fields that you can type in, but at the
-  moment you can't copy other things such as result rows.
-* There is not much in the way of argument checking. If you set a minimum IV
-  that is greater than the corresponding maximum IV, it will try very hard to
-  find that impossible IV spread.
-* There is some funny behavior when editing the DS / Game Config with multiple
-  windows open. The selected config in other windows appears to change. It is a
-  minor annoyance, but for now just set your config again in the other window
-  from it's drop down menu. Down the line there will be a bit of an interface
-  change to deal with this.
-
-
-Upcoming Features:
-
-* Generation 4 Support - Breeding (some day...)
-* Black / White 2 Support (pending research)
-
-
-Previous Releases:
 
 1.9.0
 

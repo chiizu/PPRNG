@@ -285,13 +285,26 @@ struct ProgressHandler
     {
       NSNumber  *seed = [row objectForKey: @"seed"];
       NSNumber  *frame = [row objectForKey: @"frame"];
+      uint32_t  frameNum = [frame unsignedIntValue];
       
       Gen4SeedInspectorController  *inspector =
         [[Gen4SeedInspectorController alloc] init];
+      [inspector window];
+      
+      inspector.mode = mode;
+      inspector.seed = seed;
+      
+      inspector.selectedTabId = @"frames";
+      
+      inspector.maxFrame = frameNum + 20;
+      inspector.encounterType = -1;
+      
+      [inspector generateFrames: self];
+      [inspector selectAndShowFrame: frameNum];
+      
+      inspector.esvMethod1Frame = frameNum;
+      
       [inspector showWindow: self];
-      [inspector setMode: mode];
-      [inspector setSeed: [seed unsignedIntValue]];
-      [inspector setFrame: [frame unsignedIntValue]];
     }
   }
 }

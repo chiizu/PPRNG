@@ -23,79 +23,75 @@
 #import "VertResizeOnlyWindowController.h"
 #import "Gen4ConfigurationController.h"
 
+#include "PPRNGTypes.h"
+
 @interface Gen4SeedInspectorController : VertResizeOnlyWindowController
 {
   // header
   IBOutlet Gen4ConfigurationController  *gen4ConfigController;
-  IBOutlet NSTextField                  *seedField;
-  IBOutlet NSTextField                  *baseDelayField;
-  IBOutlet NSTabView                    *tabView;
+  
+  NSNumber  *seed;
+  NSNumber  *baseDelay;
+  int       mode;
+  uint32_t  raikouLocation, enteiLocation, latiLocation;
+  uint32_t  nextRaikouLocation, nextEnteiLocation, nextLatiLocation;
+  uint32_t  skippedFrames;
+  uint32_t  seedCoinFlips;
+  uint64_t  seedProfElmResponses;
+  
+  NSString  *selectedTabId;
   
   // Frames tab
-  IBOutlet NSTextField        *minFrameField;
-  IBOutlet NSTextField        *maxFrameField;
+  uint32_t             minFrame, maxFrame;
+  int32_t              encounterType;
+  pprng::Nature::Type  syncNature;
+  BOOL                 showRealFrame;
+  NSMutableArray       *dpptFrames, *hgssFrames;
   
   IBOutlet NSTableView        *frameTableView;
   IBOutlet NSArrayController  *frameContentArray;
   
   
   // Encounter Slots tab
-  IBOutlet NSTextField        *esvMethod1FrameField;
-  IBOutlet NSTextField        *esvFrameDescriptionField;
+  uint32_t        esvMethod1Frame;
+  NSString        *esvFrameDescription;
+  NSMutableArray  *dpptESVs, *hgssESVs;
   
   IBOutlet NSTableView        *esvTableView;
   IBOutlet NSArrayController  *esvContentArray;
   
   
   // Time / Adjacents tab
-  IBOutlet NSTextField        *timeFinderYearField;
-  IBOutlet NSTextField        *timeFinderActualDelayField;
-  IBOutlet NSTextField        *timeFinderSecondField;
+  uint32_t  year;
+  NSNumber  *actualDelay;
+  BOOL      useSpecifiedSecond;
+  uint32_t  second;
   
   IBOutlet NSTableView        *timeFinderTableView;
   IBOutlet NSArrayController  *timeFinderContentArray;
   
-  IBOutlet NSTextField        *adjacentsDelayVarianceField;
-  IBOutlet NSTextField        *adjacentsTimeVarianceField;
+  uint32_t  secondVariance, delayVariance;
+  BOOL      matchSeedDelayParity;
+  
+  uint32_t  coinFlipsSearchValue;
+  uint64_t  profElmResponsesSearchValue;
+  uint32_t  raikouLocationSearchValue;
+  uint32_t  enteiLocationSearchValue;
+  uint32_t  latiLocationSearchValue;
   
   IBOutlet NSTableView        *adjacentsTableView;
   IBOutlet NSArrayController  *adjacentsContentArray;
   
-  int                         mode;
-  uint32_t                    raikouLocation;
-  uint32_t                    enteiLocation;
-  uint32_t                    latiLocation;
-  uint32_t                    nextRaikouLocation;
-  uint32_t                    nextEnteiLocation;
-  uint32_t                    nextLatiLocation;
-  uint32_t                    skippedFrames;
-  uint32_t                    seedCoinFlips;
-  uint64_t                    seedProfElmResponses;
   
-  int32_t                     encounterType;
-  int32_t                     syncNature;
-  BOOL                        showRealFrame;
-  NSMutableArray              *dpptFrames;
-  NSMutableArray              *hgssFrames;
-  
-  NSMutableArray              *dpptESVs;
-  NSMutableArray              *hgssESVs;
-  
-  BOOL                        useSpecifiedSecond;
-  BOOL                        matchSeedDelayParity;
-  uint32_t                    coinFlipsSearchValue;
-  uint64_t                    profElmResponsesSearchValue;
-  uint32_t                    raikouLocationSearchValue;
-  uint32_t                    enteiLocationSearchValue;
-  uint32_t                    latiLocationSearchValue;
-  
-  uint32_t                    minEggPIDFrame, maxEggPIDFrame;
-  BOOL                        internationalParents;
+  // Egg PID Frames tab
+  uint32_t  minEggPIDFrame, maxEggPIDFrame;
+  BOOL      internationalParents;
   
   IBOutlet NSTableView        *eggPIDsTableView;
   IBOutlet NSArrayController  *eggPIDsContentArray;
   
   
+  // Egg IV Frames tab
   uint32_t                    minEggIVFrame, maxEggIVFrame;
   
   BOOL                        enableParentIVs;
@@ -106,51 +102,54 @@
   IBOutlet NSArrayController  *eggIVsContentArray;
 }
 
+@property (copy) NSNumber  *seed;
+@property (copy) NSNumber  *baseDelay;
+
 @property int       mode;
-@property uint32_t  raikouLocation;
-@property uint32_t  enteiLocation;
-@property uint32_t  latiLocation;
-@property uint32_t  nextRaikouLocation;
-@property uint32_t  nextEnteiLocation;
-@property uint32_t  nextLatiLocation;
+@property uint32_t  raikouLocation, enteiLocation, latiLocation;
+@property uint32_t  nextRaikouLocation, nextEnteiLocation, nextLatiLocation;
 @property uint32_t  skippedFrames;
 @property uint32_t  seedCoinFlips;
 @property uint64_t  seedProfElmResponses;
-@property BOOL      showRealFrame;
-@property int32_t   encounterType;
-@property int32_t   syncNature;
-@property BOOL      useSpecifiedSecond;
+
+@property (copy) NSString  *selectedTabId;
+
+@property uint32_t             minFrame, maxFrame;
+@property int32_t              encounterType;
+@property pprng::Nature::Type  syncNature;
+@property BOOL                 showRealFrame;
+
+@property uint32_t         esvMethod1Frame;
+@property (copy) NSString  *esvFrameDescription;
+
+@property uint32_t         year;
+@property (copy) NSNumber  *actualDelay;
+@property BOOL             useSpecifiedSecond;
+@property uint32_t         second;
+
+@property uint32_t  secondVariance, delayVariance;
 @property BOOL      matchSeedDelayParity;
+
 @property uint32_t  coinFlipsSearchValue;
 @property uint64_t  profElmResponsesSearchValue;
 @property uint32_t  raikouLocationSearchValue;
 @property uint32_t  enteiLocationSearchValue;
 @property uint32_t  latiLocationSearchValue;
+
 @property uint32_t  minEggPIDFrame, maxEggPIDFrame;
 @property BOOL      internationalParents;
+
 @property uint32_t  minEggIVFrame, maxEggIVFrame;
 @property BOOL      enableParentIVs;
 
 @property (copy) NSNumber  *aHP, *aAT, *aDF, *aSA, *aSD, *aSP;
 @property (copy) NSNumber  *bHP, *bAT, *bDF, *bSA, *bSD, *bSP;
 
-// for opening with a seed and Method 1 frame already set
-- (void)setSeed:(uint32_t)seed;
-- (void)setFrame:(uint32_t)frame;
-
-// for updating the delay, coin flips, etc. when the seed text is set
-- (IBAction)seedUpdated:(id)sender;
-
-- (IBAction)roamerLocationChanged:(id)sender;
-
 // frames tab
 - (IBAction)generateFrames:(id)sender;
-
-// Encounter Slots tab
-- (IBAction)esvMethod1FrameUpdated:(id)sender;
+- (void)selectAndShowFrame:(uint32_t)frame;
 
 // time / adjacents tab
-- (IBAction)yearUpdated:(id)sender;
 - (IBAction)calculateTimes:(id)sender;
 - (IBAction)generateAdjacents:(id)sender;
 
@@ -160,17 +159,18 @@
 - (IBAction)addEResponse:(id)sender;
 - (IBAction)addKResponse:(id)sender;
 - (IBAction)addPResponse:(id)sender;
-- (IBAction)searchRoamerLocation:(id)sender;
 
 - (IBAction)removeLastSearchItem:(id)sender;
 - (IBAction)resetSearch:(id)sender;
 
 // eggs
 - (IBAction)generateEggPIDFrames:(id)sender;
+- (void)selectAndShowEggPIDFrame:(uint32_t)frame;
 
 - (void)setAIVs:(const pprng::OptionalIVs&)ivs;
 - (void)setBIVs:(const pprng::OptionalIVs&)ivs;
 
 - (IBAction)generateEggIVFrames:(id)sender;
+- (void)selectAndShowEggIVFrame:(uint32_t)frame;
 
 @end
