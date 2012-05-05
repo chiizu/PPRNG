@@ -1,4 +1,4 @@
-PPRNG 1.11.0
+PPRNG 1.11.1
 
 Mac Requirements: Intel Mac with OS X 10.5 or greater.
 
@@ -6,6 +6,10 @@ DS Requirements: All DS types now supported for English, Japanese, French,
 German, Italian, and Spanish language games. We still need to figure out details
 for Korean, so in the meantime they are still stuck on the original DS or
 DS Lite only.
+
+New in 1.11.1
+
+* Bug fix for a display issue with the Gen 4 Egg IV Searcher.
 
 New in 1.11.0
 
