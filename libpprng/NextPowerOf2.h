@@ -29,7 +29,7 @@ namespace pprng
 template <uint32_t I, uint32_t R, uint32_t N>
 struct NextPowerOf2Helper
 {
-  enum { result = NextPowerOf2Helper<I >> 1, R + (I & 0x1), N << 1>::result };
+  enum { result = NextPowerOf2Helper<(I >> 1), R + (I & 0x1), N << 1>::result };
 };
 
 template <uint32_t R, uint32_t N>

@@ -23,6 +23,7 @@
 #include <list>
 #include <map>
 #include <vector>
+#include <algorithm>
 #include <sstream>
 #include <iomanip>
 #include <ctype.h>
