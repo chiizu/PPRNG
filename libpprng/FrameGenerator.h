@@ -536,6 +536,7 @@ public:
     NonShinyStationaryFrame,
     StarterFossilGiftFrame,
     RoamerFrame,
+    DoublesFrame,
     
     NumFrameTypes
   };
@@ -599,6 +600,7 @@ private:
   void NextWildFrame();
   void NextFishingFrame();
   void NextSwarmFrame();
+  void NextDoublesFrame();
   void NextDustFrame();
   void NextShadowFrame();
   void NextStationaryFrame();

@@ -888,17 +888,26 @@ struct EncounterSlot
 {
   enum Mask
   {
-    TYPE_MASK = 0xf0,
-    SLOT_MASK = 0x0f
+    TYPE_MASK = 0xf00,
+    SLOT_MASK = 0x00f,
+    SLOT2_MASK = 0x0f0
+  };
+  
+  enum Shift
+  {
+    SLOT2_SHIFT = 4
   };
   
   enum Type
   {
-    LAND_TYPE = 0x00,
-    SURF_TYPE = 0x10,
-    OLD_ROD_TYPE = 0x20,
-    GOOD_ROD_TYPE = 0x30,
-    SUPER_ROD_TYPE = 0x40
+    LAND_TYPE = 0x000,
+    SURF_TYPE = 0x100,
+    OLD_ROD_TYPE = 0x200,
+    GOOD_ROD_TYPE = 0x300,
+    SUPER_ROD_TYPE = 0x400,
+    DOUBLES_GRASS_SINGLE_TYPE = 0x500,
+    DOUBLES_GRASS_DOUBLE_TYPE = 0x600,
+    NO_TYPE = 0xF00
   };
   
   enum Value
@@ -941,18 +950,23 @@ struct EncounterSlot
     SUPER_ROD_3,
     SUPER_ROD_4,
     
-    // can't be -1 because of special bit meanings
-    NO_SLOT
+    NO_SLOT = NO_TYPE
   };
   
   static Value MakeESV(Type type, uint32_t slot)
   { return Value(type | slot); }
+  
+  static Value MakeDoublesESV(Type type, uint32_t rightSlot, uint32_t leftSlot)
+  { return Value(type | rightSlot | (leftSlot << SLOT2_SHIFT)); }
   
   static Type SlotType(Value esv)
   { return Type(esv & TYPE_MASK); }
   
   static uint32_t Slot(Value esv)
   { return esv & SLOT_MASK; }
+  
+  static uint32_t Slot2(Value esv)
+  { return (esv & SLOT2_MASK) >> SLOT2_SHIFT; }
   
   static std::string ToString(Value v);
   

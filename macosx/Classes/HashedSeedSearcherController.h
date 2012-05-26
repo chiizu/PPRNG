@@ -35,6 +35,7 @@
   IBOutlet NSPopUpButton  *natureDropDown;
   IBOutlet NSPopUpButton  *requiredEncountersDropDown;
   IBOutlet NSPopUpButton  *landESVDropDown;
+  IBOutlet NSPopUpButton  *doublesESVDropDown;
   IBOutlet NSPopUpButton  *surfESVDropDown;
   IBOutlet NSPopUpButton  *fishESVDropDown;
   

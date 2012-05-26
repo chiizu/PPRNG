@@ -197,7 +197,11 @@ const Gen5PIDFrameGenerator::FrameGeneratorInfo
   // RoamerFrame
   { &Gen5PIDFrameGenerator::NextRoamerPID,
     &Gen5PIDFrameGenerator::NextSimpleFrame,
-    &Gen5PIDFrameGenerator::NoESV }
+    &Gen5PIDFrameGenerator::NoESV },
+  // DoublesFrame
+  { &Gen5PIDFrameGenerator::NextWildPID,
+    &Gen5PIDFrameGenerator::NextDoublesFrame,
+    &Gen5PIDFrameGenerator::LandESV }
 };
 
 void Gen5PIDFrameGenerator::LandESV()
@@ -315,6 +319,53 @@ void Gen5PIDFrameGenerator::NextSwarmFrame()
   ApplySync();
   NextHeldItem();
 }
+
+
+void Gen5PIDFrameGenerator::NextDoublesFrame()
+{
+  CheckLeadAbility();
+  
+  bool isDoubleBattle = (((m_RNG.Next() >> 32) * 100) >> 32) < 40;
+  if (isDoubleBattle)
+  {
+    // right ESV
+    uint32_t  raw_esv = (m_RNG.Next() >> 48) / 0x290;
+    uint32_t  rightSlot = ESV::Slot(ESV::Gen5Land(raw_esv));
+    
+    // right level
+    m_RNG.Next();
+    
+    // left ESV
+    raw_esv = (m_RNG.Next() >> 48) / 0x290;
+    uint32_t  leftSlot = ESV::Slot(ESV::Gen5Land(raw_esv));
+    
+    m_frame.esv =
+      ESV::MakeDoublesESV(ESV::DOUBLES_GRASS_DOUBLE_TYPE, rightSlot, leftSlot);
+    
+    // left level
+    m_RNG.Next();
+    
+    NextSimpleFrame();
+    ApplySync();
+    NextHeldItem();
+  }
+  else
+  {
+    uint32_t  raw_esv = (m_RNG.Next() >> 48) / 0x290;
+    uint32_t  rightSlot = ESV::Slot(ESV::Gen5Land(raw_esv));
+    
+    m_frame.esv =
+      ESV::MakeDoublesESV(ESV::DOUBLES_GRASS_SINGLE_TYPE, rightSlot, 0);
+    
+    // level
+    m_RNG.Next();
+    
+    NextSimpleFrame();
+    ApplySync();
+    NextHeldItem();
+  }
+}
+
 
 void Gen5PIDFrameGenerator::NextDustFrame()
 {

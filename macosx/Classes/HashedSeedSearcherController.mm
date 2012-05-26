@@ -48,10 +48,10 @@ using namespace pprng;
   
   uint32_t  requiredEncountersMask;
   uint32_t  pidStartFrame, giftFrame, grassCaveSurfSpotFrame;
-  uint32_t  swarmFrame, dustFrame, shadowFrame;
+  uint32_t  swarmFrame, doublesFrame, dustFrame, shadowFrame;
   uint32_t  stationaryFrame, fishFrame;
   
-  ESV::Value  landESV, surfESV, fishESV;
+  ESV::Value  landESV, doublesESV, surfESV, fishESV;
 }
 
 @property uint32_t       ivFrame;
@@ -60,9 +60,9 @@ using namespace pprng;
 
 @property uint32_t  requiredEncountersMask;
 @property uint32_t  pidStartFrame, giftFrame, grassCaveSurfSpotFrame;
-@property uint32_t  swarmFrame, dustFrame, shadowFrame;
+@property uint32_t  swarmFrame, doublesFrame, dustFrame, shadowFrame;
 @property uint32_t  stationaryFrame, fishFrame;
-@property ESV::Value  landESV, surfESV, fishESV;
+@property ESV::Value  landESV, doublesESV, surfESV, fishESV;
 
 @end
 
@@ -80,6 +80,7 @@ using namespace pprng;
     gender12 = Gender::NONE;
     gender34 = Gender::NONE;
     landESV = ESV::NO_SLOT;
+    doublesESV = ESV::NO_SLOT;
     surfESV = ESV::NO_SLOT;
     fishESV = ESV::NO_SLOT;
   }
@@ -98,9 +99,9 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
 
 @synthesize requiredEncountersMask;
 @synthesize pidStartFrame, giftFrame, grassCaveSurfSpotFrame;
-@synthesize swarmFrame, dustFrame, shadowFrame;
+@synthesize swarmFrame, doublesFrame, dustFrame, shadowFrame;
 @synthesize stationaryFrame, fishFrame;
-@synthesize landESV, surfESV, fishESV;
+@synthesize landESV, doublesESV, surfESV, fishESV;
 
 @end
 
@@ -166,6 +167,7 @@ struct GUICriteria : public HashedSeedQuickSearcher::Criteria
 static const uint32_t  OtherFrameTypes =
   (0x1 << Gen5PIDFrameGenerator::GrassCaveFrame) |
   (0x1 << Gen5PIDFrameGenerator::SurfingFrame) |
+  (0x1 << Gen5PIDFrameGenerator::DoublesFrame) |
   (0x1 << Gen5PIDFrameGenerator::SwarmFrame) |
   (0x1 << Gen5PIDFrameGenerator::FishingFrame) |
   (0x1 << Gen5PIDFrameGenerator::SwirlingDustFrame) |
@@ -178,6 +180,7 @@ static const uint32_t  OtherFrameTypes =
 static const uint32_t  SyncFrameTypes =
   (0x1 << Gen5PIDFrameGenerator::GrassCaveFrame) |
   (0x1 << Gen5PIDFrameGenerator::SurfingFrame) |
+  (0x1 << Gen5PIDFrameGenerator::DoublesFrame) |
   (0x1 << Gen5PIDFrameGenerator::SwarmFrame) |
   (0x1 << Gen5PIDFrameGenerator::FishingFrame) |
   (0x1 << Gen5PIDFrameGenerator::SwirlingDustFrame) |
@@ -190,6 +193,7 @@ static const uint32_t  CuteCharmFrameTypes =
   (0x1 << Gen5PIDFrameGenerator::GrassCaveFrame) |
   (0x1 << Gen5PIDFrameGenerator::SurfingFrame) |
   (0x1 << Gen5PIDFrameGenerator::WaterSpotFishingFrame) |
+  (0x1 << Gen5PIDFrameGenerator::DoublesFrame) |
   (0x1 << Gen5PIDFrameGenerator::SwarmFrame) |
   (0x1 << Gen5PIDFrameGenerator::FishingFrame) |
   (0x1 << Gen5PIDFrameGenerator::SwirlingDustFrame) |
@@ -293,16 +297,23 @@ struct ResultHandler
               data = &it->second;
             }
             
-            if ((parameters.frameType !=
-                 Gen5PIDFrameGenerator::StarterFossilGiftFrame) &&
-                (parameters.frameType !=
-                 Gen5PIDFrameGenerator::SwarmFrame) &&
-                (parameters.frameType !=
-                 Gen5PIDFrameGenerator::StationaryFrame))
+            if (data->frame.find(parameters.frameType) == data->frame.end())
             {
-              data->esv[ESV::SlotType(frame.esv)] = frame.esv;
+              if (parameters.frameType == Gen5PIDFrameGenerator::DoublesFrame)
+              {
+                data->esv[ESV::DOUBLES_GRASS_DOUBLE_TYPE] = frame.esv;
+              }
+              else if ((parameters.frameType !=
+                        Gen5PIDFrameGenerator::StarterFossilGiftFrame) &&
+                       (parameters.frameType !=
+                        Gen5PIDFrameGenerator::SwarmFrame) &&
+                       (parameters.frameType !=
+                        Gen5PIDFrameGenerator::StationaryFrame))
+              {
+                data->esv[ESV::SlotType(frame.esv)] = frame.esv;
+              }
+              data->frame[parameters.frameType] = frame.number;
             }
-            data->frame[generator.GetFrameType()] = frame.number;
           }
         }
       }
@@ -360,6 +371,14 @@ struct ResultHandler
           pidResult.surfESV = ESV::Value(data.esv.find(ESV::SURF_TYPE)->second);
           pidResult.fishESV =
             ESV::Value(data.esv.find(ESV::GOOD_ROD_TYPE)->second);
+        }
+        
+        if ((it = frameMap.find(Gen5PIDFrameGenerator::DoublesFrame)) !=
+            frameMap.end())
+        {
+          pidResult.doublesFrame = uint32_t(it->second);
+          pidResult.doublesESV =
+            ESV::Value(data.esv.find(ESV::DOUBLES_GRASS_DOUBLE_TYPE)->second);
         }
         
         if ((it = frameMap.find(Gen5PIDFrameGenerator::SwarmFrame)) !=
@@ -698,6 +717,9 @@ struct ProgressHandler
           case Gen5PIDFrameGenerator::FishingFrame:
             targetFrame = row.fishFrame;
             break;
+          case Gen5PIDFrameGenerator::DoublesFrame:
+            targetFrame = row.doublesFrame;
+            break;
           case Gen5PIDFrameGenerator::SwarmFrame:
             targetFrame = row.swarmFrame;
             break;
@@ -723,6 +745,12 @@ struct ProgressHandler
           framesTab.encounterFrameType = Gen5PIDFrameGenerator::GrassCaveFrame;
           adjacentsTab.encounterFrameType =
             Gen5PIDFrameGenerator::GrassCaveFrame;
+        }
+        else if (row.doublesFrame > 0)
+        {
+          targetFrame = row.doublesFrame;
+          framesTab.encounterFrameType = Gen5PIDFrameGenerator::DoublesFrame;
+          adjacentsTab.encounterFrameType = Gen5PIDFrameGenerator::DoublesFrame;
         }
         else if (row.fishFrame > 0)
         {
@@ -896,6 +924,9 @@ struct ProgressHandler
   criteria.requiredEncountersMask =
     GetComboMenuBitMask(requiredEncountersDropDown);
   criteria.esvMask[ESV::LAND_TYPE] = GetComboMenuBitMask(landESVDropDown);
+  criteria.esvMask[ESV::DOUBLES_GRASS_DOUBLE_TYPE] =
+    criteria.esvMask[ESV::DOUBLES_GRASS_SINGLE_TYPE] =
+      GetComboMenuBitMask(doublesESVDropDown);
   criteria.esvMask[ESV::SURF_TYPE] = GetComboMenuBitMask(surfESVDropDown);
   criteria.esvMask[ESV::GOOD_ROD_TYPE] = GetComboMenuBitMask(fishESVDropDown);
   

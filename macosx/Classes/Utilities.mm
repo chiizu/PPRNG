@@ -179,6 +179,11 @@ NSString* GetGen5PIDFrameDetails(const Gen5PIDFrame &frame,
       [NSString stringWithFormat: @"%s",
        EncounterItem::ToString(frame.encounterItem).c_str()];
     
+  case Gen5PIDFrameGenerator::DoublesFrame:
+    if (ESV::SlotType(frame.esv) == ESV::DOUBLES_GRASS_DOUBLE_TYPE)
+      return [NSString stringWithFormat: @"Double (%d)", ESV::Slot2(frame.esv)];
+    else
+      return @"";
     
   case Gen5PIDFrameGenerator::EntraLinkFrame:
     return GetCGearFrameTime(cgearTicks);
