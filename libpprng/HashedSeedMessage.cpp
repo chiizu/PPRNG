@@ -375,6 +375,8 @@ void HashedSeedMessage::NextDay()
       if ((++yearInfo & 0xf) > 9)
       {
         yearInfo = (yearInfo & 0xf0) + 0x10;
+        if (yearInfo >= 0xa0)
+          yearInfo = 0x00;
       }
       
       m_message[8] = (yearInfo << 24) | (monthInfo << 16) | dayInfo;

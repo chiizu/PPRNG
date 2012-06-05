@@ -893,7 +893,7 @@ CoinFlips::CoinFlips(uint32_t seed, uint32_t numFlips)
 {
   MTRNG     rng(seed);
   
-  for (int i = 0; i < numFlips; ++i)
+  for (uint32_t i = 0; i < numFlips; ++i)
     word = word | (CalcResult(rng.Next()) << i);
   
   word = word | (numFlips << FLIP_COUNT_SHIFT);
@@ -905,7 +905,7 @@ ProfElmResponses::ProfElmResponses(uint32_t seed, uint32_t numResponses)
 {
   LCRNG34  rng(seed);
   
-  for (int i = 0; i < numResponses; ++i)
+  for (uint32_t i = 0; i < numResponses; ++i)
     word = word | (CalcResponse(rng.Next()) << (i << 1));
   
   word = word | (uint64_t(numResponses) << RESPONSE_COUNT_SHIFT);
