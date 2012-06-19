@@ -317,7 +317,7 @@ static boost::shared_ptr<IVSeedSet>  s_IVSeedSet;
 
 static bool HasNamedCacheFile(const std::string &seedFile)
 {
-  return std::ifstream(seedFile.c_str());
+  return !std::ifstream(seedFile.c_str()).fail();
 }
 
 static
