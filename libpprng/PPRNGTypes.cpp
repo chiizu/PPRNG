@@ -52,6 +52,7 @@ static const char *GameVersionNameArray[] =
   "Black (Japanese)", "Black (Spanish)",
   "White (English)", "White (French)", "White (German)", "White (Italian)",
   "White (Japanese)", "White (Spanish)", "Black (Korean)", "White (Korean)",
+  "Black 2 (Japanese)", "White 2 (Japanese)",
   "Unknown Version"
 };
 
@@ -374,6 +375,17 @@ const IVs::Mask  IVs::IVMask[6] =
   SP_MASK
 };
 
+const IVs  IVs::Perfect(31, 31, 31, 31, 31, 31);
+const IVs  IVs::PerfectTrick(31, 31, 31, 31, 31, 0);
+const IVs  IVs::PhysPerfect(31, 31, 31, 0, 31, 31);
+const IVs  IVs::PhysPerfectTrick(31, 31, 31, 0, 31, 0);
+const IVs  IVs::SpecPerfect(31, 0, 31, 31, 31, 31);
+const IVs  IVs::SpecPerfectTrick(31, 0, 31, 31, 31, 0);
+const IVs  IVs::HpPerfectLow(30, 0, 30, 30, 30, 30);
+const IVs  IVs::HpPerfectHigh(31, 31, 31, 31, 31, 31);
+const IVs  IVs::HpPerfectTrickLow(30, 0, 30, 30, 30, 2);
+const IVs  IVs::HpPerfectTrickHigh(31, 31, 31, 31, 31, 3);
+
 IVs::BadIVIndexException::BadIVIndexException(int i)
   : Exception(MakeBadIVIndexExceptionString(i))
 {}
@@ -625,6 +637,55 @@ bool IVs::betterThanOrEqual(const IndividualValues &ivs) const
          ((word & IVs::SA_MASK) >= (ivs.word & IVs::SA_MASK)) &&
          ((word & IVs::SD_MASK) >= (ivs.word & IVs::SD_MASK)) &&
          ((word & IVs::SP_MASK) >= (ivs.word & IVs::SP_MASK));
+}
+
+IVPattern::Type IVPattern::Get(const IVs &min, const IVs &max,
+                               bool considerHiddenPower,
+                               uint32_t minHiddenPower)
+{
+  if ((min == IVs::Perfect) && (max == IVs::Perfect))
+  {
+    return IVPattern::HEX_FLAWLESS;
+  }
+  else if ((min == IVs::PerfectTrick) && (max == IVs::PerfectTrick))
+  {
+    return IVPattern::HEX_FLAWLESS_TRICK;
+  }
+  else if (((min.word & IVs::PhysPerfect.word) == IVs::PhysPerfect.word) &&
+           ((max.word & IVs::PhysPerfect.word) == IVs::PhysPerfect.word))
+  {
+    return IVPattern::PHYSICAL_FLAWLESS;
+  }
+  else if (((min.word & IVs::PhysPerfect.word) == IVs::PhysPerfectTrick.word) &&
+           ((max.word & IVs::PhysPerfect.word) == IVs::PhysPerfectTrick.word))
+  {
+    return IVPattern::PHYSICAL_FLAWLESS_TRICK;
+  }
+  else if (((min.word & IVs::SpecPerfect.word) == IVs::SpecPerfect.word) &&
+           ((max.word & IVs::SpecPerfect.word) == IVs::SpecPerfect.word))
+  {
+    return IVPattern::SPECIAL_FLAWLESS;
+  }
+  else if (((min.word & IVs::SpecPerfect.word) == IVs::SpecPerfectTrick.word) &&
+           ((max.word & IVs::SpecPerfect.word) == IVs::SpecPerfectTrick.word))
+  {
+    return IVPattern::SPECIAL_FLAWLESS_TRICK;
+  }
+  else if (considerHiddenPower && (minHiddenPower == 70))
+  {
+    if (min.betterThanOrEqual(IVs::HpPerfectLow) &&
+        max.worseThanOrEqual(IVs::HpPerfectHigh))
+    {
+      return IVPattern::SPECIAL_HIDDEN_POWER_FLAWLESS;
+    }
+    else if (min.betterThanOrEqual(IVs::HpPerfectTrickLow) &&
+             max.worseThanOrEqual(IVs::HpPerfectTrickHigh))
+    {
+      return IVPattern::SPECIAL_HIDDEN_POWER_FLAWLESS_TRICK;
+    }
+  }
+  
+  return IVPattern::CUSTOM;
 }
 
 Characteristic::Type Characteristic::Get(PID pid, IVs ivs)

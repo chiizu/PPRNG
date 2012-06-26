@@ -31,7 +31,6 @@
 @interface HashedSeedInspectorFramesTabController : NSObject
 {
   IBOutlet StandardSeedInspectorController  *inspectorController;
-  IBOutlet Gen5ConfigurationController      *gen5ConfigController;
   
   pprng::Gen5PIDFrameGenerator::FrameType  encounterFrameType;
   pprng::EncounterLead::Ability            encounterLeadAbility;

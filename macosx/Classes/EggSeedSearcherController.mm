@@ -231,15 +231,15 @@ struct ProgressHandler
     {
     case EggSeedSearcher::LOADED:
       seedCacheIsLoaded = YES;
-      self.seedFileStatus = @"Seed cache loaded successfully";
+      self.seedFileStatus = @"Seed cache loaded successfully. Searches for Black / White egg seeds will be approximately three times as fast.";
       break;
       
     case EggSeedSearcher::NO_CACHE_FILE:
-      self.seedFileStatus = @"Failed to find seed cache file.  Please download the seed cache file and place it in the same directory as PPRNG to enable faster searching!";
+      self.seedFileStatus = @"Failed to find seed cache file.  Please download the seed cache file and place it in the same directory as PPRNG to enable faster searching for Black / White egg seeds!";
       break;
       
     case EggSeedSearcher::BAD_CACHE_FILE:
-      self.seedFileStatus = @"Seed cache file is corrupted or not of the correct format.  Please download the seed cache file again to enable faster searching!";
+      self.seedFileStatus = @"Seed cache file is corrupted or not of the correct format.  Please download the seed cache file again to enable faster searching for Black / White egg seeds!";
       break;
       
     case EggSeedSearcher::NOT_ENOUGH_MEMORY:
@@ -515,8 +515,6 @@ struct ProgressHandler
   criteria.frameParameters.internationalParents = internationalParents;
   criteria.frameParameters.tid = [gen5ConfigController tid];
   criteria.frameParameters.sid = [gen5ConfigController sid];
-  
-  criteria.ivs.pattern = ivParameterController.ivPattern;
   
   criteria.ivFrame.min = minIVFrame;
   criteria.ivFrame.max = maxIVFrame;

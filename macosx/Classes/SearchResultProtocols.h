@@ -25,16 +25,23 @@
 
 @protocol HashedSeedResultParameters
 
-@property uint32_t  date, time, timer0, vcount, vframe, heldButtons;
-@property uint64_t  rawSeed;
+@property pprng::DS::Type       dsType;
+@property uint32_t              macAddressLow, macAddressHigh;
+@property pprng::Game::Version  version;
+@property uint32_t              date, time, timer0, vcount, vframe, heldButtons;
+@property uint64_t              rawSeed;
 
 @end
 
 #define DECLARE_HASHED_SEED_RESULT_PARAMETERS_VARIABLES() \
-  uint32_t  date, time, timer0, vcount, vframe, heldButtons; \
-  uint64_t  rawSeed
+  DS::Type       dsType; \
+  uint32_t       macAddressLow, macAddressHigh; \
+  Game::Version  version; \
+  uint32_t       date, time, timer0, vcount, vframe, heldButtons; \
+  uint64_t       rawSeed
 
 #define SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES() \
+  @synthesize dsType, macAddressLow, macAddressHigh, version; \
   @synthesize date, time, timer0, vcount, vframe, heldButtons, rawSeed
 
 extern void SetHashedSeedResultParameters
@@ -69,7 +76,8 @@ extern void SetIVResult(id <IVResult> result, const pprng::IVs &ivs,
 @protocol PIDResult
 
 @property uint32_t              pid;
-@property BOOL                  shiny;
+@property uint32_t              tid, sid;
+@property bool                  shiny;
 @property pprng::Nature::Type   nature;
 @property pprng::Ability::Type  ability;
 @property pprng::Gender::Type   gender18, gender14, gender12, gender34;
@@ -78,13 +86,15 @@ extern void SetIVResult(id <IVResult> result, const pprng::IVs &ivs,
 
 #define DECLARE_PID_RESULT_VARIABLES() \
   uint32_t              pid; \
-  BOOL                  shiny; \
+  uint32_t              tid, sid; \
+  bool                  shiny; \
   pprng::Nature::Type   nature; \
   pprng::Ability::Type  ability; \
   pprng::Gender::Type   gender18, gender14, gender12, gender34
 
 #define SYNTHESIZE_PID_RESULT_PROPERTIES() \
   @synthesize pid; \
+  @synthesize tid, sid; \
   @synthesize shiny; \
   @synthesize nature; \
   @synthesize ability; \

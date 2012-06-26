@@ -64,7 +64,6 @@ struct SearchCriteria
   
   struct IVCriteria
   {
-    IVPattern::Type  pattern;
     bool             shouldCheckMax;
     IVs              min, max;
     Element::Type    hiddenType;
@@ -75,6 +74,12 @@ struct SearchCriteria
       : shouldCheckMax(true), min(), max(),
         hiddenType(Element::ANY), minHiddenPower(30), isRoamer(false)
     {}
+    
+    IVPattern::Type GetPattern() const
+    {
+      return IVPattern::Get(min, max,
+                            (hiddenType != Element::NONE), minHiddenPower);
+    }
   };
   
   struct NumberRange

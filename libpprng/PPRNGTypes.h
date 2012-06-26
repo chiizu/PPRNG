@@ -138,7 +138,9 @@ struct Game
     
     FifthGenStart = FourthGenEnd,
     
-    BlackEnglish = FifthGenStart,
+    BlackWhiteStart = FifthGenStart,
+    
+    BlackEnglish = BlackWhiteStart,
     BlackFrench,
     BlackGerman,
     BlackItalian,
@@ -156,12 +158,25 @@ struct Game
     BlackKorean,
     WhiteKorean,
     
-    FifthGenEnd = WhiteKorean + 1,
+    BlackWhiteEnd,
+    
+    Black2White2Start = BlackWhiteEnd,
+    Black2Japanese = Black2White2Start,
+    White2Japanese,
+    Black2White2End,
+    
+    FifthGenEnd = Black2White2End,
     
     UnknownVersion = FifthGenEnd,
     
     NumVersions = FifthGenEnd
   };
+  
+  static bool IsBlackWhite(Version v)
+  { return (v >= Game::BlackWhiteStart) && (v < Game::BlackWhiteEnd); }
+  
+  static bool IsBlack2White2(Version v)
+  { return (v >= Game::Black2White2Start) && (v < Game::Black2White2End); }
   
   static std::string ToString(Version v);
 };
@@ -452,6 +467,19 @@ struct IndividualValues
   };
   
   static const Mask  IVMask[NUM_IVS];
+  
+  // commonly used IVs
+  static const IndividualValues  Perfect;
+  static const IndividualValues  PerfectTrick;
+  static const IndividualValues  PhysPerfect;
+  static const IndividualValues  PhysPerfectTrick;
+  static const IndividualValues  SpecPerfect;
+  static const IndividualValues  SpecPerfectTrick;
+  static const IndividualValues  HpPerfectLow;
+  static const IndividualValues  HpPerfectHigh;
+  static const IndividualValues  HpPerfectTrickLow;
+  static const IndividualValues  HpPerfectTrickHigh;
+  
   
   IndividualValues() : word(0) {}
   
@@ -804,6 +832,9 @@ struct IVPattern
     SPECIAL_FLAWLESS_TRICK,
     SPECIAL_HIDDEN_POWER_FLAWLESS_TRICK
   };
+  
+  static Type Get(const IVs &min, const IVs &max,
+                  bool considerHiddenPower, uint32_t minHiddenPower);
 };
 
 

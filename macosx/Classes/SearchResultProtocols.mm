@@ -27,6 +27,10 @@ using namespace pprng;
 void SetHashedSeedResultParameters(id <HashedSeedResultParameters> result,
                                    const HashedSeed &seed)
 {
+  result.dsType = seed.dsType;
+  result.macAddressLow = seed.macAddress.low;
+  result.macAddressHigh = seed.macAddress.high;
+  result.version = seed.version;
   result.date = MakeUInt32Date(seed.year(), seed.month(), seed.day());
   result.time = MakeUInt32Time(seed.hour, seed.minute, seed.second);
   result.timer0 = seed.timer0;
@@ -55,6 +59,8 @@ void SetPIDResult(id <PIDResult> result,
                   Gender::Type gender, Gender::Ratio genderRatio)
 {
   result.pid = pid.word;
+  result.tid = tid;
+  result.sid = sid;
   result.shiny = pid.IsShiny(tid, sid);
   result.nature = nature;
   result.ability = ability;

@@ -71,6 +71,13 @@ HashedIVFrameGenerator::HashedIVFrameGenerator
   : m_RNG(seed.rawSeed >> 32), m_IVRNG(m_RNG, IVRNG::FrameType(frameType)),
     m_frame(seed)
 {
+  if (Game::IsBlack2White2(seed.version))
+  {
+    // b2w2 skips first 2 frames
+    m_IVRNG.NextIVWord();
+    m_IVRNG.NextIVWord();
+  }
+  
   m_frame.number = 0;
 }
 

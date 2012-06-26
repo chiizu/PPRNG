@@ -22,14 +22,22 @@
 
 #import <Cocoa/Cocoa.h>
 #import "VertResizeOnlyWindowController.h"
-#import "Gen5ConfigurationController.h"
 #import "SearchResultProtocols.h"
 
 #include "HashedSeed.h"
 
 @interface HashedSeedInspectorController : VertResizeOnlyWindowController
 {
-  IBOutlet Gen5ConfigurationController  *gen5ConfigController;
+  NSArray   *configurationNames;
+  
+  pprng::DS::Type  dsType;
+  
+  NSNumber  *macAddress0, *macAddress1, *macAddress2;
+  NSNumber  *macAddress3, *macAddress4, *macAddress5;
+  
+  pprng::Game::Version  version;
+  
+  NSNumber  *tid, *sid;
   
   NSDate    *startDate;
   NSNumber  *startHour, *startMinute, *startSecond;
@@ -41,6 +49,15 @@
   NSNumber  *initialPIDFrame;
 }
 
+@property (copy) NSArray   *configurationNames;
+
+@property        pprng::DS::Type  dsType;
+@property (copy) NSNumber  *macAddress0, *macAddress1, *macAddress2;
+@property (copy) NSNumber  *macAddress3, *macAddress4, *macAddress5;
+
+@property        pprng::Game::Version  version;
+@property (copy) NSNumber  *tid, *sid;
+
 @property (copy) NSDate    *startDate;
 @property (copy) NSNumber  *startHour, *startMinute, *startSecond;
 @property (copy) NSNumber  *timer0, *vcount, *vframe;
@@ -50,8 +67,12 @@
 @property (copy) NSNumber  *rawSeed;
 @property (copy) NSNumber  *initialPIDFrame;
 
+- (IBAction) configChanged:(id)sender;
 - (IBAction) seedParameterChanged:(id)sender;
 - (IBAction) seedValueChanged:(id)sender;
+
+- (pprng::MACAddress)macAddress;
+- (void)setMACAddress:(pprng::MACAddress)macAddress;
 
 - (void)setSeedFromResult:(id <HashedSeedResultParameters>)result;
 - (void)setSeed:(const pprng::HashedSeed&)seed;

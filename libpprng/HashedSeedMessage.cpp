@@ -207,8 +207,12 @@ uint32_t ToBCD(uint32_t value)
 
 enum
 {
-  FirstNazoOffset = 0xFC,
-  SecondNazoOffset = FirstNazoOffset + 0x4C,
+  BWFirstNazoOffset = 0xFC,
+  BWSecondNazoOffset = BWFirstNazoOffset + 0x4C,
+  
+  BW2FirstNazoOffset = 0x1650D4,
+  BW2SecondNazoOffset = BW2FirstNazoOffset + 0x54,
+  
   ButtonMask = 0x2FFF
 };
 
@@ -217,9 +221,21 @@ void MakeMessage(uint32_t message[], const HashedSeed::Parameters &parameters)
   HashedSeed::Nazo  nazo =
     HashedSeed::NazoForVersionAndDS(parameters.version, parameters.dsType);
   
-  message[0] = SwapEndianess(nazo);
-  message[1] = message[2] = SwapEndianess(nazo + FirstNazoOffset);
-  message[3] = message[4] = SwapEndianess(nazo + SecondNazoOffset);
+  if (Game::IsBlack2White2(parameters.version))
+  {
+    message[0] = SwapEndianess(nazo);
+    message[1] =
+      SwapEndianess(HashedSeed::Nazo2ForVersionAndDS(parameters.version,
+                                                     parameters.dsType));
+    message[2] = SwapEndianess(nazo + BW2FirstNazoOffset);
+    message[3] = message[4] = SwapEndianess(nazo + BW2SecondNazoOffset);
+  }
+  else
+  {
+    message[0] = SwapEndianess(nazo);
+    message[1] = message[2] = SwapEndianess(nazo + BWFirstNazoOffset);
+    message[3] = message[4] = SwapEndianess(nazo + BWSecondNazoOffset);
+  }
   
   message[5] = SwapEndianess((parameters.vcount << 16) | parameters.timer0);
   

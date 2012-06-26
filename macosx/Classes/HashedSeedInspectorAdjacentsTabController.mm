@@ -165,9 +165,9 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   
   HashedSeed::Parameters  targetSeedParams;
   
-  targetSeedParams.version = [gen5ConfigController version];
-  targetSeedParams.dsType = [gen5ConfigController dsType];
-  targetSeedParams.macAddress = [gen5ConfigController macAddress];
+  targetSeedParams.version = inspectorController.version;
+  targetSeedParams.dsType = inspectorController.dsType;
+  targetSeedParams.macAddress = [inspectorController macAddress];
   targetSeedParams.gxStat = HashedSeed::HardResetGxStat;
   targetSeedParams.vcount = [inspectorController.vcount unsignedIntValue];
   targetSeedParams.vframe = [inspectorController.vframe unsignedIntValue];
@@ -215,8 +215,8 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   pidFrameParams.targetRatio = genderRequired ?
     targetGenderRatio : Gender::ANY_RATIO;
   
-  pidFrameParams.tid = [gen5ConfigController tid];
-  pidFrameParams.sid = [gen5ConfigController sid];
+  pidFrameParams.tid = [inspectorController.tid unsignedIntValue];
+  pidFrameParams.sid = [inspectorController.sid unsignedIntValue];
   pidFrameParams.startFromLowestFrame = matchOffsetFromInitialPIDFrame;
   
   NSMutableArray  *rowArray =

@@ -185,7 +185,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   [[frameTableView tableColumnWithIdentifier:@"characteristic"]
    setHidden: hidePIDInfo];
   
-  HashedSeed  seed([rawSeed unsignedLongLongValue]);
+  HashedSeed  seed([rawSeed unsignedLongLongValue], version);
   
   uint32_t  frameNum = 0;
   
@@ -289,9 +289,9 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   
   HashedSeed::Parameters  targetSeedParams;
   
-  targetSeedParams.version = [gen5ConfigController version];
-  targetSeedParams.dsType = [gen5ConfigController dsType];
-  targetSeedParams.macAddress = [gen5ConfigController macAddress];
+  targetSeedParams.version = version;
+  targetSeedParams.dsType = dsType;
+  targetSeedParams.macAddress = [self macAddress];
   targetSeedParams.gxStat = HashedSeed::HardResetGxStat;
   targetSeedParams.vcount = [vcount unsignedIntValue];
   targetSeedParams.vframe = [vframe unsignedIntValue];

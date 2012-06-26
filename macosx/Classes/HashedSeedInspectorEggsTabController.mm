@@ -278,7 +278,8 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   
   [eggsContentArray setContent: [NSMutableArray array]];
   
-  HashedSeed  seed([inspectorController.rawSeed unsignedLongLongValue]);
+  HashedSeed  seed([inspectorController.rawSeed unsignedLongLongValue],
+                   inspectorController.version);
   
   uint32_t  ivFrameNum = enableIVs ? ivFrame : 0;
   uint32_t  frameNum = 0;
@@ -329,8 +330,8 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   p.usingEverstone = usingEverstone;
   p.usingDitto = usingDitto;
   p.internationalParents = internationalParents;
-  p.tid = [gen5ConfigController tid];
-  p.sid = [gen5ConfigController sid];
+  p.tid = [inspectorController.tid unsignedIntValue];
+  p.sid = [inspectorController.sid unsignedIntValue];
   Gen5BreedingFrameGenerator  generator(seed, p);
   
   frameNum = 0;

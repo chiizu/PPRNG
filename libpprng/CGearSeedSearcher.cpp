@@ -391,7 +391,9 @@ void CGearSeedSearcher::Search
   FrameChecker  frameChecker(criteria);
   SearchRunner  searcher;
   
-  if ((criteria.ivs.pattern == IVPattern::CUSTOM) ||
+  IVPattern::Type  ivPattern = criteria.ivs.GetPattern();
+  
+  if ((ivPattern == IVPattern::CUSTOM) ||
       (criteria.frameRange.min < 21) || (criteria.frameRange.min > 26) ||
       (criteria.frameRange.max < 21) || (criteria.frameRange.max > 26) ||
       criteria.ivs.isRoamer)
@@ -413,8 +415,7 @@ void CGearSeedSearcher::Search
   else
   {
     FastSearchSeedGenerator  seedGenerator;
-    FastSeedSearcher         seedSearcher(GetIVSeedMap(criteria.ivs.pattern),
-                                          criteria);
+    FastSeedSearcher         seedSearcher(GetIVSeedMap(ivPattern), criteria);
     
     searcher.Search(seedGenerator, seedSearcher, frameChecker,
                     resultHandler, progressHandler);

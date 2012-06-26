@@ -295,7 +295,8 @@ struct IDFrameSearchProgressHandler
   
   [pidFrameContentArray setContent: [NSMutableArray array]];
   
-  HashedSeed  seed([ivSeed unsignedLongLongValue]);
+  HashedSeed  seed([ivSeed unsignedLongLongValue],
+                   [gen5ConfigController version]);
   
   uint32_t  skippedFrames = startFromInitialPIDFrame ?
                               seed.GetSkippedPIDFrames() : minPIDFrame - 1;

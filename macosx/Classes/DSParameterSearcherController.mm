@@ -118,15 +118,28 @@ struct ProgressHandler
   [searcherController setDoSearchWithCriteriaSelector:
                       @selector(doSearchWithCriteria:)];
   
-  DS::Type  dsType = [gen5ConfigController dsType];
+  DS::Type       dsType = [gen5ConfigController dsType];
+  Game::Version  version = [gen5ConfigController version];
   if ((dsType == DS::DSPhat) || (dsType == DS::DSLite))
   {
-    self.timer0Low = 0xC00;
-    self.timer0High = 0xCFF;
-    self.vcountLow = 0x50;
-    self.vcountHigh = 0x6F;
-    self.vframeLow = 0x0;
-    self.vframeHigh = 0xF;
+    if (Game::IsBlack2White2(version))
+    {
+      self.timer0Low = 0x1000;
+      self.timer0High = 0x1200;
+      self.vcountLow = 0x78;
+      self.vcountHigh = 0x98;
+      self.vframeLow = 0x0;
+      self.vframeHigh = 0xF;
+    }
+    else
+    {
+      self.timer0Low = 0xC00;
+      self.timer0High = 0xCFF;
+      self.vcountLow = 0x50;
+      self.vcountHigh = 0x6F;
+      self.vframeLow = 0x0;
+      self.vframeHigh = 0xF;
+    }
   }
   else
   {

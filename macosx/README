@@ -1,17 +1,65 @@
-PPRNG 1.11.1
+PPRNG 1.12.0
 
-Mac Requirements: Intel Mac with OS X 10.5 or greater.
+Mac Requirements:
+Intel Mac with OS X 10.5 or greater.
 
-DS Requirements: All DS types now supported for English, Japanese, French,
-German, Italian, and Spanish language games. We still need to figure out details
-for Korean, so in the meantime they are still stuck on the original DS or
-DS Lite only.
+DS Requirements:
+All DS types are supported for English, Japanese, French, German, Italian, and
+Spanish language Black / White. Only DS and DS Lite are supported for Korean
+Black / White at this time.
 
-New in 1.11.1
+Only DS and DS Lite are supported for Japanese Black 2 / White 2 at this time.
+
+
+New in 1.12.0
+
+* Added support for Japanese Black 2 / White 2 on DS / DS Lite.
+  * Except for C-Gear seed searches, all Gen 5 RNG abuse types supported for
+    Black / White should also work for Black 2 / White 2.
+  * On Japanese Black 2 / White 2 retail cartridges Timer0 shows more variance
+    than in Black / White, having up to 6 different values.  The use of an
+    external timer (eg. a stopwatch) is highly recommended to avoid frustration.
+  * In Black 2 / White 2, C-Gear seeds are not used.  Turning on the C-Gear just
+    advances the Standard Seed IV frame by 2 instead of reseeding the IV RNG as
+    in Black / White.
+* Added support for double grass encounters.  At this time, only the Pokemon on
+  the right side of a double battle can be RNG abused.
+* Changed the way that configurations are handled in the Gen 5 seed inspectors
+  to eliminate the need to create a new configuration in order to inspect the
+  details of a seed.
+* Fixed a bug that would produce wrong results when starting a search from
+  Janurary 1, 2000.
+
+
+Upcoming Features:
+
+* Cute Charm encounters for Generation 4
+* Generation 4 TID / SID abuse
+* Black 2 / White 2 support for DSi / 3DS (?)
+
+
+Quick Start:
+1. First, before doing anything else, open the DS / Game Config screen.
+2. Enter what you know about your game and DS (at minimum, that would be game
+   version, DS type, and MAC address).
+3. Click OK to save the config.
+4. If you don't know your DS Parameters, go to the DS Parameter Searcher to find
+   your parameters.  Once you have found your parameters, go back to the
+   DS / Game Config screen and add them to your configuration.
+5. You are now ready to search for Standard Seeds in the Standard Seed Searcher.
+
+General Usage Tip:
+In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
+on a result row to bring up the seed inspector for that specific seed.
+
+
+Previous Releases:
+
+1.11.1
 
 * Bug fix for a display issue with the Gen 4 Egg IV Searcher.
 
-New in 1.11.0
+1.11.0
 
 * Added 4th Generation breeding support with the Egg PID and Egg IV searchers,
   and corresponding tabs in the Generation 4 Seed Inspector
@@ -36,30 +84,6 @@ Known Issues in this version:
   from it's drop down menu. Down the line there will be a bit of an interface
   change to deal with this.
 
-
-Upcoming Features:
-
-* Cute Charm encounters for Generation 4
-* Generation 4 TID / SID abuse
-* Black / White 2 Support (pending research)
-
-
-Quick Start:
-1. First, before doing anything else, open the DS / Game Config screen.
-2. Enter what you know about your game and DS (at minimum, that would be game
-   version, DS type, and MAC address).
-3. Click OK to save the config.
-4. If you don't know your DS Parameters, go to the DS Parameter Searcher to find
-   your parameters.  Once you have found your parameters, go back to the
-   DS / Game Config screen and add them to your configuration.
-5. You are now ready to search for Standard Seeds in the Standard Seed Searcher.
-
-General Usage Tip:
-In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
-on a result row to bring up the seed inspector for that specific seed.
-
-
-Previous Releases:
 
 1.10.0
 

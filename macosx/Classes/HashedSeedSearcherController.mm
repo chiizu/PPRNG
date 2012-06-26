@@ -651,6 +651,8 @@ struct ProgressHandler
       [inspector window];
       
       [inspector setSeedFromResult: row];
+      inspector.tid = [NSNumber numberWithUnsignedInt: row.tid];
+      inspector.sid = [NSNumber numberWithUnsignedInt: row.sid];
       
       HashedSeedInspectorFramesTabController *framesTab =
         inspector.framesTabController;
@@ -885,8 +887,6 @@ struct ProgressHandler
   
   criteria.seedParameters.toTime =
     ptime(NSDateToBoostDate(toDate), hours(23) + minutes(59) + seconds(59));
-  
-  criteria.ivs.pattern = ivParameterController.ivPattern;
   
   criteria.ivFrame.min = minIVFrame;
   criteria.ivFrame.max = maxIVFrame;

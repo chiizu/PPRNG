@@ -30,6 +30,15 @@ using namespace pprng;
 
 @implementation HashedSeedInspectorController
 
+@synthesize configurationNames;
+
+@synthesize dsType;
+@synthesize macAddress0, macAddress1, macAddress2;
+@synthesize macAddress3, macAddress4, macAddress5;
+
+@synthesize version;
+@synthesize tid, sid;
+
 @synthesize startDate, startHour, startMinute, startSecond;
 @synthesize timer0, vcount, vframe;
 
@@ -38,14 +47,81 @@ using namespace pprng;
 @synthesize rawSeed;
 @synthesize initialPIDFrame;
 
+- (void)setConfig:(NSInteger)configIndex
+{
+  NSArray  *configurations = [[NSUserDefaults standardUserDefaults]
+                              arrayForKey: @"gen5Configurations"];
+  NSDictionary  *config = [configurations objectAtIndex: configIndex];
+  
+  self.dsType = DS::Type([[config objectForKey: @"dsType"] intValue]);
+  self.macAddress0 = [config objectForKey: @"macAddress0"];
+  self.macAddress1 = [config objectForKey: @"macAddress1"];
+  self.macAddress2 = [config objectForKey: @"macAddress2"];
+  self.macAddress3 = [config objectForKey: @"macAddress3"];
+  self.macAddress4 = [config objectForKey: @"macAddress4"];
+  self.macAddress5 = [config objectForKey: @"macAddress5"];
+  self.version = Game::Version([[config objectForKey: @"version"] intValue]);
+  
+  self.tid = [config objectForKey: @"tid"];
+  self.sid = [config objectForKey: @"sid"];
+  
+  self.timer0 = [config objectForKey: @"timer0Low"];
+  self.vcount = [config objectForKey: @"vcountLow"];
+  self.vframe = [config objectForKey: @"vframeLow"];
+}
+
 - (void)awakeFromNib
 {
   [super awakeFromNib];
+  
+  NSArray  *configurations = [[NSUserDefaults standardUserDefaults]
+                              arrayForKey: @"gen5Configurations"];
+  
+  NSMutableArray *names =
+    [NSMutableArray arrayWithCapacity: [configurations count] + 1];
+  
+  [names addObject: @"Use Configuration..."];
+  [names addObjectsFromArray:
+         [configurations valueForKeyPath: @"@unionOfObjects.name"]];
+  
+  self.configurationNames = names;
+  
+  NSInteger  currentConfigIndex =
+    [[NSUserDefaults standardUserDefaults] integerForKey: @"gen5ConfigIndex"];
+  
+  [self setConfig: currentConfigIndex];
   
   self.startDate = [NSDate date];
   self.button1 = 0;
   self.button2 = 0;
   self.button3 = 0;
+}
+
+- (MACAddress)macAddress
+{
+  uint32_t  macAddressLow = [macAddress0 unsignedIntValue] |
+                            ([macAddress1 unsignedIntValue] << 8) |
+                            ([macAddress2 unsignedIntValue] << 16);
+  uint32_t  macAddressHigh = [macAddress3 unsignedIntValue] |
+                             ([macAddress4 unsignedIntValue] << 8) |
+                             ([macAddress5 unsignedIntValue] << 16);
+  
+  return MACAddress(macAddressHigh, macAddressLow);
+}
+
+- (void)setMACAddress:(MACAddress)macAddress
+{
+  self.macAddress0 = [NSNumber numberWithUnsignedInt:macAddress.low & 0xff];
+  self.macAddress1 =
+    [NSNumber numberWithUnsignedInt:(macAddress.low >> 8) & 0xff];
+  self.macAddress2 =
+    [NSNumber numberWithUnsignedInt:(macAddress.low >> 16) & 0xff];
+  
+  self.macAddress3 = [NSNumber numberWithUnsignedInt:macAddress.high & 0xff];
+  self.macAddress4 =
+    [NSNumber numberWithUnsignedInt:(macAddress.high >> 8) & 0xff];
+  self.macAddress5 =
+    [NSNumber numberWithUnsignedInt:(macAddress.high >> 16) & 0xff];
 }
 
 - (NSNumber*)calcRawSeed
@@ -58,9 +134,9 @@ using namespace pprng;
   
   HashedSeed::Parameters  p;
   
-  p.version = [gen5ConfigController version];
-  p.dsType = [gen5ConfigController dsType];
-  p.macAddress = [gen5ConfigController macAddress];
+  p.version = version;
+  p.dsType = dsType;
+  p.macAddress = [self macAddress];
   p.gxStat = HashedSeed::HardResetGxStat;
   p.vcount = [vcount unsignedIntValue];
   p.vframe = [vframe unsignedIntValue];
@@ -74,6 +150,13 @@ using namespace pprng;
   HashedSeed  s(p);
   
   return [NSNumber numberWithUnsignedLongLong: s.rawSeed];
+}
+
+- (IBAction) configChanged:(id)sender
+{
+  NSInteger  selectedIdx = [sender indexOfSelectedItem];
+  
+  [self setConfig: selectedIdx - 1];
 }
 
 - (IBAction)seedParameterChanged:(id)sender
@@ -100,37 +183,13 @@ using namespace pprng;
   }
 }
 
-- (void)setButton1:(uint32_t)newButton
-{
-  if (newButton != button1)
-  {
-    button1 = newButton;
-    [self seedParameterChanged:self];
-  }
-}
-
-- (void)setButton2:(uint32_t)newButton
-{
-  if (newButton != button2)
-  {
-    button2 = newButton;
-    [self seedParameterChanged:self];
-  }
-}
-
-- (void)setButton3:(uint32_t)newButton
-{
-  if (newButton != button3)
-  {
-    button3 = newButton;
-    [self seedParameterChanged:self];
-  }
-}
-
 - (void)setSeedFromResult:(id <HashedSeedResultParameters>)result
 {
   HashedSeed::Parameters  p;
   
+  p.dsType = result.dsType;
+  p.macAddress = MACAddress(result.macAddressHigh, result.macAddressLow);
+  p.version = result.version;
   p.timer0 = result.timer0;
   p.vcount = result.vcount;
   p.vframe = result.vframe;
@@ -145,6 +204,11 @@ using namespace pprng;
 
 - (void)setSeed:(const pprng::HashedSeed&)seed
 {
+  self.dsType = seed.dsType;
+  [self setMACAddress: seed.macAddress];
+  
+  self.version = seed.version;
+  
   self.startDate = MakeNSDate(seed.year(), seed.month(), seed.day());
   self.startHour = [NSNumber numberWithUnsignedInt: seed.hour];
   self.startMinute = [NSNumber numberWithUnsignedInt: seed.minute];
@@ -194,7 +258,7 @@ using namespace pprng;
     }
     else
     {
-      HashedSeed  seed([newSeed unsignedLongLongValue]);
+      HashedSeed  seed([newSeed unsignedLongLongValue], version);
       self.initialPIDFrame =
         [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1];
     }

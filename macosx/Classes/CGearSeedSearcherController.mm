@@ -183,8 +183,6 @@ struct ProgressHandler
   criteria.frameRange.min = minFrame;
   criteria.frameRange.max = maxFrame;
   
-  criteria.ivs.pattern = ivParameterController.ivPattern;
-  
   criteria.ivs.min = ivParameterController.minIVs;
   criteria.ivs.max = ivParameterController.maxIVs;
   criteria.ivs.shouldCheckMax =

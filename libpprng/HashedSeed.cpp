@@ -29,7 +29,7 @@ namespace pprng
 namespace
 {
 
-enum { NumTableRows = 5, NumTableColumns = 4, NumLoops = 5 };
+enum { NumTableRows = 5, NumTableColumns = 4 };
 
 static uint32_t  PercentageTable[NumTableRows][NumTableColumns] =
 {
@@ -40,28 +40,75 @@ static uint32_t  PercentageTable[NumTableRows][NumTableColumns] =
   {  20, 25, 33, 50 }
 };
 
-static uint32_t CalculateConsumedPIDRNGFrames(uint64_t rawSeed)
+static uint32_t ProbabilityTableLoop(LCRNG5 &rng)
+{
+  uint32_t  count = 0;
+  
+  for (uint32_t j = 0; j < NumTableRows; ++j)
+  {
+    for (uint32_t k = 0; k < NumTableColumns; ++k)
+    {
+      uint32_t  percent = PercentageTable[j][k];
+      if (percent == 100)
+        break;
+      
+      ++count;
+      
+      uint32_t d101 = ((rng.Next() >> 32) * 101) >> 32;
+      if (d101 <= percent)
+        break;
+    }
+  }
+  
+  return count;
+}
+
+static uint32_t CalculateConsumedPIDRNGFrames(uint64_t rawSeed,
+                          Game::Version version)
 {
   LCRNG5    rng(rawSeed);
   uint32_t  count = 0;
   
-  for (uint32_t i = 0; i < NumLoops; ++i)
+  if (Game::IsBlack2White2(version))
   {
-    for (uint32_t j = 0; j < NumTableRows; ++j)
+    count += ProbabilityTableLoop(rng);
+    
+    rng.Next(); // 0
+    rng.Next(); // 0xffffffff
+    rng.Next(); // 0xffffffff
+    
+    count += 3;
+    
+    for (uint32_t i = 0; i < 4; ++i)
+      count += ProbabilityTableLoop(rng);
+    
+    bool      duplicatesFound = true;
+    uint32_t  buffer[3];
+    for (uint32_t limit = 0; duplicatesFound && (limit < 100); ++limit)
     {
-      for (uint32_t k = 0; k < NumTableColumns; ++k)
+      for (uint32_t i = 0; i < 3; ++i)
+        buffer[i] = ((rng.Next() >> 32) * 15) >> 32;
+      
+      count += 3;
+      duplicatesFound = false;
+      
+      for (uint32_t i = 0; i < 3; ++i)
       {
-        uint32_t  percent = PercentageTable[j][k];
-        if (percent == 100)
-          break;
-        
-        ++count;
-        
-        uint32_t d101 = ((rng.Next() >> 32) * 101) >> 32;
-        if (d101 <= percent)
-          break;
+        for (uint32_t j = 0; j < 3; ++ j)
+        {
+          if (i != j)
+          {
+            if (buffer[i] == buffer[j])
+              duplicatesFound = true;
+          }
+        }
       }
     }
+  }
+  else
+  {
+    for (uint32_t i = 0; i < 5; ++i)
+      count += ProbabilityTableLoop(rng);
   }
   
   return count;
@@ -158,17 +205,50 @@ HashedSeed::Nazo HashedSeed::NazoForVersionAndDS(Game::Version version,
       return isPlainDS ? KRWhiteNazo : KRWhiteDSiNazo;
       break;
       
+    case Game::Black2Japanese:
+      return isPlainDS ? JPBlack2Nazo : JPBlack2Nazo;
+      break;
+    
+    case Game::White2Japanese:
+      return isPlainDS ? JPWhite2Nazo : JPWhite2Nazo;
+      break;
+      
     default:
       return static_cast<Nazo>(0);
       break;
   }
 }
 
+
+
+
+HashedSeed::Nazo HashedSeed::Nazo2ForVersionAndDS(Game::Version version,
+                                                  DS::Type dsType)
+{
+  bool isPlainDS = (dsType == DS::DSPhat) || (dsType == DS::DSLite);
+  
+  switch (version)
+  {
+    case Game::Black2Japanese:
+      return isPlainDS ? JPBlack2Nazo2 : JPBlack2Nazo2;
+      break;
+    
+    case Game::White2Japanese:
+      return isPlainDS ? JPWhite2Nazo2 : JPWhite2Nazo2;
+      break;
+      
+    default:
+      return static_cast<Nazo>(0);
+      break;
+  }
+}
+
+
 uint32_t HashedSeed::GetSkippedPIDFrames() const
 {
   if (!m_skippedPIDFramesCalculated)
   {
-    m_skippedPIDFrames = CalculateConsumedPIDRNGFrames(rawSeed);
+    m_skippedPIDFrames = CalculateConsumedPIDRNGFrames(rawSeed, version);
     
     m_skippedPIDFramesCalculated = true;
   }

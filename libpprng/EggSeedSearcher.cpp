@@ -317,7 +317,14 @@ static boost::shared_ptr<IVSeedSet>  s_IVSeedSet;
 
 static bool HasNamedCacheFile(const std::string &seedFile)
 {
-  return !std::ifstream(seedFile.c_str()).fail();
+  std::string  filePath = s_CacheDirectory;
+  if (!filePath.empty())
+  {
+    filePath += '/';
+  }
+  filePath += seedFile;
+  
+  return !std::ifstream(filePath.c_str()).fail();
 }
 
 static
@@ -560,7 +567,8 @@ void EggSeedSearcher::Search
   IVFrameResultHandler  ivFrameResultHandler(criteria, resultHandler);
   SearchRunner          searcher;
   
-  if ((criteria.ivs.pattern == IVPattern::CUSTOM) ||
+  if ((criteria.ivs.GetPattern() == IVPattern::CUSTOM) ||
+      Game::IsBlack2White2(criteria.seedParameters.version) ||
       (criteria.ivFrame.min != 8) || (criteria.ivFrame.max != 8) ||
       (LoadSeedCache() != LOADED))
   {

@@ -29,7 +29,6 @@
 @interface HashedSeedInspectorEggsTabController : NSObject
 {
   IBOutlet StandardSeedInspectorController  *inspectorController;
-  IBOutlet Gen5ConfigurationController      *gen5ConfigController;
   
   BOOL      internationalParents;
   BOOL      usingEverstone;

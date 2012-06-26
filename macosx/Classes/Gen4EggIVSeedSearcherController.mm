@@ -290,8 +290,6 @@ struct ProgressHandler
   criteria.aIVs = [self aParentIVs];
   criteria.bIVs = [self bParentIVs];
   
-  criteria.ivs.pattern = ivParameterController.ivPattern;
-  
   criteria.ivs.min = ivParameterController.minIVs;
   criteria.ivs.max = ivParameterController.maxIVs;
   criteria.ivs.shouldCheckMax =

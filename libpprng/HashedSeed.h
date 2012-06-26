@@ -65,10 +65,16 @@ public:
     KRBlackNazo = 0x022167B0,
     KRWhiteNazo = 0x022167B0,
     KRBlackDSiNazo = 0x02761150,
-    KRWhiteDSiNazo = 0x02761150
+    KRWhiteDSiNazo = 0x02761150,
+    
+    JPBlack2Nazo = 0x0209A8DC,
+    JPBlack2Nazo2 = 0x02039AC9,
+    JPWhite2Nazo = 0x0209A8FC,
+    JPWhite2Nazo2 = 0x02039AF5
   };
   
   static Nazo NazoForVersionAndDS(Game::Version version, DS::Type dsType);
+  static Nazo Nazo2ForVersionAndDS(Game::Version version, DS::Type dsType);
   
   enum GxStat
   {
@@ -98,9 +104,10 @@ public:
   // to be used when raw seed is already calculated (see UnhashedSeed)
   HashedSeed(const Parameters &parameters, uint64_t rawSeed);
   
-  // sometimes you just want to work with the raw seed value
-  HashedSeed(uint64_t rawSeed)
-    : version(Game::Version(0)), dsType(DS::Type(0)), macAddress(),
+  // sometimes you just want to work with the raw seed value,
+  //  but still need the game version because of differences between bw and b2w2
+  HashedSeed(uint64_t rawSeed, Game::Version v)
+    : version(v), dsType(DS::Type(0)), macAddress(),
       gxStat(HardResetGxStat), vcount(0), vframe(0), timer0(0),
       date(), hour(0), minute(0), second(0), heldButtons(0),
       rawSeed(rawSeed),

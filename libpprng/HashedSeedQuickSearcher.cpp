@@ -303,8 +303,10 @@ struct SeedSearcher
   typedef HashedIVFrame  ResultType;
   
   SeedSearcher(const IVSeedMap &seedMap,
-               const SearchCriteria::FrameRange &frameRange)
-    : m_seedMap(seedMap), m_frameRange(frameRange)
+               const SearchCriteria::FrameRange &frameRange,
+               bool isBlack2White2)
+    : m_seedMap(seedMap), m_frameRange(frameRange),
+      m_frameOffset(isBlack2White2 ? 2 : 0)
   {}
   
   void Search(const HashedSeed &seed, const FrameChecker &frameChecker,
@@ -318,13 +320,15 @@ struct SeedSearcher
       std::map<uint32_t, uint32_t>::const_iterator  j = i->second.begin();
       std::map<uint32_t, uint32_t>::const_iterator  end = i->second.end();
       
-      while ((j != end) && (j->first < m_frameRange.min))
+      uint32_t  limit = m_frameRange.min + m_frameOffset;
+      while ((j != end) && (j->first < limit))
         ++j;
       
+      limit = m_frameRange.max + m_frameOffset;
       HashedIVFrame  result(seed);
-      while ((j != end) && (j->first <= m_frameRange.max))
+      while ((j != end) && (j->first <= limit))
       {
-        result.number = j->first;
+        result.number = j->first - m_frameOffset;
         result.ivs = j->second;
         
         if (frameChecker(result))
@@ -337,6 +341,7 @@ struct SeedSearcher
   
   const IVSeedMap                   &m_seedMap;
   const SearchCriteria::FrameRange  &m_frameRange;
+  const uint32_t                    m_frameOffset;
 };
 
 }
@@ -367,8 +372,13 @@ void HashedSeedQuickSearcher::Search
   (const Criteria &criteria, const ResultCallback &resultHandler,
    const SearchRunner::ProgressCallback &progressHandler)
 {
-  if ((criteria.ivs.pattern == IVPattern::CUSTOM) ||
-      (criteria.ivFrame.min > 6) || (criteria.ivFrame.max > 6))
+  IVPattern::Type  ivPattern = criteria.ivs.GetPattern();
+  bool             isBlack2White2 =
+    Game::IsBlack2White2(criteria.seedParameters.version);
+  
+  if ((ivPattern == IVPattern::CUSTOM) ||
+      (criteria.ivFrame.min > 6) || (criteria.ivFrame.max > 6) ||
+      (criteria.ivs.isRoamer && isBlack2White2))
   {
     HashedSeedSearcher::Criteria  slowCriteria;
     
@@ -383,9 +393,10 @@ void HashedSeedQuickSearcher::Search
   else
   {
     HashedSeedGenerator  seedGenerator(criteria.seedParameters);
-    SeedSearcher         seedSearcher(GetIVSeedMap(criteria.ivs.pattern,
+    SeedSearcher         seedSearcher(GetIVSeedMap(ivPattern,
                                                    criteria.ivs.isRoamer),
-                                      criteria.ivFrame);
+                                      criteria.ivFrame,
+                                      isBlack2White2);
     
     FrameChecker         frameChecker(criteria);
     SearchRunner         searcher;
