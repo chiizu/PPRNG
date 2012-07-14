@@ -41,6 +41,7 @@
 #import "NatureTransformer.h"
 #import "ProfElmResponsesTransformer.h"
 #import "ShinyTransformer.h"
+#import "SpinnerSequenceTransformer.h"
 #import "UInt32DateTransformer.h"
 #import "UInt32TimeTransformer.h"
 #import "VersionTransformer.h"
@@ -89,6 +90,9 @@
                       forName: @"ProfElmResponsesTransformer"];
   [NSValueTransformer setValueTransformer: [[ShinyTransformer alloc] init]
                       forName: @"ShinyTransformer"];
+  [NSValueTransformer setValueTransformer:
+                        [[SpinnerSequenceTransformer alloc] init]
+                      forName: @"SpinnerSequenceTransformer"];
   [NSValueTransformer setValueTransformer: [[UInt32DateTransformer alloc] init]
                       forName: @"UInt32DateTransformer"];
   [NSValueTransformer setValueTransformer: [[UInt32TimeTransformer alloc] init]

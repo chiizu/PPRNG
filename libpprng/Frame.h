@@ -239,6 +239,18 @@ struct Gen5EggFrame : public Gen5BreedingFrame
   Characteristic::Type  characteristic;
 };
 
+struct DreamRadarFrame
+{
+  DreamRadarFrame(const HashedSeed &s) : seed(s) {}
+  
+  const HashedSeed  seed;
+  uint32_t          number;
+  uint64_t          rngValue;
+  PID               pid;
+  Nature::Type      nature;
+  IVs               ivs;
+};
+
 }
 
 #endif

@@ -110,6 +110,16 @@ struct Gen5PIDRNG
   }
   
   template <class RNG>
+  static uint32_t NextDreamRadarPIDWord(RNG &rng,
+                                       Gender::Type gender, Gender::Ratio ratio,
+                                       uint32_t tid, uint32_t sid)
+  {
+    return ForceNonShiny(FlipAbility(ForceGender(NextRawPIDWord(rng),
+                                                 gender, ratio, rng)),
+                         tid, sid);
+  }
+  
+  template <class RNG>
   static uint32_t NextCuteCharmPIDWord(RNG &rng,
                                        Gender::Type gender, Gender::Ratio ratio,
                                        uint32_t tid, uint32_t sid)

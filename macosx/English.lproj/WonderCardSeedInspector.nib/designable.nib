@@ -2159,7 +2159,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2185,7 +2185,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																		<string type="base64-UTF8" key="NSHeaderToolTip">VGhlIHBpdGNoIG9mIGEgY2hhdG90J3MgY3J5LCBzcGxpdCBpbnRvIDUgZ3JvdXBpbmdzCuKAoiBMbyAo
@@ -2215,7 +2215,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2293,7 +2293,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2319,7 +2319,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2345,7 +2345,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2371,7 +2371,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																		<string key="NSHeaderToolTip">For a species with a gender ratio of 1/8 female, whether the result will be female or male</string>
@@ -2398,7 +2398,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																		<string key="NSHeaderToolTip">For a species with a gender ratio of 1/4 female, whether the result will be female or male</string>
@@ -2425,7 +2425,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																		<string key="NSHeaderToolTip">For a species with a gender ratio of 1/2 female, whether the result will be female or male</string>
@@ -2452,7 +2452,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																		<string key="NSHeaderToolTip">For a species with a gender ratio of 3/4 female, whether the result will be female or male</string>
@@ -2527,7 +2527,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2601,7 +2601,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2675,7 +2675,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2749,7 +2749,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2823,7 +2823,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2897,7 +2897,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2923,7 +2923,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2997,7 +2997,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -3023,7 +3023,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -4618,7 +4618,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -4692,7 +4692,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -4766,7 +4766,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -4840,7 +4840,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -4866,7 +4866,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -4892,7 +4892,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -4918,7 +4918,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -4944,7 +4944,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																		<string key="NSHeaderToolTip">For a species with a gender ratio of 1/8 female, whether the result will be female or male</string>
@@ -4971,7 +4971,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																		<string key="NSHeaderToolTip">For a species with a gender ratio of 1/4 female, whether the result will be female or male</string>
@@ -4998,7 +4998,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																		<string key="NSHeaderToolTip">For a species with a gender ratio of 1/2 female, whether the result will be female or male</string>
@@ -5025,7 +5025,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																		<string key="NSHeaderToolTip">For a species with a gender ratio of 3/4 female, whether the result will be female or male</string>
@@ -5100,7 +5100,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -5174,7 +5174,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -5248,7 +5248,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -5322,7 +5322,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -5396,7 +5396,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -5470,7 +5470,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -5496,7 +5496,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -5570,7 +5570,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -5596,7 +5596,7 @@ IC0gMTAwJSk</string>
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="707527689"/>
 																	</object>
@@ -10045,7 +10045,7 @@ IC0gMTAwJSk</string>
 								<int key="NSCellFlags">917024</int>
 								<int key="NSCellFlags2">0</int>
 								<reference key="NSControlView" ref="576213429"/>
-								<double key="NSMaxValue">59</double>
+								<double key="NSMaxValue">65535</double>
 								<double key="NSIncrement">1</double>
 								<bool key="NSAutorepeat">YES</bool>
 							</object>
@@ -12730,14 +12730,6 @@ IC0gMTAwJSk</string>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
-						<string key="label">initialFirstResponder</string>
-						<reference key="source" ref="727823210"/>
-						<reference key="destination" ref="955567990"/>
-					</object>
-					<int key="connectionID">1828</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
 						<string key="label">nextKeyView</string>
 						<reference key="source" ref="1014472714"/>
 						<reference key="destination" ref="229955706"/>
@@ -12759,14 +12751,6 @@ IC0gMTAwJSk</string>
 						<reference key="destination" ref="956728704"/>
 					</object>
 					<int key="connectionID">1839</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">nextKeyView</string>
-						<reference key="source" ref="956728704"/>
-						<reference key="destination" ref="359670196"/>
-					</object>
-					<int key="connectionID">1840</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -14779,6 +14763,86 @@ IC0gMTAwJSk</string>
 						<reference key="destination" ref="416361264"/>
 					</object>
 					<int key="connectionID">3026</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">nextKeyView</string>
+						<reference key="source" ref="416361264"/>
+						<reference key="destination" ref="734262431"/>
+					</object>
+					<int key="connectionID">3027</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">nextKeyView</string>
+						<reference key="source" ref="734262431"/>
+						<reference key="destination" ref="433676294"/>
+					</object>
+					<int key="connectionID">3028</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">nextKeyView</string>
+						<reference key="source" ref="883940644"/>
+						<reference key="destination" ref="132230790"/>
+					</object>
+					<int key="connectionID">3029</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">nextKeyView</string>
+						<reference key="source" ref="132230790"/>
+						<reference key="destination" ref="137289559"/>
+					</object>
+					<int key="connectionID">3030</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">nextKeyView</string>
+						<reference key="source" ref="700776719"/>
+						<reference key="destination" ref="28595800"/>
+					</object>
+					<int key="connectionID">3031</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">nextKeyView</string>
+						<reference key="source" ref="490030"/>
+						<reference key="destination" ref="270329240"/>
+					</object>
+					<int key="connectionID">3032</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">initialFirstResponder</string>
+						<reference key="source" ref="727823210"/>
+						<reference key="destination" ref="534611848"/>
+					</object>
+					<int key="connectionID">3033</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">nextKeyView</string>
+						<reference key="source" ref="534611848"/>
+						<reference key="destination" ref="955567990"/>
+					</object>
+					<int key="connectionID">3034</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">nextKeyView</string>
+						<reference key="source" ref="956728704"/>
+						<reference key="destination" ref="971762255"/>
+					</object>
+					<int key="connectionID">3035</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">nextKeyView</string>
+						<reference key="source" ref="971762255"/>
+						<reference key="destination" ref="359670196"/>
+					</object>
+					<int key="connectionID">3036</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -23826,7 +23890,7 @@ IC0gMTAwJSk</string>
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">3026</int>
+			<int key="maxID">3036</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

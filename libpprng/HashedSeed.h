@@ -22,6 +22,8 @@
 #define NON_C_GEAR_SEED_H
 
 #include "PPRNGTypes.h"
+#include "LinearCongruentialRNG.h"
+
 #include <boost/date_time/gregorian/gregorian.hpp>
 
 namespace pprng
@@ -30,52 +32,6 @@ namespace pprng
 class HashedSeed
 {
 public:
-  enum Nazo
-  {
-    JPBlackNazo = 0x02215f10,
-    JPWhiteNazo = 0x02215f30,
-    JPBlackDSiNazo = 0x02761150,
-    JPWhiteDSiNazo = 0x02761150,
-    
-    ENBlackNazo = 0x022160B0,
-    ENWhiteNazo = 0x022160D0,
-    ENBlackDSiNazo = 0x02760190,
-    ENWhiteDSiNazo = 0x027601B0,
-    
-    SPBlackNazo = 0x02216050,
-    SPWhiteNazo = 0x02216070,
-    SPBlackDSiNazo = 0x027601f0,
-    SPWhiteDSiNazo = 0x027601f0,
-    
-    FRBlackNazo = 0x02216030,
-    FRWhiteNazo = 0x02216050,
-    FRBlackDSiNazo = 0x02760230,
-    FRWhiteDSiNazo = 0x02760250,
-    
-    DEBlackNazo = 0x02215FF0,
-    DEWhiteNazo = 0x02216010,
-    DEBlackDSiNazo = 0x027602f0,
-    DEWhiteDSiNazo = 0x027602f0,
-    
-    ITBlackNazo = 0x02215FB0,
-    ITWhiteNazo = 0x02215FD0,
-    ITBlackDSiNazo = 0x027601d0,
-    ITWhiteDSiNazo = 0x027601d0,
-    
-    KRBlackNazo = 0x022167B0,
-    KRWhiteNazo = 0x022167B0,
-    KRBlackDSiNazo = 0x02761150,
-    KRWhiteDSiNazo = 0x02761150,
-    
-    JPBlack2Nazo = 0x0209A8DC,
-    JPBlack2Nazo2 = 0x02039AC9,
-    JPWhite2Nazo = 0x0209A8FC,
-    JPWhite2Nazo2 = 0x02039AF5
-  };
-  
-  static Nazo NazoForVersionAndDS(Game::Version version, DS::Type dsType);
-  static Nazo Nazo2ForVersionAndDS(Game::Version version, DS::Type dsType);
-  
   enum GxStat
   {
     HardResetGxStat = 0x06000000
@@ -111,7 +67,8 @@ public:
       gxStat(HardResetGxStat), vcount(0), vframe(0), timer0(0),
       date(), hour(0), minute(0), second(0), heldButtons(0),
       rawSeed(rawSeed),
-      m_skippedPIDFramesCalculated(false), m_skippedPIDFrames(0)
+      m_skippedPIDFramesCalculated(false), m_skippedPIDFrames(0),
+      m_skippedPIDFramesSeed(0)
   {}
   
   // this is needed to decode a HashedSeed from a byte array
@@ -120,7 +77,8 @@ public:
       gxStat(HardResetGxStat), vcount(0), vframe(0), timer0(0),
       date(), hour(0), minute(0), second(0), heldButtons(0),
       rawSeed(rawSeed),
-      m_skippedPIDFramesCalculated(false), m_skippedPIDFrames(0)
+      m_skippedPIDFramesCalculated(false), m_skippedPIDFrames(0),
+      m_skippedPIDFramesSeed(0)
   {}
   
   const Game::Version           version;
@@ -139,12 +97,15 @@ public:
   // calculated raw seed
   const uint64_t    rawSeed;
   
+  uint32_t SeedAndSkipPIDFrames(LCRNG5 &rng) const;
+  
   uint32_t GetSkippedPIDFrames() const;
   
 private:
   // skipped frames calculated lazily and cached
   mutable bool      m_skippedPIDFramesCalculated;
   mutable uint32_t  m_skippedPIDFrames;
+  mutable uint64_t  m_skippedPIDFramesSeed;
 };
 
 }

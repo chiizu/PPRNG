@@ -1231,10 +1231,11 @@ struct ProfElmResponses
   
   bool Contains(const ProfElmResponses &subResponses) const
   {
-    uint64_t  searchMask = (0x1 << (subResponses.NumResponses() << 1)) - 1;
+    uint64_t  numResponses = subResponses.NumResponses();
+    uint64_t  searchMask = (0x1 << (numResponses << 1)) - 1;
     uint64_t  searchValue = subResponses.word & searchMask;
     
-    return (subResponses.NumResponses() <= NumResponses()) &&
+    return (numResponses <= NumResponses()) &&
       ((word & searchMask) == searchValue);
   }
 };
@@ -1284,6 +1285,67 @@ static uint32_t Gen5Pitch(uint64_t rawRNGValue)
   return (((rawRNGValue >> 32) * 0x1FFF) >> 32) / 82;
 }
 
+};
+
+
+struct SpinnerPositions
+{
+  uint64_t  word;
+  
+  enum Position
+  {
+    UP = 0,
+    UP_RIGHT,
+    RIGHT,
+    DOWN_RIGHT,
+    DOWN,
+    DOWN_LEFT,
+    LEFT,
+    UP_LEFT
+  };
+  
+  static Position CalcPosition(uint64_t rawRNG)
+  { return Position(rawRNG >> 61); }
+  
+  enum
+  {
+    SPIN_COUNT_SHIFT = 57,
+    SPIN_BITS_MASK = 0x01FFFFFFFFFFFFFFULL
+  };
+  
+  SpinnerPositions() : word(0) {}
+  SpinnerPositions(uint64_t seed, uint32_t numSpins);
+  explicit SpinnerPositions(uint64_t w) : word(w) {}
+  
+  uint32_t NumSpins() const
+  { return (word >> SPIN_COUNT_SHIFT); }
+  
+  Position GetPosition(uint32_t positionNum) const
+  { return Position((word >> (positionNum * 3)) & 0x7); }
+  
+  void AddSpin(Position p)
+  {
+    uint64_t  numSpins = NumSpins();
+    
+    word = ((numSpins + 1) << SPIN_COUNT_SHIFT) |
+           (word & SPIN_BITS_MASK) | (p << (numSpins * 3));
+  }
+  
+  void RemoveSpin()
+  {
+    uint64_t  numSpins = NumSpins();
+    word = ((numSpins - 1) << SPIN_COUNT_SHIFT) |
+           (word & ((0x1 << ((numSpins - 1) * 3)) - 1));
+  }
+  
+  bool Contains(const SpinnerPositions &subSpins) const
+  {
+    uint64_t  numSpins = subSpins.NumSpins();
+    uint64_t  searchMask = (0x1 << (numSpins * 3)) - 1;
+    uint64_t  searchValue = subSpins.word & searchMask;
+    
+    return (numSpins <= NumSpins()) && ((word & searchMask) == searchValue);
+  }
 };
 
 

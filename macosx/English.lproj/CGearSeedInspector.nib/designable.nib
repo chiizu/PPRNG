@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="2"/>
+			<integer value="1"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -161,17 +161,20 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<object class="NSLocale" id="381353895">
 																<string key="NS.identifier"/>
@@ -180,11 +183,12 @@
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -271,28 +275,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -357,28 +365,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -443,28 +455,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -529,28 +545,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -615,28 +635,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -2714,7 +2738,7 @@
 																			</object>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2788,7 +2812,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2862,7 +2886,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -2936,7 +2960,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -3010,7 +3034,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -3084,7 +3108,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -3158,7 +3182,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -3184,7 +3208,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -3258,7 +3282,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="824418903"/>
 																	</object>
@@ -3747,7 +3771,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="540317374"/>
 																	</object>
@@ -3773,7 +3797,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="540317374"/>
 																	</object>
@@ -3799,7 +3823,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="540317374"/>
 																	</object>
@@ -3873,7 +3897,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="540317374"/>
 																	</object>
@@ -3947,7 +3971,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="540317374"/>
 																	</object>
@@ -4021,7 +4045,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="540317374"/>
 																	</object>
@@ -4095,7 +4119,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="540317374"/>
 																	</object>
@@ -4169,7 +4193,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="540317374"/>
 																	</object>
@@ -4243,7 +4267,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="540317374"/>
 																	</object>
@@ -4317,7 +4341,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="540317374"/>
 																	</object>
@@ -4391,7 +4415,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="540317374"/>
 																	</object>
@@ -4917,7 +4941,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="494641319"/>
 																	</object>
@@ -4943,7 +4967,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="494641319"/>
 																	</object>
@@ -18587,37 +18611,37 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>

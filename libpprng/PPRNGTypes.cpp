@@ -967,7 +967,7 @@ ProfElmResponses::ProfElmResponses(uint32_t seed, uint32_t numResponses)
   LCRNG34  rng(seed);
   
   for (uint32_t i = 0; i < numResponses; ++i)
-    word = word | (CalcResponse(rng.Next()) << (i << 1));
+    word = word | (uint64_t(CalcResponse(rng.Next())) << (i << 1));
   
   word = word | (uint64_t(numResponses) << RESPONSE_COUNT_SHIFT);
 }
@@ -1032,6 +1032,21 @@ HGSSRoamers::HGSSRoamers(uint32_t seed, uint32_t raikouLocation,
   }
   
   word = result | (consumed << CONSUMED_FRAMES_SHIFT);
+}
+
+
+SpinnerPositions::SpinnerPositions(uint64_t seed, uint32_t numSpins)
+  : word(0)
+{
+  LCRNG5  rng(seed);
+  
+  for (uint32_t i = 0; i < numSpins; ++i)
+  {
+    word = word | (uint64_t(CalcPosition(rng.Next())) << (i * 3));
+    rng.Next();
+  }
+  
+  word = word | (uint64_t(numSpins) << SPIN_COUNT_SHIFT);
 }
 
 }

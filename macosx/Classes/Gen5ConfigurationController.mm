@@ -67,16 +67,6 @@ using namespace pprng;
 
 - (void)awakeFromNib
 {
-  if (macAddressField0 != nil)
-  {
-    [[macAddressField0 formatter] setFormatWidth: 2];
-    [[macAddressField1 formatter] setFormatWidth: 2];
-    [[macAddressField2 formatter] setFormatWidth: 2];
-    [[macAddressField3 formatter] setFormatWidth: 2];
-    [[macAddressField4 formatter] setFormatWidth: 2];
-    [[macAddressField5 formatter] setFormatWidth: 2];
-  }
-  
   [self setCurrentConfiguration];
 }
 

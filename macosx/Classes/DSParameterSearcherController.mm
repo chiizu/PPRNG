@@ -125,11 +125,9 @@ struct ProgressHandler
     if (Game::IsBlack2White2(version))
     {
       self.timer0Low = 0x1000;
-      self.timer0High = 0x1200;
+      self.timer0High = 0x11FF;
       self.vcountLow = 0x78;
-      self.vcountHigh = 0x98;
-      self.vframeLow = 0x0;
-      self.vframeHigh = 0xF;
+      self.vcountHigh = 0x97;
     }
     else
     {
@@ -137,19 +135,34 @@ struct ProgressHandler
       self.timer0High = 0xCFF;
       self.vcountLow = 0x50;
       self.vcountHigh = 0x6F;
-      self.vframeLow = 0x0;
-      self.vframeHigh = 0xF;
     }
   }
   else
   {
-    self.timer0Low = 0x1100;
-    self.timer0High = 0x1300;
-    self.vcountLow = 0x78;
-    self.vcountHigh = 0x98;
-    self.vframeLow = 0x0;
-    self.vframeHigh = 0xF;
+    if (version == Game::Black2Japanese)
+    {
+      self.timer0Low = 0x1480;
+      self.timer0High = 0x167F;
+      self.vcountLow = 0x98;
+      self.vcountHigh = 0xB7;
+    }
+    else if (version == Game::White2Japanese)
+    {
+      self.timer0Low = 0x1780;
+      self.timer0High = 0x197F;
+      self.vcountLow = 0xA8;
+      self.vcountHigh = 0xC7;
+    }
+    else
+    {
+      self.timer0Low = 0x1100;
+      self.timer0High = 0x12FF;
+      self.vcountLow = 0x78;
+      self.vcountHigh = 0x97;
+    }
   }
+  self.vframeLow = 0x0;
+  self.vframeHigh = 0xF;
   
   self.startDate = [NSDate date];
   self.startHour = 0;

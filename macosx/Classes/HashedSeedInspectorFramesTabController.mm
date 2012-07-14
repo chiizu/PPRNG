@@ -177,7 +177,20 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   p.frameType = encounterFrameType;
   p.leadAbility = encounterLeadAbility;
   p.targetGender = targetGender;
-  p.targetRatio = genderRequired ? targetGenderRatio : Gender::ANY_RATIO;
+  
+  if (targetGender == Gender::GENDERLESS)
+  {
+    p.targetRatio = Gender::NO_RATIO;
+  }
+  else if (targetGenderRatio == Gender::NO_RATIO)
+  {
+    p.targetRatio = (targetGender == Gender::FEMALE) ?
+      Gender::FEMALE_ONLY : Gender::MALE_ONLY;
+  }
+  else
+  {
+    p.targetRatio = targetGenderRatio;
+  }
   
   p.tid = [inspectorController.tid unsignedIntValue];
   p.sid = [inspectorController.sid unsignedIntValue];

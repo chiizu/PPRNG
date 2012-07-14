@@ -651,8 +651,6 @@ struct ProgressHandler
       [inspector window];
       
       [inspector setSeedFromResult: row];
-      inspector.tid = [NSNumber numberWithUnsignedInt: row.tid];
-      inspector.sid = [NSNumber numberWithUnsignedInt: row.sid];
       
       HashedSeedInspectorFramesTabController *framesTab =
         inspector.framesTabController;
@@ -667,6 +665,9 @@ struct ProgressHandler
       }
       else
       {
+        inspector.tid = [NSNumber numberWithUnsignedInt: row.tid];
+        inspector.sid = [NSNumber numberWithUnsignedInt: row.sid];
+        
         framesTab.encounterLeadAbility = row.leadAbility;
         adjacentsTab.encounterLeadAbility = row.leadAbility;
         

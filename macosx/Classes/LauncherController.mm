@@ -26,6 +26,8 @@
 #import "EggSeedSearcherController.h"
 #import "WonderCardSeedSearcherController.h"
 #import "WonderCardSeedInspectorController.h"
+#import "DreamRadarSeedSearcherController.h"
+#import "DreamRadarSeedInspectorController.h"
 #import "CGearSeedSearcherController.h"
 #import "CGearSeedInspectorController.h"
 #import "TrainerIDSearcherController.h"
@@ -66,6 +68,10 @@
         [launchWonderCardSeedSearcher title],
       [WonderCardSeedInspectorController class],
         [launchWonderCardSeedInspector title],
+      [DreamRadarSeedSearcherController class],
+        [launchDreamRadarSeedSearcher title],
+      [DreamRadarSeedInspectorController class],
+        [launchDreamRadarSeedInspector title],
       [CGearSeedSearcherController class], [launchCGearSeedSearcher title],
       [CGearSeedInspectorController class], [launchCGearSeedInspector title],
       [TrainerIDSearcherController class], [launchTIDSearcher title],

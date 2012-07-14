@@ -211,17 +211,20 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<object class="NSLocale" id="381353895">
 																<string key="NS.identifier"/>
@@ -230,11 +233,12 @@
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -305,28 +309,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -391,28 +399,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -477,28 +489,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -563,28 +579,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -649,28 +669,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -1567,7 +1591,7 @@
 																			</object>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">PID Frame Number</string>
@@ -1646,7 +1670,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">The raw PID value before it is modified for the different frame types</string>
@@ -1673,7 +1697,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																	</object>
@@ -1699,7 +1723,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">Ability</string>
@@ -1726,7 +1750,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">For a species with a gender ratio of 1/8 female, whether the result will be female or male</string>
@@ -1753,7 +1777,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">For a species with a gender ratio of 1/4 female, whether the result will be female or male</string>
@@ -1780,7 +1804,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">For a species with a gender ratio of 1/2 female, whether the result will be female or male</string>
@@ -1807,7 +1831,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">For a species with a gender ratio of 3/4 female, whether the result will be female or male</string>
@@ -1834,7 +1858,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">The frame number which will produce a shiny stationary encounter</string>
@@ -1861,7 +1885,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">The frame number which will produce a shiny in grass (including shaking grass), cave, surfing, and water spot (surfing or fishing) encounters</string>
@@ -1888,7 +1912,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">Whether you will encounter a Pokémon when fishing</string>
@@ -1915,7 +1939,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">The frame number which will produce a shiny swarm encounter</string>
@@ -1942,10 +1966,10 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
-																		<string key="NSHeaderToolTip">Whether you will encounter a Pokémon in swirling dust</string>
+																		<string key="NSHeaderToolTip">The frame number which will produce a shiny swirling dust encounter</string>
 																	</object>
 																	<object class="NSTableColumn" id="496970882">
 																		<string key="NSIdentifier">findItem</string>
@@ -1969,10 +1993,10 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
-																		<string key="NSHeaderToolTip">Whether you will encounter a Pokémon in bridge shadow</string>
+																		<string key="NSHeaderToolTip">The frame number which will produce a shiny swirling dust bridge shadow encounter</string>
 																	</object>
 																	<object class="NSTableColumn" id="668755069">
 																		<string key="NSIdentifier">landESV</string>
@@ -1996,7 +2020,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">The Encounter Slot Value for an encounter on land</string>
@@ -2023,7 +2047,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">The Encounter Slot Value for an encounter when surfing</string>
@@ -2050,7 +2074,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="425897078"/>
 																		<string key="NSHeaderToolTip">The Encounter Slot Value for an encounter when fishing</string>
@@ -2535,10 +2559,10 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="1026049821"/>
-																		<string key="NSHeaderToolTip">The date to set on your DS</string>
+																		<string key="NSHeaderToolTip"/>
 																	</object>
 																	<object class="NSTableColumn" id="686788935">
 																		<string key="NSIdentifier">time</string>
@@ -2562,10 +2586,10 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="1026049821"/>
-																		<string key="NSHeaderToolTip">Time on your DS at which the game should start.  You normally start the game from the DS menu 1 second before this time.</string>
+																		<string key="NSHeaderToolTip"/>
 																	</object>
 																	<object class="NSTableColumn" id="976308128">
 																		<string key="NSIdentifier">timer0</string>
@@ -2637,10 +2661,10 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="1026049821"/>
-																		<string key="NSHeaderToolTip">Most people's DSs have two Timer0 values.  You can't dependably control which one you hit, unfortunately.</string>
+																		<string key="NSHeaderToolTip"/>
 																	</object>
 																	<object class="NSTableColumn" id="82176826">
 																		<string key="NSIdentifier">keys</string>
@@ -2664,10 +2688,10 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="1026049821"/>
-																		<string key="NSHeaderToolTip">Hold these buttons from the time you start the game from the DS menu until you see the Pokemon logo.</string>
+																		<string key="NSHeaderToolTip"/>
 																	</object>
 																	<object class="NSTableColumn" id="887571869">
 																		<string key="NSIdentifier">seed</string>
@@ -2746,7 +2770,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="1026049821"/>
 																		<string key="NSHeaderToolTip">The raw 64-bit seed</string>
@@ -2821,7 +2845,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="1026049821"/>
 																		<string key="NSHeaderToolTip">The PID frame number that will produce the given TID / SID pair</string>
@@ -2896,7 +2920,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="1026049821"/>
 																		<string key="NSHeaderToolTip">Trainer ID (visible number)</string>
@@ -2971,7 +2995,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="1026049821"/>
 																		<string key="NSHeaderToolTip">Secret ID (hidden number)</string>
@@ -2998,7 +3022,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="1026049821"/>
 																		<string key="NSHeaderToolTip"/>
@@ -3025,7 +3049,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="1026049821"/>
 																		<string key="NSHeaderToolTip"/>
@@ -3052,7 +3076,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="1026049821"/>
 																		<string key="NSHeaderToolTip"/>
@@ -12315,37 +12339,37 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>

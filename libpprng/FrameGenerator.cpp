@@ -128,6 +128,7 @@ Gen5PIDFrameGenerator::Gen5PIDFrameGenerator
 void Gen5PIDFrameGenerator::SkipFrames(uint32_t numFrames)
 {
   uint32_t  i = 0;
+  
   while (i++ < numFrames)
     m_RNG.AdvanceBuffer();
   
@@ -737,6 +738,96 @@ void Gen5BreedingFrameGenerator::AdvanceFrame()
       m_frame.pid = Gen5PIDRNG::NextEggPIDWord(m_RNG);
     }
   }
+}
+
+
+DreamRadarFrameGenerator::DreamRadarFrameGenerator(const HashedSeed &seed,
+                                                   const Parameters &parameters)
+  : m_PIDRNG(seed.rawSeed),
+    m_MTRNG(seed.rawSeed >> 32), m_IVRNG(m_MTRNG, IVRNG::Normal),
+    m_frame(seed),
+    m_parameters(parameters)
+{
+  m_frame.number = 0;
+  
+  int32_t  skippedFrames = seed.GetSkippedPIDFrames();
+  while (skippedFrames-- > 0)
+    m_PIDRNG.AdvanceBuffer();
+  
+  // start from IV frame 8
+  skippedFrames = 8;
+  while (skippedFrames-- > 0)
+    m_IVRNG.NextIVWord();
+  
+  switch (parameters.frameType)
+  {
+  case GenieFrame:
+    // genies use stats from the second slot
+    m_parameters.slot += 1;
+    
+    // fall through
+    
+  case NonGenieLegendaryFrame:
+    // legendaries and genies have 100% male PIDs
+    m_parameters.targetGender = Gender::MALE;
+    m_parameters.targetRatio = Gender::MALE_ONLY;
+    break;
+    
+  default:
+    break;
+  }
+  
+  // skip over IV frames
+  skippedFrames = (m_parameters.slot - 1) * 13;
+  while (skippedFrames-- > 0)
+    m_IVRNG.NextIVWord();
+}
+
+void DreamRadarFrameGenerator::SkipFrames(uint32_t numFrames)
+{
+  uint32_t  i = 0;
+  while (i++ < numFrames)
+  {
+    m_PIDRNG.AdvanceBuffer();
+    m_PIDRNG.AdvanceBuffer();
+    
+    m_IVRNG.NextIVWord();
+    m_IVRNG.NextIVWord();
+  }
+  m_frame.number += numFrames;
+}
+
+void DreamRadarFrameGenerator::AdvanceFrame()
+{
+  m_PIDRNG.AdvanceBuffer();
+  m_frame.rngValue = m_PIDRNG.Next();
+  
+  m_PIDRNG.AdvanceBuffer();
+  
+  m_IVRNG.NextIVWord();
+  m_frame.ivs = m_IVRNG.NextIVWord();
+  
+  ++m_frame.number;
+  
+  // skip 1 frame for some reason...
+  m_PIDRNG.Next();
+  
+  // skip PID frames of earlier slots
+  int32_t  skippedFrames =
+    ((m_parameters.slot - 1) * 5) - m_parameters.numPrecedingGenderless;
+  while (skippedFrames-- > 0)
+    m_PIDRNG.Next();
+  
+  m_frame.pid =
+    Gen5PIDRNG::NextDreamRadarPIDWord(m_PIDRNG, m_parameters.targetGender,
+                                      m_parameters.targetRatio,
+                                      m_parameters.tid, m_parameters.sid);
+  
+  // skip 2 frames for something...
+  m_PIDRNG.Next();
+  m_PIDRNG.Next();
+  
+  m_frame.nature = Nature::Type(((m_PIDRNG.Next() >> 32) * 25) >> 32);
 }
 
 }

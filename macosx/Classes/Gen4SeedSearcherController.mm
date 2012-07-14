@@ -171,11 +171,6 @@ struct ProgressHandler
   [resultsTableView setTarget: self];
   [resultsTableView setDoubleAction: @selector(inspectSeed:)];
   
-  [[[[resultsTableView tableColumnWithIdentifier: @"seed"] dataCell] formatter]
-   setFormatWidth: 8];
-  [[[[resultsTableView tableColumnWithIdentifier: @"pid"] dataCell] formatter]
-   setFormatWidth: 8];
-  
   [[resultsTableView tableColumnWithIdentifier:@"frameJ"]
     setHidden: NO];
   [[resultsTableView tableColumnWithIdentifier:@"frameJSync"]

@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="3"/>
+			<integer value="6"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -647,7 +647,7 @@
 														</object>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="30300212"/>
 												</object>
@@ -721,7 +721,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="30300212"/>
 												</object>
@@ -800,7 +800,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="30300212"/>
 												</object>
@@ -826,7 +826,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="30300212"/>
 												</object>
@@ -852,7 +852,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="30300212"/>
 												</object>
@@ -878,7 +878,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="30300212"/>
 												</object>
@@ -904,7 +904,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="30300212"/>
 												</object>
@@ -930,7 +930,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="30300212"/>
 												</object>
@@ -956,7 +956,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="30300212"/>
 												</object>
@@ -982,7 +982,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="30300212"/>
 												</object>
@@ -1008,7 +1008,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="30300212"/>
 												</object>

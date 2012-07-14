@@ -10,6 +10,12 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		C0238B29159FFF1F0075C7D5 /* DreamRadarSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0238B27159FFF1F0075C7D5 /* DreamRadarSeedSearcher.nib */; };
+		C0238B3B15A08D250075C7D5 /* DreamRadarSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0238B3915A08D250075C7D5 /* DreamRadarSeedSearcher.cpp */; };
+		C0238B4215A09AE00075C7D5 /* DreamRadarSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0238B4115A09AE00075C7D5 /* DreamRadarSeedSearcherController.mm */; };
+		C0238E5915AF219C0075C7D5 /* DreamRadarSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0238E5715AF219C0075C7D5 /* DreamRadarSeedInspector.nib */; };
+		C0238E6115AF288A0075C7D5 /* DreamRadarSeedInspectorController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0238E6015AF288A0075C7D5 /* DreamRadarSeedInspectorController.mm */; };
+		C0238E8E15AF42D50075C7D5 /* SpinnerSequenceTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0238E8D15AF42D50075C7D5 /* SpinnerSequenceTransformer.mm */; };
 		C02E0A0213515E1A00855098 /* README in Resources */ = {isa = PBXBuildFile; fileRef = C02E0A0113515E1A00855098 /* README */; };
 		C03B40FE1463D21100AD59B0 /* Gen4ConfigurationController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */; };
 		C05B870114626E42009166E0 /* HashedSeedMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05B86FF14626E42009166E0 /* HashedSeedMessage.cpp */; };
@@ -110,6 +116,16 @@
 		32CA4F630368D1EE00C91783 /* PPRNG_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPRNG_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* PPRNG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PPRNG.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0238B28159FFF1F0075C7D5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/DreamRadarSeedSearcher.nib; sourceTree = "<group>"; };
+		C0238B3915A08D250075C7D5 /* DreamRadarSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DreamRadarSeedSearcher.cpp; sourceTree = "<group>"; };
+		C0238B3A15A08D250075C7D5 /* DreamRadarSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DreamRadarSeedSearcher.h; sourceTree = "<group>"; };
+		C0238B4015A09AE00075C7D5 /* DreamRadarSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DreamRadarSeedSearcherController.h; sourceTree = "<group>"; };
+		C0238B4115A09AE00075C7D5 /* DreamRadarSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DreamRadarSeedSearcherController.mm; sourceTree = "<group>"; };
+		C0238E5815AF219C0075C7D5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/DreamRadarSeedInspector.nib; sourceTree = "<group>"; };
+		C0238E5F15AF288A0075C7D5 /* DreamRadarSeedInspectorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DreamRadarSeedInspectorController.h; sourceTree = "<group>"; };
+		C0238E6015AF288A0075C7D5 /* DreamRadarSeedInspectorController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DreamRadarSeedInspectorController.mm; sourceTree = "<group>"; };
+		C0238E8C15AF42D50075C7D5 /* SpinnerSequenceTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpinnerSequenceTransformer.h; sourceTree = "<group>"; };
+		C0238E8D15AF42D50075C7D5 /* SpinnerSequenceTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SpinnerSequenceTransformer.mm; sourceTree = "<group>"; };
 		C02E0A0113515E1A00855098 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		C03B40FC1463D21100AD59B0 /* Gen4ConfigurationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4ConfigurationController.h; sourceTree = "<group>"; };
 		C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Gen4ConfigurationController.mm; sourceTree = "<group>"; };
@@ -301,6 +317,10 @@
 				C0E3042C1346349900C56C1A /* CGearSeedInspectorController.mm */,
 				C0E3042D1346349900C56C1A /* CGearSeedSearcherController.h */,
 				C0E3042E1346349900C56C1A /* CGearSeedSearcherController.mm */,
+				C0238E5F15AF288A0075C7D5 /* DreamRadarSeedInspectorController.h */,
+				C0238E6015AF288A0075C7D5 /* DreamRadarSeedInspectorController.mm */,
+				C0238B4015A09AE00075C7D5 /* DreamRadarSeedSearcherController.h */,
+				C0238B4115A09AE00075C7D5 /* DreamRadarSeedSearcherController.mm */,
 				C0E3042F1346349900C56C1A /* DSParameterSearcherController.h */,
 				C0E304301346349900C56C1A /* DSParameterSearcherController.mm */,
 				C082156B1375923500B6E0E5 /* EggSeedSearcherController.h */,
@@ -413,6 +433,8 @@
 			children = (
 				C0AA903214B4A7E4003EC28F /* CGearSeedInspector.nib */,
 				C0AA903414B4A7E4003EC28F /* CGearSeedSearcher.nib */,
+				C0238E5715AF219C0075C7D5 /* DreamRadarSeedInspector.nib */,
+				C0238B27159FFF1F0075C7D5 /* DreamRadarSeedSearcher.nib */,
 				C0AA903614B4A7E4003EC28F /* DSParameterSearcher.nib */,
 				C0AA903814B4A7E4003EC28F /* EggSeedSearcher.nib */,
 				C0AA903A14B4A7E4003EC28F /* Gen4Configuration.nib */,
@@ -480,6 +502,8 @@
 				C0DA5AB8152598140011A473 /* ProfElmResponsesTransformer.mm */,
 				C0DA4C89150CF7770011A473 /* ShinyTransformer.h */,
 				C0DA4C8A150CF7770011A473 /* ShinyTransformer.mm */,
+				C0238E8C15AF42D50075C7D5 /* SpinnerSequenceTransformer.h */,
+				C0238E8D15AF42D50075C7D5 /* SpinnerSequenceTransformer.mm */,
 				C0DA49B31507B4CC0011A473 /* UInt32DateTransformer.h */,
 				C0DA49B41507B4CC0011A473 /* UInt32DateTransformer.mm */,
 				C0DA49BB1507B4CC0011A473 /* UInt32TimeTransformer.h */,
@@ -500,6 +524,8 @@
 				C0E303FA1346343400C56C1A /* CGearSeed.h */,
 				C0E303FB1346343400C56C1A /* CGearSeedSearcher.cpp */,
 				C0E303FC1346343400C56C1A /* CGearSeedSearcher.h */,
+				C0238B3915A08D250075C7D5 /* DreamRadarSeedSearcher.cpp */,
+				C0238B3A15A08D250075C7D5 /* DreamRadarSeedSearcher.h */,
 				C0E303FD1346343400C56C1A /* EEGA.h */,
 				C08215641372F4FF00B6E0E5 /* EggSeedSearcher.cpp */,
 				C08215651372F4FF00B6E0E5 /* EggSeedSearcher.h */,
@@ -619,6 +645,8 @@
 				C0AA905E14B4A7E4003EC28F /* WonderCardSeedSearcher.nib in Resources */,
 				C0F6D79D15444B9F007C58D1 /* Gen4EggPIDSeedSearcher.nib in Resources */,
 				C0F6D7A015444BB6007C58D1 /* Gen4EggIVSeedSearcher.nib in Resources */,
+				C0238B29159FFF1F0075C7D5 /* DreamRadarSeedSearcher.nib in Resources */,
+				C0238E5915AF219C0075C7D5 /* DreamRadarSeedInspector.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -699,6 +727,10 @@
 				C0F6D7A315444BED007C58D1 /* Gen4EggPIDSeedSearcherController.mm in Sources */,
 				C0F6D87615483DCE007C58D1 /* Gen4EggIVSeedSearcherController.mm in Sources */,
 				C0F6D87D15483FC0007C58D1 /* Gen4EggIVSeedSearcher.cpp in Sources */,
+				C0238B3B15A08D250075C7D5 /* DreamRadarSeedSearcher.cpp in Sources */,
+				C0238B4215A09AE00075C7D5 /* DreamRadarSeedSearcherController.mm in Sources */,
+				C0238E6115AF288A0075C7D5 /* DreamRadarSeedInspectorController.mm in Sources */,
+				C0238E8E15AF42D50075C7D5 /* SpinnerSequenceTransformer.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -711,6 +743,22 @@
 				089C165DFE840E0CC02AAC07 /* English */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		C0238B27159FFF1F0075C7D5 /* DreamRadarSeedSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0238B28159FFF1F0075C7D5 /* English */,
+			);
+			name = DreamRadarSeedSearcher.nib;
+			sourceTree = "<group>";
+		};
+		C0238E5715AF219C0075C7D5 /* DreamRadarSeedInspector.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0238E5815AF219C0075C7D5 /* English */,
+			);
+			name = DreamRadarSeedInspector.nib;
 			sourceTree = "<group>";
 		};
 		C0AA903214B4A7E4003EC28F /* CGearSeedInspector.nib */ = {

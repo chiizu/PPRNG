@@ -746,6 +746,58 @@ private:
   Frame          m_frame;
 };
 
+
+class DreamRadarFrameGenerator
+{
+public:
+  typedef HashedSeed                 Seed;
+  typedef DreamRadarFrame            Frame;
+  typedef BufferedRNG<LCRNG5, 64>    PIDRNG;
+  typedef Gen5BufferingIVRNG<MTRNG>  IVRNG;
+  
+  enum FrameType
+  {
+    NonLegendaryFrame = 0,
+    GenieFrame,
+    NonGenieLegendaryFrame,
+    
+    NumFrameTypes
+  };
+  
+  struct Parameters
+  {
+    FrameType      frameType;
+    Gender::Type   targetGender;
+    Gender::Ratio  targetRatio;
+    uint32_t       slot;
+    uint32_t       numPrecedingGenderless;
+    uint32_t       tid, sid;
+    
+    Parameters()
+      : frameType(NonLegendaryFrame),
+        targetGender(Gender::ANY), targetRatio(Gender::ANY_RATIO),
+        slot(0), numPrecedingGenderless(0),
+        tid(0), sid(0)
+    {}
+  };
+  
+  DreamRadarFrameGenerator(const HashedSeed &seed,
+                           const Parameters &parameters);
+  
+  void SkipFrames(uint32_t numFrames);
+  
+  void AdvanceFrame();
+  
+  const Frame& CurrentFrame() { return m_frame; }
+  
+private:
+  PIDRNG      m_PIDRNG;
+  MTRNG       m_MTRNG;
+  IVRNG       m_IVRNG;
+  Frame       m_frame;
+  Parameters  m_parameters;
+};
+
 }
 
 #endif

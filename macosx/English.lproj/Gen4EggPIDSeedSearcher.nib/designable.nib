@@ -1395,7 +1395,7 @@
 														</object>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 												</object>
@@ -1469,7 +1469,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 												</object>
@@ -1548,7 +1548,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 												</object>
@@ -1626,7 +1626,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 												</object>
@@ -1652,7 +1652,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 												</object>
@@ -1678,7 +1678,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 												</object>
@@ -1756,7 +1756,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 												</object>
@@ -1782,7 +1782,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 													<string key="NSHeaderToolTip">For a species with a gender ratio of 1/8 female, whether the result will be female or male</string>
@@ -1809,7 +1809,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 													<string key="NSHeaderToolTip">For a species with a gender ratio of 1/4 female, whether the result will be female or male</string>
@@ -1836,7 +1836,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 													<string key="NSHeaderToolTip">For a species with a gender ratio of 1/2 female, whether the result will be female or male</string>
@@ -1863,7 +1863,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 													<string key="NSHeaderToolTip">For a species with a gender ratio of 3/4 female, whether the result will be female or male</string>
@@ -1893,7 +1893,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 												</object>
@@ -1967,7 +1967,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 												</object>
@@ -2041,7 +2041,7 @@
 														<reference key="NSBackgroundColor" ref="330838722"/>
 														<reference key="NSTextColor" ref="943158657"/>
 													</object>
-													<int key="NSResizingMask">1</int>
+													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="709237399"/>
 												</object>

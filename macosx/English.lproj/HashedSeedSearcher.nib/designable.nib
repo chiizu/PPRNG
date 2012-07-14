@@ -208,7 +208,7 @@
 													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="18469957"/>
-													<string key="NSHeaderToolTip">The date to set on your DS</string>
+													<string key="NSHeaderToolTip"/>
 												</object>
 												<object class="NSTableColumn" id="635849676">
 													<string key="NSIdentifier">time</string>
@@ -235,7 +235,7 @@
 													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="18469957"/>
-													<string key="NSHeaderToolTip">Time on your DS at which the game should start.  You normally start the game from the DS menu 1 second before this time.</string>
+													<string key="NSHeaderToolTip"/>
 												</object>
 												<object class="NSTableColumn" id="369768773">
 													<string key="NSIdentifier">timer0</string>
@@ -325,7 +325,7 @@
 													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="18469957"/>
-													<string key="NSHeaderToolTip">Most people's DSs have two Timer0 values.  You can't dependably control which one you hit, unfortunately.</string>
+													<string key="NSHeaderToolTip"/>
 												</object>
 												<object class="NSTableColumn" id="428877185">
 													<string key="NSIdentifier">keys</string>
@@ -352,7 +352,7 @@
 													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="18469957"/>
-													<string key="NSHeaderToolTip">Hold these buttons from the time you start the game from the DS menu until you see the Pokemon logo.</string>
+													<string key="NSHeaderToolTip"/>
 												</object>
 												<object class="NSTableColumn" id="302107846">
 													<string key="NSIdentifier">ivFrame</string>
@@ -1486,7 +1486,7 @@
 													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="18469957"/>
-													<string key="NSHeaderToolTip">The frame number which will produce a shiny swarm encounter</string>
+													<string key="NSHeaderToolTip">The frame number which will produce a shiny in a doubles grass encounter.  Only the right side will be a shiny.</string>
 												</object>
 												<object class="NSTableColumn" id="345578710">
 													<string key="NSIdentifier">fishFrame</string>
@@ -1940,7 +1940,7 @@
 													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
 													<reference key="NSTableView" ref="18469957"/>
-													<string key="NSHeaderToolTip">The Encounter Slot Value for an encounter on land</string>
+													<string key="NSHeaderToolTip">The Encounter Slot Value for an encounter in doubles grass</string>
 												</object>
 												<object class="NSTableColumn" id="606387999">
 													<string key="NSIdentifier">surfESV</string>
@@ -2241,28 +2241,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="5"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="65535"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0#####</string>
+													<string key="NS.negativeformat">*0#####</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -2310,28 +2314,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="5"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="65535"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0#####</string>
+													<string key="NS.negativeformat">*0#####</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -2468,28 +2476,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -2554,28 +2566,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -2640,28 +2656,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -2726,28 +2746,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -2812,28 +2836,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -2898,28 +2926,32 @@
 														<object class="NSArray" key="dict.sortedKeys">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<string>allowsFloats</string>
+															<string>formatWidth</string>
 															<string>formatterBehavior</string>
 															<string>locale</string>
 															<string>maximum</string>
 															<string>minimum</string>
 															<string>negativeInfinitySymbol</string>
 															<string>nilSymbol</string>
+															<string>paddingCharacter</string>
 															<string>positiveInfinitySymbol</string>
 														</object>
 														<object class="NSMutableArray" key="dict.values">
 															<bool key="EncodedWithXMLCoder">YES</bool>
 															<boolean value="YES"/>
+															<integer value="2"/>
 															<integer value="1040"/>
 															<reference ref="381353895"/>
 															<real value="255"/>
 															<real value="0.0"/>
 															<string>-∞</string>
 															<string/>
+															<string>0</string>
 															<string>+∞</string>
 														</object>
 													</object>
-													<string key="NS.positiveformat">#</string>
-													<string key="NS.negativeformat">#</string>
+													<string key="NS.positiveformat">*0##</string>
+													<string key="NS.negativeformat">*0##</string>
 													<nil key="NS.positiveattrs"/>
 													<nil key="NS.negativeattrs"/>
 													<nil key="NS.zero"/>
@@ -16029,37 +16061,37 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>HexadecimalFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -16071,12 +16103,12 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>TrainerIDFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>TrainerIDFormatter</string>
-					<integer value="1041"/>
+					<integer value="1040"/>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>

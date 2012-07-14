@@ -63,10 +63,8 @@ static uint32_t ProbabilityTableLoop(LCRNG5 &rng)
   return count;
 }
 
-static uint32_t CalculateConsumedPIDRNGFrames(uint64_t rawSeed,
-                          Game::Version version)
+static uint32_t SkipPIDRNGFrames(LCRNG5 &rng, Game::Version version)
 {
-  LCRNG5    rng(rawSeed);
   uint32_t  count = 0;
   
   if (Game::IsBlack2White2(version))
@@ -142,118 +140,38 @@ HashedSeed::HashedSeed(const Parameters &parameters, uint64_t rawSeed_)
     m_skippedPIDFrames(0)
 {}
 
-HashedSeed::Nazo HashedSeed::NazoForVersionAndDS(Game::Version version,
-                                                 DS::Type dsType)
+
+uint32_t HashedSeed::SeedAndSkipPIDFrames(LCRNG5 &rng) const
 {
-  bool isPlainDS = (dsType == DS::DSPhat) || (dsType == DS::DSLite);
-  
-  switch (version)
+  if (!m_skippedPIDFramesCalculated)
   {
-    case Game::BlackJapanese:
-      return isPlainDS ? JPBlackNazo : JPBlackDSiNazo;
-      break;
+    rng.Seed(rawSeed);
     
-    case Game::WhiteJapanese:
-      return isPlainDS ? JPWhiteNazo : JPWhiteDSiNazo;
-      break;
+    m_skippedPIDFrames = SkipPIDRNGFrames(rng, version);
+    m_skippedPIDFramesSeed = rng.Seed();
     
-    case Game::BlackEnglish:
-      return isPlainDS ? ENBlackNazo : ENBlackDSiNazo;
-      break;
-    
-    case Game::WhiteEnglish:
-      return isPlainDS ? ENWhiteNazo : ENWhiteDSiNazo;
-      break;
-    
-    case Game::BlackSpanish:
-      return isPlainDS ? SPBlackNazo : SPBlackDSiNazo;
-      break;
-    
-    case Game::WhiteSpanish:
-      return isPlainDS ? SPWhiteNazo : SPWhiteDSiNazo;
-      break;
-    
-    case Game::BlackFrench:
-      return isPlainDS ? FRBlackNazo : FRBlackDSiNazo;
-      break;
-      
-    case Game::WhiteFrench:
-      return isPlainDS ? FRWhiteNazo : FRWhiteDSiNazo;
-      break;
-      
-    case Game::BlackItalian:
-      return isPlainDS ? ITBlackNazo : ITBlackDSiNazo;
-      break;
-      
-    case Game::WhiteItalian:
-      return isPlainDS ? ITWhiteNazo : ITWhiteDSiNazo;
-      break;
-      
-    case Game::BlackGerman:
-      return isPlainDS ? DEBlackNazo : DEBlackDSiNazo;
-      break;
-      
-    case Game::WhiteGerman:
-      return isPlainDS ? DEWhiteNazo : DEWhiteDSiNazo;
-      break;
-      
-    case Game::BlackKorean:
-      return isPlainDS ? KRBlackNazo : KRBlackDSiNazo;
-      break;
-      
-    case Game::WhiteKorean:
-      return isPlainDS ? KRWhiteNazo : KRWhiteDSiNazo;
-      break;
-      
-    case Game::Black2Japanese:
-      return isPlainDS ? JPBlack2Nazo : JPBlack2Nazo;
-      break;
-    
-    case Game::White2Japanese:
-      return isPlainDS ? JPWhite2Nazo : JPWhite2Nazo;
-      break;
-      
-    default:
-      return static_cast<Nazo>(0);
-      break;
+    m_skippedPIDFramesCalculated = true;
   }
-}
-
-
-
-
-HashedSeed::Nazo HashedSeed::Nazo2ForVersionAndDS(Game::Version version,
-                                                  DS::Type dsType)
-{
-  bool isPlainDS = (dsType == DS::DSPhat) || (dsType == DS::DSLite);
-  
-  switch (version)
+  else
   {
-    case Game::Black2Japanese:
-      return isPlainDS ? JPBlack2Nazo2 : JPBlack2Nazo2;
-      break;
-    
-    case Game::White2Japanese:
-      return isPlainDS ? JPWhite2Nazo2 : JPWhite2Nazo2;
-      break;
-      
-    default:
-      return static_cast<Nazo>(0);
-      break;
+    rng.Seed(m_skippedPIDFramesSeed);
   }
+  
+  return m_skippedPIDFrames;
 }
-
 
 uint32_t HashedSeed::GetSkippedPIDFrames() const
 {
   if (!m_skippedPIDFramesCalculated)
   {
-    m_skippedPIDFrames = CalculateConsumedPIDRNGFrames(rawSeed, version);
+    LCRNG5  rng(0);
     
-    m_skippedPIDFramesCalculated = true;
+    return SeedAndSkipPIDFrames(rng);
   }
-  
-  return m_skippedPIDFrames;
+  else
+  {
+    return m_skippedPIDFrames;
+  }
 }
 
 }

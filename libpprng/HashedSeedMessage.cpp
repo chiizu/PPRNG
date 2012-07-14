@@ -205,30 +205,171 @@ uint32_t ToBCD(uint32_t value)
 }
 
 
+enum Nazo
+{
+  // Black / White
+  JPBlackNazo = 0x02215f10,
+  JPWhiteNazo = 0x02215f30,
+  JPBlackDSiNazo = 0x02761150,
+  JPWhiteDSiNazo = 0x02761150,
+  
+  ENBlackNazo = 0x022160B0,
+  ENWhiteNazo = 0x022160D0,
+  ENBlackDSiNazo = 0x02760190,
+  ENWhiteDSiNazo = 0x027601B0,
+  
+  SPBlackNazo = 0x02216050,
+  SPWhiteNazo = 0x02216070,
+  SPBlackDSiNazo = 0x027601f0,
+  SPWhiteDSiNazo = 0x027601f0,
+  
+  FRBlackNazo = 0x02216030,
+  FRWhiteNazo = 0x02216050,
+  FRBlackDSiNazo = 0x02760230,
+  FRWhiteDSiNazo = 0x02760250,
+  
+  DEBlackNazo = 0x02215FF0,
+  DEWhiteNazo = 0x02216010,
+  DEBlackDSiNazo = 0x027602f0,
+  DEWhiteDSiNazo = 0x027602f0,
+  
+  ITBlackNazo = 0x02215FB0,
+  ITWhiteNazo = 0x02215FD0,
+  ITBlackDSiNazo = 0x027601d0,
+  ITWhiteDSiNazo = 0x027601d0,
+  
+  KRBlackNazo = 0x022167B0,
+  KRWhiteNazo = 0x022167B0,
+  KRBlackDSiNazo = 0x02761150,
+  KRWhiteDSiNazo = 0x02761150,
+  
+  
+  // Black2 / White2
+  JPBlack2Nazo0 = 0x0209A8DC,
+  JPBlack2Nazo1 = 0x02039AC9,
+  JPBlack2Nazo2DS = 0x021FF9B0,
+  JPBlack2Nazo2DSi = 0x027AA730,
+  
+  JPWhite2Nazo0 = 0x0209A8FC,
+  JPWhite2Nazo1 = 0x02039AF5,
+  JPWhite2Nazo2DS = 0x021FF9D0,
+  JPWhite2Nazo2DSi = 0x027AA5F0
+};
+
+static Nazo NazoForVersionAndDS(Game::Version version, DS::Type dsType)
+{
+  bool isPlainDS = (dsType == DS::DSPhat) || (dsType == DS::DSLite);
+  
+  switch (version)
+  {
+    case Game::BlackJapanese:
+      return isPlainDS ? JPBlackNazo : JPBlackDSiNazo;
+      break;
+    
+    case Game::WhiteJapanese:
+      return isPlainDS ? JPWhiteNazo : JPWhiteDSiNazo;
+      break;
+    
+    case Game::BlackEnglish:
+      return isPlainDS ? ENBlackNazo : ENBlackDSiNazo;
+      break;
+    
+    case Game::WhiteEnglish:
+      return isPlainDS ? ENWhiteNazo : ENWhiteDSiNazo;
+      break;
+    
+    case Game::BlackSpanish:
+      return isPlainDS ? SPBlackNazo : SPBlackDSiNazo;
+      break;
+    
+    case Game::WhiteSpanish:
+      return isPlainDS ? SPWhiteNazo : SPWhiteDSiNazo;
+      break;
+    
+    case Game::BlackFrench:
+      return isPlainDS ? FRBlackNazo : FRBlackDSiNazo;
+      break;
+      
+    case Game::WhiteFrench:
+      return isPlainDS ? FRWhiteNazo : FRWhiteDSiNazo;
+      break;
+      
+    case Game::BlackItalian:
+      return isPlainDS ? ITBlackNazo : ITBlackDSiNazo;
+      break;
+      
+    case Game::WhiteItalian:
+      return isPlainDS ? ITWhiteNazo : ITWhiteDSiNazo;
+      break;
+      
+    case Game::BlackGerman:
+      return isPlainDS ? DEBlackNazo : DEBlackDSiNazo;
+      break;
+      
+    case Game::WhiteGerman:
+      return isPlainDS ? DEWhiteNazo : DEWhiteDSiNazo;
+      break;
+      
+    case Game::BlackKorean:
+      return isPlainDS ? KRBlackNazo : KRBlackDSiNazo;
+      break;
+      
+    case Game::WhiteKorean:
+      return isPlainDS ? KRWhiteNazo : KRWhiteDSiNazo;
+      break;
+      
+    case Game::Black2Japanese:
+      return isPlainDS ? JPBlack2Nazo2DS : JPBlack2Nazo2DSi;
+      break;
+    
+    case Game::White2Japanese:
+      return isPlainDS ? JPWhite2Nazo2DS : JPWhite2Nazo2DSi;
+      break;
+      
+    default:
+      return static_cast<Nazo>(0);
+      break;
+  }
+}
+
+static void SetBlack2White2FirstNazos(uint32_t message[], Game::Version version)
+{
+  switch (version)
+  {
+    case Game::Black2Japanese:
+      message[0] = SwapEndianess(JPBlack2Nazo0);
+      message[1] = SwapEndianess(JPBlack2Nazo1);
+      break;
+    
+    case Game::White2Japanese:
+      message[0] = SwapEndianess(JPWhite2Nazo0);
+      message[1] = SwapEndianess(JPWhite2Nazo1);
+      break;
+      
+    default:
+      break;
+  }
+}
+
 enum
 {
   BWFirstNazoOffset = 0xFC,
   BWSecondNazoOffset = BWFirstNazoOffset + 0x4C,
   
-  BW2FirstNazoOffset = 0x1650D4,
-  BW2SecondNazoOffset = BW2FirstNazoOffset + 0x54,
+  BW2NazoOffset = 0x54,
   
   ButtonMask = 0x2FFF
 };
 
-void MakeMessage(uint32_t message[], const HashedSeed::Parameters &parameters)
+static void SetNazos(uint32_t message[], Game::Version version, DS::Type dsType)
 {
-  HashedSeed::Nazo  nazo =
-    HashedSeed::NazoForVersionAndDS(parameters.version, parameters.dsType);
+  Nazo  nazo = NazoForVersionAndDS(version, dsType);
   
-  if (Game::IsBlack2White2(parameters.version))
+  if (Game::IsBlack2White2(version))
   {
-    message[0] = SwapEndianess(nazo);
-    message[1] =
-      SwapEndianess(HashedSeed::Nazo2ForVersionAndDS(parameters.version,
-                                                     parameters.dsType));
-    message[2] = SwapEndianess(nazo + BW2FirstNazoOffset);
-    message[3] = message[4] = SwapEndianess(nazo + BW2SecondNazoOffset);
+    SetBlack2White2FirstNazos(message, version);
+    message[2] = SwapEndianess(nazo);
+    message[3] = message[4] = SwapEndianess(nazo + BW2NazoOffset);
   }
   else
   {
@@ -236,6 +377,11 @@ void MakeMessage(uint32_t message[], const HashedSeed::Parameters &parameters)
     message[1] = message[2] = SwapEndianess(nazo + BWFirstNazoOffset);
     message[3] = message[4] = SwapEndianess(nazo + BWSecondNazoOffset);
   }
+}
+
+void MakeMessage(uint32_t message[], const HashedSeed::Parameters &parameters)
+{
+  SetNazos(message, parameters.version, parameters.dsType);
   
   message[5] = SwapEndianess((parameters.vcount << 16) | parameters.timer0);
   
