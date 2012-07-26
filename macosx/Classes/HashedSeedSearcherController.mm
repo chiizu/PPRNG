@@ -46,10 +46,13 @@ using namespace pprng;
   
   DECLARE_PID_RESULT_VARIABLES();
   
-  uint32_t  requiredEncountersMask;
+  uint32_t       requiredEncountersMask;
+  Gender::Type   targetGender;
+  Gender::Ratio  targetRatio;
+  
   uint32_t  pidStartFrame, giftFrame, grassCaveSurfSpotFrame;
   uint32_t  swarmFrame, doublesFrame, dustFrame, shadowFrame;
-  uint32_t  stationaryFrame, fishFrame;
+  uint32_t  stationaryFrame, hollowFrame, fishFrame;
   
   ESV::Value  landESV, doublesESV, surfESV, fishESV;
 }
@@ -59,9 +62,12 @@ using namespace pprng;
 @property EncounterLead::Ability  leadAbility;
 
 @property uint32_t  requiredEncountersMask;
+@property Gender::Type   targetGender;
+@property Gender::Ratio  targetRatio;
+
 @property uint32_t  pidStartFrame, giftFrame, grassCaveSurfSpotFrame;
 @property uint32_t  swarmFrame, doublesFrame, dustFrame, shadowFrame;
-@property uint32_t  stationaryFrame, fishFrame;
+@property uint32_t  stationaryFrame, hollowFrame, fishFrame;
 @property ESV::Value  landESV, doublesESV, surfESV, fishESV;
 
 @end
@@ -97,10 +103,10 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
 
 SYNTHESIZE_PID_RESULT_PROPERTIES();
 
-@synthesize requiredEncountersMask;
+@synthesize requiredEncountersMask, targetGender, targetRatio;
 @synthesize pidStartFrame, giftFrame, grassCaveSurfSpotFrame;
 @synthesize swarmFrame, doublesFrame, dustFrame, shadowFrame;
-@synthesize stationaryFrame, fishFrame;
+@synthesize stationaryFrame, hollowFrame, fishFrame;
 @synthesize landESV, doublesESV, surfESV, fishESV;
 
 @end
@@ -131,6 +137,8 @@ struct GUICriteria : public HashedSeedQuickSearcher::Criteria
 {
   uint32_t       tid, sid;
   bool           shinyOnly;
+  bool           hasShinyCharm;
+  bool           memoryLinkUsed;
   
   uint32_t       leadAbilityMask;
   
@@ -209,6 +217,9 @@ static const uint32_t  CompoundEyesFrameTypes =
 static const uint32_t  SuctionCupsFrameTypes =
   (0x1 << Gen5PIDFrameGenerator::FishingFrame);
 
+static const uint32_t  HiddenHollowFrameType =
+  (0x1 << Gen5PIDFrameGenerator::HiddenHollowFrame);
+
 
 struct ResultHandler
 {
@@ -229,96 +240,6 @@ struct ResultHandler
     typedef std::map<Gen5PIDFrameGenerator::FrameType, uint32_t>  FrameMap;
     FrameMap  frame;
   };
-  
-  void SearchEncounters
-    (const HashedSeed &seed,
-     const Gen5PIDFrameGenerator::Parameters &frameParameters,
-     uint32_t frameTypesMask,
-     std::map<uint32_t, PIDEncounterData> &resultMap)
-  {
-    Gen5PIDFrameGenerator::Parameters  parameters = frameParameters;
-    
-    for (uint32_t f = 0; f < 32; ++f)
-    {
-      if ((frameTypesMask & (0x1 << f)) != 0)
-      {
-        parameters.frameType = Gen5PIDFrameGenerator::FrameType(f);
-        Gen5PIDFrameGenerator  generator(seed, parameters);
-        
-        uint32_t  minFrame = m_criteria.pid.startFromLowestFrame ?
-                               0 : m_criteria.pidFrame.min - 1;
-        uint32_t  frameNum = 0;
-        
-        while (frameNum < minFrame)
-        {
-          generator.AdvanceFrame();
-          ++frameNum;
-        }
-        
-        while (frameNum < m_criteria.pidFrame.max)
-        {
-          generator.AdvanceFrame();
-          ++frameNum;
-          
-          Gen5PIDFrame  frame = generator.CurrentFrame();
-          
-          if (frame.isEncounter && frame.abilityActivated &&
-              frame.pid.IsShiny(m_criteria.tid, m_criteria.sid) &&
-              ((parameters.leadAbility == EncounterLead::SYNCHRONIZE) ||
-               m_criteria.pid.CheckNature(frame.nature)) &&
-              ((m_criteria.pid.ability == Ability::ANY) ||
-               (m_criteria.pid.ability == frame.pid.Gen5Ability())) &&
-              Gender::GenderValueMatches(frame.pid.GenderValue(),
-                                         m_criteria.pid.gender,
-                                         m_criteria.pid.genderRatio) &&
-              ((parameters.frameType ==
-                Gen5PIDFrameGenerator::StarterFossilGiftFrame) ||
-               (parameters.frameType ==
-                Gen5PIDFrameGenerator::StationaryFrame) ||
-               ((parameters.frameType == Gen5PIDFrameGenerator::SwarmFrame) &&
-                (frame.esv == ESV::SWARM)) ||
-               ((m_criteria.esvMask.find(ESV::SlotType(frame.esv))->second &
-                 (0x1 << ESV::Slot(frame.esv))) != 0)))
-          {
-            PIDEncounterData  *data;
-            std::map<uint32_t, PIDEncounterData>::iterator  it;
-            
-            it = resultMap.find(frame.pid.word);
-            if (it == resultMap.end())
-            {
-              data = &resultMap[frame.pid.word];
-              data->nature = frame.nature;
-              data->leadAbility = frame.leadAbility;
-              data->gender = parameters.targetGender;
-              data->genderRatio = parameters.targetRatio;
-            }
-            else
-            {
-              data = &it->second;
-            }
-            
-            if (data->frame.find(parameters.frameType) == data->frame.end())
-            {
-              if (parameters.frameType == Gen5PIDFrameGenerator::DoublesFrame)
-              {
-                data->esv[ESV::DOUBLES_GRASS_DOUBLE_TYPE] = frame.esv;
-              }
-              else if ((parameters.frameType !=
-                        Gen5PIDFrameGenerator::StarterFossilGiftFrame) &&
-                       (parameters.frameType !=
-                        Gen5PIDFrameGenerator::SwarmFrame) &&
-                       (parameters.frameType !=
-                        Gen5PIDFrameGenerator::StationaryFrame))
-              {
-                data->esv[ESV::SlotType(frame.esv)] = frame.esv;
-              }
-              data->frame[parameters.frameType] = frame.number;
-            }
-          }
-        }
-      }
-    }
-  }
   
   bool AddResults(const std::map<uint32_t, PIDEncounterData> &resultMap,
                   HashedSeedSearchResult *ivResult)
@@ -360,6 +281,8 @@ struct ResultHandler
                      data.gender, data.genderRatio);
         
         pidResult.requiredEncountersMask = m_criteria.requiredEncountersMask;
+        pidResult.targetGender = m_criteria.pid.gender;
+        pidResult.targetRatio = m_criteria.pid.genderRatio;
         
         PIDEncounterData::FrameMap::const_iterator  it;
         
@@ -405,6 +328,12 @@ struct ResultHandler
           pidResult.stationaryFrame = uint32_t(it->second);
         }
         
+        if ((it = frameMap.find(Gen5PIDFrameGenerator::HiddenHollowFrame)) !=
+            frameMap.end())
+        {
+          pidResult.hollowFrame = uint32_t(it->second);
+        }
+        
         if ((it = frameMap.find(Gen5PIDFrameGenerator::FishingFrame)) !=
             frameMap.end())
         {
@@ -430,6 +359,126 @@ struct ResultHandler
     return resultAdded;
   }
   
+  bool SearchEncounters
+    (const HashedSeed &seed,
+     const Gen5PIDFrameGenerator::Parameters &frameParameters,
+     uint32_t frameTypesMask,
+     HashedSeedSearchResult *ivResult)
+  {
+    std::map<uint32_t, PIDEncounterData>  resultMap;
+    Gen5PIDFrameGenerator::Parameters     parameters = frameParameters;
+    
+    for (uint32_t f = 0; f < 32; ++f)
+    {
+      if ((frameTypesMask & (0x1 << f)) != 0)
+      {
+        parameters.frameType = Gen5PIDFrameGenerator::FrameType(f);
+        Gen5PIDFrameGenerator  generator(seed, parameters);
+        
+        uint32_t  minFrame = m_criteria.pid.startFromLowestFrame ?
+                               0 : m_criteria.pidFrame.min - 1;
+        uint32_t  frameNum = 0;
+        
+        while (frameNum < minFrame)
+        {
+          generator.AdvanceFrame();
+          ++frameNum;
+        }
+        
+        while (frameNum < m_criteria.pidFrame.max)
+        {
+          generator.AdvanceFrame();
+          ++frameNum;
+          
+          Gen5PIDFrame  frame = generator.CurrentFrame();
+          
+          if (frame.isEncounter && frame.abilityActivated &&
+              (frame.pid.IsShiny(m_criteria.tid, m_criteria.sid) ||
+               !m_criteria.shinyOnly) && 
+              ((parameters.leadAbility == EncounterLead::SYNCHRONIZE) ||
+               m_criteria.pid.CheckNature(frame.nature)) &&
+              ((m_criteria.pid.ability == Ability::ANY) ||
+               (m_criteria.pid.ability == frame.pid.Gen5Ability())) &&
+              Gender::GenderValueMatches(frame.pid.GenderValue(),
+                                         m_criteria.pid.gender,
+                                         m_criteria.pid.genderRatio) &&
+              ((parameters.frameType ==
+                Gen5PIDFrameGenerator::StarterFossilGiftFrame) ||
+               (parameters.frameType ==
+                Gen5PIDFrameGenerator::StationaryFrame) ||
+               (parameters.frameType ==
+                Gen5PIDFrameGenerator::HiddenHollowFrame) ||
+               ((parameters.frameType == Gen5PIDFrameGenerator::SwarmFrame) &&
+                (frame.esv == ESV::SWARM)) ||
+               ((m_criteria.esvMask.find(ESV::SlotType(frame.esv))->second &
+                 (0x1 << ESV::Slot(frame.esv))) != 0)))
+          {
+            PIDEncounterData  *data;
+            std::map<uint32_t, PIDEncounterData>::iterator  it;
+            
+            it = resultMap.find(frame.pid.word);
+            if (it == resultMap.end())
+            {
+              data = &resultMap[frame.pid.word];
+              data->nature = frame.nature;
+              data->leadAbility = frame.leadAbility;
+              data->gender = parameters.targetGender;
+              data->genderRatio = parameters.targetRatio;
+            }
+            else
+            {
+              data = &it->second;
+            }
+            
+            if (data->frame.find(parameters.frameType) == data->frame.end())
+            {
+              if (parameters.frameType == Gen5PIDFrameGenerator::DoublesFrame)
+              {
+                data->esv[ESV::DOUBLES_GRASS_DOUBLE_TYPE] = frame.esv;
+              }
+              else if ((parameters.frameType !=
+                        Gen5PIDFrameGenerator::StarterFossilGiftFrame) &&
+                       (parameters.frameType !=
+                        Gen5PIDFrameGenerator::SwarmFrame) &&
+                       (parameters.frameType !=
+                        Gen5PIDFrameGenerator::StationaryFrame) &&
+                       (parameters.frameType !=
+                        Gen5PIDFrameGenerator::HiddenHollowFrame))
+              {
+                data->esv[ESV::SlotType(frame.esv)] = frame.esv;
+              }
+              data->frame[parameters.frameType] = frame.number;
+            }
+            
+            // if not searching for shinies, take only first result
+            if (!m_criteria.shinyOnly)
+              break;
+          }
+        }
+      }
+    }
+    
+    return AddResults(resultMap, ivResult);
+  }
+  
+  bool SearchHiddenHollowFrame(const HashedSeed &seed,
+     const Gen5PIDFrameGenerator::Parameters &baseParameters,
+     HashedSeedSearchResult *ivResult)
+  {
+    Gen5PIDFrameGenerator::Parameters  frameParameters = baseParameters;
+    bool                               shinyFound = false;
+    
+    if ((m_criteria.pid.gender != Gender::ANY) &&
+        ((m_criteria.pid.genderRatio != Gender::ANY_RATIO) ||
+         (m_criteria.pid.gender == Gender::GENDERLESS)))
+    {
+      shinyFound = SearchEncounters(seed, frameParameters,
+                                    HiddenHollowFrameType, ivResult);
+    }
+    
+    return shinyFound;
+  }
+  
   void operator()(const HashedIVFrame &frame)
   {
     HashedSeedSearchResult  *result = [[HashedSeedSearchResult alloc] init];
@@ -439,7 +488,8 @@ struct ResultHandler
     result.ivFrame = frame.number;
     SetIVResult(result, frame.ivs, m_criteria.ivs.isRoamer);
     
-    result.pidStartFrame = frame.seed.GetSkippedPIDFrames() + 1;
+    result.pidStartFrame =
+      frame.seed.GetSkippedPIDFrames(m_criteria.memoryLinkUsed) + 1;
     
     bool  shinyFound = false;
     
@@ -449,76 +499,68 @@ struct ResultHandler
     frameParameters.targetRatio = m_criteria.pid.genderRatio;
     frameParameters.tid = m_criteria.tid;
     frameParameters.sid = m_criteria.sid;
+    frameParameters.hasShinyCharm = m_criteria.hasShinyCharm;
+    frameParameters.memoryLinkUsed = m_criteria.memoryLinkUsed;
     frameParameters.startFromLowestFrame = m_criteria.pid.startFromLowestFrame;
     
     if (CheckBitMask(m_criteria.leadAbilityMask, EncounterLead::OTHER))
     {
-      std::map<uint32_t, PIDEncounterData>  resultMap;
-      
       frameParameters.leadAbility = EncounterLead::OTHER;
-      SearchEncounters(frame.seed, frameParameters, OtherFrameTypes, resultMap);
-      shinyFound = AddResults(resultMap, result);
+      shinyFound = SearchEncounters(frame.seed, frameParameters,
+                                    OtherFrameTypes, result);
+      shinyFound =
+        SearchHiddenHollowFrame(frame.seed, frameParameters, result) ||
+          shinyFound;
     }
     
     if (CheckBitMask(m_criteria.leadAbilityMask, EncounterLead::SYNCHRONIZE))
     {
-      std::map<uint32_t, PIDEncounterData>  resultMap;
-      
       frameParameters.leadAbility = EncounterLead::SYNCHRONIZE;
-      SearchEncounters(frame.seed, frameParameters, SyncFrameTypes, resultMap);
-      shinyFound = AddResults(resultMap, result) || shinyFound;
+      shinyFound = SearchEncounters(frame.seed, frameParameters,
+                                    SyncFrameTypes, result) || shinyFound;
+      shinyFound =
+        SearchHiddenHollowFrame(frame.seed, frameParameters, result) ||
+          shinyFound;
     }
     
     if (CheckBitMask(m_criteria.leadAbilityMask, EncounterLead::COMPOUND_EYES))
     {
-      std::map<uint32_t, PIDEncounterData>  resultMap;
-      
       frameParameters.leadAbility = EncounterLead::COMPOUND_EYES;
-      SearchEncounters(frame.seed, frameParameters, CompoundEyesFrameTypes,
-                      resultMap);
-      shinyFound = AddResults(resultMap, result) || shinyFound;
+      shinyFound =
+        SearchEncounters(frame.seed, frameParameters,
+                         CompoundEyesFrameTypes, result) || shinyFound;
     }
     
     if (CheckBitMask(m_criteria.leadAbilityMask, EncounterLead::SUCTION_CUPS))
     {
-      std::map<uint32_t, PIDEncounterData>  resultMap;
-      
       frameParameters.leadAbility = EncounterLead::SUCTION_CUPS;
-      SearchEncounters(frame.seed, frameParameters, SuctionCupsFrameTypes,
-                      resultMap);
-      shinyFound = AddResults(resultMap, result) || shinyFound;
+      shinyFound =
+        SearchEncounters(frame.seed, frameParameters,
+                         SuctionCupsFrameTypes, result) || shinyFound;
     }
     
-    if (CheckBitMask(m_criteria.leadAbilityMask, EncounterLead::CUTE_CHARM))
+    if (m_criteria.shinyOnly &&
+        CheckBitMask(m_criteria.leadAbilityMask, EncounterLead::CUTE_CHARM))
     {
-      std::map<uint32_t, PIDEncounterData>  resultMap;
-      
       frameParameters.leadAbility = EncounterLead::CUTE_CHARM;
       
       if (m_criteria.pid.genderRatio != Gender::ANY_RATIO)
       {
         if (m_criteria.pid.gender != Gender::ANY)
         {
-          std::map<uint32_t, PIDEncounterData>  resultMap;
-          
-          SearchEncounters(frame.seed, frameParameters, CuteCharmFrameTypes,
-                           resultMap);
-          shinyFound = AddResults(resultMap, result) || shinyFound;
+          shinyFound =
+            SearchEncounters(frame.seed, frameParameters,
+                             CuteCharmFrameTypes, result) || shinyFound;
         }
         else
         {
-          std::map<uint32_t, PIDEncounterData>  resultMap;
-          
-          frameParameters.targetGender = Gender::FEMALE;
-          SearchEncounters(frame.seed, frameParameters, CuteCharmFrameTypes,
-                           resultMap);
-          shinyFound = AddResults(resultMap, result) || shinyFound;
-          
-          resultMap.clear();
-          frameParameters.targetGender = Gender::MALE;
-          SearchEncounters(frame.seed, frameParameters, CuteCharmFrameTypes,
-                           resultMap);
-          shinyFound = AddResults(resultMap, result) || shinyFound;
+          for (uint32_t t = Gender::FEMALE; t <= Gender::MALE; ++t)
+          {
+            frameParameters.targetGender = Gender::Type(t);
+            shinyFound =
+              SearchEncounters(frame.seed, frameParameters,
+                               CuteCharmFrameTypes, result) || shinyFound;
+          }
         }
       }
       else
@@ -532,11 +574,9 @@ struct ResultHandler
             frameParameters.targetGender = Gender::Type(t);
             frameParameters.targetRatio = Gender::Ratio(r);
             
-            std::map<uint32_t, PIDEncounterData>  resultMap;
-            
-            SearchEncounters(frame.seed, frameParameters, CuteCharmFrameTypes,
-                             resultMap);
-            shinyFound = AddResults(resultMap, result) || shinyFound;
+            shinyFound =
+              SearchEncounters(frame.seed, frameParameters,
+                               CuteCharmFrameTypes, result) || shinyFound;
           }
         }
       }
@@ -735,6 +775,9 @@ struct ProgressHandler
           case Gen5PIDFrameGenerator::StationaryFrame:
             targetFrame = row.stationaryFrame;
             break;
+          case Gen5PIDFrameGenerator::HiddenHollowFrame:
+            targetFrame = row.hollowFrame;
+            break;
           case Gen5PIDFrameGenerator::StarterFossilGiftFrame:
             targetFrame = row.giftFrame;
             break;
@@ -789,6 +832,19 @@ struct ProgressHandler
           framesTab.encounterFrameType = Gen5PIDFrameGenerator::StationaryFrame;
           adjacentsTab.encounterFrameType =
             Gen5PIDFrameGenerator::StationaryFrame;
+        }
+        else if (row.hollowFrame > 0)
+        {
+          targetFrame = row.hollowFrame;
+          framesTab.encounterFrameType =
+            Gen5PIDFrameGenerator::HiddenHollowFrame;
+          framesTab.targetGender = row.targetGender;
+          framesTab.targetGenderRatio = row.targetRatio;
+          
+          adjacentsTab.encounterFrameType =
+            Gen5PIDFrameGenerator::HiddenHollowFrame;
+          adjacentsTab.targetGender = row.targetGender;
+          adjacentsTab.targetGenderRatio = row.targetRatio;
         }
         else if (row.giftFrame > 0)
         {
@@ -911,6 +967,8 @@ struct ProgressHandler
   criteria.tid = [gen5ConfigController tid];
   criteria.sid = [gen5ConfigController sid];
   criteria.shinyOnly = showShinyOnly;
+  criteria.hasShinyCharm = [gen5ConfigController hasShinyCharm];
+  criteria.memoryLinkUsed = [gen5ConfigController memoryLinkUsed];
   criteria.leadAbilityMask = GetComboMenuBitMask(leadAbilityDropDown);
   
   criteria.pid.natureMask = GetComboMenuBitMask(natureDropDown);

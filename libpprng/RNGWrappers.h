@@ -94,6 +94,16 @@ public:
     ResetPos();
   }
   
+  void AdvanceBuffer(uint32_t numAdvancements)
+  {
+    while (numAdvancements-- > 0)
+    {
+      m_buffer[m_end] = m_RNG.Next();
+      m_end = (m_end + 1) & (BufferSize - 1);
+    }
+    ResetPos();
+  }
+  
 private:
   RNG             m_RNG;
   ReturnType      m_buffer[BufferSize];

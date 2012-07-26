@@ -537,6 +537,7 @@ public:
     StarterFossilGiftFrame,
     RoamerFrame,
     DoublesFrame,
+    HiddenHollowFrame,
     
     NumFrameTypes
   };
@@ -548,12 +549,15 @@ public:
     Gender::Type            targetGender;
     Gender::Ratio           targetRatio;
     uint32_t                tid, sid;
+    bool                    hasShinyCharm;
+    bool                    memoryLinkUsed;
     bool                    startFromLowestFrame;
     
     Parameters()
       : frameType(GrassCaveFrame), leadAbility(EncounterLead::SYNCHRONIZE),
         targetGender(Gender::ANY), targetRatio(Gender::ANY_RATIO),
-        tid(0), sid(0), startFromLowestFrame(false)
+        tid(0), sid(0), hasShinyCharm(false),
+        memoryLinkUsed(false), startFromLowestFrame(false)
     {}
   };
   
@@ -604,6 +608,7 @@ private:
   void NextDustFrame();
   void NextShadowFrame();
   void NextStationaryFrame();
+  void NextHiddenHollowFrame();
   void NextEntraLinkFrame();
   void NextSimpleFrame();
   
@@ -617,9 +622,10 @@ private:
   
   void NextHeldItem();
   
-  RNG                      m_RNG;
-  Frame                    m_frame;
-  const Parameters         m_parameters;
+  RNG               m_RNG;
+  Frame             m_frame;
+  const Parameters  m_parameters;
+  const uint32_t    m_shinyChances;
 };
 
 
@@ -640,13 +646,15 @@ public:
     WonderCardShininess::Type  cardShininess;
     uint32_t                   cardTID, cardSID;
     
+    bool           memoryLinkUsed;
     bool           startFromLowestFrame;
     
     Parameters()
       : cardNature(Nature::ANY), cardAbility(Ability::ANY),
         cardGender(Gender::ANY), cardGenderRatio(Gender::ANY_RATIO),
         cardShininess(WonderCardShininess::NEVER_SHINY),
-        cardTID(0), cardSID(0), startFromLowestFrame(false)
+        cardTID(0), cardSID(0),
+        memoryLinkUsed(false), startFromLowestFrame(false)
     {}
   };
   
@@ -772,12 +780,13 @@ public:
     uint32_t       slot;
     uint32_t       numPrecedingGenderless;
     uint32_t       tid, sid;
+    bool           memoryLinkUsed;
     
     Parameters()
       : frameType(NonLegendaryFrame),
         targetGender(Gender::ANY), targetRatio(Gender::ANY_RATIO),
         slot(0), numPrecedingGenderless(0),
-        tid(0), sid(0)
+        tid(0), sid(0), memoryLinkUsed(false)
     {}
   };
   
@@ -796,6 +805,27 @@ private:
   IVRNG       m_IVRNG;
   Frame       m_frame;
   Parameters  m_parameters;
+};
+
+
+class HiddenHollowSpawnFrameGenerator
+{
+public:
+  typedef HashedSeed              Seed;
+  typedef HiddenHollowSpawnFrame  Frame;
+  typedef BufferedRNG<LCRNG5, 4>  PIDRNG;
+  
+  HiddenHollowSpawnFrameGenerator(const HashedSeed &seed, bool memoryLinkUsed);
+  
+  void SkipFrames(uint32_t numFrames);
+  
+  void AdvanceFrame();
+  
+  const Frame& CurrentFrame() { return m_frame; }
+  
+private:
+  PIDRNG  m_PIDRNG;
+  Frame   m_frame;
 };
 
 }

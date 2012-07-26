@@ -38,6 +38,8 @@
 #import "GenderTransformer.h"
 #import "HeldItemTransformer.h"
 #import "HGSSRoamerLocationsTransformer.h"
+#import "HiddenHollowGroupTransformer.h"
+#import "HiddenHollowSlotTransformer.h"
 #import "NatureTransformer.h"
 #import "ProfElmResponsesTransformer.h"
 #import "ShinyTransformer.h"
@@ -83,6 +85,12 @@
   [NSValueTransformer setValueTransformer:
                         [[HGSSRoamerLocationsTransformer alloc] init]
                       forName: @"HGSSRoamerLocationsTransformer"];
+  [NSValueTransformer setValueTransformer:
+                        [[HiddenHollowGroupTransformer alloc] init]
+                      forName: @"HiddenHollowGroupTransformer"];
+  [NSValueTransformer setValueTransformer:
+                        [[HiddenHollowSlotTransformer alloc] init]
+                      forName: @"HiddenHollowSlotTransformer"];
   [NSValueTransformer setValueTransformer: [[NatureTransformer alloc] init]
                       forName: @"NatureTransformer"];
   [NSValueTransformer setValueTransformer:

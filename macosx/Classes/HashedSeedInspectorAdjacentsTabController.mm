@@ -77,7 +77,7 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
 @synthesize ivFrame, isRoamer;
 @synthesize pidFrame, pidFrameVariance;
 @synthesize encounterFrameType, encounterLeadAbility;
-@synthesize genderRequired, targetGender;
+@synthesize genderRequired, genderlessAllowed, targetGender;
 @synthesize genderRatioRequired, targetGenderRatio;
 @synthesize isEntralink, cgearStartOffset;
 
@@ -87,7 +87,8 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
     ((encounterLeadAbility == EncounterLead::CUTE_CHARM) &&
      (encounterFrameType != Gen5PIDFrameGenerator::StarterFossilGiftFrame) &&
      (encounterFrameType != Gen5PIDFrameGenerator::RoamerFrame)) ||
-    (encounterFrameType == Gen5PIDFrameGenerator::EntraLinkFrame);
+    (encounterFrameType == Gen5PIDFrameGenerator::EntraLinkFrame) ||
+    (encounterFrameType == Gen5PIDFrameGenerator::HiddenHollowFrame);
   
   if (!genderRequired)
     self.targetGender = Gender::GENDERLESS;
@@ -104,6 +105,8 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   {
     encounterFrameType = newFrameType;
     self.isEntralink = (newFrameType == Gen5PIDFrameGenerator::EntraLinkFrame);
+    self.genderlessAllowed = isEntralink ||
+      (newFrameType == Gen5PIDFrameGenerator::HiddenHollowFrame);
     [self checkGenderSettingsRequired];
   }
 }
@@ -200,7 +203,9 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   dt = dt - seconds(secondsVariance);
   
   uint32_t  pidFrameOffset = matchOffsetFromInitialPIDFrame ?
-    (pidFrame - targetSeed.GetSkippedPIDFrames() - 1) : pidFrame;
+    (pidFrame -
+     targetSeed.GetSkippedPIDFrames(inspectorController.memoryLinkUsed) - 1) :
+    pidFrame;
   
   if (pidFrameOffset > pidFrame)
     pidFrameOffset = pidFrame;
@@ -217,6 +222,9 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   
   pidFrameParams.tid = [inspectorController.tid unsignedIntValue];
   pidFrameParams.sid = [inspectorController.sid unsignedIntValue];
+  pidFrameParams.hasShinyCharm = inspectorController.hasShinyCharm;
+  
+  pidFrameParams.memoryLinkUsed = inspectorController.memoryLinkUsed;
   pidFrameParams.startFromLowestFrame = matchOffsetFromInitialPIDFrame;
   
   NSMutableArray  *rowArray =
@@ -250,7 +258,8 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
       IVs  ivs = ivGenerator.CurrentFrame().ivs;
       
       uint32_t  adjacentPIDFrameNum = matchOffsetFromInitialPIDFrame ?
-        (seed.GetSkippedPIDFrames() + 1 + pidFrameOffset) :
+        (seed.GetSkippedPIDFrames(inspectorController.memoryLinkUsed) + 1 +
+         pidFrameOffset) :
         pidFrame;
       
       uint32_t  skippedFrames;
@@ -295,7 +304,8 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
         
         SetIVResult(result, ivs, isRoamer);
         
-        result.startFrame = seed.GetSkippedPIDFrames() + 1;
+        result.startFrame =
+          seed.GetSkippedPIDFrames(inspectorController.memoryLinkUsed) + 1;
         result.pidFrame = frame.number;
         
         SetPIDResult(result, frame.pid, pidFrameParams.tid, pidFrameParams.sid,

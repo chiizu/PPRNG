@@ -299,7 +299,7 @@ struct IDFrameSearchProgressHandler
                    [gen5ConfigController version]);
   
   uint32_t  skippedFrames = startFromInitialPIDFrame ?
-                              seed.GetSkippedPIDFrames() : minPIDFrame - 1;
+                              seed.GetSkippedPIDFrames(false) : minPIDFrame - 1;
   
   Gen5PIDFrameGenerator::Parameters  frameParameters;
   
@@ -308,6 +308,8 @@ struct IDFrameSearchProgressHandler
   frameParameters.targetRatio = Gender::ANY_RATIO;
   frameParameters.tid = 0;
   frameParameters.sid = 0;
+  frameParameters.hasShinyCharm = false;
+  frameParameters.memoryLinkUsed = false;
   frameParameters.startFromLowestFrame = false;  // need to handle manually
   
   frameParameters.frameType = Gen5PIDFrameGenerator::GrassCaveFrame;

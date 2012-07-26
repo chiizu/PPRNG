@@ -81,7 +81,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
 @implementation HashedSeedInspectorFramesTabController
 
 @synthesize encounterFrameType, encounterLeadAbility;
-@synthesize genderRequired, targetGender;
+@synthesize genderRequired, genderlessAllowed, targetGender;
 @synthesize genderRatioRequired, targetGenderRatio;
 @synthesize startFromInitialPIDFrame;
 @synthesize minPIDFrame, maxPIDFrame;
@@ -95,7 +95,8 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
     ((encounterLeadAbility == EncounterLead::CUTE_CHARM) &&
      (encounterFrameType != Gen5PIDFrameGenerator::StarterFossilGiftFrame) &&
      (encounterFrameType != Gen5PIDFrameGenerator::RoamerFrame)) ||
-    (encounterFrameType == Gen5PIDFrameGenerator::EntraLinkFrame);
+    (encounterFrameType == Gen5PIDFrameGenerator::EntraLinkFrame) ||
+    (encounterFrameType == Gen5PIDFrameGenerator::HiddenHollowFrame);
   
   if (!genderRequired)
     self.targetGender = Gender::GENDERLESS;
@@ -112,6 +113,8 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   {
     encounterFrameType = newFrameType;
     self.isEntralink = (newFrameType == Gen5PIDFrameGenerator::EntraLinkFrame);
+    self.genderlessAllowed = isEntralink ||
+      (newFrameType == Gen5PIDFrameGenerator::HiddenHollowFrame);
     [self checkGenderSettingsRequired];
   }
 }
@@ -176,25 +179,36 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   
   p.frameType = encounterFrameType;
   p.leadAbility = encounterLeadAbility;
-  p.targetGender = targetGender;
   
-  if (targetGender == Gender::GENDERLESS)
+  if (genderRequired)
   {
-    p.targetRatio = Gender::NO_RATIO;
-  }
-  else if (targetGenderRatio == Gender::NO_RATIO)
-  {
-    p.targetRatio = (targetGender == Gender::FEMALE) ?
-      Gender::FEMALE_ONLY : Gender::MALE_ONLY;
+    p.targetGender = targetGender;
+    
+    if (targetGender == Gender::GENDERLESS)
+    {
+      p.targetRatio = Gender::NO_RATIO;
+    }
+    else if (targetGenderRatio == Gender::ANY_RATIO)
+    {
+      p.targetRatio = (targetGender == Gender::FEMALE) ?
+        Gender::FEMALE_ONLY : Gender::MALE_ONLY;
+    }
+    else
+    {
+      p.targetRatio = targetGenderRatio;
+    }
   }
   else
   {
-    p.targetRatio = targetGenderRatio;
+    p.targetGender = Gender::ANY;
+    p.targetRatio = Gender::ANY_RATIO;
   }
   
   p.tid = [inspectorController.tid unsignedIntValue];
   p.sid = [inspectorController.sid unsignedIntValue];
+  p.hasShinyCharm = inspectorController.hasShinyCharm;
   
+  p.memoryLinkUsed = inspectorController.memoryLinkUsed;
   p.startFromLowestFrame = startFromInitialPIDFrame;
   
   Gen5PIDFrameGenerator    generator(seed, p);

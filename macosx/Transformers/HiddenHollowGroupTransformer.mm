@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -19,27 +19,46 @@
 */
 
 
-#import <Cocoa/Cocoa.h>
+#import "HiddenHollowGroupTransformer.h"
 
-
-@interface Gen5ConfigurationEditController : NSWindowController
+namespace
 {
-  IBOutlet NSTableView         *configurationTableView;
-  IBOutlet NSArrayController   *configurationArrayController;
-  
-  IBOutlet NSPopUpButton       *versionPopUp;
+
+static NSString  *GroupText[] =
+{
+  @"A",
+  @"B",
+  @"C",
+  @"D"
+};
+
 }
 
-- (IBAction)addConfig:(id)sender;
-- (IBAction)removeConfig:(id)sender;
-- (IBAction)duplicateConfig:(id)sender;
-- (IBAction)changeVersion:(id)sender;
-- (IBAction)changeDSType:(id)sender;
+@implementation HiddenHollowGroupTransformer
 
-- (IBAction)done:(id)sender;
-- (IBAction)cancel:(id)sender;
++ (Class)transformedValueClass
+{
+  return [NSString class];
+}
 
-- (BOOL)runModal;
-- (BOOL)runModalWithConfigIndex:(NSInteger)configIndex;
++ (BOOL)allowsReverseTransformation
+{
+  return NO;
+}
+
+- (id)transformedValue:(id)value
+{
+  if (value == nil)
+    return nil;
+  
+  if (![value respondsToSelector: @selector(intValue)])
+  {
+    [NSException raise: NSInternalInconsistencyException
+                 format: @"Value (%@) does not respond to -intValue.",
+                         [value class]];
+  }
+  
+  return GroupText[[value intValue]];
+}
 
 @end

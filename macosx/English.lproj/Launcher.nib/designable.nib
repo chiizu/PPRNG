@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="2"/>
+			<integer value="105"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -530,7 +530,7 @@
 											<reference key="NSSuperview" ref="583973616"/>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSButtonCell" key="NSCell" id="409900186">
-												<int key="NSCellFlags">-1543373312</int>
+												<int key="NSCellFlags">-2080244224</int>
 												<int key="NSCellFlags2">134217728</int>
 												<string key="NSContents">Hidden Hollow Searcher</string>
 												<reference key="NSSupport" ref="634247281"/>
@@ -796,14 +796,6 @@
 					<int key="connectionID">71</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">launchStandardSeedInspector</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="759861458"/>
-					</object>
-					<int key="connectionID">72</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
 						<string key="label">launch:</string>
 						<reference key="source" ref="1001"/>
@@ -874,6 +866,22 @@
 						<reference key="destination" ref="862822140"/>
 					</object>
 					<int key="connectionID">117</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">launchHiddenHollowSpawnSeedSearcher</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="862822140"/>
+					</object>
+					<int key="connectionID">119</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">launchStandardSeedInspector</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="759861458"/>
+					</object>
+					<int key="connectionID">120</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -1310,9 +1318,9 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1133, 534}, {731, 355}}</string>
+					<string>{{-1023, 275}, {731, 355}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1133, 534}, {731, 355}}</string>
+					<string>{{-1023, 275}, {731, 355}}</string>
 					<integer value="1"/>
 					<string>{196, 240}</string>
 					<string>{{357, 418}, {480, 270}}</string>
@@ -1441,7 +1449,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">117</int>
+			<int key="maxID">120</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1477,6 +1485,7 @@
 							<string>launchGen4SeedSearcher</string>
 							<string>launchGen5ConfigurationEdit</string>
 							<string>launchHashedSeedSearcher</string>
+							<string>launchHiddenHollowSpawnSeedSearcher</string>
 							<string>launchStandardSeedInspector</string>
 							<string>launchTIDSearcher</string>
 							<string>launchWonderCardSeedInspector</string>
@@ -1484,6 +1493,7 @@
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>NSButton</string>
 							<string>NSButton</string>
 							<string>NSButton</string>
 							<string>NSButton</string>
@@ -1520,6 +1530,7 @@
 							<string>launchGen4SeedSearcher</string>
 							<string>launchGen5ConfigurationEdit</string>
 							<string>launchHashedSeedSearcher</string>
+							<string>launchHiddenHollowSpawnSeedSearcher</string>
 							<string>launchStandardSeedInspector</string>
 							<string>launchTIDSearcher</string>
 							<string>launchWonderCardSeedInspector</string>
@@ -1577,6 +1588,10 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">launchHashedSeedSearcher</string>
+								<string key="candidateClassName">NSButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">launchHiddenHollowSpawnSeedSearcher</string>
 								<string key="candidateClassName">NSButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">

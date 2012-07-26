@@ -120,25 +120,36 @@ SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
   self.timer0Variance = 3;
 }
 
+- (void)calcInitialSpinnerSequence
+{
+  if (rawSeed == nil)
+  {
+    self.spinnerSequence = 0ULL;
+  }
+  else
+  {
+    HashedSeed  seed([rawSeed unsignedLongLongValue], version);
+    LCRNG5      rng(0);
+    seed.SeedAndSkipPIDFrames(rng, memoryLinkUsed);
+    
+    if (!memoryLinkUsed)
+      rng.Next();
+    
+    self.spinnerSequence = SpinnerPositions(rng.Seed(), 10).word;
+  }
+}
+
+- (IBAction) memoryLinkUsedChanged:(id)sender
+{
+  [self calcInitialSpinnerSequence];
+}
+
 - (void)setRawSeed:(NSNumber*)newSeed
 {
   if (newSeed != rawSeed)
   {
-    if (newSeed == nil)
-    {
-      self.spinnerSequence = 0ULL;
-    }
-    else
-    {
-      HashedSeed  seed([newSeed unsignedLongLongValue], version);
-      LCRNG5      rng(0);
-      seed.SeedAndSkipPIDFrames(rng);
-      
-      rng.Next();
-      self.spinnerSequence = SpinnerPositions(rng.Seed(), 10).word;
-    }
-    
     rawSeed = newSeed;
+    [self calcInitialSpinnerSequence];
   }
 }
 
@@ -220,6 +231,7 @@ SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
   p.numPrecedingGenderless = numPrecedingGenderless;
   p.tid = [tid unsignedIntValue];
   p.sid = [sid unsignedIntValue];
+  p.memoryLinkUsed = memoryLinkUsed;
   
   DreamRadarFrameGenerator  generator(seed, p);
   
@@ -245,7 +257,11 @@ SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
       [[DreamRadarSeedInspectorFrame alloc] init];
     
     row.frame = frame.number;
-    row.spinnerPosition = SpinnerPositions(frame.rngValue, 1).word;
+    
+    SpinnerPositions  spins;
+    spins.AddSpin(SpinnerPositions::CalcPosition(frame.rngValue));
+    
+    row.spinnerPosition = spins.word;
     
     SetPIDResult(row, frame.pid, p.tid, p.sid,
                  frame.nature, frame.pid.Gen5Ability(),
@@ -367,9 +383,12 @@ SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
       SetHashedSeedResultParameters(row, seed);
       
       LCRNG5      rng(0);
-      seed.SeedAndSkipPIDFrames(rng);
+      seed.SeedAndSkipPIDFrames(rng, memoryLinkUsed);
       
-      row.spinnerSequence = SpinnerPositions(rng.Next(), 19).word;
+      if (!memoryLinkUsed)
+        rng.Next();
+      
+      row.spinnerSequence = SpinnerPositions(rng.Seed(), 19).word;
       
       [rowArray addObject: row];
     }

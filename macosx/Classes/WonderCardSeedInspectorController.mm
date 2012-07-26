@@ -322,9 +322,12 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   ptime  endTime = dt + seconds(secondsVariance);
   dt = dt - seconds(secondsVariance);
   
-  uint32_t  frameOffset = matchOffsetFromInitialFrame ?
-       (targetFrame - targetSeed.GetSkippedPIDFrames() - 1) :
-       targetFrame - 1;
+  bool  useOffset = matchOffsetFromInitialFrame &&
+    (targetFrame > targetSeed.GetSkippedPIDFrames(memoryLinkUsed));
+  
+  uint32_t  frameOffset = useOffset ?
+    (targetFrame - targetSeed.GetSkippedPIDFrames(memoryLinkUsed) - 1) :
+    (targetFrame - 1);
   
   HashedSeed::Parameters  seedParams;
   seedParams.macAddress = targetSeed.macAddress;
@@ -336,7 +339,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   seedParams.heldButtons = targetSeed.heldButtons;
   
   WonderCardFrameGenerator::Parameters  frameParams;
-  frameParams.startFromLowestFrame = matchOffsetFromInitialFrame;
+  frameParams.startFromLowestFrame = useOffset;
   frameParams.cardNature = cardNature;
   frameParams.cardAbility = cardAbility;
   frameParams.cardGender = cardGender;
@@ -344,6 +347,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   frameParams.cardShininess = cardShininess;
   frameParams.cardTID = [cardTID unsignedIntValue];
   frameParams.cardSID = [cardSID unsignedIntValue];
+  frameParams.memoryLinkUsed = memoryLinkUsed;
   
   NSMutableArray  *rowArray =
     [NSMutableArray arrayWithCapacity:
@@ -365,12 +369,12 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
       
       HashedSeed  seed(seedParams);
       
-      uint32_t  adjacentFrameNum = matchOffsetFromInitialFrame ?
-        (seed.GetSkippedPIDFrames() + 1 + frameOffset) :
+      uint32_t  adjacentFrameNum = useOffset ?
+        (seed.GetSkippedPIDFrames(memoryLinkUsed) + 1 + frameOffset) :
         targetFrame;
       
       uint32_t  skippedFrames;
-      if (matchOffsetFromInitialFrame)
+      if (useOffset)
       {
         if (frameOffset < (targetFrameVariance + 1))
           skippedFrames = 0;
@@ -404,7 +408,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
         
         SetHashedSeedResultParameters(row, seed);
         
-        row.startFrame = seed.GetSkippedPIDFrames() + 1;
+        row.startFrame = seed.GetSkippedPIDFrames(memoryLinkUsed) + 1;
         row.frame = frame.number;
         
         SetPIDResult(row, frame.pid, frameParams.cardTID, frameParams.cardSID,

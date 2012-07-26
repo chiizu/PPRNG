@@ -278,6 +278,8 @@ struct ProgressHandler
       inspector.slot = row.slot;
       inspector.numPrecedingGenderless = row.numPrecedingGenderless;
       
+      inspector.maxFrame = row.frame + 5;
+      
       [inspector generateFrames: self];
       [inspector selectAndShowFrame: row.frame];
       
@@ -362,6 +364,8 @@ struct ProgressHandler
   criteria.frameParameters.numPrecedingGenderless = numPrecedingGenderless;
   criteria.frameParameters.tid = [gen5ConfigController tid];
   criteria.frameParameters.sid = [gen5ConfigController sid];
+  criteria.frameParameters.memoryLinkUsed =
+    [gen5ConfigController memoryLinkUsed];
   
   criteria.ivs.min = ivParameterController.minIVs;
   criteria.ivs.max = ivParameterController.maxIVs;

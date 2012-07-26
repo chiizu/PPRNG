@@ -197,7 +197,7 @@ struct IVFrameResultHandler
     
     uint32_t  frameNum = 0;
     uint32_t  limitFrame = m_criteria.pid.startFromLowestFrame ?
-      frame.seed.GetSkippedPIDFrames() + 1 :
+      frame.seed.GetSkippedPIDFrames(false) + 1 :
       m_criteria.pidFrame.min - 1;
     while (frameNum < limitFrame)
     {

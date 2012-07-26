@@ -103,7 +103,10 @@ struct ResultHandler
     
     SetHashedSeedResultParameters(result, frame.seed);
     
-    result.startFrame = frame.seed.GetSkippedPIDFrames() + 1;
+    result.startFrame =
+      frame.seed.GetSkippedPIDFrames
+        (m_criteria.frameParameters.memoryLinkUsed) + 1;
+    
     result.frame = frame.number;
     
     SetPIDResult(result, frame.pid,
@@ -392,6 +395,8 @@ struct ProgressHandler
   criteria.frameParameters.cardShininess = cardShininess;
   criteria.frameParameters.cardTID = [cardTID unsignedIntValue];
   criteria.frameParameters.cardSID = [cardSID unsignedIntValue];
+  criteria.frameParameters.memoryLinkUsed =
+    [gen5ConfigController memoryLinkUsed];
   
   criteria.ivs.min = ivParameterController.minIVs;
   criteria.ivs.max = ivParameterController.maxIVs;

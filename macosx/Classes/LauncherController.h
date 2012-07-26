@@ -31,6 +31,7 @@
   IBOutlet NSButton  *launchWonderCardSeedInspector;
   IBOutlet NSButton  *launchDreamRadarSeedSearcher;
   IBOutlet NSButton  *launchDreamRadarSeedInspector;
+  IBOutlet NSButton  *launchHiddenHollowSpawnSeedSearcher;
   IBOutlet NSButton  *launchCGearSeedSearcher;
   IBOutlet NSButton  *launchCGearSeedInspector;
   IBOutlet NSButton  *launchTIDSearcher;

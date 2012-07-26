@@ -97,13 +97,14 @@ public:
   // calculated raw seed
   const uint64_t    rawSeed;
   
-  uint32_t SeedAndSkipPIDFrames(LCRNG5 &rng) const;
+  uint32_t SeedAndSkipPIDFrames(LCRNG5 &rng, bool memoryLinkUsed) const;
   
-  uint32_t GetSkippedPIDFrames() const;
+  uint32_t GetSkippedPIDFrames(bool memoryLinkUsed) const;
   
 private:
   // skipped frames calculated lazily and cached
   mutable bool      m_skippedPIDFramesCalculated;
+  mutable bool      m_skippedPIDFramesMemoryLinkUsed;
   mutable uint32_t  m_skippedPIDFrames;
   mutable uint64_t  m_skippedPIDFramesSeed;
 };

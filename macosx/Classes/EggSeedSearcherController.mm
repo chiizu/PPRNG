@@ -126,7 +126,7 @@ struct ResultHandler
     result.usingEverstone = m_criteria.frameParameters.usingEverstone;
     result.usingDitto = m_criteria.frameParameters.usingDitto;
     
-    result.startFrame = frame.seed.GetSkippedPIDFrames() + 1;
+    result.startFrame = frame.seed.GetSkippedPIDFrames(false) + 1;
     result.pidFrame = frame.number;
     
     SetPIDResult(result, frame.pid,

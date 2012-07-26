@@ -251,6 +251,19 @@ struct DreamRadarFrame
   IVs               ivs;
 };
 
+struct HiddenHollowSpawnFrame
+{
+  HiddenHollowSpawnFrame(const HashedSeed &s) : seed(s) {}
+  
+  const HashedSeed  seed;
+  uint32_t          number;
+  uint64_t          rngValue;
+  bool              isSpawn;
+  uint32_t          group;
+  uint32_t          slot;
+  uint32_t          genderPercentage;
+};
+
 }
 
 #endif

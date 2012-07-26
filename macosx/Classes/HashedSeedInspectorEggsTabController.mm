@@ -321,7 +321,7 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   }
   
   uint32_t  minFrameNum = startFromInitialPIDFrame ?
-                          (seed.GetSkippedPIDFrames() + 1) :
+                          (seed.GetSkippedPIDFrames(false) + 1) :
                           minPIDFrame;
   uint32_t  limitFrame = minFrameNum - 1;
   

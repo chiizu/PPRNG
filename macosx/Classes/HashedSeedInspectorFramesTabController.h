@@ -35,7 +35,7 @@
   pprng::Gen5PIDFrameGenerator::FrameType  encounterFrameType;
   pprng::EncounterLead::Ability            encounterLeadAbility;
   
-  BOOL                  genderRequired;
+  BOOL                  genderRequired, genderlessAllowed;
   pprng::Gender::Type   targetGender;
   BOOL                  genderRatioRequired;
   pprng::Gender::Ratio  targetGenderRatio;
@@ -60,7 +60,7 @@
 @property pprng::Gen5PIDFrameGenerator::FrameType  encounterFrameType;
 @property pprng::EncounterLead::Ability            encounterLeadAbility;
 
-@property BOOL                  genderRequired;
+@property BOOL                  genderRequired, genderlessAllowed;
 @property pprng::Gender::Type   targetGender;
 @property BOOL                  genderRatioRequired;
 @property pprng::Gender::Ratio  targetGenderRatio;

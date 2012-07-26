@@ -114,6 +114,16 @@ using namespace pprng;
   return [sidField intValue];
 }
 
+- (BOOL)memoryLinkUsed
+{
+  return [memoryLinkUsedButton state] == 1;
+}
+
+- (BOOL)hasShinyCharm
+{
+  return [hasShinyCharmButton state] == 1;
+}
+
 - (DS::Type)dsType
 {
   NSDictionary  *config =

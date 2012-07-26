@@ -39,6 +39,8 @@
   
   NSNumber  *tid, *sid;
   
+  BOOL      memoryLinkUsed, hasShinyCharm;
+  
   NSDate    *startDate;
   NSNumber  *startHour, *startMinute, *startSecond;
   NSNumber  *timer0, *vcount, *vframe;
@@ -57,6 +59,7 @@
 
 @property        pprng::Game::Version  version;
 @property (copy) NSNumber  *tid, *sid;
+@property        BOOL      memoryLinkUsed, hasShinyCharm;
 
 @property (copy) NSDate    *startDate;
 @property (copy) NSNumber  *startHour, *startMinute, *startSecond;
@@ -69,6 +72,7 @@
 
 - (IBAction) configChanged:(id)sender;
 - (IBAction) seedParameterChanged:(id)sender;
+- (IBAction) memoryLinkUsedChanged:(id)sender;
 - (IBAction) seedValueChanged:(id)sender;
 
 - (pprng::MACAddress)macAddress;

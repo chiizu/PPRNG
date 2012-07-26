@@ -38,6 +38,7 @@ using namespace pprng;
 
 @synthesize version;
 @synthesize tid, sid;
+@synthesize memoryLinkUsed, hasShinyCharm;
 
 @synthesize startDate, startHour, startMinute, startSecond;
 @synthesize timer0, vcount, vframe;
@@ -64,6 +65,9 @@ using namespace pprng;
   
   self.tid = [config objectForKey: @"tid"];
   self.sid = [config objectForKey: @"sid"];
+  
+  self.memoryLinkUsed = [[config objectForKey: @"memoryLinkUsed"] boolValue];
+  self.hasShinyCharm = [[config objectForKey: @"hasShinyCharm"] boolValue];
   
   self.timer0 = [config objectForKey: @"timer0Low"];
   self.vcount = [config objectForKey: @"vcountLow"];
@@ -152,6 +156,21 @@ using namespace pprng;
   return [NSNumber numberWithUnsignedLongLong: s.rawSeed];
 }
 
+- (void)calcInitialPIDFrame
+{
+  if (rawSeed == nil)
+  {
+    self.initialPIDFrame = nil;
+  }
+  else
+  {
+    HashedSeed  seed([rawSeed unsignedLongLongValue], version);
+    self.initialPIDFrame =
+      [NSNumber numberWithUnsignedInt:
+        seed.GetSkippedPIDFrames(memoryLinkUsed) + 1];
+  }
+}
+
 - (IBAction) configChanged:(id)sender
 {
   NSInteger  selectedIdx = [sender indexOfSelectedItem];
@@ -162,6 +181,11 @@ using namespace pprng;
 - (IBAction)seedParameterChanged:(id)sender
 {
   self.rawSeed = [self calcRawSeed];
+}
+
+- (IBAction) memoryLinkUsedChanged:(id)sender
+{
+  [self calcInitialPIDFrame];
 }
 
 - (IBAction) seedValueChanged:(id)sender
@@ -252,18 +276,8 @@ using namespace pprng;
 {
   if (newSeed != rawSeed)
   {
-    if (newSeed == nil)
-    {
-      self.initialPIDFrame = nil;
-    }
-    else
-    {
-      HashedSeed  seed([newSeed unsignedLongLongValue], version);
-      self.initialPIDFrame =
-        [NSNumber numberWithUnsignedInt: seed.GetSkippedPIDFrames() + 1];
-    }
-    
     rawSeed = newSeed;
+    [self calcInitialPIDFrame];
   }
 }
 

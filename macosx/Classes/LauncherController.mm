@@ -28,6 +28,7 @@
 #import "WonderCardSeedInspectorController.h"
 #import "DreamRadarSeedSearcherController.h"
 #import "DreamRadarSeedInspectorController.h"
+#import "HiddenHollowSpawnSeedSearcherController.h"
 #import "CGearSeedSearcherController.h"
 #import "CGearSeedInspectorController.h"
 #import "TrainerIDSearcherController.h"
@@ -72,6 +73,8 @@
         [launchDreamRadarSeedSearcher title],
       [DreamRadarSeedInspectorController class],
         [launchDreamRadarSeedInspector title],
+      [HiddenHollowSpawnSeedSearcherController class],
+        [launchHiddenHollowSpawnSeedSearcher title],
       [CGearSeedSearcherController class], [launchCGearSeedSearcher title],
       [CGearSeedInspectorController class], [launchCGearSeedInspector title],
       [TrainerIDSearcherController class], [launchTIDSearcher title],

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of PPRNG.
@@ -22,24 +22,14 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface Gen5ConfigurationEditController : NSWindowController
+@interface HiddenHollowGroupTransformer : NSValueTransformer
 {
-  IBOutlet NSTableView         *configurationTableView;
-  IBOutlet NSArrayController   *configurationArrayController;
-  
-  IBOutlet NSPopUpButton       *versionPopUp;
 }
 
-- (IBAction)addConfig:(id)sender;
-- (IBAction)removeConfig:(id)sender;
-- (IBAction)duplicateConfig:(id)sender;
-- (IBAction)changeVersion:(id)sender;
-- (IBAction)changeDSType:(id)sender;
++ (Class)transformedValueClass;
 
-- (IBAction)done:(id)sender;
-- (IBAction)cancel:(id)sender;
++ (BOOL)allowsReverseTransformation;
 
-- (BOOL)runModal;
-- (BOOL)runModalWithConfigIndex:(NSInteger)configIndex;
+- (id)transformedValue:(id)value;
 
 @end

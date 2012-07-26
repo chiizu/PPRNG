@@ -103,7 +103,9 @@ Gen5PIDFrameGenerator::Gen5PIDFrameGenerator
     m_PIDFrameGenerator
       (s_FrameGeneratorInfo[parameters.frameType].pidFrameGenerator),
     m_ESVGenerator(s_FrameGeneratorInfo[parameters.frameType].esvGenerator),
-    m_RNG(seed.rawSeed), m_frame(seed), m_parameters(parameters)
+    m_RNG(seed.rawSeed), m_frame(seed), m_parameters(parameters),
+    m_shinyChances((m_parameters.hasShinyCharm &&
+                    Game::IsBlack2White2(m_frame.seed.version)) ? 3 : 1)
 {
   m_frame.number = 0;
   m_frame.rngValue = 0;
@@ -116,22 +118,16 @@ Gen5PIDFrameGenerator::Gen5PIDFrameGenerator
   
   if (parameters.startFromLowestFrame)
   {
-    uint32_t  skippedFrames = seed.GetSkippedPIDFrames();
-    while (skippedFrames-- > 0)
-    {
-      m_RNG.AdvanceBuffer();
-      ++m_frame.number;
-    }
+    uint32_t  skippedFrames =
+      seed.GetSkippedPIDFrames(parameters.memoryLinkUsed);
+    m_RNG.AdvanceBuffer(skippedFrames);
+    m_frame.number += skippedFrames;
   }
 }
 
 void Gen5PIDFrameGenerator::SkipFrames(uint32_t numFrames)
 {
-  uint32_t  i = 0;
-  
-  while (i++ < numFrames)
-    m_RNG.AdvanceBuffer();
-  
+  m_RNG.AdvanceBuffer(numFrames);
   m_frame.number += numFrames;
 }
 
@@ -209,7 +205,11 @@ const Gen5PIDFrameGenerator::FrameGeneratorInfo
   // DoublesFrame
   { &Gen5PIDFrameGenerator::NextWildPID,
     &Gen5PIDFrameGenerator::NextDoublesFrame,
-    &Gen5PIDFrameGenerator::LandESV }
+    &Gen5PIDFrameGenerator::LandESV },
+  // HiddenHollowFrame
+  { &Gen5PIDFrameGenerator::NextEntraLinkPID,
+    &Gen5PIDFrameGenerator::NextHiddenHollowFrame,
+    &Gen5PIDFrameGenerator::NoESV }
 };
 
 void Gen5PIDFrameGenerator::LandESV()
@@ -240,18 +240,26 @@ void Gen5PIDFrameGenerator::NoESV()
 
 void Gen5PIDFrameGenerator::NextWildPID()
 {
-  if ((m_parameters.leadAbility == EncounterLead::CUTE_CHARM) &&
-      m_frame.abilityActivated)
+  uint32_t  shinyChances = m_shinyChances;
+  
+  do
   {
-    m_frame.pid = Gen5PIDRNG::NextCuteCharmPIDWord
-                    (m_RNG, m_parameters.targetGender, m_parameters.targetRatio,
-                     m_parameters.tid, m_parameters.sid);
+    if ((m_parameters.leadAbility == EncounterLead::CUTE_CHARM) &&
+        m_frame.abilityActivated)
+    {
+      m_frame.pid = Gen5PIDRNG::NextCuteCharmPIDWord
+                      (m_RNG, m_parameters.targetGender,
+                       m_parameters.targetRatio,
+                       m_parameters.tid, m_parameters.sid);
+    }
+    else
+    {
+      m_frame.pid =
+        Gen5PIDRNG::NextWildPIDWord(m_RNG, m_parameters.tid, m_parameters.sid);
+    }
   }
-  else
-  {
-    m_frame.pid =
-      Gen5PIDRNG::NextWildPIDWord(m_RNG, m_parameters.tid, m_parameters.sid);
-  }
+  while (!m_frame.pid.IsShiny(m_parameters.tid, m_parameters.sid) &&
+         (--shinyChances > 0));
 }
 
 void Gen5PIDFrameGenerator::NextEntraLinkPID()
@@ -269,12 +277,26 @@ void Gen5PIDFrameGenerator::NextNonShinyPID()
 
 void Gen5PIDFrameGenerator::NextGiftPID()
 {
-  m_frame.pid = Gen5PIDRNG::NextGiftPIDWord(m_RNG);
+  uint32_t  shinyChances = m_shinyChances;
+  
+  do
+  {
+    m_frame.pid = Gen5PIDRNG::NextGiftPIDWord(m_RNG);
+  }
+  while (!m_frame.pid.IsShiny(m_parameters.tid, m_parameters.sid) &&
+         (--shinyChances > 0));
 }
 
 void Gen5PIDFrameGenerator::NextRoamerPID()
 {
-  m_frame.pid = Gen5PIDRNG::NextRoamerPIDWord(m_RNG);
+  uint32_t  shinyChances = m_shinyChances;
+  
+  do
+  {
+    m_frame.pid = Gen5PIDRNG::NextRoamerPIDWord(m_RNG);
+  }
+  while (!m_frame.pid.IsShiny(m_parameters.tid, m_parameters.sid) &&
+         (--shinyChances > 0));
 }
 
 void Gen5PIDFrameGenerator::NextWildFrame()
@@ -465,6 +487,17 @@ void Gen5PIDFrameGenerator::NextEntraLinkFrame()
   m_frame.nature = Nature::Type(((m_RNG.Next() >> 32) * 25) >> 32);
 }
 
+void Gen5PIDFrameGenerator::NextHiddenHollowFrame()
+{
+  // level?
+  m_RNG.Next();
+  
+  CheckLeadAbility();
+  NextSimpleFrame();
+  ApplySync();
+  NextHeldItem();
+}
+
 void Gen5PIDFrameGenerator::NextSimpleFrame()
 {
   (this->*m_PIDGenerator)();
@@ -571,7 +604,8 @@ WonderCardFrameGenerator::WonderCardFrameGenerator(const HashedSeed &seed,
   
   if (parameters.startFromLowestFrame)
   {
-    uint32_t  skippedFrames = seed.GetSkippedPIDFrames();
+    uint32_t  skippedFrames =
+      seed.GetSkippedPIDFrames(parameters.memoryLinkUsed);
     while (skippedFrames-- > 0)
     {
       m_RNG.AdvanceBuffer();
@@ -750,12 +784,14 @@ DreamRadarFrameGenerator::DreamRadarFrameGenerator(const HashedSeed &seed,
 {
   m_frame.number = 0;
   
-  int32_t  skippedFrames = seed.GetSkippedPIDFrames();
-  while (skippedFrames-- > 0)
+  int32_t  skippedFrames = seed.GetSkippedPIDFrames(parameters.memoryLinkUsed);
+  m_PIDRNG.AdvanceBuffer(skippedFrames);
+  
+  if (!parameters.memoryLinkUsed)
     m_PIDRNG.AdvanceBuffer();
   
-  // start from IV frame 8
-  skippedFrames = 8;
+  // start from (b2w2) IV frame 8 (bw frame 10)
+  skippedFrames = 9;
   while (skippedFrames-- > 0)
     m_IVRNG.NextIVWord();
   
@@ -785,32 +821,28 @@ DreamRadarFrameGenerator::DreamRadarFrameGenerator(const HashedSeed &seed,
 
 void DreamRadarFrameGenerator::SkipFrames(uint32_t numFrames)
 {
+  m_PIDRNG.AdvanceBuffer(numFrames * 2);
+  
   uint32_t  i = 0;
   while (i++ < numFrames)
   {
-    m_PIDRNG.AdvanceBuffer();
-    m_PIDRNG.AdvanceBuffer();
-    
     m_IVRNG.NextIVWord();
     m_IVRNG.NextIVWord();
   }
+  
   m_frame.number += numFrames;
 }
 
 void DreamRadarFrameGenerator::AdvanceFrame()
 {
-  m_PIDRNG.AdvanceBuffer();
-  m_frame.rngValue = m_PIDRNG.Next();
-  
-  m_PIDRNG.AdvanceBuffer();
-  
-  m_IVRNG.NextIVWord();
   m_frame.ivs = m_IVRNG.NextIVWord();
+  
+  m_PIDRNG.AdvanceBuffer();
   
   ++m_frame.number;
   
   // skip 1 frame for some reason...
-  m_PIDRNG.Next();
+  m_frame.rngValue = m_PIDRNG.Next();
   
   // skip PID frames of earlier slots
   int32_t  skippedFrames =
@@ -828,6 +860,59 @@ void DreamRadarFrameGenerator::AdvanceFrame()
   m_PIDRNG.Next();
   
   m_frame.nature = Nature::Type(((m_PIDRNG.Next() >> 32) * 25) >> 32);
+  
+  // skipped when advancing via spinner
+  m_PIDRNG.AdvanceBuffer();
+  m_IVRNG.NextIVWord();
+}
+
+
+namespace
+{
+
+static const uint32_t HiddenHollowSpawnSlotThreshold[] =
+{ 0, 4, 19, 20, 24, 34, 59, 60, 64, 74, 99 };
+
+static uint32_t GetHiddenHollowSpawnSlot(uint32_t value)
+{
+  uint32_t  slot = 0;
+  while (value > HiddenHollowSpawnSlotThreshold[slot])
+    ++slot;
+  
+  return slot;
+}
+
+}
+
+HiddenHollowSpawnFrameGenerator::HiddenHollowSpawnFrameGenerator
+  (const HashedSeed &seed, bool memoryLinkUsed)
+  : m_PIDRNG(seed.rawSeed),
+    m_frame(seed)
+{
+  m_frame.number = 0;
+  
+  int32_t  skippedFrames = seed.GetSkippedPIDFrames(memoryLinkUsed);
+  m_PIDRNG.AdvanceBuffer(skippedFrames);
+}
+
+void HiddenHollowSpawnFrameGenerator::SkipFrames(uint32_t numFrames)
+{
+  m_PIDRNG.AdvanceBuffer(numFrames);
+  m_frame.number += numFrames;
+}
+
+void HiddenHollowSpawnFrameGenerator::AdvanceFrame()
+{
+  m_PIDRNG.AdvanceBuffer();
+  m_frame.rngValue = m_PIDRNG.PeekNext();
+  
+  ++m_frame.number;
+  
+  m_frame.isSpawn = (((m_PIDRNG.Next() >> 32) * 100) >> 32) < 5;
+  m_frame.group = m_PIDRNG.Next() >> 62;
+  m_frame.slot =
+    GetHiddenHollowSpawnSlot(((m_PIDRNG.Next() >> 32) * 100) >> 32);
+  m_frame.genderPercentage = ((m_PIDRNG.Next() >> 32) * 100) >> 32;
 }
 
 }

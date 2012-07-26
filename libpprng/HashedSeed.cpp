@@ -63,7 +63,8 @@ static uint32_t ProbabilityTableLoop(LCRNG5 &rng)
   return count;
 }
 
-static uint32_t SkipPIDRNGFrames(LCRNG5 &rng, Game::Version version)
+static uint32_t SkipPIDRNGFrames(LCRNG5 &rng, Game::Version version,
+                                 bool memoryLinkUsed)
 {
   uint32_t  count = 0;
   
@@ -73,9 +74,14 @@ static uint32_t SkipPIDRNGFrames(LCRNG5 &rng, Game::Version version)
     
     rng.Next(); // 0
     rng.Next(); // 0xffffffff
-    rng.Next(); // 0xffffffff
+    count += 2;
     
-    count += 3;
+    // difference after memory link has been used
+    if (!memoryLinkUsed)
+    {
+      rng.Next(); // 0xffffffff
+      ++count;
+    }
     
     for (uint32_t i = 0; i < 4; ++i)
       count += ProbabilityTableLoop(rng);
@@ -141,16 +147,18 @@ HashedSeed::HashedSeed(const Parameters &parameters, uint64_t rawSeed_)
 {}
 
 
-uint32_t HashedSeed::SeedAndSkipPIDFrames(LCRNG5 &rng) const
+uint32_t HashedSeed::SeedAndSkipPIDFrames(LCRNG5 &rng, bool memLinkUsed) const
 {
-  if (!m_skippedPIDFramesCalculated)
+  if (!m_skippedPIDFramesCalculated ||
+      (memLinkUsed != m_skippedPIDFramesMemoryLinkUsed))
   {
     rng.Seed(rawSeed);
     
-    m_skippedPIDFrames = SkipPIDRNGFrames(rng, version);
+    m_skippedPIDFrames = SkipPIDRNGFrames(rng, version, memLinkUsed);
     m_skippedPIDFramesSeed = rng.Seed();
     
     m_skippedPIDFramesCalculated = true;
+    m_skippedPIDFramesMemoryLinkUsed = memLinkUsed;
   }
   else
   {
@@ -160,13 +168,14 @@ uint32_t HashedSeed::SeedAndSkipPIDFrames(LCRNG5 &rng) const
   return m_skippedPIDFrames;
 }
 
-uint32_t HashedSeed::GetSkippedPIDFrames() const
+uint32_t HashedSeed::GetSkippedPIDFrames(bool memoryLinkUsed) const
 {
-  if (!m_skippedPIDFramesCalculated)
+  if (!m_skippedPIDFramesCalculated ||
+      (memoryLinkUsed != m_skippedPIDFramesMemoryLinkUsed))
   {
     LCRNG5  rng(0);
     
-    return SeedAndSkipPIDFrames(rng);
+    return SeedAndSkipPIDFrames(rng, memoryLinkUsed);
   }
   else
   {

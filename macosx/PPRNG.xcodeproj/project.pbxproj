@@ -16,6 +16,11 @@
 		C0238E5915AF219C0075C7D5 /* DreamRadarSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0238E5715AF219C0075C7D5 /* DreamRadarSeedInspector.nib */; };
 		C0238E6115AF288A0075C7D5 /* DreamRadarSeedInspectorController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0238E6015AF288A0075C7D5 /* DreamRadarSeedInspectorController.mm */; };
 		C0238E8E15AF42D50075C7D5 /* SpinnerSequenceTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0238E8D15AF42D50075C7D5 /* SpinnerSequenceTransformer.mm */; };
+		C02390D815B5A1910075C7D5 /* HiddenHollowSpawnSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C02390D615B5A1910075C7D5 /* HiddenHollowSpawnSeedSearcher.cpp */; };
+		C02390E215B5A1DA0075C7D5 /* HiddenHollowSpawnSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C02390E015B5A1DA0075C7D5 /* HiddenHollowSpawnSeedSearcher.nib */; };
+		C023910B15B5C2880075C7D5 /* HiddenHollowSpawnSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C023910A15B5C2880075C7D5 /* HiddenHollowSpawnSeedSearcherController.mm */; };
+		C023915815B5CA5B0075C7D5 /* HiddenHollowSlotTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C023915715B5CA5B0075C7D5 /* HiddenHollowSlotTransformer.mm */; };
+		C023953B15C1F7D50075C7D5 /* HiddenHollowGroupTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C023953A15C1F7D50075C7D5 /* HiddenHollowGroupTransformer.mm */; };
 		C02E0A0213515E1A00855098 /* README in Resources */ = {isa = PBXBuildFile; fileRef = C02E0A0113515E1A00855098 /* README */; };
 		C03B40FE1463D21100AD59B0 /* Gen4ConfigurationController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */; };
 		C05B870114626E42009166E0 /* HashedSeedMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05B86FF14626E42009166E0 /* HashedSeedMessage.cpp */; };
@@ -126,6 +131,15 @@
 		C0238E6015AF288A0075C7D5 /* DreamRadarSeedInspectorController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DreamRadarSeedInspectorController.mm; sourceTree = "<group>"; };
 		C0238E8C15AF42D50075C7D5 /* SpinnerSequenceTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpinnerSequenceTransformer.h; sourceTree = "<group>"; };
 		C0238E8D15AF42D50075C7D5 /* SpinnerSequenceTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SpinnerSequenceTransformer.mm; sourceTree = "<group>"; };
+		C02390D615B5A1910075C7D5 /* HiddenHollowSpawnSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HiddenHollowSpawnSeedSearcher.cpp; sourceTree = "<group>"; };
+		C02390D715B5A1910075C7D5 /* HiddenHollowSpawnSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HiddenHollowSpawnSeedSearcher.h; sourceTree = "<group>"; };
+		C02390E115B5A1DA0075C7D5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/HiddenHollowSpawnSeedSearcher.nib; sourceTree = "<group>"; };
+		C023910915B5C2880075C7D5 /* HiddenHollowSpawnSeedSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HiddenHollowSpawnSeedSearcherController.h; sourceTree = "<group>"; };
+		C023910A15B5C2880075C7D5 /* HiddenHollowSpawnSeedSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HiddenHollowSpawnSeedSearcherController.mm; sourceTree = "<group>"; };
+		C023915615B5CA5B0075C7D5 /* HiddenHollowSlotTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HiddenHollowSlotTransformer.h; sourceTree = "<group>"; };
+		C023915715B5CA5B0075C7D5 /* HiddenHollowSlotTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HiddenHollowSlotTransformer.mm; sourceTree = "<group>"; };
+		C023953915C1F7D50075C7D5 /* HiddenHollowGroupTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HiddenHollowGroupTransformer.h; sourceTree = "<group>"; };
+		C023953A15C1F7D50075C7D5 /* HiddenHollowGroupTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HiddenHollowGroupTransformer.mm; sourceTree = "<group>"; };
 		C02E0A0113515E1A00855098 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		C03B40FC1463D21100AD59B0 /* Gen4ConfigurationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4ConfigurationController.h; sourceTree = "<group>"; };
 		C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Gen4ConfigurationController.mm; sourceTree = "<group>"; };
@@ -353,6 +367,8 @@
 				C0E3043C1346349900C56C1A /* HashedSeedSearcherController.mm */,
 				C0E3043D1346349900C56C1A /* HexadecimalFormatter.h */,
 				C0E3043E1346349900C56C1A /* HexadecimalFormatter.m */,
+				C023910915B5C2880075C7D5 /* HiddenHollowSpawnSeedSearcherController.h */,
+				C023910A15B5C2880075C7D5 /* HiddenHollowSpawnSeedSearcherController.mm */,
 				C0E3043F1346349900C56C1A /* IVParameterController.h */,
 				C0E304401346349900C56C1A /* IVParameterController.mm */,
 				C0E304411346349900C56C1A /* LauncherController.h */,
@@ -445,6 +461,7 @@
 				C0AA904014B4A7E4003EC28F /* Gen5Configuration.nib */,
 				C0AA904214B4A7E4003EC28F /* HashedSeedInspector.nib */,
 				C0AA904414B4A7E4003EC28F /* HashedSeedSearcher.nib */,
+				C02390E015B5A1DA0075C7D5 /* HiddenHollowSpawnSeedSearcher.nib */,
 				C0AA904614B4A7E4003EC28F /* Launcher.nib */,
 				C0AA904814B4A7E4003EC28F /* MainMenu.nib */,
 				C0AA904A14B4A7E4003EC28F /* TrainerIDSearcher.nib */,
@@ -496,6 +513,10 @@
 				C0DA4C73150CF4760011A473 /* HeldItemTransformer.mm */,
 				C0DA5AB41525980B0011A473 /* HGSSRoamerLocationsTransformer.h */,
 				C0DA5AB51525980B0011A473 /* HGSSRoamerLocationsTransformer.m */,
+				C023953915C1F7D50075C7D5 /* HiddenHollowGroupTransformer.h */,
+				C023953A15C1F7D50075C7D5 /* HiddenHollowGroupTransformer.mm */,
+				C023915615B5CA5B0075C7D5 /* HiddenHollowSlotTransformer.h */,
+				C023915715B5CA5B0075C7D5 /* HiddenHollowSlotTransformer.mm */,
 				C0DA49A21507B1AB0011A473 /* NatureTransformer.h */,
 				C0DA49A31507B1AB0011A473 /* NatureTransformer.mm */,
 				C0DA5AB7152598140011A473 /* ProfElmResponsesTransformer.h */,
@@ -550,6 +571,8 @@
 				C0CB379E14BDBD270043877C /* HashedSeedQuickSearcher.h */,
 				C0E304071346343400C56C1A /* HashedSeedSearcher.cpp */,
 				C0E304081346343400C56C1A /* HashedSeedSearcher.h */,
+				C02390D615B5A1910075C7D5 /* HiddenHollowSpawnSeedSearcher.cpp */,
+				C02390D715B5A1910075C7D5 /* HiddenHollowSpawnSeedSearcher.h */,
 				C0E3040B1346343400C56C1A /* IVRNG.h */,
 				C0E304091346343400C56C1A /* InitialSeedSearcher.cpp */,
 				C0E3040A1346343400C56C1A /* InitialSeedSearcher.h */,
@@ -647,6 +670,7 @@
 				C0F6D7A015444BB6007C58D1 /* Gen4EggIVSeedSearcher.nib in Resources */,
 				C0238B29159FFF1F0075C7D5 /* DreamRadarSeedSearcher.nib in Resources */,
 				C0238E5915AF219C0075C7D5 /* DreamRadarSeedInspector.nib in Resources */,
+				C02390E215B5A1DA0075C7D5 /* HiddenHollowSpawnSeedSearcher.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -731,6 +755,10 @@
 				C0238B4215A09AE00075C7D5 /* DreamRadarSeedSearcherController.mm in Sources */,
 				C0238E6115AF288A0075C7D5 /* DreamRadarSeedInspectorController.mm in Sources */,
 				C0238E8E15AF42D50075C7D5 /* SpinnerSequenceTransformer.mm in Sources */,
+				C02390D815B5A1910075C7D5 /* HiddenHollowSpawnSeedSearcher.cpp in Sources */,
+				C023910B15B5C2880075C7D5 /* HiddenHollowSpawnSeedSearcherController.mm in Sources */,
+				C023915815B5CA5B0075C7D5 /* HiddenHollowSlotTransformer.mm in Sources */,
+				C023953B15C1F7D50075C7D5 /* HiddenHollowGroupTransformer.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -759,6 +787,14 @@
 				C0238E5815AF219C0075C7D5 /* English */,
 			);
 			name = DreamRadarSeedInspector.nib;
+			sourceTree = "<group>";
+		};
+		C02390E015B5A1DA0075C7D5 /* HiddenHollowSpawnSeedSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C02390E115B5A1DA0075C7D5 /* English */,
+			);
+			name = HiddenHollowSpawnSeedSearcher.nib;
 			sourceTree = "<group>";
 		};
 		C0AA903214B4A7E4003EC28F /* CGearSeedInspector.nib */ = {

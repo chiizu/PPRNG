@@ -35,6 +35,9 @@
   IBOutlet NSTextField        *tidField;
   IBOutlet NSTextField        *sidField;
   
+  IBOutlet NSButton           *memoryLinkUsedButton;
+  IBOutlet NSButton           *hasShinyCharmButton;
+  
   IBOutlet NSTextField        *dsTypeField;
   
   IBOutlet NSTextField        *macAddressField0;
@@ -60,6 +63,9 @@
 
 - (uint32_t)tid;
 - (uint32_t)sid;
+
+- (BOOL)memoryLinkUsed;
+- (BOOL)hasShinyCharm;
 
 - (pprng::DS::Type)dsType;
 
