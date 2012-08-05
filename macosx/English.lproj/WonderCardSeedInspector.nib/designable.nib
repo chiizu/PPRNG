@@ -3041,7 +3041,7 @@ IC0gMTAwJSk</string>
 																	</object>
 																</object>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">916455424</int>
+																<int key="NSTvFlags">1990197248</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -5606,7 +5606,7 @@ IC0gMTAwJSk</string>
 																<reference key="NSBackgroundColor" ref="985901451"/>
 																<reference key="NSGridColor" ref="1069"/>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">916455424</int>
+																<int key="NSTvFlags">1990197248</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -22310,9 +22310,9 @@ IC0gMTAwJSk</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1149, 10}, {962, 739}}</string>
+					<string>{{-1123, 116}, {962, 739}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1149, 10}, {962, 739}}</string>
+					<string>{{-1123, 116}, {962, 739}}</string>
 					<integer value="1"/>
 					<string>{196, 240}</string>
 					<string>{{357, 418}, {480, 270}}</string>

@@ -2093,7 +2093,7 @@
 																	</object>
 																</object>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">916455424</int>
+																<int key="NSTvFlags">1990197248</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -2667,7 +2667,7 @@
 																		<string key="NSHeaderToolTip"/>
 																	</object>
 																	<object class="NSTableColumn" id="82176826">
-																		<string key="NSIdentifier">keys</string>
+																		<string key="NSIdentifier">heldButtons</string>
 																		<double key="NSWidth">101</double>
 																		<double key="NSMinWidth">10</double>
 																		<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -2694,7 +2694,7 @@
 																		<string key="NSHeaderToolTip"/>
 																	</object>
 																	<object class="NSTableColumn" id="887571869">
-																		<string key="NSIdentifier">seed</string>
+																		<string key="NSIdentifier">rawSeed</string>
 																		<double key="NSWidth">152</double>
 																		<double key="NSMinWidth">40</double>
 																		<double key="NSMaxWidth">1000</double>
@@ -3001,7 +3001,7 @@
 																		<string key="NSHeaderToolTip">Secret ID (hidden number)</string>
 																	</object>
 																	<object class="NSTableColumn" id="74827067">
-																		<string key="NSIdentifier">keys</string>
+																		<string key="NSIdentifier">wildShiny</string>
 																		<double key="NSWidth">31</double>
 																		<double key="NSMinWidth">10</double>
 																		<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -3028,7 +3028,7 @@
 																		<string key="NSHeaderToolTip"/>
 																	</object>
 																	<object class="NSTableColumn" id="46715072">
-																		<string key="NSIdentifier">keys</string>
+																		<string key="NSIdentifier">giftShiny</string>
 																		<double key="NSWidth">27.28759765625</double>
 																		<double key="NSMinWidth">10</double>
 																		<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -3055,7 +3055,7 @@
 																		<string key="NSHeaderToolTip"/>
 																	</object>
 																	<object class="NSTableColumn" id="922741588">
-																		<string key="NSIdentifier">keys</string>
+																		<string key="NSIdentifier">eggShiny</string>
 																		<double key="NSWidth">27.6796875</double>
 																		<double key="NSMinWidth">10</double>
 																		<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -3087,7 +3087,7 @@
 																<reference key="NSBackgroundColor" ref="985901451"/>
 																<reference key="NSGridColor" ref="332525439"/>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">916455424</int>
+																<int key="NSTvFlags">1990197248</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -4093,7 +4093,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="18469957"/>
 																	</object>
@@ -4119,7 +4119,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="18469957"/>
 																	</object>
@@ -4193,7 +4193,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="18469957"/>
 																	</object>
@@ -4219,7 +4219,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="18469957"/>
 																	</object>
@@ -4300,7 +4300,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="18469957"/>
 																	</object>
@@ -4374,7 +4374,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="18469957"/>
 																	</object>
@@ -4448,7 +4448,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="18469957"/>
 																	</object>
@@ -4522,7 +4522,7 @@
 																			<reference key="NSBackgroundColor" ref="250549713"/>
 																			<reference key="NSTextColor" ref="394895171"/>
 																		</object>
-																		<int key="NSResizingMask">1</int>
+																		<int key="NSResizingMask">3</int>
 																		<bool key="NSIsResizeable">YES</bool>
 																		<reference key="NSTableView" ref="18469957"/>
 																	</object>
@@ -4532,7 +4532,7 @@
 																<reference key="NSBackgroundColor" ref="985901451"/>
 																<reference key="NSGridColor" ref="332525439"/>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">916455424</int>
+																<int key="NSTvFlags">1990197248</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -12567,12 +12567,14 @@
 							<string>configMenu</string>
 							<string>delegate</string>
 							<string>dsTypeField</string>
+							<string>hasShinyCharmButton</string>
 							<string>macAddressField0</string>
 							<string>macAddressField1</string>
 							<string>macAddressField2</string>
 							<string>macAddressField3</string>
 							<string>macAddressField4</string>
 							<string>macAddressField5</string>
+							<string>memoryLinkUsedButton</string>
 							<string>sidField</string>
 							<string>tidField</string>
 							<string>timer0HighField</string>
@@ -12589,12 +12591,14 @@
 							<string>NSPopUpButton</string>
 							<string>id</string>
 							<string>NSTextField</string>
+							<string>NSButton</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
+							<string>NSButton</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
@@ -12614,12 +12618,14 @@
 							<string>configMenu</string>
 							<string>delegate</string>
 							<string>dsTypeField</string>
+							<string>hasShinyCharmButton</string>
 							<string>macAddressField0</string>
 							<string>macAddressField1</string>
 							<string>macAddressField2</string>
 							<string>macAddressField3</string>
 							<string>macAddressField4</string>
 							<string>macAddressField5</string>
+							<string>memoryLinkUsedButton</string>
 							<string>sidField</string>
 							<string>tidField</string>
 							<string>timer0HighField</string>
@@ -12649,6 +12655,10 @@
 								<string key="candidateClassName">NSTextField</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">hasShinyCharmButton</string>
+								<string key="candidateClassName">NSButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">macAddressField0</string>
 								<string key="candidateClassName">NSTextField</string>
 							</object>
@@ -12671,6 +12681,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">macAddressField5</string>
 								<string key="candidateClassName">NSTextField</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">memoryLinkUsedButton</string>
+								<string key="candidateClassName">NSButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">sidField</string>

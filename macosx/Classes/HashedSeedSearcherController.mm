@@ -21,7 +21,7 @@
 
 #import "HashedSeedSearcherController.h"
 
-#include "HashedSeedQuickSearcher.h"
+#include "HashedSeedSearcher.h"
 #include "FrameGenerator.h"
 #include "SearchResultProtocols.h"
 #include "Utilities.h"
@@ -133,7 +133,7 @@ uint32_t CountBitMaskBits(uint32_t mask)
 }
 
 
-struct GUICriteria : public HashedSeedQuickSearcher::Criteria
+struct GUICriteria : public HashedSeedSearcher::Criteria
 {
   uint32_t       tid, sid;
   bool           shinyOnly;
@@ -152,7 +152,7 @@ struct GUICriteria : public HashedSeedQuickSearcher::Criteria
   uint64_t ExpectedNumberOfResults() const
   {
     uint64_t  result =
-      HashedSeedQuickSearcher::Criteria::ExpectedNumberOfResults();
+      HashedSeedSearcher::Criteria::ExpectedNumberOfResults();
     
     uint64_t  pidFrameMultiplier = 1;
     uint64_t  shinyDivisor = 1;
@@ -1007,7 +1007,7 @@ struct ProgressHandler
   std::auto_ptr<GUICriteria> 
     criteria(static_cast<GUICriteria*>([criteriaPtr pointerValue]));
   
-  HashedSeedQuickSearcher  searcher;
+  HashedSeedSearcher  searcher;
   
   searcher.Search(*criteria, ResultHandler(searcherController, *criteria),
                   ProgressHandler(searcherController));

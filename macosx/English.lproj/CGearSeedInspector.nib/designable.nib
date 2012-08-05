@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="1"/>
+			<integer value="2"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -3300,7 +3300,7 @@
 																	</object>
 																</object>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">916455424</int>
+																<int key="NSTvFlags">1990197248</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -4425,7 +4425,7 @@
 																<reference key="NSBackgroundColor" ref="985901451"/>
 																<reference key="NSGridColor" ref="1069"/>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">849346560</int>
+																<int key="NSTvFlags">1923088384</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -4977,7 +4977,7 @@
 																<reference key="NSBackgroundColor" ref="985901451"/>
 																<reference key="NSGridColor" ref="1069"/>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">580911104</int>
+																<int key="NSTvFlags">1654652928</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -8233,7 +8233,7 @@
 																		<string key="NSHeaderToolTip">Most people's DSs have two Timer0 values.  You can't dependably control which one you hit, unfortunately.</string>
 																	</object>
 																	<object class="NSTableColumn" id="178890925">
-																		<string key="NSIdentifier">keys</string>
+																		<string key="NSIdentifier">heldButtons</string>
 																		<double key="NSWidth">101</double>
 																		<double key="NSMinWidth">10</double>
 																		<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -8260,7 +8260,7 @@
 																		<string key="NSHeaderToolTip">Hold these buttons from the time you start the game from the DS menu until you see the Pokemon logo.</string>
 																	</object>
 																	<object class="NSTableColumn" id="209401923">
-																		<string key="NSIdentifier">time</string>
+																		<string key="NSIdentifier">cgearTime</string>
 																		<double key="NSWidth">71</double>
 																		<double key="NSMinWidth">10</double>
 																		<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -8313,7 +8313,7 @@
 																		<reference key="NSTableView" ref="1040020316"/>
 																	</object>
 																	<object class="NSTableColumn" id="424450553">
-																		<string key="NSIdentifier">pidStartFrame</string>
+																		<string key="NSIdentifier">frame</string>
 																		<double key="NSWidth">40.87109375</double>
 																		<double key="NSMinWidth">10</double>
 																		<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -8388,7 +8388,7 @@
 																		<string key="NSHeaderToolTip">Lowest possible PID frame for this seed</string>
 																	</object>
 																	<object class="NSTableColumn" id="998680223">
-																		<string key="NSIdentifier">giftFrame</string>
+																		<string key="NSIdentifier">clusterSize</string>
 																		<double key="NSWidth">46</double>
 																		<double key="NSMinWidth">10</double>
 																		<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -18927,12 +18927,14 @@
 							<string>configMenu</string>
 							<string>delegate</string>
 							<string>dsTypeField</string>
+							<string>hasShinyCharmButton</string>
 							<string>macAddressField0</string>
 							<string>macAddressField1</string>
 							<string>macAddressField2</string>
 							<string>macAddressField3</string>
 							<string>macAddressField4</string>
 							<string>macAddressField5</string>
+							<string>memoryLinkUsedButton</string>
 							<string>sidField</string>
 							<string>tidField</string>
 							<string>timer0HighField</string>
@@ -18949,12 +18951,14 @@
 							<string>NSPopUpButton</string>
 							<string>id</string>
 							<string>NSTextField</string>
+							<string>NSButton</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
+							<string>NSButton</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
@@ -18974,12 +18978,14 @@
 							<string>configMenu</string>
 							<string>delegate</string>
 							<string>dsTypeField</string>
+							<string>hasShinyCharmButton</string>
 							<string>macAddressField0</string>
 							<string>macAddressField1</string>
 							<string>macAddressField2</string>
 							<string>macAddressField3</string>
 							<string>macAddressField4</string>
 							<string>macAddressField5</string>
+							<string>memoryLinkUsedButton</string>
 							<string>sidField</string>
 							<string>tidField</string>
 							<string>timer0HighField</string>
@@ -19009,6 +19015,10 @@
 								<string key="candidateClassName">NSTextField</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">hasShinyCharmButton</string>
+								<string key="candidateClassName">NSButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">macAddressField0</string>
 								<string key="candidateClassName">NSTextField</string>
 							</object>
@@ -19031,6 +19041,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">macAddressField5</string>
 								<string key="candidateClassName">NSTextField</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">memoryLinkUsedButton</string>
+								<string key="candidateClassName">NSButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">sidField</string>

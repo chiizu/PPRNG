@@ -309,6 +309,36 @@ BOOL EndEditing(NSWindow *window)
   return success;
 }
 
+
+static id GetValueTransformer(NSTableColumn *column)
+{
+  id  transformer = [NSNull null];
+  
+  NSDictionary  *bindingInfo = [column infoForBinding: NSValueBinding];
+  if (bindingInfo != nil)
+  {
+    NSDictionary  *bindingOptions = [bindingInfo objectForKey: NSOptionsKey];
+    if (bindingOptions != nil)
+    {
+      id trans = [bindingOptions objectForKey: NSValueTransformerBindingOption];
+      
+      if (trans == nil)
+      {
+        NSString  *name =
+          [bindingOptions objectForKey: NSValueTransformerNameBindingOption];
+        
+        if (name != nil)
+          trans = [NSValueTransformer valueTransformerForName: name];
+      }
+      
+      if (trans != nil)
+        transformer = trans;
+    }
+  }
+  
+  return transformer;
+}
+
 void SaveTableContentsToCSV(NSTableView *tableView,
                             NSArrayController *contentArray)
 {
@@ -324,12 +354,13 @@ void SaveTableContentsToCSV(NSTableView *tableView,
   NSString        *result = @"";
   
   NSArray         *columns = [tableView tableColumns];
+  NSInteger       numColumns = [columns count];
   NSEnumerator    *columnEnumerator = [columns objectEnumerator];
   NSTableColumn   *column;
-  NSMutableArray  *columnIds =
-    [NSMutableArray arrayWithCapacity: [columns count]];
-  NSMutableArray  *columnCells =
-    [NSMutableArray arrayWithCapacity: [columns count]];
+  NSMutableArray  *columnIds = [NSMutableArray arrayWithCapacity: numColumns];
+  NSMutableArray  *columnCells = [NSMutableArray arrayWithCapacity: numColumns];
+  NSMutableArray  *columnTransformers =
+    [NSMutableArray arrayWithCapacity: numColumns];
   
   /* output header row */
   column = [columnEnumerator nextObject];
@@ -342,6 +373,7 @@ void SaveTableContentsToCSV(NSTableView *tableView,
   {
     [columnIds addObject: [column identifier]];
     [columnCells addObject: [column dataCell]];
+    [columnTransformers addObject: GetValueTransformer(column)];
     result = [result stringByAppendingString:[[column headerCell] stringValue]];
     
     while (column = [columnEnumerator nextObject])
@@ -350,6 +382,7 @@ void SaveTableContentsToCSV(NSTableView *tableView,
       {
         [columnIds addObject: [column identifier]];
         [columnCells addObject: [column dataCell]];
+        [columnTransformers addObject: GetValueTransformer(column)];
         result = [result stringByAppendingFormat: @",%@",
                         [[column headerCell] stringValue]];
       }
@@ -358,9 +391,9 @@ void SaveTableContentsToCSV(NSTableView *tableView,
     result = [result stringByAppendingString: @"\n"];
   }
   
-  NSArray              *rows = [contentArray arrangedObjects];
-  NSEnumerator         *rowEnumerator = [rows objectEnumerator];
-  NSMutableDictionary  *row;
+  NSArray       *rows = [contentArray arrangedObjects];
+  NSEnumerator  *rowEnumerator = [rows objectEnumerator];
+  id            row;
   
   /* output data rows */
   while (row = [rowEnumerator nextObject])
@@ -371,9 +404,16 @@ void SaveTableContentsToCSV(NSTableView *tableView,
     NSEnumerator  *cellEnum = [columnCells objectEnumerator];
     NSCell        *cell = [cellEnum nextObject];
     
+    NSEnumerator  *transEnum = [columnTransformers objectEnumerator];
+    id            transformer = [transEnum nextObject];
+    
     if (columnId != nil)
     {
-      id  dataObject = [row objectForKey: columnId];
+      id  dataObject = [row valueForKey: columnId];
+      
+      if (transformer != [NSNull null])
+        dataObject =
+          [(NSValueTransformer*)transformer transformedValue: dataObject];
       
       [cell setObjectValue: dataObject];
       
@@ -384,7 +424,12 @@ void SaveTableContentsToCSV(NSTableView *tableView,
       while (columnId = [columnEnumerator nextObject])
       {
         cell = [cellEnum nextObject];
-        dataObject = [row objectForKey: columnId];
+        transformer = [transEnum nextObject];
+        dataObject = [row valueForKey: columnId];
+      
+        if (transformer != [NSNull null])
+          dataObject =
+            [(NSValueTransformer*)transformer transformedValue: dataObject];
         
         [cell setObjectValue: dataObject];
         data = [cell stringValue];

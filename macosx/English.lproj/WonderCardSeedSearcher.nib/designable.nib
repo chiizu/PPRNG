@@ -325,7 +325,7 @@
 													<reference key="NSTableView" ref="18469957"/>
 												</object>
 												<object class="NSTableColumn" id="428877185">
-													<string key="NSIdentifier">keys</string>
+													<string key="NSIdentifier">heldButtons</string>
 													<double key="NSWidth">112</double>
 													<double key="NSMinWidth">10</double>
 													<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -351,7 +351,7 @@
 													<reference key="NSTableView" ref="18469957"/>
 												</object>
 												<object class="NSTableColumn" id="979112892">
-													<string key="NSIdentifier">frame</string>
+													<string key="NSIdentifier">startFrame</string>
 													<double key="NSWidth">33</double>
 													<double key="NSMinWidth">10</double>
 													<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -551,7 +551,7 @@
 													<reference key="NSTableView" ref="18469957"/>
 												</object>
 												<object class="NSTableColumn" id="548896625">
-													<string key="NSIdentifier">shinyAbility</string>
+													<string key="NSIdentifier">ability</string>
 													<double key="NSWidth">29</double>
 													<double key="NSMinWidth">10</double>
 													<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -1242,7 +1242,7 @@
 												</object>
 											</object>
 											<double key="NSRowHeight">17</double>
-											<int key="NSTvFlags">916455424</int>
+											<int key="NSTvFlags">1990197248</int>
 											<reference key="NSDelegate"/>
 											<reference key="NSDataSource"/>
 											<int key="NSGridStyleMask">3</int>

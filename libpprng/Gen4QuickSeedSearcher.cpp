@@ -195,8 +195,10 @@ uint64_t Gen4QuickSeedSearcher::Criteria::ExpectedNumberOfResults()
   
   uint64_t  natureDivisor = (nature != Nature::ANY) ? 25 : 1;
   
+  uint64_t  shinyDivisor = shinyOnly ? 8196 : 1;
+  
   uint64_t  numResults = numFrames * numSeeds * numIVs /
-                           (32 * 32 * 32 * 32 * 32 * 32 * natureDivisor);
+    (32 * 32 * 32 * 32 * 32 * 32 * natureDivisor * shinyDivisor);
   
   if (hiddenType != Element::NONE)
   {

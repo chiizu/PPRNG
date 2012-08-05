@@ -788,6 +788,31 @@ public:
         slot(0), numPrecedingGenderless(0),
         tid(0), sid(0), memoryLinkUsed(false)
     {}
+    
+    uint32_t GetActualSlot() const
+    {
+      uint32_t  actualSlot = slot;
+      if (frameType == DreamRadarFrameGenerator::GenieFrame)
+        ++actualSlot;
+      
+      return actualSlot;
+    }
+    
+    uint32_t GetBaseIVFrameNumber(uint32_t dreamRadarFrameNumber) const
+    {
+      return ((dreamRadarFrameNumber - 1) * 2) + 10 +
+             ((GetActualSlot() - 1) * 13);
+    }
+    
+    uint32_t GetDRFrameNumber(uint32_t ivFrameNumber) const
+    {
+      return ((ivFrameNumber - ((GetActualSlot() - 1) * 13) - 10) >> 1) + 1;
+    }
+    
+    uint32_t GetPIDRNGAdvancements() const
+    {
+      return ((GetActualSlot() - 1) * 5) - numPrecedingGenderless;
+    }
   };
   
   DreamRadarFrameGenerator(const HashedSeed &seed,
@@ -799,12 +824,18 @@ public:
   
   const Frame& CurrentFrame() { return m_frame; }
   
+  // create a frame from an IV frame and DR parameters
+  // (used in faster search mode)
+  static DreamRadarFrame FrameFromIVFrame(const HashedIVFrame &ivFrame,
+                                          const Parameters &parameters);
+  
 private:
-  PIDRNG      m_PIDRNG;
-  MTRNG       m_MTRNG;
-  IVRNG       m_IVRNG;
-  Frame       m_frame;
-  Parameters  m_parameters;
+  PIDRNG          m_PIDRNG;
+  MTRNG           m_MTRNG;
+  IVRNG           m_IVRNG;
+  Frame           m_frame;
+  Parameters      m_parameters;
+  const uint32_t  m_pidAdvancements;
 };
 
 

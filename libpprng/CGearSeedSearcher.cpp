@@ -22,191 +22,13 @@
 #include "CGearSeedSearcher.h"
 #include "SeedSearcher.h"
 
-#include <boost/interprocess/containers/flat_map.hpp>
+#include "IVSeedCache.h"
 
 namespace pprng
 {
 
 namespace
 {
-
-struct SeedData
-{
-  SeedData(uint32_t f, uint32_t w) : frame(f), ivWord(w) {}
-  
-  SeedData& operator=(const SeedData &other)
-  {
-    frame = other.frame;
-    ivWord = other.ivWord;
-    return *this;
-  }
-  
-  uint32_t  frame;
-  uint32_t  ivWord;
-};
-
-typedef boost::container::flat_multimap<uint32_t, SeedData> IVSeedMap;
-
-typedef uint32_t IVSeedRow[3];
-
-struct InputIterator
-{
-  typedef std::random_access_iterator_tag  iterator_category;
-  typedef IVSeedMap::value_type            value_type;
-  typedef std::ptrdiff_t                   difference_type;
-  typedef value_type*                      pointer;
-  typedef value_type&                      reference;
-  typedef const value_type&                const_reference;
-  
-  InputIterator(const IVSeedRow *data)
-    : m_data(data), m_item((*m_data)[0], SeedData((*m_data)[1], (*m_data)[2]))
-  {}
-  
-  bool operator!=(const InputIterator &other)
-  {
-    return m_data != other.m_data;
-  }
-  
-  InputIterator& operator++()
-  {
-    ++m_data;
-    m_item.first = (*m_data)[0];
-    m_item.second = SeedData((*m_data)[1], (*m_data)[2]);
-    return *this;
-  }
-  
-  InputIterator& operator+=(difference_type i)
-  {
-    m_data += i;
-    m_item.first = (*m_data)[0];
-    m_item.second = SeedData((*m_data)[1], (*m_data)[2]);
-    return *this;
-  }
-  
-  const_reference operator*() const
-  {
-    return m_item;
-  }
-  
-  difference_type operator-(const InputIterator &other) const
-  {
-    return m_data - other.m_data;
-  }
-  
-  const IVSeedRow        *m_data;
-  IVSeedMap::value_type  m_item;
-};
-
-// macro for parsing data file
-#define DEFINE_IV_SEED(SEED, FRAME, IVWORD)    { SEED, FRAME, IVWORD },
-
-// macro for defining the seed map
-#define DEFINE_IV_SEED_MAP(NAME, DATASOURCE) \
-  IVSeedMap  NAME(InputIterator(DATASOURCE), \
-                  InputIterator(DATASOURCE + (sizeof(DATASOURCE) / \
-                                              sizeof(IVSeedRow))))
-
-// normal sets
-IVSeedRow  PerfectIVsData[] = {
-#include "data/entralink/perfect.txt"
-};
-
-DEFINE_IV_SEED_MAP(PerfectIVs, PerfectIVsData);
-
-IVSeedRow  PhysIVsData[] = {
-#include "data/entralink/phys.txt"
-};
-
-DEFINE_IV_SEED_MAP(PhysIVs, PhysIVsData);
-
-IVSeedRow  SpecIVsData[] = {
-#include "data/entralink/spec.txt"
-};
-
-DEFINE_IV_SEED_MAP(SpecIVs, SpecIVsData);
-
-
-// trick room sets
-IVSeedRow  PerfectTrickIVsData[] = {
-#include "data/entralink/perfect_trick.txt"
-};
-
-DEFINE_IV_SEED_MAP(PerfectTrickIVs, PerfectTrickIVsData);
-
-IVSeedRow  PhysTrickIVsData[] = {
-#include "data/entralink/phys_trick.txt"
-};
-
-DEFINE_IV_SEED_MAP(PhysTrickIVs, PhysTrickIVsData);
-
-IVSeedRow  SpecTrickIVsData[] = {
-#include "data/entralink/spec_trick.txt"
-};
-
-DEFINE_IV_SEED_MAP(SpecTrickIVs, SpecTrickIVsData);
-
-
-
-// redefine macro for parsing hidden power files
-#undef DEFINE_IV_SEED
-#define DEFINE_IV_SEED(SEED, FRAME, IVWORD, HPTYPE)  { SEED, FRAME, IVWORD },
-
-IVSeedRow  HpIVsData[] = {
-#include "data/entralink/hp.txt"
-};
-
-DEFINE_IV_SEED_MAP(HpIVs, HpIVsData);
-
-IVSeedRow  HpTrickIVsData[] = {
-#include "data/entralink/hp_trick.txt"
-};
-
-DEFINE_IV_SEED_MAP(HpTrickIVs, HpTrickIVsData);
-
-
-const IVSeedMap& GetIVSeedMap(IVPattern::Type pattern)
-{
-  switch (pattern)
-  {
-  case IVPattern::HEX_FLAWLESS:
-    return PerfectIVs;
-    break;
-    
-  case IVPattern::PHYSICAL_FLAWLESS:
-    return PhysIVs;
-    break;
-    
-  case IVPattern::SPECIAL_FLAWLESS:
-    return SpecIVs;
-    break;
-    
-  case IVPattern::SPECIAL_HIDDEN_POWER_FLAWLESS:
-    return HpIVs;
-    break;
-    
-  case IVPattern::HEX_FLAWLESS_TRICK:
-    return PerfectTrickIVs;
-    break;
-    
-  case IVPattern::PHYSICAL_FLAWLESS_TRICK:
-    return PhysTrickIVs;
-    break;
-    
-  case IVPattern::SPECIAL_FLAWLESS_TRICK:
-    return SpecTrickIVs;
-    break;
-    
-  case IVPattern::SPECIAL_HIDDEN_POWER_FLAWLESS_TRICK:
-    return HpTrickIVs;
-    break;
-  
-  case IVPattern::CUSTOM:
-  default:
-    throw;
-    break;
-  }
-}
-
 
 class FastSearchSeedGenerator
 {
@@ -319,13 +141,13 @@ private:
   {
     while (i != end)
     {
-      if ((i->second.frame >= m_frameRange.min) &&
-          (i->second.frame <= m_frameRange.max))
+      if ((i->second.frame >= (m_frameRange.min + 2)) &&
+          (i->second.frame <= (m_frameRange.max + 2)))
       {
         CGearIVFrame  frame;
         
         frame.seed = i->first;
-        frame.number = i->second.frame;
+        frame.number = i->second.frame - 2;
         frame.ivs = i->second.ivWord;
         
         if (frameChecker(frame))
@@ -394,8 +216,8 @@ void CGearSeedSearcher::Search
   IVPattern::Type  ivPattern = criteria.ivs.GetPattern();
   
   if ((ivPattern == IVPattern::CUSTOM) ||
-      (criteria.frameRange.min < 21) || (criteria.frameRange.min > 26) ||
-      (criteria.frameRange.max < 21) || (criteria.frameRange.max > 26) ||
+      ((criteria.frameRange.min + 2) > IVSeedMapMaxFrame) ||
+      ((criteria.frameRange.max + 2) > IVSeedMapMaxFrame) ||
       criteria.ivs.isRoamer)
   {
     CGearSeedGenerator     seedGenerator(criteria.minDelay,

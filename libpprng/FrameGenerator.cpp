@@ -780,7 +780,8 @@ DreamRadarFrameGenerator::DreamRadarFrameGenerator(const HashedSeed &seed,
   : m_PIDRNG(seed.rawSeed),
     m_MTRNG(seed.rawSeed >> 32), m_IVRNG(m_MTRNG, IVRNG::Normal),
     m_frame(seed),
-    m_parameters(parameters)
+    m_parameters(parameters),
+    m_pidAdvancements(parameters.GetPIDRNGAdvancements())
 {
   m_frame.number = 0;
   
@@ -845,8 +846,7 @@ void DreamRadarFrameGenerator::AdvanceFrame()
   m_frame.rngValue = m_PIDRNG.Next();
   
   // skip PID frames of earlier slots
-  int32_t  skippedFrames =
-    ((m_parameters.slot - 1) * 5) - m_parameters.numPrecedingGenderless;
+  int32_t  skippedFrames = m_pidAdvancements;
   while (skippedFrames-- > 0)
     m_PIDRNG.Next();
   
@@ -864,6 +864,40 @@ void DreamRadarFrameGenerator::AdvanceFrame()
   // skipped when advancing via spinner
   m_PIDRNG.AdvanceBuffer();
   m_IVRNG.NextIVWord();
+}
+
+DreamRadarFrame DreamRadarFrameGenerator::FrameFromIVFrame
+  (const HashedIVFrame &ivFrame, const Parameters &parameters)
+{
+  DreamRadarFrame  result(ivFrame.seed);
+  
+  result.ivs = ivFrame.ivs;
+  result.number = parameters.GetDRFrameNumber(ivFrame.number);
+  
+  LCRNG5  pidRNG(0);
+  result.seed.SeedAndSkipPIDFrames(pidRNG, parameters.memoryLinkUsed);
+  if (!parameters.memoryLinkUsed)
+    pidRNG.Next();
+  
+  result.rngValue = pidRNG.Next();
+  
+  uint32_t  skipped = parameters.GetPIDRNGAdvancements();
+  skipped += (result.number - 1) * 2;
+  while (skipped-- > 0)
+    pidRNG.Next();
+  
+  result.pid =
+    Gen5PIDRNG::NextDreamRadarPIDWord(pidRNG, parameters.targetGender,
+                                      parameters.targetRatio,
+                                      parameters.tid, parameters.sid);
+  
+  // skip 2 frames for something...
+  pidRNG.Next();
+  pidRNG.Next();
+  
+  result.nature = Nature::Type(((pidRNG.Next() >> 32) * 25) >> 32);
+  
+  return result;
 }
 
 

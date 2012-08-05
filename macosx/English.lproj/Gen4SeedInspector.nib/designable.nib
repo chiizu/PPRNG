@@ -2974,7 +2974,7 @@
 																	</object>
 																</object>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">916455424</int>
+																<int key="NSTvFlags">1990197248</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -4118,7 +4118,7 @@
 																<reference key="NSBackgroundColor" ref="985901451"/>
 																<reference key="NSGridColor" ref="1069"/>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">580911104</int>
+																<int key="NSTvFlags">1654652928</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -4761,7 +4761,7 @@
 																<reference key="NSBackgroundColor" ref="985901451"/>
 																<reference key="NSGridColor" ref="1069"/>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">849346560</int>
+																<int key="NSTvFlags">1923088384</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -5205,7 +5205,7 @@
 																<reference key="NSBackgroundColor" ref="985901451"/>
 																<reference key="NSGridColor" ref="1069"/>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">580911104</int>
+																<int key="NSTvFlags">1654652928</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -7240,7 +7240,7 @@
 																<reference key="NSBackgroundColor" ref="985901451"/>
 																<reference key="NSGridColor" ref="1069"/>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">916455424</int>
+																<int key="NSTvFlags">1990197248</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>
@@ -10005,7 +10005,7 @@
 																<reference key="NSBackgroundColor" ref="985901451"/>
 																<reference key="NSGridColor" ref="1069"/>
 																<double key="NSRowHeight">17</double>
-																<int key="NSTvFlags">916455424</int>
+																<int key="NSTvFlags">1990197248</int>
 																<reference key="NSDelegate"/>
 																<reference key="NSDataSource"/>
 																<int key="NSGridStyleMask">3</int>

@@ -193,7 +193,7 @@ struct ProgressHandler
   self.numPrecedingGenderless = 0;
   
   self.minFrame = 4;
-  self.maxFrame = 10;
+  self.maxFrame = 35;
 }
 
 - (IBAction)toggleDropDownChoice:(id)sender

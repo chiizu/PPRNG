@@ -21,7 +21,7 @@
 		C023910B15B5C2880075C7D5 /* HiddenHollowSpawnSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C023910A15B5C2880075C7D5 /* HiddenHollowSpawnSeedSearcherController.mm */; };
 		C023915815B5CA5B0075C7D5 /* HiddenHollowSlotTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C023915715B5CA5B0075C7D5 /* HiddenHollowSlotTransformer.mm */; };
 		C023953B15C1F7D50075C7D5 /* HiddenHollowGroupTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C023953A15C1F7D50075C7D5 /* HiddenHollowGroupTransformer.mm */; };
-		C02E0A0213515E1A00855098 /* README in Resources */ = {isa = PBXBuildFile; fileRef = C02E0A0113515E1A00855098 /* README */; };
+		C023966E15C81CCC0075C7D5 /* IVSeedCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C023966C15C81CCC0075C7D5 /* IVSeedCache.cpp */; };
 		C03B40FE1463D21100AD59B0 /* Gen4ConfigurationController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */; };
 		C05B870114626E42009166E0 /* HashedSeedMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C05B86FF14626E42009166E0 /* HashedSeedMessage.cpp */; };
 		C0821492136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0821491136D311200B6E0E5 /* HashedSeedInspectorFramesTabController.mm */; };
@@ -48,7 +48,6 @@
 		C0AA905D14B4A7E4003EC28F /* WonderCardSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904C14B4A7E4003EC28F /* WonderCardSeedInspector.nib */; };
 		C0AA905E14B4A7E4003EC28F /* WonderCardSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904E14B4A7E4003EC28F /* WonderCardSeedSearcher.nib */; };
 		C0B53D011451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */; };
-		C0CB379F14BDBD270043877C /* HashedSeedQuickSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0CB379D14BDBD270043877C /* HashedSeedQuickSearcher.cpp */; };
 		C0D1A3B8136C2C3100D6E2DA /* Utilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */; };
 		C0DA49A41507B1AB0011A473 /* ElementTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49A11507B1AB0011A473 /* ElementTransformer.mm */; };
 		C0DA49A51507B1AB0011A473 /* NatureTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49A31507B1AB0011A473 /* NatureTransformer.mm */; };
@@ -140,7 +139,8 @@
 		C023915715B5CA5B0075C7D5 /* HiddenHollowSlotTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HiddenHollowSlotTransformer.mm; sourceTree = "<group>"; };
 		C023953915C1F7D50075C7D5 /* HiddenHollowGroupTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HiddenHollowGroupTransformer.h; sourceTree = "<group>"; };
 		C023953A15C1F7D50075C7D5 /* HiddenHollowGroupTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HiddenHollowGroupTransformer.mm; sourceTree = "<group>"; };
-		C02E0A0113515E1A00855098 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		C023966C15C81CCC0075C7D5 /* IVSeedCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IVSeedCache.cpp; sourceTree = "<group>"; };
+		C023966D15C81CCC0075C7D5 /* IVSeedCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IVSeedCache.h; sourceTree = "<group>"; };
 		C03B40FC1463D21100AD59B0 /* Gen4ConfigurationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4ConfigurationController.h; sourceTree = "<group>"; };
 		C03B40FD1463D21100AD59B0 /* Gen4ConfigurationController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Gen4ConfigurationController.mm; sourceTree = "<group>"; };
 		C05B86FF14626E42009166E0 /* HashedSeedMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HashedSeedMessage.cpp; sourceTree = "<group>"; };
@@ -180,8 +180,6 @@
 		C0B53D001451CEBC00C62866 /* Gen4QuickSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4QuickSeedSearcher.h; sourceTree = "<group>"; };
 		C0CB35F814B827CC0043877C /* SeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeedSearcher.h; sourceTree = "<group>"; };
 		C0CB35FD14B82ECC0043877C /* SearchCriteria.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchCriteria.h; sourceTree = "<group>"; };
-		C0CB379D14BDBD270043877C /* HashedSeedQuickSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HashedSeedQuickSearcher.cpp; sourceTree = "<group>"; };
-		C0CB379E14BDBD270043877C /* HashedSeedQuickSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashedSeedQuickSearcher.h; sourceTree = "<group>"; };
 		C0D1A3B6136C2C3100D6E2DA /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Utilities.mm; sourceTree = "<group>"; };
 		C0DA49A01507B1AB0011A473 /* ElementTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElementTransformer.h; sourceTree = "<group>"; };
@@ -467,7 +465,6 @@
 				C0AA904A14B4A7E4003EC28F /* TrainerIDSearcher.nib */,
 				C0AA904C14B4A7E4003EC28F /* WonderCardSeedInspector.nib */,
 				C0AA904E14B4A7E4003EC28F /* WonderCardSeedSearcher.nib */,
-				C02E0A0113515E1A00855098 /* README */,
 				C0E30465134634BF00C56C1A /* Icon.icns */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
@@ -567,13 +564,13 @@
 				C0E304061346343400C56C1A /* HashedSeed.h */,
 				C05B86FF14626E42009166E0 /* HashedSeedMessage.cpp */,
 				C05B870014626E42009166E0 /* HashedSeedMessage.h */,
-				C0CB379D14BDBD270043877C /* HashedSeedQuickSearcher.cpp */,
-				C0CB379E14BDBD270043877C /* HashedSeedQuickSearcher.h */,
 				C0E304071346343400C56C1A /* HashedSeedSearcher.cpp */,
 				C0E304081346343400C56C1A /* HashedSeedSearcher.h */,
 				C02390D615B5A1910075C7D5 /* HiddenHollowSpawnSeedSearcher.cpp */,
 				C02390D715B5A1910075C7D5 /* HiddenHollowSpawnSeedSearcher.h */,
 				C0E3040B1346343400C56C1A /* IVRNG.h */,
+				C023966C15C81CCC0075C7D5 /* IVSeedCache.cpp */,
+				C023966D15C81CCC0075C7D5 /* IVSeedCache.h */,
 				C0E304091346343400C56C1A /* InitialSeedSearcher.cpp */,
 				C0E3040A1346343400C56C1A /* InitialSeedSearcher.h */,
 				C0E3040C1346343400C56C1A /* LinearCongruentialRNG.h */,
@@ -650,7 +647,6 @@
 			files = (
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				C0E30466134634BF00C56C1A /* Icon.icns in Resources */,
-				C02E0A0213515E1A00855098 /* README in Resources */,
 				C0AA905014B4A7E4003EC28F /* CGearSeedInspector.nib in Resources */,
 				C0AA905114B4A7E4003EC28F /* CGearSeedSearcher.nib in Resources */,
 				C0AA905214B4A7E4003EC28F /* DSParameterSearcher.nib in Resources */,
@@ -724,7 +720,6 @@
 				C0B53D011451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp in Sources */,
 				C05B870114626E42009166E0 /* HashedSeedMessage.cpp in Sources */,
 				C03B40FE1463D21100AD59B0 /* Gen4ConfigurationController.mm in Sources */,
-				C0CB379F14BDBD270043877C /* HashedSeedQuickSearcher.cpp in Sources */,
 				C0DA49A41507B1AB0011A473 /* ElementTransformer.mm in Sources */,
 				C0DA49A51507B1AB0011A473 /* NatureTransformer.mm in Sources */,
 				C0DA49BD1507B4CC0011A473 /* AbilityTransformer.mm in Sources */,
@@ -759,6 +754,7 @@
 				C023910B15B5C2880075C7D5 /* HiddenHollowSpawnSeedSearcherController.mm in Sources */,
 				C023915815B5CA5B0075C7D5 /* HiddenHollowSlotTransformer.mm in Sources */,
 				C023953B15C1F7D50075C7D5 /* HiddenHollowGroupTransformer.mm in Sources */,
+				C023966E15C81CCC0075C7D5 /* IVSeedCache.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

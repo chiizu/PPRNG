@@ -22,6 +22,8 @@
 #include "DreamRadarSeedSearcher.h"
 #include "SeedSearcher.h"
 
+#include "IVSeedCache.h"
+
 namespace pprng
 {
 
@@ -71,6 +73,60 @@ struct FrameChecker
   const DreamRadarSeedSearcher::Criteria  &m_criteria;
 };
 
+
+struct SeedMapSearcher
+{
+  typedef DreamRadarFrame  ResultType;
+  
+  SeedMapSearcher(const IVSeedMap &seedMap,
+                  const DreamRadarSeedSearcher::Criteria &criteria)
+    : m_seedMap(seedMap), m_criteria(criteria),
+      m_lowIVFrame(criteria.frameParameters.GetBaseIVFrameNumber
+                                              (criteria.frame.min)),
+      m_highIVFrame(m_lowIVFrame +
+                    ((criteria.frame.max - criteria.frame.min + 1) * 2))
+  {}
+  
+  void Search(const HashedSeed &seed, const FrameChecker &frameChecker,
+              const DreamRadarSeedSearcher::ResultCallback &resultHandler)
+  {
+    uint32_t  ivSeed = seed.rawSeed >> 32;
+    uint32_t  limit = m_lowIVFrame;
+    
+    IVSeedMap::const_iterator  i = m_seedMap.lower_bound(ivSeed);
+    IVSeedMap::const_iterator  end = m_seedMap.upper_bound(ivSeed);
+    while ((i != end) && (i->second.frame < limit))
+      ++i;
+    
+    limit = m_highIVFrame;
+    HashedIVFrame  ivFrame(seed);
+    while ((i != end) && (i->second.frame <= limit))
+    {
+      ivFrame.number = i->second.frame;
+      ivFrame.ivs = i->second.ivWord;
+      
+      if (((ivFrame.number & 0x1) == (m_lowIVFrame & 0x1)) &&
+          frameChecker.CheckIVs(ivFrame.ivs) &&
+          frameChecker.CheckHiddenPower(ivFrame.ivs))
+      {
+        DreamRadarFrame  result =
+          DreamRadarFrameGenerator::FrameFromIVFrame
+            (ivFrame, m_criteria.frameParameters);
+        
+        if (frameChecker.CheckNature(result.nature))
+          resultHandler(result);
+      }
+      
+      ++i;
+    }
+  }
+  
+  const IVSeedMap                         &m_seedMap;
+  const DreamRadarSeedSearcher::Criteria  &m_criteria;
+  const uint32_t                          m_lowIVFrame, m_highIVFrame;
+};
+
+
 struct FrameGeneratorFactory
 {
   typedef DreamRadarFrameGenerator  FrameGenerator;
@@ -117,18 +173,32 @@ void DreamRadarSeedSearcher::Search
   (const Criteria &criteria, const ResultCallback &resultHandler,
    const SearchRunner::ProgressCallback &progressHandler)
 {
+  IVPattern::Type  ivPattern = criteria.ivs.GetPattern();
+  
   HashedSeedGenerator         seedGenerator(criteria.seedParameters);
   FrameGeneratorFactory       frameGeneratorFactory(criteria);
-  
-  SeedFrameSearcher<FrameGeneratorFactory>  seedSearcher(frameGeneratorFactory,
-                                                         criteria.frame);
-  
   FrameChecker                frameChecker(criteria);
-  
   SearchRunner                searcher;
   
-  searcher.SearchThreaded(seedGenerator, seedSearcher, frameChecker,
-                          resultHandler, progressHandler);
+  if ((ivPattern != IVPattern::CUSTOM) &&
+      (criteria.frameParameters.GetBaseIVFrameNumber(criteria.frame.min) <=
+        IVSeedMapMaxFrame) &&
+      (criteria.frameParameters.GetBaseIVFrameNumber(criteria.frame.max) <=
+        IVSeedMapMaxFrame))
+  {
+    SeedMapSearcher  seedSearcher(GetIVSeedMap(ivPattern), criteria);
+    
+    searcher.SearchThreaded(seedGenerator, seedSearcher, frameChecker,
+                            resultHandler, progressHandler);
+  }
+  else
+  {
+    SeedFrameSearcher<FrameGeneratorFactory> seedSearcher(frameGeneratorFactory,
+                                                          criteria.frame);
+    
+    searcher.SearchThreaded(seedGenerator, seedSearcher, frameChecker,
+                            resultHandler, progressHandler);
+  }
 }
 
 }

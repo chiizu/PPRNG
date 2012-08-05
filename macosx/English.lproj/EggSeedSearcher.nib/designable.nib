@@ -325,7 +325,7 @@
 													<reference key="NSTableView" ref="18469957"/>
 												</object>
 												<object class="NSTableColumn" id="428877185">
-													<string key="NSIdentifier">keys</string>
+													<string key="NSIdentifier">heldButtons</string>
 													<double key="NSWidth">101</double>
 													<double key="NSMinWidth">10</double>
 													<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -16408,12 +16408,14 @@
 							<string>configMenu</string>
 							<string>delegate</string>
 							<string>dsTypeField</string>
+							<string>hasShinyCharmButton</string>
 							<string>macAddressField0</string>
 							<string>macAddressField1</string>
 							<string>macAddressField2</string>
 							<string>macAddressField3</string>
 							<string>macAddressField4</string>
 							<string>macAddressField5</string>
+							<string>memoryLinkUsedButton</string>
 							<string>sidField</string>
 							<string>tidField</string>
 							<string>timer0HighField</string>
@@ -16430,12 +16432,14 @@
 							<string>NSPopUpButton</string>
 							<string>id</string>
 							<string>NSTextField</string>
+							<string>NSButton</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
+							<string>NSButton</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
@@ -16455,12 +16459,14 @@
 							<string>configMenu</string>
 							<string>delegate</string>
 							<string>dsTypeField</string>
+							<string>hasShinyCharmButton</string>
 							<string>macAddressField0</string>
 							<string>macAddressField1</string>
 							<string>macAddressField2</string>
 							<string>macAddressField3</string>
 							<string>macAddressField4</string>
 							<string>macAddressField5</string>
+							<string>memoryLinkUsedButton</string>
 							<string>sidField</string>
 							<string>tidField</string>
 							<string>timer0HighField</string>
@@ -16490,6 +16496,10 @@
 								<string key="candidateClassName">NSTextField</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">hasShinyCharmButton</string>
+								<string key="candidateClassName">NSButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">macAddressField0</string>
 								<string key="candidateClassName">NSTextField</string>
 							</object>
@@ -16512,6 +16522,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">macAddressField5</string>
 								<string key="candidateClassName">NSTextField</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">memoryLinkUsedButton</string>
+								<string key="candidateClassName">NSButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">sidField</string>

@@ -328,7 +328,7 @@
 													<string key="NSHeaderToolTip"/>
 												</object>
 												<object class="NSTableColumn" id="428877185">
-													<string key="NSIdentifier">keys</string>
+													<string key="NSIdentifier">heldButtons</string>
 													<double key="NSWidth">101</double>
 													<double key="NSMinWidth">10</double>
 													<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -1329,7 +1329,7 @@
 													<string key="NSHeaderToolTip">The frame number that will produce a shiny gift, fossil, starter, or roamer</string>
 												</object>
 												<object class="NSTableColumn" id="4500">
-													<string key="NSIdentifier">grassCaveFrame</string>
+													<string key="NSIdentifier">grassCaveSurfSpotFrame</string>
 													<double key="NSWidth">126</double>
 													<double key="NSMinWidth">10</double>
 													<double key="NSMaxWidth">3.4028234663852886e+38</double>
@@ -1996,7 +1996,7 @@
 													<string key="NSHeaderToolTip">The Encounter Slot Value for an encounter on land</string>
 												</object>
 												<object class="NSTableColumn" id="749532826">
-													<string key="NSIdentifier">landESV</string>
+													<string key="NSIdentifier">doublesESV</string>
 													<double key="NSWidth">75</double>
 													<double key="NSMinWidth">10</double>
 													<double key="NSMaxWidth">3.4028234663852886e+38</double>
