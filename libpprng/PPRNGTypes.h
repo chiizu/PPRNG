@@ -1219,20 +1219,20 @@ struct ProfElmResponses
     uint64_t  numResponses = NumResponses();
     
     word = ((numResponses + 1) << RESPONSE_COUNT_SHIFT) |
-           (word & RESPONSE_BITS_MASK) | (r << (numResponses << 1));
+           (word & RESPONSE_BITS_MASK) | (uint64_t(r) << (numResponses << 1));
   }
   
   void RemoveResponse()
   {
     uint64_t  numResponses = NumResponses();
     word = ((numResponses - 1) << RESPONSE_COUNT_SHIFT) |
-           (word & ((0x1 << ((numResponses - 1) << 1)) - 1));
+           (word & ((0x1ULL << ((numResponses - 1) << 1)) - 1));
   }
   
   bool Contains(const ProfElmResponses &subResponses) const
   {
     uint64_t  numResponses = subResponses.NumResponses();
-    uint64_t  searchMask = (0x1 << (numResponses << 1)) - 1;
+    uint64_t  searchMask = (0x1ULL << (numResponses << 1)) - 1;
     uint64_t  searchValue = subResponses.word & searchMask;
     
     return (numResponses <= NumResponses()) &&
@@ -1288,6 +1288,8 @@ static uint32_t Gen5Pitch(uint64_t rawRNGValue)
 };
 
 
+class HashedSeed;
+
 struct SpinnerPositions
 {
   uint64_t  word;
@@ -1310,12 +1312,15 @@ struct SpinnerPositions
   enum
   {
     SPIN_COUNT_SHIFT = 57,
-    SPIN_BITS_MASK = 0x01FFFFFFFFFFFFFFULL
+    SPIN_BITS_MASK = 0x01FFFFFFFFFFFFFFULL,
+    MAX_SPINS = 19
   };
   
   SpinnerPositions() : word(0) {}
   SpinnerPositions(uint64_t seed, uint32_t numSpins);
   explicit SpinnerPositions(uint64_t w) : word(w) {}
+  SpinnerPositions(const HashedSeed &seed, bool memoryLinkUsed,
+                   uint32_t numSpins = MAX_SPINS);
   
   uint32_t NumSpins() const
   { return (word >> SPIN_COUNT_SHIFT); }
@@ -1328,20 +1333,20 @@ struct SpinnerPositions
     uint64_t  numSpins = NumSpins();
     
     word = ((numSpins + 1) << SPIN_COUNT_SHIFT) |
-           (word & SPIN_BITS_MASK) | (p << (numSpins * 3));
+           (word & SPIN_BITS_MASK) | (uint64_t(p) << (numSpins * 3));
   }
   
   void RemoveSpin()
   {
     uint64_t  numSpins = NumSpins();
     word = ((numSpins - 1) << SPIN_COUNT_SHIFT) |
-           (word & ((0x1 << ((numSpins - 1) * 3)) - 1));
+           (word & ((0x1ULL << ((numSpins - 1) * 3)) - 1));
   }
   
   bool Contains(const SpinnerPositions &subSpins) const
   {
     uint64_t  numSpins = subSpins.NumSpins();
-    uint64_t  searchMask = (0x1 << (numSpins * 3)) - 1;
+    uint64_t  searchMask = (0x1ULL << (numSpins * 3)) - 1;
     uint64_t  searchValue = subSpins.word & searchMask;
     
     return (numSpins <= NumSpins()) && ((word & searchMask) == searchValue);

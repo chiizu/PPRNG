@@ -30,28 +30,6 @@
 namespace pprng
 {
 
-class TIDSeedSearcher
-{
-public:
-  struct Criteria
-  {
-    uint32_t  tid1;
-    uint32_t  tid2;
-    uint32_t  tid3;
-  };
-  
-  struct Result
-  {
-    uint64_t  tidSeed;
-  };
-  typedef boost::function<void (const Result&)>  ResultCallback;
-  
-  TIDSeedSearcher() {}
-  
-  void Search(const Criteria &criteria,
-              const ResultCallback &resultHandler);
-};
-
 class InitialIVSeedSearcher
 {
 public:
@@ -81,23 +59,30 @@ public:
               const SearchRunner::ProgressCallback &progressHandler);
 };
 
-class InitialSeedSearcher
+class B2W2InitialSeedSearcher
 {
 public:
-  struct Criteria
+  struct Criteria : public SearchCriteria
   {
-    uint32_t  tid1;
-    uint32_t  tid2;
-    uint32_t  tid3;
-    uint32_t  tid4;
+    HashedSeedGenerator::Parameters  seedParameters;
+    bool              memoryLinkUsed;
+    SpinnerPositions  spins;
     
-    IVs       minIVs;
-    IVs       maxIVs;
+    Criteria()
+      : seedParameters(), memoryLinkUsed(false), spins()
+    {}
+    
+    uint64_t ExpectedNumberOfResults() const;
   };
   
-  InitialSeedSearcher() {}
+  typedef HashedSeed                                 ResultType;
+  typedef boost::function<void (const ResultType&)>  ResultCallback;
   
-  uint64_t Search(const Criteria &criteria);
+  B2W2InitialSeedSearcher() {}
+  
+  void Search(const Criteria &criteria,
+              const ResultCallback &resultHandler,
+              const SearchRunner::ProgressCallback &progressHandler);
 };
 
 }

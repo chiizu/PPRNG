@@ -47,6 +47,8 @@
 		C0AA905C14B4A7E4003EC28F /* TrainerIDSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904A14B4A7E4003EC28F /* TrainerIDSearcher.nib */; };
 		C0AA905D14B4A7E4003EC28F /* WonderCardSeedInspector.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904C14B4A7E4003EC28F /* WonderCardSeedInspector.nib */; };
 		C0AA905E14B4A7E4003EC28F /* WonderCardSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AA904E14B4A7E4003EC28F /* WonderCardSeedSearcher.nib */; };
+		C0AD806615D3F3DB00D8B07E /* B2W2ParameterSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0AD806415D3F3DB00D8B07E /* B2W2ParameterSearcher.nib */; };
+		C0AD806A15D3F6A300D8B07E /* B2W2ParameterSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0AD806915D3F6A300D8B07E /* B2W2ParameterSearcherController.mm */; };
 		C0B53D011451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */; };
 		C0D1A3B8136C2C3100D6E2DA /* Utilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0D1A3B7136C2C3100D6E2DA /* Utilities.mm */; };
 		C0DA49A41507B1AB0011A473 /* ElementTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0DA49A11507B1AB0011A473 /* ElementTransformer.mm */; };
@@ -176,6 +178,9 @@
 		C0AA904B14B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/TrainerIDSearcher.nib; sourceTree = "<group>"; };
 		C0AA904D14B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/WonderCardSeedInspector.nib; sourceTree = "<group>"; };
 		C0AA904F14B4A7E4003EC28F /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/WonderCardSeedSearcher.nib; sourceTree = "<group>"; };
+		C0AD806515D3F3DB00D8B07E /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/B2W2ParameterSearcher.nib; sourceTree = "<group>"; };
+		C0AD806815D3F6A300D8B07E /* B2W2ParameterSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = B2W2ParameterSearcherController.h; sourceTree = "<group>"; };
+		C0AD806915D3F6A300D8B07E /* B2W2ParameterSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = B2W2ParameterSearcherController.mm; sourceTree = "<group>"; };
 		C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Gen4QuickSeedSearcher.cpp; sourceTree = "<group>"; };
 		C0B53D001451CEBC00C62866 /* Gen4QuickSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4QuickSeedSearcher.h; sourceTree = "<group>"; };
 		C0CB35F814B827CC0043877C /* SeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeedSearcher.h; sourceTree = "<group>"; };
@@ -325,6 +330,8 @@
 			children = (
 				C0E304291346349900C56C1A /* AppDelegate.h */,
 				C0E3042A1346349900C56C1A /* AppDelegate.mm */,
+				C0AD806815D3F6A300D8B07E /* B2W2ParameterSearcherController.h */,
+				C0AD806915D3F6A300D8B07E /* B2W2ParameterSearcherController.mm */,
 				C0E3042B1346349900C56C1A /* CGearSeedInspectorController.h */,
 				C0E3042C1346349900C56C1A /* CGearSeedInspectorController.mm */,
 				C0E3042D1346349900C56C1A /* CGearSeedSearcherController.h */,
@@ -445,6 +452,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C0AD806415D3F3DB00D8B07E /* B2W2ParameterSearcher.nib */,
 				C0AA903214B4A7E4003EC28F /* CGearSeedInspector.nib */,
 				C0AA903414B4A7E4003EC28F /* CGearSeedSearcher.nib */,
 				C0238E5715AF219C0075C7D5 /* DreamRadarSeedInspector.nib */,
@@ -667,6 +675,7 @@
 				C0238B29159FFF1F0075C7D5 /* DreamRadarSeedSearcher.nib in Resources */,
 				C0238E5915AF219C0075C7D5 /* DreamRadarSeedInspector.nib in Resources */,
 				C02390E215B5A1DA0075C7D5 /* HiddenHollowSpawnSeedSearcher.nib in Resources */,
+				C0AD806615D3F3DB00D8B07E /* B2W2ParameterSearcher.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -755,6 +764,7 @@
 				C023915815B5CA5B0075C7D5 /* HiddenHollowSlotTransformer.mm in Sources */,
 				C023953B15C1F7D50075C7D5 /* HiddenHollowGroupTransformer.mm in Sources */,
 				C023966E15C81CCC0075C7D5 /* IVSeedCache.cpp in Sources */,
+				C0AD806A15D3F6A300D8B07E /* B2W2ParameterSearcherController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -911,6 +921,14 @@
 				C0AA904F14B4A7E4003EC28F /* English */,
 			);
 			name = WonderCardSeedSearcher.nib;
+			sourceTree = "<group>";
+		};
+		C0AD806415D3F3DB00D8B07E /* B2W2ParameterSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0AD806515D3F3DB00D8B07E /* English */,
+			);
+			name = B2W2ParameterSearcher.nib;
 			sourceTree = "<group>";
 		};
 		C0F6D79B15444B9F007C58D1 /* Gen4EggPIDSeedSearcher.nib */ = {

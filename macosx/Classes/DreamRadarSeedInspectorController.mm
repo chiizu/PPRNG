@@ -129,13 +129,8 @@ SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
   else
   {
     HashedSeed  seed([rawSeed unsignedLongLongValue], version);
-    LCRNG5      rng(0);
-    seed.SeedAndSkipPIDFrames(rng, memoryLinkUsed);
     
-    if (!memoryLinkUsed)
-      rng.Next();
-    
-    self.spinnerSequence = SpinnerPositions(rng.Seed(), 10).word;
+    self.spinnerSequence = SpinnerPositions(seed, memoryLinkUsed, 10).word;
   }
 }
 
@@ -382,13 +377,8 @@ SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
       
       SetHashedSeedResultParameters(row, seed);
       
-      LCRNG5      rng(0);
-      seed.SeedAndSkipPIDFrames(rng, memoryLinkUsed);
-      
-      if (!memoryLinkUsed)
-        rng.Next();
-      
-      row.spinnerSequence = SpinnerPositions(rng.Seed(), 19).word;
+      row.spinnerSequence = SpinnerPositions(seed, memoryLinkUsed,
+                                             SpinnerPositions::MAX_SPINS).word;
       
       [rowArray addObject: row];
     }
@@ -433,7 +423,7 @@ SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
 {
   SpinnerPositions  spins(spinnerSequenceSearchValue);
   
-  if (spins.NumSpins() < 19)
+  if (spins.NumSpins() < SpinnerPositions::MAX_SPINS)
   {
     spins.AddSpin(position);
     
@@ -484,8 +474,7 @@ SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
 
 - (IBAction)removeLastSearchItem:(id)sender
 {
-  uint32_t  numSpins =
-    SpinnerPositions(spinnerSequenceSearchValue).NumSpins();
+  uint32_t  numSpins = SpinnerPositions(spinnerSequenceSearchValue).NumSpins();
   if (numSpins > 0)
   {
     SpinnerPositions  spins(spinnerSequenceSearchValue);

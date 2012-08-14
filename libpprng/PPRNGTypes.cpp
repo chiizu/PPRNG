@@ -30,6 +30,7 @@
 
 #include "LinearCongruentialRNG.h"
 #include "MersenneTwisterRNG.h"
+#include "HashedSeed.h"
 
 namespace pprng
 {
@@ -1035,18 +1036,48 @@ HGSSRoamers::HGSSRoamers(uint32_t seed, uint32_t raikouLocation,
 }
 
 
+namespace
+{
+
+uint64_t GenerateSpinnerPositions(LCRNG5 &rng, uint32_t numSpins)
+{
+  uint64_t  word = 0;
+  
+  for (uint32_t i = 0; i < numSpins; ++i)
+  {
+    word = word |
+      (uint64_t(SpinnerPositions::CalcPosition(rng.Next())) << (i * 3));
+    rng.Next();
+  }
+  
+  word = word | (uint64_t(numSpins) << SpinnerPositions::SPIN_COUNT_SHIFT);
+  
+  return word;
+}
+
+}
+
 SpinnerPositions::SpinnerPositions(uint64_t seed, uint32_t numSpins)
   : word(0)
 {
   LCRNG5  rng(seed);
   
-  for (uint32_t i = 0; i < numSpins; ++i)
-  {
-    word = word | (uint64_t(CalcPosition(rng.Next())) << (i * 3));
-    rng.Next();
-  }
+  word = GenerateSpinnerPositions(rng, numSpins);
+}
+
+
+SpinnerPositions::SpinnerPositions(const HashedSeed &seed, bool memoryLinkUsed,
+                                   uint32_t numSpins)
+  : word(0)
+{
+  LCRNG5  rng(0);
   
-  word = word | (uint64_t(numSpins) << SPIN_COUNT_SHIFT);
+  seed.SeedAndSkipPIDFrames(rng, memoryLinkUsed);
+  
+  if (!memoryLinkUsed)
+    rng.Next();
+  
+  word = GenerateSpinnerPositions(rng, numSpins);
 }
 
 }

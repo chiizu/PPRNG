@@ -21,19 +21,27 @@
 
 #import "LauncherController.h"
 
+// Gen 5 Common
 #import "HashedSeedSearcherController.h"
 #import "StandardSeedInspectorController.h"
-#import "EggSeedSearcherController.h"
 #import "WonderCardSeedSearcherController.h"
 #import "WonderCardSeedInspectorController.h"
-#import "DreamRadarSeedSearcherController.h"
-#import "DreamRadarSeedInspectorController.h"
-#import "HiddenHollowSpawnSeedSearcherController.h"
-#import "CGearSeedSearcherController.h"
-#import "CGearSeedInspectorController.h"
 #import "TrainerIDSearcherController.h"
 #import "DSParameterSearcherController.h"
 #import "Gen5ConfigurationEditController.h"
+
+// BW Only
+#import "EggSeedSearcherController.h"
+#import "CGearSeedSearcherController.h"
+#import "CGearSeedInspectorController.h"
+
+// B2W2 Only
+#import "DreamRadarSeedSearcherController.h"
+#import "DreamRadarSeedInspectorController.h"
+#import "HiddenHollowSpawnSeedSearcherController.h"
+#import "B2W2ParameterSearcherController.h"
+
+// Gen 4
 #import "Gen4SeedSearcherController.h"
 #import "Gen4EggPIDSeedSearcherController.h"
 #import "Gen4EggIVSeedSearcherController.h"
@@ -59,28 +67,38 @@
   
   buttonToClassMap =
     [NSDictionary dictionaryWithObjectsAndKeys:
+      
+      // Gen 5 Common
       [HashedSeedSearcherController class],
         [launchHashedSeedSearcher title],
       [StandardSeedInspectorController class],
         [launchStandardSeedInspector title],
-      [EggSeedSearcherController class],
-        [launchEggSeedSearcher title],
       [WonderCardSeedSearcherController class],
         [launchWonderCardSeedSearcher title],
       [WonderCardSeedInspectorController class],
         [launchWonderCardSeedInspector title],
+      [TrainerIDSearcherController class], [launchTIDSearcher title],
+      [DSParameterSearcherController class], [launchDSParameterSearcher title],
+      [Gen5ConfigurationEditController class],
+        [launchGen5ConfigurationEdit title],
+      
+      // BW Only
+      [EggSeedSearcherController class],
+        [launchEggSeedSearcher title],
+      [CGearSeedSearcherController class], [launchCGearSeedSearcher title],
+      [CGearSeedInspectorController class], [launchCGearSeedInspector title],
+      
+      // B2W2 Only
       [DreamRadarSeedSearcherController class],
         [launchDreamRadarSeedSearcher title],
       [DreamRadarSeedInspectorController class],
         [launchDreamRadarSeedInspector title],
       [HiddenHollowSpawnSeedSearcherController class],
         [launchHiddenHollowSpawnSeedSearcher title],
-      [CGearSeedSearcherController class], [launchCGearSeedSearcher title],
-      [CGearSeedInspectorController class], [launchCGearSeedInspector title],
-      [TrainerIDSearcherController class], [launchTIDSearcher title],
-      [DSParameterSearcherController class], [launchDSParameterSearcher title],
-      [Gen5ConfigurationEditController class],
-        [launchGen5ConfigurationEdit title],
+      [B2W2ParameterSearcherController class],
+        [launchB2W2ParameterSearcher title],
+      
+      // Gen 4
       [Gen4SeedSearcherController class], [launchGen4SeedSearcher title],
       [Gen4EggPIDSeedSearcherController class],
         [launchGen4EggPIDSeedSearcher title],

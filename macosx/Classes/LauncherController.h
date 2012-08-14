@@ -24,20 +24,27 @@
 
 @interface LauncherController : NSWindowController
 {
+  // Gen 5 Common
   IBOutlet NSButton  *launchHashedSeedSearcher;
   IBOutlet NSButton  *launchStandardSeedInspector;
-  IBOutlet NSButton  *launchEggSeedSearcher;
   IBOutlet NSButton  *launchWonderCardSeedSearcher;
   IBOutlet NSButton  *launchWonderCardSeedInspector;
-  IBOutlet NSButton  *launchDreamRadarSeedSearcher;
-  IBOutlet NSButton  *launchDreamRadarSeedInspector;
-  IBOutlet NSButton  *launchHiddenHollowSpawnSeedSearcher;
-  IBOutlet NSButton  *launchCGearSeedSearcher;
-  IBOutlet NSButton  *launchCGearSeedInspector;
   IBOutlet NSButton  *launchTIDSearcher;
   IBOutlet NSButton  *launchDSParameterSearcher;
   IBOutlet NSButton  *launchGen5ConfigurationEdit;
   
+  // BW Only
+  IBOutlet NSButton  *launchEggSeedSearcher;
+  IBOutlet NSButton  *launchCGearSeedSearcher;
+  IBOutlet NSButton  *launchCGearSeedInspector;
+  
+  // B2W2 Only
+  IBOutlet NSButton  *launchDreamRadarSeedSearcher;
+  IBOutlet NSButton  *launchDreamRadarSeedInspector;
+  IBOutlet NSButton  *launchHiddenHollowSpawnSeedSearcher;
+  IBOutlet NSButton  *launchB2W2ParameterSearcher;
+  
+  // Gen 4
   IBOutlet NSButton  *launchGen4SeedSearcher;
   IBOutlet NSButton  *launchGen4EggPIDSeedSearcher;
   IBOutlet NSButton  *launchGen4EggIVSeedSearcher;

@@ -51,17 +51,23 @@
     
     if ([scanner scanInt: &result] && [scanner isAtEnd] && (result >= 0))
     {
-      if (anObject)
+      if (result <= 65535)
       {
-        unsigned int  tid = result;
+        if (anObject)
+        {
+          unsigned int  tid = result;
+          
+          *anObject = [NSNumber numberWithUnsignedInt: tid];
+        }
         
-        *anObject = [NSNumber numberWithUnsignedInt: tid];
+        return YES;
       }
-      
-      return YES;
+      else if (error)
+      {
+        *error = @"Trainer ID is limited to a value between 0 and 65535";
+      }
     }
-    
-    if (error)
+    else if (error)
     {
       *error = @"Not a Trainer ID";
     }
