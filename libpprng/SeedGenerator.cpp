@@ -233,10 +233,16 @@ std::list<HashedSeedGenerator> HashedSeedGenerator::Split(uint32_t parts)
   
   HashedSeedGenerator::Parameters  p = m_parameters;
   
-  uint32_t  partSeconds =
-    ((m_parameters.toTime - m_parameters.fromTime).total_seconds() + 1) / parts;
+  uint32_t  totalSeconds =
+    (m_parameters.toTime - m_parameters.fromTime).total_seconds() + 1;
+  
+  if (parts > totalSeconds)
+    parts = totalSeconds;
+  
+  uint32_t  partSeconds = (totalSeconds + parts - 1) / parts;
+  seconds   delta(partSeconds);
   ptime     fromTime = m_parameters.fromTime;
-  ptime     toTime = fromTime + seconds(partSeconds);
+  ptime     toTime = fromTime + seconds(partSeconds - 1);
   
   for (uint32_t i = 0; i < parts; ++i)
   {
@@ -247,12 +253,8 @@ std::list<HashedSeedGenerator> HashedSeedGenerator::Split(uint32_t parts)
     
     result.push_back(part);
     
-    fromTime = toTime;
-    toTime = toTime + seconds(partSeconds);
-    if (i == (parts - 1))
-    {
-      toTime = m_parameters.toTime;
-    }
+    fromTime = fromTime + delta;
+    toTime = (i == (parts - 1)) ? m_parameters.toTime : toTime + delta;
   }
   
   return result;

@@ -253,7 +253,17 @@ enum Nazo
   JPWhite2Nazo0 = 0x0209A8FC,
   JPWhite2Nazo1 = 0x02039AF5,
   JPWhite2Nazo2DS = 0x021FF9D0,
-  JPWhite2Nazo2DSi = 0x027AA5F0
+  JPWhite2Nazo2DSi = 0x027AA5F0,
+  
+  ENBlack2Nazo0 = 0x0209AEE8,
+  ENBlack2Nazo1 = 0x02039DE9,
+  ENBlack2Nazo2DS = 0x02200010,
+  ENBlack2Nazo2DSi = 0x027AA730,
+  
+  ENWhite2Nazo0 = 0x0209AF28,
+  ENWhite2Nazo1 = 0x02039E15,
+  ENWhite2Nazo2DS = 0x02200050,
+  ENWhite2Nazo2DSi = 0x027AA5F0
 };
 
 static Nazo NazoForVersionAndDS(Game::Version version, DS::Type dsType)
@@ -326,6 +336,14 @@ static Nazo NazoForVersionAndDS(Game::Version version, DS::Type dsType)
       return isPlainDS ? JPWhite2Nazo2DS : JPWhite2Nazo2DSi;
       break;
       
+    case Game::Black2English:
+      return isPlainDS ? ENBlack2Nazo2DS : ENBlack2Nazo2DSi;
+      break;
+    
+    case Game::White2English:
+      return isPlainDS ? ENWhite2Nazo2DS : ENWhite2Nazo2DSi;
+      break;
+      
     default:
       return static_cast<Nazo>(0);
       break;
@@ -346,7 +364,19 @@ static void SetBlack2White2FirstNazos(uint32_t message[], Game::Version version)
       message[1] = SwapEndianess(JPWhite2Nazo1);
       break;
       
+    case Game::Black2English:
+      message[0] = SwapEndianess(ENBlack2Nazo0);
+      message[1] = SwapEndianess(ENBlack2Nazo1);
+      break;
+    
+    case Game::White2English:
+      message[0] = SwapEndianess(ENWhite2Nazo0);
+      message[1] = SwapEndianess(ENWhite2Nazo1);
+      break;
+      
     default:
+      message[0] = 0;
+      message[1] = 0;
       break;
   }
 }
