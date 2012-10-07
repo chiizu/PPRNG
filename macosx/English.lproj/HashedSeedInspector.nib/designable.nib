@@ -4667,7 +4667,7 @@ IC0gMTAwJSk</string>
 											</object>
 											<object class="NSBox" id="334658658">
 												<reference key="NSNextResponder" ref="284933407"/>
-												<int key="NSvFlags">12</int>
+												<int key="NSvFlags">16</int>
 												<string key="NSFrame">{{617, 17}, {5, 421}}</string>
 												<reference key="NSSuperview" ref="284933407"/>
 												<string key="NSOffsets">{0, 0}</string>

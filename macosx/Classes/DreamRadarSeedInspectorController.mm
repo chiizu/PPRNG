@@ -154,7 +154,17 @@ SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
   {
     type = newValue;
     
-    self.genderRequired = (type == DreamRadarFrameGenerator::NonLegendaryFrame);
+    if (type == DreamRadarFrameGenerator::NonLegendaryFrame)
+    {
+      self.genderRequired = YES;
+      self.numPrecedingGenderlessRequired = YES;
+    }
+    else
+    {
+      self.genderRequired = NO;
+      self.numPrecedingGenderlessRequired = NO;
+      self.numPrecedingGenderless = 0;
+    }
   }
 }
 
@@ -176,19 +186,15 @@ SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
     slot = newValue;
     self.maxNumPrecedingGenderless = slot - 1;
     
-    self.numPrecedingGenderlessRequired = (slot > 1);
-    if (numPrecedingGenderless >= slot)
-      self.numPrecedingGenderless = slot - 1;
-  }
-}
-
-- (void)setNumPrecedingGenderlessRequired:(BOOL)newValue
-{
-  if (numPrecedingGenderlessRequired != newValue)
-  {
-    numPrecedingGenderlessRequired = newValue;
-    if (newValue)
+    if ((slot > 1) && (type == DreamRadarFrameGenerator::NonLegendaryFrame))
     {
+      self.numPrecedingGenderlessRequired = YES;
+      if (numPrecedingGenderless >= slot)
+        self.numPrecedingGenderless = slot - 1;
+    }
+    else
+    {
+      self.numPrecedingGenderlessRequired = NO;
       self.numPrecedingGenderless = 0;
     }
   }
@@ -216,14 +222,15 @@ SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
   {
     p.targetGender = gender;
     p.targetRatio = genderRatio;
+    p.numPrecedingGenderless = numPrecedingGenderless;
   }
   else
   {
     p.targetGender = Gender::MALE;
     p.targetRatio = Gender::MALE_ONLY;
+    p.numPrecedingGenderless = 0;
   }
   p.slot = slot;
-  p.numPrecedingGenderless = numPrecedingGenderless;
   p.tid = [tid unsignedIntValue];
   p.sid = [sid unsignedIntValue];
   p.memoryLinkUsed = memoryLinkUsed;

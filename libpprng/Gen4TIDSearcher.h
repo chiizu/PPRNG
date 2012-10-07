@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 chiizu
+  Copyright (C) 2012 chiizu
   chiizu.pprng@gmail.com
   
   This file is part of libpprng.
@@ -18,8 +18,8 @@
   along with libpprng.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TRAINER_ID_SEARCHER_H
-#define TRAINER_ID_SEARCHER_H
+#ifndef GEN_4_TID_SEARCHER_H
+#define GEN_4_TID_SEARCHER_H
 
 #include "PPRNGTypes.h"
 #include "SearchCriteria.h"
@@ -32,31 +32,26 @@
 namespace pprng
 {
 
-class TrainerIDSearcher
+class Gen4TIDSearcher
 {
 public:
   struct Criteria : public SearchCriteria
   {
-    HashedSeedGenerator::Parameters  seedParameters;
-    SearchCriteria::FrameRange       frame;
+    uint32_t  minDelay, maxDelay;
     
-    bool      hasTID;
-    uint32_t  tid;
-    bool      hasSID;
-    uint32_t  sid;
-    bool      hasShinyPID;
-    PID       shinyPID;
-    bool      wildShiny;
-    bool      giftShiny;
-    bool      eggShiny;
+    bool      considerTID, considerSID;
+    uint32_t  tid, sid;
+    
+    bool      considerPID;
+    PID       pid;
     
     uint64_t ExpectedNumberOfResults() const;
   };
   
-  typedef Gen5TrainerIDFrameGenerator::Frame         ResultType;
+  typedef Gen4TrainerIDFrame                         ResultType;
   typedef boost::function<void (const ResultType&)>  ResultCallback;
   
-  TrainerIDSearcher() {}
+  Gen4TIDSearcher() {}
   
   void Search(const Criteria &criteria, const ResultCallback &resultHandler,
               const SearchRunner::ProgressCallback &progressHandler);

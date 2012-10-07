@@ -213,7 +213,17 @@ struct ProgressHandler
   {
     type = newValue;
     
-    self.genderRequired = (type == DreamRadarFrameGenerator::NonLegendaryFrame);
+    if (type == DreamRadarFrameGenerator::NonLegendaryFrame)
+    {
+      self.genderRequired = YES;
+      self.numPrecedingGenderlessRequired = YES;
+    }
+    else
+    {
+      self.genderRequired = NO;
+      self.numPrecedingGenderlessRequired = NO;
+      self.numPrecedingGenderless = 0;
+    }
   }
 }
 
@@ -235,19 +245,15 @@ struct ProgressHandler
     slot = newValue;
     self.maxNumPrecedingGenderless = slot - 1;
     
-    self.numPrecedingGenderlessRequired = (slot > 1);
-    if (numPrecedingGenderless >= slot)
-      self.numPrecedingGenderless = slot - 1;
-  }
-}
-
-- (void)setNumPrecedingGenderlessRequired:(BOOL)newValue
-{
-  if (numPrecedingGenderlessRequired != newValue)
-  {
-    numPrecedingGenderlessRequired = newValue;
-    if (newValue)
+    if ((slot > 1) && (type == DreamRadarFrameGenerator::NonLegendaryFrame))
     {
+      self.numPrecedingGenderlessRequired = YES;
+      if (numPrecedingGenderless >= slot)
+        self.numPrecedingGenderless = slot - 1;
+    }
+    else
+    {
+      self.numPrecedingGenderlessRequired = NO;
       self.numPrecedingGenderless = 0;
     }
   }
@@ -354,14 +360,17 @@ struct ProgressHandler
   {
     criteria.frameParameters.targetGender = gender;
     criteria.frameParameters.targetRatio = genderRatio;
+    criteria.frameParameters.numPrecedingGenderless = numPrecedingGenderless;
   }
   else
   {
     criteria.frameParameters.targetGender = Gender::MALE;
     criteria.frameParameters.targetRatio = Gender::MALE_ONLY;
+    
+    // all legendaries are gendered in the Dream Radar
+    criteria.frameParameters.numPrecedingGenderless = 0;
   }
   criteria.frameParameters.slot = slot;
-  criteria.frameParameters.numPrecedingGenderless = numPrecedingGenderless;
   criteria.frameParameters.tid = [gen5ConfigController tid];
   criteria.frameParameters.sid = [gen5ConfigController sid];
   criteria.frameParameters.memoryLinkUsed =

@@ -200,7 +200,7 @@ struct IDFrameSearchProgressHandler
 
 @synthesize  minTIDFrame, maxTIDFrame;
 @synthesize  wildShiny, giftShiny, eggShiny;
-@synthesize  desiredTID;
+@synthesize  desiredTID, desiredSID;
 
 @synthesize  foundTID;
 @synthesize  startDate;
@@ -254,6 +254,7 @@ struct IDFrameSearchProgressHandler
   self.eggShiny = YES;
   
   self.desiredTID = nil;
+  self.desiredSID = nil;
   
   [idFrameSearcherController setGetValidatedSearchCriteriaSelector:
                              @selector(idFrameSearchGetValidatedSearchCriteria)];
@@ -440,13 +441,13 @@ struct IDFrameSearchProgressHandler
     return nil;
   
   NSInteger  rowNum = [pidFrameTableView selectedRow];
-  if (rowNum < 0)
+  if ((rowNum < 0) && (desiredTID == nil))
   {
     NSAlert *alert = [[NSAlert alloc] init];
     
     [alert addButtonWithTitle:@"OK"];
-    [alert setMessageText:@"Please Select a Target PID Row"];
-    [alert setInformativeText:@"You need to choose a row from the upper table to be the PID that you wish to make shiny."];
+    [alert setMessageText:@"Please Set Additional Criteria"];
+    [alert setInformativeText:@"You need to choose a row from the upper table to indicate the PID that you wish to be shiny and/or set a desired TID (with optional SID) in order to run a search."];
     [alert setAlertStyle:NSWarningAlertStyle];
     
     [alert beginSheetModalForWindow:[self window] modalDelegate:self
@@ -511,10 +512,21 @@ struct IDFrameSearchProgressHandler
   if (criteria.hasTID)
     criteria.tid = [desiredTID unsignedIntValue];
   
-  DesiredShinyPIDFrameResult  *row =
-    [[pidFrameContentArray arrangedObjects] objectAtIndex: rowNum];
-  criteria.shinyPID = row.pid;
-  criteria.hasShinyPID = true;
+  criteria.hasSID = (desiredSID != nil);
+  if (criteria.hasSID)
+    criteria.sid = [desiredSID unsignedIntValue];
+  
+  if (rowNum >= 0)
+  {
+    DesiredShinyPIDFrameResult  *row =
+      [[pidFrameContentArray arrangedObjects] objectAtIndex: rowNum];
+    criteria.shinyPID = row.pid;
+    criteria.hasShinyPID = true;
+  }
+  else
+  {
+    criteria.hasShinyPID = false;
+  }
   
   criteria.wildShiny = wildShiny;
   criteria.giftShiny = giftShiny;

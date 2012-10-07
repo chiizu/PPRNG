@@ -43,7 +43,7 @@
   uint32_t  minTIDFrame, maxTIDFrame;
   BOOL      wildShiny, giftShiny, eggShiny;
   
-  NSNumber  *desiredTID;
+  NSNumber  *desiredTID, *desiredSID;
   
   IBOutlet SearcherController  *tidSidSearcherController;
   
@@ -76,7 +76,7 @@
 
 @property uint32_t  minTIDFrame, maxTIDFrame;
 @property BOOL      wildShiny, giftShiny, eggShiny;
-@property (copy) NSNumber  *desiredTID;
+@property (copy) NSNumber  *desiredTID, *desiredSID;
 
 @property (copy) NSNumber  *foundTID;
 @property (copy) NSDate    *startDate;

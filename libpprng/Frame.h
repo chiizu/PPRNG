@@ -138,6 +138,13 @@ struct Gen4EggIVFrame : public Gen4BreedingFrame
   OptionalIVs  ivs;
 };
 
+struct Gen4TrainerIDFrame
+{
+  uint32_t  seed;
+  uint32_t  number;
+  uint32_t  tid, sid;
+};
+
 struct Gen5PIDFrame
 {
   Gen5PIDFrame(const HashedSeed &s) : seed(s) {}

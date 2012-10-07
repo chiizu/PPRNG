@@ -37,16 +37,12 @@ struct FrameChecker
   
   bool operator()(const Gen5TrainerIDFrame &frame) const
   {
-    if (m_criteria.hasTID && (frame.tid != m_criteria.tid))
-      return false;
-    
-    if (m_criteria.hasShinyPID &&
-        ((m_criteria.giftShiny && !frame.giftShiny) ||
-         (m_criteria.wildShiny && !frame.wildShiny) ||
-         (m_criteria.eggShiny && !frame.eggShiny)))
-      return false;
-    
-    return true;
+    return (!m_criteria.hasTID || (frame.tid == m_criteria.tid)) &&
+           (!m_criteria.hasSID || (frame.sid == m_criteria.sid)) &&
+           (!m_criteria.hasShinyPID ||
+            ((!m_criteria.giftShiny || frame.giftShiny) &&
+             (!m_criteria.wildShiny || frame.wildShiny) &&
+             (!m_criteria.eggShiny || frame.eggShiny)));
   }
   
   const TrainerIDSearcher::Criteria  &m_criteria;
@@ -78,10 +74,11 @@ uint64_t TrainerIDSearcher::Criteria::ExpectedNumberOfResults() const
   uint64_t  numFrames = frame.max - frame.min + 1;
   
   uint64_t  tidDivisor = hasTID ? 65536 : 1;
+  uint64_t  sidDivisor = hasSID ? 65536 : 1;
   uint64_t  shinyDivisor =
     (hasShinyPID && (wildShiny || giftShiny || eggShiny)) ? 8192 : 1;
   
-  return numFrames * numSeeds / (tidDivisor * shinyDivisor);
+  return numFrames * numSeeds / (tidDivisor * sidDivisor * shinyDivisor);
 }
 
 void TrainerIDSearcher::Search

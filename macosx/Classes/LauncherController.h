@@ -49,6 +49,7 @@
   IBOutlet NSButton  *launchGen4EggPIDSeedSearcher;
   IBOutlet NSButton  *launchGen4EggIVSeedSearcher;
   IBOutlet NSButton  *launchGen4SeedInspector;
+  IBOutlet NSButton  *launchGen4TIDSearcher;
   IBOutlet NSButton  *launchGen4ConfigurationEdit;
   
   NSDictionary    *buttonToClassMap;

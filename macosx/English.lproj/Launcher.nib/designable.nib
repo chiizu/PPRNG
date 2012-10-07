@@ -256,7 +256,7 @@
 										<object class="NSButton" id="39231531">
 											<reference key="NSNextResponder" ref="41873618"/>
 											<int key="NSvFlags">268</int>
-											<string key="NSFrame">{{18, 192}, {193, 25}}</string>
+											<string key="NSFrame">{{18, 252}, {193, 25}}</string>
 											<reference key="NSSuperview" ref="41873618"/>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSButtonCell" key="NSCell" id="342993094">
@@ -276,7 +276,7 @@
 										<object class="NSButton" id="765056736">
 											<reference key="NSNextResponder" ref="41873618"/>
 											<int key="NSvFlags">268</int>
-											<string key="NSFrame">{{18, 162}, {193, 25}}</string>
+											<string key="NSFrame">{{18, 222}, {193, 25}}</string>
 											<reference key="NSSuperview" ref="41873618"/>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSButtonCell" key="NSCell" id="763795780">
@@ -316,7 +316,7 @@
 										<object class="NSButton" id="800113552">
 											<reference key="NSNextResponder" ref="41873618"/>
 											<int key="NSvFlags">268</int>
-											<string key="NSFrame">{{18, 102}, {193, 25}}</string>
+											<string key="NSFrame">{{18, 162}, {193, 25}}</string>
 											<reference key="NSSuperview" ref="41873618"/>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSButtonCell" key="NSCell" id="882716348">
@@ -336,7 +336,7 @@
 										<object class="NSButton" id="169646620">
 											<reference key="NSNextResponder" ref="41873618"/>
 											<int key="NSvFlags">268</int>
-											<string key="NSFrame">{{18, 72}, {193, 25}}</string>
+											<string key="NSFrame">{{18, 132}, {193, 25}}</string>
 											<reference key="NSSuperview" ref="41873618"/>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSButtonCell" key="NSCell" id="483835332">
@@ -353,12 +353,32 @@
 												<int key="NSPeriodicInterval">75</int>
 											</object>
 										</object>
+										<object class="NSButton" id="269154570">
+											<reference key="NSNextResponder" ref="41873618"/>
+											<int key="NSvFlags">268</int>
+											<string key="NSFrame">{{18, 72}, {193, 25}}</string>
+											<reference key="NSSuperview" ref="41873618"/>
+											<bool key="NSEnabled">YES</bool>
+											<object class="NSButtonCell" key="NSCell" id="507287711">
+												<int key="NSCellFlags">-2080244224</int>
+												<int key="NSCellFlags2">134217728</int>
+												<string key="NSContents">TID Searcher</string>
+												<reference key="NSSupport" ref="634247281"/>
+												<reference key="NSControlView" ref="269154570"/>
+												<int key="NSButtonFlags">-2038152961</int>
+												<int key="NSButtonFlags2">163</int>
+												<string key="NSAlternateContents"/>
+												<string key="NSKeyEquivalent"/>
+												<int key="NSPeriodicDelay">400</int>
+												<int key="NSPeriodicInterval">75</int>
+											</object>
+										</object>
 									</object>
-									<string key="NSFrame">{{1, 1}, {229, 226}}</string>
+									<string key="NSFrame">{{1, 1}, {229, 286}}</string>
 									<reference key="NSSuperview" ref="964121309"/>
 								</object>
 							</object>
-							<string key="NSFrame">{{483, 136}, {231, 242}}</string>
+							<string key="NSFrame">{{483, 76}, {231, 302}}</string>
 							<reference key="NSSuperview" ref="1006"/>
 							<string key="NSOffsets">{0, 0}</string>
 							<object class="NSTextFieldCell" key="NSTitleCell">
@@ -919,6 +939,22 @@
 					</object>
 					<int key="connectionID">124</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">launch:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="269154570"/>
+					</object>
+					<int key="connectionID">127</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">launchGen4TIDSearcher</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="269154570"/>
+					</object>
+					<int key="connectionID">128</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -1063,6 +1099,7 @@
 							<reference ref="800113552"/>
 							<reference ref="169646620"/>
 							<reference ref="765056736"/>
+							<reference ref="269154570"/>
 						</object>
 						<reference key="parent" ref="1006"/>
 					</object>
@@ -1285,6 +1322,20 @@
 						<reference key="object" ref="938342664"/>
 						<reference key="parent" ref="202278129"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">125</int>
+						<reference key="object" ref="269154570"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<reference ref="507287711"/>
+						</object>
+						<reference key="parent" ref="964121309"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">126</int>
+						<reference key="object" ref="507287711"/>
+						<reference key="parent" ref="269154570"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -1313,6 +1364,9 @@
 					<string>121.IBPluginDependency</string>
 					<string>121.IBViewBoundsToFrameTransform</string>
 					<string>122.IBPluginDependency</string>
+					<string>125.IBPluginDependency</string>
+					<string>125.IBViewBoundsToFrameTransform</string>
+					<string>126.IBPluginDependency</string>
 					<string>13.IBPluginDependency</string>
 					<string>14.IBPluginDependency</string>
 					<string>14.IBViewBoundsToFrameTransform</string>
@@ -1372,9 +1426,9 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1023, 272}, {731, 385}}</string>
+					<string>{{-965, 209}, {731, 385}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-1023, 272}, {731, 385}}</string>
+					<string>{{-965, 209}, {731, 385}}</string>
 					<integer value="1"/>
 					<string>{196, 240}</string>
 					<string>{{357, 418}, {480, 270}}</string>
@@ -1402,6 +1456,11 @@
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<object class="NSAffineTransform">
+						<bytes key="NSTransformStruct">P4AAAL+AAABBkAAAwvoAAA</bytes>
+					</object>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
 						<bytes key="NSTransformStruct">P4AAAL+AAABBkAAAwzkAAA</bytes>
@@ -1409,7 +1468,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
-						<bytes key="NSTransformStruct">P4AAAL+AAABBkAAAwvoAAA</bytes>
+						<bytes key="NSTransformStruct">P4AAAL+AAABBkAAAwxsAAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -1508,7 +1567,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">124</int>
+			<int key="maxID">128</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1543,6 +1602,7 @@
 							<string>launchGen4EggPIDSeedSearcher</string>
 							<string>launchGen4SeedInspector</string>
 							<string>launchGen4SeedSearcher</string>
+							<string>launchGen4TIDSearcher</string>
 							<string>launchGen5ConfigurationEdit</string>
 							<string>launchHashedSeedSearcher</string>
 							<string>launchHiddenHollowSpawnSeedSearcher</string>
@@ -1553,6 +1613,7 @@
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>NSButton</string>
 							<string>NSButton</string>
 							<string>NSButton</string>
 							<string>NSButton</string>
@@ -1590,6 +1651,7 @@
 							<string>launchGen4EggPIDSeedSearcher</string>
 							<string>launchGen4SeedInspector</string>
 							<string>launchGen4SeedSearcher</string>
+							<string>launchGen4TIDSearcher</string>
 							<string>launchGen5ConfigurationEdit</string>
 							<string>launchHashedSeedSearcher</string>
 							<string>launchHiddenHollowSpawnSeedSearcher</string>
@@ -1646,6 +1708,10 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">launchGen4SeedSearcher</string>
+								<string key="candidateClassName">NSButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">launchGen4TIDSearcher</string>
 								<string key="candidateClassName">NSButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">

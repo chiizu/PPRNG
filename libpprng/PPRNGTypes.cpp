@@ -54,6 +54,12 @@ static const char *GameVersionNameArray[] =
   "White (English)", "White (French)", "White (German)", "White (Italian)",
   "White (Japanese)", "White (Spanish)", "Black (Korean)", "White (Korean)",
   "Black 2 (Japanese)", "White 2 (Japanese)",
+  "Black 2 (English)", "White 2 (English)",
+  "Black 2 (French)", "White 2 (French)",
+  "Black 2 (German)", "White 2 (German)",
+  "Black 2 (Italian)", "White 2 (Italian)",
+  "Black 2 (Korean)", "White 2 (Korean)",
+  "Black 2 (Spanish)", "White 2 (Spanish)",
   "Unknown Version"
 };
 

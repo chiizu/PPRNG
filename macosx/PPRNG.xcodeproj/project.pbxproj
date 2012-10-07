@@ -10,6 +10,9 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		C017697515DD2FD400046084 /* Gen4TIDSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C017697315DD2FD400046084 /* Gen4TIDSearcher.cpp */; };
+		C017698315DE7A8800046084 /* Gen4TIDSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C017698115DE7A8800046084 /* Gen4TIDSearcher.nib */; };
+		C017698E15DF3C4700046084 /* Gen4TIDSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C017698D15DF3C4700046084 /* Gen4TIDSearcherController.mm */; };
 		C0238B29159FFF1F0075C7D5 /* DreamRadarSeedSearcher.nib in Resources */ = {isa = PBXBuildFile; fileRef = C0238B27159FFF1F0075C7D5 /* DreamRadarSeedSearcher.nib */; };
 		C0238B3B15A08D250075C7D5 /* DreamRadarSeedSearcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0238B3915A08D250075C7D5 /* DreamRadarSeedSearcher.cpp */; };
 		C0238B4215A09AE00075C7D5 /* DreamRadarSeedSearcherController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0238B4115A09AE00075C7D5 /* DreamRadarSeedSearcherController.mm */; };
@@ -122,6 +125,11 @@
 		32CA4F630368D1EE00C91783 /* PPRNG_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPRNG_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* PPRNG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PPRNG.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C017697315DD2FD400046084 /* Gen4TIDSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Gen4TIDSearcher.cpp; sourceTree = "<group>"; };
+		C017697415DD2FD400046084 /* Gen4TIDSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4TIDSearcher.h; sourceTree = "<group>"; };
+		C017698215DE7A8800046084 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Gen4TIDSearcher.nib; sourceTree = "<group>"; };
+		C017698C15DF3C4700046084 /* Gen4TIDSearcherController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gen4TIDSearcherController.h; sourceTree = "<group>"; };
+		C017698D15DF3C4700046084 /* Gen4TIDSearcherController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Gen4TIDSearcherController.mm; sourceTree = "<group>"; };
 		C0238B28159FFF1F0075C7D5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/DreamRadarSeedSearcher.nib; sourceTree = "<group>"; };
 		C0238B3915A08D250075C7D5 /* DreamRadarSeedSearcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DreamRadarSeedSearcher.cpp; sourceTree = "<group>"; };
 		C0238B3A15A08D250075C7D5 /* DreamRadarSeedSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DreamRadarSeedSearcher.h; sourceTree = "<group>"; };
@@ -356,6 +364,8 @@
 				C0A0AD1A1423B9AB008C67F0 /* Gen4SeedInspectorController.mm */,
 				C0E304331346349900C56C1A /* Gen4SeedSearcherController.h */,
 				C0E304341346349900C56C1A /* Gen4SeedSearcherController.mm */,
+				C017698C15DF3C4700046084 /* Gen4TIDSearcherController.h */,
+				C017698D15DF3C4700046084 /* Gen4TIDSearcherController.mm */,
 				C0E304351346349900C56C1A /* Gen5ConfigurationController.h */,
 				C0E304361346349900C56C1A /* Gen5ConfigurationController.mm */,
 				C0E304371346349900C56C1A /* Gen5ConfigurationEditController.h */,
@@ -464,6 +474,7 @@
 				C0F6D79B15444B9F007C58D1 /* Gen4EggPIDSeedSearcher.nib */,
 				C0AA903C14B4A7E4003EC28F /* Gen4SeedInspector.nib */,
 				C0AA903E14B4A7E4003EC28F /* Gen4SeedSearcher.nib */,
+				C017698115DE7A8800046084 /* Gen4TIDSearcher.nib */,
 				C0AA904014B4A7E4003EC28F /* Gen5Configuration.nib */,
 				C0AA904214B4A7E4003EC28F /* HashedSeedInspector.nib */,
 				C0AA904414B4A7E4003EC28F /* HashedSeedSearcher.nib */,
@@ -568,6 +579,8 @@
 				C0F6D6DF15405F74007C58D1 /* Gen4EggPIDSeedSearcher.h */,
 				C0B53CFF1451CEBC00C62866 /* Gen4QuickSeedSearcher.cpp */,
 				C0B53D001451CEBC00C62866 /* Gen4QuickSeedSearcher.h */,
+				C017697315DD2FD400046084 /* Gen4TIDSearcher.cpp */,
+				C017697415DD2FD400046084 /* Gen4TIDSearcher.h */,
 				C0E304051346343400C56C1A /* HashedSeed.cpp */,
 				C0E304061346343400C56C1A /* HashedSeed.h */,
 				C05B86FF14626E42009166E0 /* HashedSeedMessage.cpp */,
@@ -676,6 +689,7 @@
 				C0238E5915AF219C0075C7D5 /* DreamRadarSeedInspector.nib in Resources */,
 				C02390E215B5A1DA0075C7D5 /* HiddenHollowSpawnSeedSearcher.nib in Resources */,
 				C0AD806615D3F3DB00D8B07E /* B2W2ParameterSearcher.nib in Resources */,
+				C017698315DE7A8800046084 /* Gen4TIDSearcher.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -765,6 +779,8 @@
 				C023953B15C1F7D50075C7D5 /* HiddenHollowGroupTransformer.mm in Sources */,
 				C023966E15C81CCC0075C7D5 /* IVSeedCache.cpp in Sources */,
 				C0AD806A15D3F6A300D8B07E /* B2W2ParameterSearcherController.mm in Sources */,
+				C017697515DD2FD400046084 /* Gen4TIDSearcher.cpp in Sources */,
+				C017698E15DF3C4700046084 /* Gen4TIDSearcherController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -777,6 +793,14 @@
 				089C165DFE840E0CC02AAC07 /* English */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		C017698115DE7A8800046084 /* Gen4TIDSearcher.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C017698215DE7A8800046084 /* English */,
+			);
+			name = Gen4TIDSearcher.nib;
 			sourceTree = "<group>";
 		};
 		C0238B27159FFF1F0075C7D5 /* DreamRadarSeedSearcher.nib */ = {

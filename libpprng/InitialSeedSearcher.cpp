@@ -63,7 +63,7 @@ uint64_t B2W2InitialSeedSearcher::Criteria::ExpectedNumberOfResults() const
 {
   uint64_t  numSeeds = seedParameters.NumberOfSeeds();
   
-  uint64_t  spinsDenominator = (0x1 << (3 * spins.NumSpins()));
+  uint64_t  spinsDenominator = (0x1ULL << (3 * spins.NumSpins()));
   
   return numSeeds / spinsDenominator;
 }

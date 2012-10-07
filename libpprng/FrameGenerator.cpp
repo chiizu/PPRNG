@@ -580,7 +580,8 @@ void Gen5PIDFrameGenerator::NextHeldItem()
 
 WonderCardFrameGenerator::WonderCardFrameGenerator(const HashedSeed &seed,
                                                    const Parameters &parameters)
-  : m_RNG(seed.rawSeed), m_IVRNG(m_RNG, IVRNG::Normal),
+  : m_initialValueRNG(seed.rawSeed),
+    m_RNG(seed.rawSeed), m_IVRNG(m_RNG, IVRNG::Normal),
     m_frame(seed),
     m_parameters(parameters),
     m_isGLAN((parameters.cardNature == Nature::ANY) &&
@@ -606,12 +607,7 @@ WonderCardFrameGenerator::WonderCardFrameGenerator(const HashedSeed &seed,
   {
     uint32_t  skippedFrames =
       seed.GetSkippedPIDFrames(parameters.memoryLinkUsed);
-    while (skippedFrames-- > 0)
-    {
-      m_RNG.AdvanceBuffer();
-      m_IVRNG.NextIVWord();
-      ++m_frame.number;
-    }
+    SkipFrames(skippedFrames);
   }
 }
 
@@ -620,6 +616,7 @@ void WonderCardFrameGenerator::SkipFrames(uint32_t numFrames)
   uint32_t  i = 0;
   while (i++ < numFrames)
   {
+    m_initialValueRNG.Next();
     m_RNG.AdvanceBuffer();
     m_IVRNG.NextIVWord();
   }
@@ -628,11 +625,10 @@ void WonderCardFrameGenerator::SkipFrames(uint32_t numFrames)
 
 void WonderCardFrameGenerator::AdvanceFrame()
 {
-  m_RNG.AdvanceBuffer();
-  
   ++m_frame.number;
-  m_frame.rngValue = m_RNG.PeekNext();
+  m_frame.rngValue = m_initialValueRNG.Next();
   
+  m_RNG.AdvanceBuffer();
   m_frame.ivs = m_IVRNG.NextIVWord();
   
   // 'unused' frames

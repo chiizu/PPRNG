@@ -51,10 +51,7 @@ public:
   
   void SkipFrames(uint32_t numFrames)
   {
-    uint32_t  i = 0;
-    while (i++ < numFrames)
-      m_RNG.AdvanceBuffer();
-    
+    m_RNG.AdvanceBuffer(numFrames);
     m_frame.number += numFrames;
   }
   
@@ -357,10 +354,7 @@ public:
   
   void SkipFrames(uint32_t numFrames)
   {
-    uint32_t  i = 0;
-    while (i++ < numFrames)
-      m_RNG.AdvanceBuffer();
-    
+    m_RNG.AdvanceBuffer(numFrames);
     m_frame.number += numFrames;
   }
   
@@ -451,6 +445,49 @@ private:
   RNG                         m_RNG;
   IVRNG                       m_IVRNG;
   Frame                       m_frame;
+};
+
+
+class Gen4TrainerIDFrameGenerator
+{
+public:
+  typedef uint32_t            Seed;
+  typedef Gen4TrainerIDFrame  Frame;
+  typedef MTRNG               RNG;
+  
+  Gen4TrainerIDFrameGenerator(uint32_t seed)
+    : m_RNG(seed), m_frame()
+  {
+    m_frame.seed = seed;
+    m_frame.number = 0;
+    
+    // throw out first MTRNG frame
+    m_RNG.Next();
+  }
+  
+  void SkipFrames(uint32_t numFrames)
+  {
+    uint32_t  i = 0;
+    while (i++ < numFrames)
+      m_RNG.Next();
+    
+    m_frame.number += numFrames;
+  }
+  
+  void AdvanceFrame()
+  {
+    ++m_frame.number;
+    
+    uint32_t  fullID = m_RNG.Next();
+    m_frame.tid = fullID & 0xffff;
+    m_frame.sid = fullID >> 16;
+  }
+  
+  const Frame& CurrentFrame() { return m_frame; }
+  
+private:
+  RNG    m_RNG;
+  Frame  m_frame;
 };
 
 
@@ -668,6 +705,7 @@ public:
   const Frame& CurrentFrame() { return m_frame; }
   
 private:
+  LCRNG5            m_initialValueRNG;
   RNG               m_RNG;
   IVRNG             m_IVRNG;
   Frame             m_frame;

@@ -46,6 +46,7 @@
 #import "Gen4EggPIDSeedSearcherController.h"
 #import "Gen4EggIVSeedSearcherController.h"
 #import "Gen4SeedInspectorController.h"
+#import "Gen4TIDSearcherController.h"
 #import "Gen4ConfigurationEditController.h"
 
 
@@ -105,6 +106,7 @@
       [Gen4EggIVSeedSearcherController class],
         [launchGen4EggIVSeedSearcher title],
       [Gen4SeedInspectorController class], [launchGen4SeedInspector title],
+      [Gen4TIDSearcherController class], [launchGen4TIDSearcher title],
       [Gen4ConfigurationEditController class],
         [launchGen4ConfigurationEdit title],
       nil];
