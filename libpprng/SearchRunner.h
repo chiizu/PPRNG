@@ -98,6 +98,8 @@ public:
     uint32_t  numProcs = boost::thread::hardware_concurrency();
     
     std::list<SeedGenerator>  generators = seedGenerator.Split(numProcs);
+    if (generators.size() < numProcs)
+      numProcs = generators.size();
     
     typedef std::list<boost::shared_ptr<boost::thread> >  ThreadList;
     ThreadList  threadList;

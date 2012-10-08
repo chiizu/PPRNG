@@ -637,6 +637,7 @@ struct IDFrameSearchProgressHandler
   
   criteria.hasTID = true;
   criteria.tid = [foundTID unsignedIntValue];
+  criteria.hasSID = false;
   criteria.hasShinyPID = false;
   
   if (criteria.ExpectedNumberOfResults() > 100)

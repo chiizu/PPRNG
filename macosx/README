@@ -1,17 +1,62 @@
-PPRNG 1.13.0
+PPRNG 1.14.0
 
 Mac Requirements:
-Intel Mac with OS X 10.5 or greater.
+Intel or PPC Mac with OS X 10.5 or greater.
 
 DS Requirements:
 All DS types are supported for English, Japanese, French, German, Italian, and
 Spanish language Black / White. Only DS and DS Lite are supported for Korean
 Black / White at this time.
 
-All DS types are supported for Japanese Black 2 / White 2.
+All DS types are supported for Japanese Black 2 / White 2.  Only DS and DS Lite
+are supported for English Black 2 / White 2 at this time.
 
 
-New in 1.13.0
+New in 1.14.1
+
+* Fix for bug in Trainer ID Frame Searcher which caused it to incorrectly not
+  find IDs
+
+New in 1.14.0
+
+* Added support for English Black 2 / White 2 on the original DS and DS Lite
+* Added a new parameter searcher specifically for Black 2 / White 2 that is much
+  easier and quicker than the IV checking technique used in Black / White
+* Added Gen 4 Trainer ID abuse support
+* Added ability to search for a specific TID (with optional SID) without needed
+  to specify a PID to be shiny in the Gen 5 Trainer ID searcher
+* Fixed problems with Chatot chatters in the Wondercard Seed Inspector
+
+For help with the new parameter calibration technique as well as a full guide to
+Dream Radar abuse and Hidden Hollow abuse, please see the following forum post:
+
+http://www.smogon.com/forums/showpost.php?p=3411155&postcount=4
+
+
+Upcoming Features:
+
+* Cute Charm encounters for Generation 4
+
+
+Quick Start:
+For Black / White setup and details of common functions, see this post:
+http://www.smogon.com/forums/showpost.php?p=3411155&postcount=2
+
+For Black 2 / White 2 setup and details of new functions, see this post:
+http://www.smogon.com/forums/showpost.php?p=3411155&postcount=4
+
+For functions supported only on Black 1 / White 1, see this post:
+http://www.smogon.com/forums/showpost.php?p=3411155&postcount=3
+
+
+General Usage Tip:
+In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
+on a result row to bring up the seed inspector for that specific seed.
+
+
+Previous Releases:
+
+1.13.0
 
 * Added support for Japanese Black 2 / White 2 on DSi / XL / 3DS.
 * Added Dream Radar support.
@@ -32,30 +77,6 @@ New in 1.13.0
 * Fixed a bug in the calculaion of the expected number of results in the 4th
   Gen seed searcher.
 * All table columns can now be resized.
-
-
-Upcoming Features:
-
-* Cute Charm encounters for Generation 4
-* Generation 4 TID / SID abuse
-
-
-Quick Start:
-1. First, before doing anything else, open the DS / Game Config screen.
-2. Enter what you know about your game and DS (at minimum, that would be game
-   version, DS type, and MAC address).
-3. Click OK to save the config.
-4. If you don't know your DS Parameters, go to the DS Parameter Searcher to find
-   your parameters.  Once you have found your parameters, go back to the
-   DS / Game Config screen and add them to your configuration.
-5. You are now ready to search for Standard Seeds in the Standard Seed Searcher.
-
-General Usage Tip:
-In any seed searcher window (Standard Seed, Wonder Card, C-Gear), double click
-on a result row to bring up the seed inspector for that specific seed.
-
-
-Previous Releases:
 
 1.12.0
 

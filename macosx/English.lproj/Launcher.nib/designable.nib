@@ -552,7 +552,7 @@
 											<object class="NSButtonCell" key="NSCell" id="409900186">
 												<int key="NSCellFlags">-2080244224</int>
 												<int key="NSCellFlags2">134217728</int>
-												<string key="NSContents">Hidden Hollow Searcher</string>
+												<string key="NSContents">Hidden Grotto Searcher</string>
 												<reference key="NSSupport" ref="634247281"/>
 												<reference key="NSControlView" ref="862822140"/>
 												<int key="NSButtonFlags">-2038152961</int>
