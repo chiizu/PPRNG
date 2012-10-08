@@ -14,7 +14,7 @@ are supported for English Black 2 / White 2 at this time.
 
 New in 1.14.1
 
-* Fix for bug in Trainer ID Frame Searcher which caused it to incorrectly not
+* Fix for bug in Trainer ID Frame Searcher which caused it to randomly fail to
   find IDs
 
 New in 1.14.0
