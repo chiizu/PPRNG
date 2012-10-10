@@ -1,4 +1,4 @@
-PPRNG 1.14.0
+PPRNG 1.14.2
 
 Mac Requirements:
 Intel or PPC Mac with OS X 10.5 or greater.
@@ -8,9 +8,12 @@ All DS types are supported for English, Japanese, French, German, Italian, and
 Spanish language Black / White. Only DS and DS Lite are supported for Korean
 Black / White at this time.
 
-All DS types are supported for Japanese Black 2 / White 2.  Only DS and DS Lite
-are supported for English Black 2 / White 2 at this time.
+All DS types are supported for Japanese and English Black 2 / White 2.
 
+
+New in 1.14.2
+
+* Added support for English Black 2 / White 2 on DSi/XL/3DS
 
 New in 1.14.1
 

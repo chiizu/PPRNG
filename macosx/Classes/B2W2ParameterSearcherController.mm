@@ -151,6 +151,13 @@ struct ProgressHandler
       self.vcountLow = 0xA8;
       self.vcountHigh = 0xC7;
     }
+    else if (Game::IsBlack2White2(version))
+    {
+      self.timer0Low = 0x1580;
+      self.timer0High = 0x177F;
+      self.vcountLow = 0x98;
+      self.vcountHigh = 0xb7;
+    }
     else
     {
       self.timer0Low = 0x1100;

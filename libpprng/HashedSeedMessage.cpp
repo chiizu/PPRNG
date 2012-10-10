@@ -258,12 +258,12 @@ enum Nazo
   ENBlack2Nazo0 = 0x0209AEE8,
   ENBlack2Nazo1 = 0x02039DE9,
   ENBlack2Nazo2DS = 0x02200010,
-  ENBlack2Nazo2DSi = 0x027AA730,
+  ENBlack2Nazo2DSi = 0x027A5F70,
   
   ENWhite2Nazo0 = 0x0209AF28,
   ENWhite2Nazo1 = 0x02039E15,
   ENWhite2Nazo2DS = 0x02200050,
-  ENWhite2Nazo2DSi = 0x027AA5F0
+  ENWhite2Nazo2DSi = 0x027A5E90
 };
 
 static Nazo NazoForVersionAndDS(Game::Version version, DS::Type dsType)
