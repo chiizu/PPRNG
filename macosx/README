@@ -1,4 +1,4 @@
-PPRNG 1.14.2
+PPRNG 1.14.3
 
 Mac Requirements:
 Intel or PPC Mac with OS X 10.5 or greater.
@@ -8,8 +8,22 @@ All DS types are supported for English, Japanese, French, German, Italian, and
 Spanish language Black / White. Only DS and DS Lite are supported for Korean
 Black / White at this time.
 
-All DS types are supported for Japanese and English Black 2 / White 2.
+All DS types are supported for Japanese and English Black 2 and White 2, French
+and Italian Black 2 only, and German White 2 only.  Only DS and DS Lite are
+supported for French and Italian White 2, German Black 2, and Spanish Black 2
+and White 2 at this time.
 
+
+New in 1.14.3
+
+* Added support for French, German, Italian, and Spanish Black 2 / White 2 on
+  DS / DS Lite
+* Added support for French and Italian Black 2, and German White 2, on DSi / 3DS
+* Added correct ESV calculation for Black 2 / White 2 games
+* Fixed issue where non-Japanese Black 2 / White 2 game versions were missing
+  from the various seed inspectors
+* Fixed issue where Hidden Grotto Searcher window would disappear when you tried
+  to resize it
 
 New in 1.14.2
 
