@@ -206,17 +206,19 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   
   p.tid = [inspectorController.tid unsignedIntValue];
   p.sid = [inspectorController.sid unsignedIntValue];
-  p.hasShinyCharm = inspectorController.hasShinyCharm;
   
+  p.isBlack2White2 = Game::IsBlack2White2(inspectorController.version);
+  p.hasShinyCharm = inspectorController.hasShinyCharm;
   p.memoryLinkUsed = inspectorController.memoryLinkUsed;
+  
   p.startFromLowestFrame = startFromInitialPIDFrame;
   
   Gen5PIDFrameGenerator    generator(seed, p);
   
-  while (frameNum < minFrame)
+  if (frameNum < minFrame)
   {
-    generator.AdvanceFrame();
-    ++frameNum;
+    generator.SkipFrames(minFrame - frameNum);
+    frameNum = minFrame;
   }
   
   CGearFrameTime  cgearTime(cgearStartOffset);

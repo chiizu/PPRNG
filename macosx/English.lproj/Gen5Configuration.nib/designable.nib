@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="1"/>
+			<integer value="2"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -2000,7 +2000,6 @@
 														</object>
 														<object class="NSMenuItem" id="198201037">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">Black 2 (French)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -2013,7 +2012,6 @@
 														</object>
 														<object class="NSMenuItem" id="475327327">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">Black 2 (German)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -2026,7 +2024,6 @@
 														</object>
 														<object class="NSMenuItem" id="767182801">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">Black 2 (Italian)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -2064,7 +2061,6 @@
 														</object>
 														<object class="NSMenuItem" id="338612947">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">Black 2 (Spanish)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -2102,7 +2098,6 @@
 														</object>
 														<object class="NSMenuItem" id="861841784">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">White 2 (French)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -2115,7 +2110,6 @@
 														</object>
 														<object class="NSMenuItem" id="504405627">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">White 2 (German)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -2128,7 +2122,6 @@
 														</object>
 														<object class="NSMenuItem" id="761093234">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">White 2 (Italian)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -2166,7 +2159,6 @@
 														</object>
 														<object class="NSMenuItem" id="495274479">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">White 2 (Spanish)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>

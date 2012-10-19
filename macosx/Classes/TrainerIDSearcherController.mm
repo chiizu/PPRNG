@@ -309,8 +309,12 @@ struct IDFrameSearchProgressHandler
   frameParameters.targetRatio = Gender::ANY_RATIO;
   frameParameters.tid = 0;
   frameParameters.sid = 0;
+  
+  frameParameters.isBlack2White2 =
+    Game::IsBlack2White2([gen5ConfigController version]);
   frameParameters.hasShinyCharm = false;
   frameParameters.memoryLinkUsed = false;
+  
   frameParameters.startFromLowestFrame = false;  // need to handle manually
   
   frameParameters.frameType = Gen5PIDFrameGenerator::GrassCaveFrame;

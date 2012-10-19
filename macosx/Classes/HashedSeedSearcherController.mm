@@ -499,8 +499,12 @@ struct ResultHandler
     frameParameters.targetRatio = m_criteria.pid.genderRatio;
     frameParameters.tid = m_criteria.tid;
     frameParameters.sid = m_criteria.sid;
+    
+    frameParameters.isBlack2White2 =
+      Game::IsBlack2White2(m_criteria.seedParameters.version);
     frameParameters.hasShinyCharm = m_criteria.hasShinyCharm;
     frameParameters.memoryLinkUsed = m_criteria.memoryLinkUsed;
+    
     frameParameters.startFromLowestFrame = m_criteria.pid.startFromLowestFrame;
     
     if (CheckBitMask(m_criteria.leadAbilityMask, EncounterLead::OTHER))

@@ -586,6 +586,7 @@ public:
     Gender::Type            targetGender;
     Gender::Ratio           targetRatio;
     uint32_t                tid, sid;
+    bool                    isBlack2White2;
     bool                    hasShinyCharm;
     bool                    memoryLinkUsed;
     bool                    startFromLowestFrame;
@@ -627,7 +628,8 @@ private:
   {
     PIDGenerator       pidGenerator;
     PIDFrameGenerator  pidFrameGenerator;
-    ESVGenerator       esvGenerator;
+    ESVGenerator       bwEsvGenerator;
+    ESVGenerator       b2w2EsvGenerator;
   };
   
   static const FrameGeneratorInfo  s_FrameGeneratorInfo[NumFrameTypes];
@@ -652,9 +654,12 @@ private:
   void CheckLeadAbility();
   void ApplySync();
   
-  void LandESV();
-  void SurfESV();
-  void FishingESV();
+  void BWLandESV();
+  void B2W2LandESV();
+  void BWSurfESV();
+  void B2W2SurfESV();
+  void BWFishingESV();
+  void B2W2FishingESV();
   void NoESV();
   
   void NextHeldItem();

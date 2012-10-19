@@ -146,7 +146,8 @@ struct ProgressHandler
       self.vcountLow = 0x98;
       self.vcountHigh = 0xB7;
     }
-    else if (version == Game::White2Japanese)
+    else if ((version == Game::White2Japanese) ||
+             (version == Game::Black2French))
     {
       self.timer0Low = 0x1780;
       self.timer0High = 0x197F;

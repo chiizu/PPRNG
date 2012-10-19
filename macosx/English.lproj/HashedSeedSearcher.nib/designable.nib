@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="2"/>
+			<integer value="1"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -7439,7 +7439,7 @@
 														</object>
 														<object class="NSMenuItem" id="369597742">
 															<reference key="NSMenu" ref="696078175"/>
-															<string key="NSTitle">Hidden Hollow</string>
+															<string key="NSTitle">Hidden Grotto</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSMnemonicLoc">2147483647</int>
 															<reference key="NSOnImage" ref="712930574"/>
@@ -15875,7 +15875,7 @@
 						<bytes key="NSTransformStruct">P4AAAL+AAABDgAAAww8AAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-507, 572}, {261, 253}}</string>
+					<string>{{-518, 472}, {261, 253}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>

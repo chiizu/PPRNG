@@ -222,9 +222,12 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   
   pidFrameParams.tid = [inspectorController.tid unsignedIntValue];
   pidFrameParams.sid = [inspectorController.sid unsignedIntValue];
-  pidFrameParams.hasShinyCharm = inspectorController.hasShinyCharm;
   
+  pidFrameParams.isBlack2White2 =
+    Game::IsBlack2White2(inspectorController.version);
+  pidFrameParams.hasShinyCharm = inspectorController.hasShinyCharm;
   pidFrameParams.memoryLinkUsed = inspectorController.memoryLinkUsed;
+  
   pidFrameParams.startFromLowestFrame = matchOffsetFromInitialPIDFrame;
   
   NSMutableArray  *rowArray =

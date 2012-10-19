@@ -263,6 +263,9 @@ struct FrameGeneratorFactory
     p.targetRatio = criteria.pid.genderRatio;
     p.tid = 0;
     p.sid = 0;
+    p.isBlack2White2 = false;
+    p.hasShinyCharm = false;
+    p.memoryLinkUsed = false;
     p.startFromLowestFrame = criteria.pid.startFromLowestFrame;
     
     return p;

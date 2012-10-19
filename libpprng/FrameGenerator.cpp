@@ -102,7 +102,9 @@ Gen5PIDFrameGenerator::Gen5PIDFrameGenerator
   : m_PIDGenerator(s_FrameGeneratorInfo[parameters.frameType].pidGenerator),
     m_PIDFrameGenerator
       (s_FrameGeneratorInfo[parameters.frameType].pidFrameGenerator),
-    m_ESVGenerator(s_FrameGeneratorInfo[parameters.frameType].esvGenerator),
+    m_ESVGenerator(parameters.isBlack2White2 ?
+                   s_FrameGeneratorInfo[parameters.frameType].b2w2EsvGenerator :
+                   s_FrameGeneratorInfo[parameters.frameType].bwEsvGenerator),
     m_RNG(seed.rawSeed), m_frame(seed), m_parameters(parameters),
     m_shinyChances((m_parameters.hasShinyCharm &&
                     Game::IsBlack2White2(m_frame.seed.version)) ? 3 : 1)
@@ -149,86 +151,123 @@ const Gen5PIDFrameGenerator::FrameGeneratorInfo
   // GrassCaveFrame
   { &Gen5PIDFrameGenerator::NextWildPID,
     &Gen5PIDFrameGenerator::NextWildFrame,
-    &Gen5PIDFrameGenerator::LandESV },
+    &Gen5PIDFrameGenerator::BWLandESV,
+    &Gen5PIDFrameGenerator::B2W2LandESV },
   // SurfingFrame
   { &Gen5PIDFrameGenerator::NextWildPID,
     &Gen5PIDFrameGenerator::NextWildFrame,
-    &Gen5PIDFrameGenerator::SurfESV },
+    &Gen5PIDFrameGenerator::BWSurfESV,
+    &Gen5PIDFrameGenerator::B2W2SurfESV },
   // FishingFrame
   { &Gen5PIDFrameGenerator::NextWildPID,
     &Gen5PIDFrameGenerator::NextFishingFrame,
-    &Gen5PIDFrameGenerator::FishingESV },
+    &Gen5PIDFrameGenerator::BWFishingESV,
+    &Gen5PIDFrameGenerator::B2W2FishingESV },
   // SwarmFrame
   { &Gen5PIDFrameGenerator::NextWildPID,
     &Gen5PIDFrameGenerator::NextSwarmFrame,
-    &Gen5PIDFrameGenerator::LandESV },
+    &Gen5PIDFrameGenerator::BWLandESV,
+    &Gen5PIDFrameGenerator::B2W2LandESV },
   // ShakingGrassFrame
   { &Gen5PIDFrameGenerator::NextWildPID,
     &Gen5PIDFrameGenerator::NextWildFrame,
-    &Gen5PIDFrameGenerator::LandESV },
+    &Gen5PIDFrameGenerator::BWLandESV,
+    &Gen5PIDFrameGenerator::B2W2LandESV },
   // SwirlingDustFrame
   { &Gen5PIDFrameGenerator::NextWildPID,
     &Gen5PIDFrameGenerator::NextDustFrame,
-    &Gen5PIDFrameGenerator::LandESV },
+    &Gen5PIDFrameGenerator::BWLandESV,
+    &Gen5PIDFrameGenerator::B2W2LandESV },
   // BridgeShadowFrame
   { &Gen5PIDFrameGenerator::NextWildPID,
     &Gen5PIDFrameGenerator::NextShadowFrame,
-    &Gen5PIDFrameGenerator::LandESV },
+    &Gen5PIDFrameGenerator::BWLandESV,
+    &Gen5PIDFrameGenerator::B2W2LandESV },
   // WaterSpotSurfingFrame
   { &Gen5PIDFrameGenerator::NextWildPID,
     &Gen5PIDFrameGenerator::NextWildFrame,
-    &Gen5PIDFrameGenerator::SurfESV },
+    &Gen5PIDFrameGenerator::BWSurfESV,
+    &Gen5PIDFrameGenerator::B2W2SurfESV },
   // WaterSpotFishingFrame
   { &Gen5PIDFrameGenerator::NextWildPID,
     &Gen5PIDFrameGenerator::NextWildFrame,
-    &Gen5PIDFrameGenerator::FishingESV },
+    &Gen5PIDFrameGenerator::BWFishingESV,
+    &Gen5PIDFrameGenerator::B2W2FishingESV },
   // EntraLinkFrame
   { &Gen5PIDFrameGenerator::NextEntraLinkPID,
     &Gen5PIDFrameGenerator::NextEntraLinkFrame,
+    &Gen5PIDFrameGenerator::NoESV,
     &Gen5PIDFrameGenerator::NoESV },
   // StationaryFrame
   { &Gen5PIDFrameGenerator::NextWildPID,
     &Gen5PIDFrameGenerator::NextStationaryFrame,
+    &Gen5PIDFrameGenerator::NoESV,
     &Gen5PIDFrameGenerator::NoESV },
   // ZekReshVicFrame
   { &Gen5PIDFrameGenerator::NextNonShinyPID,
     &Gen5PIDFrameGenerator::NextStationaryFrame,
+    &Gen5PIDFrameGenerator::NoESV,
     &Gen5PIDFrameGenerator::NoESV },
   // StarterFossilGiftFrame
   { &Gen5PIDFrameGenerator::NextGiftPID,
     &Gen5PIDFrameGenerator::NextSimpleFrame,
+    &Gen5PIDFrameGenerator::NoESV,
     &Gen5PIDFrameGenerator::NoESV },
   // RoamerFrame
   { &Gen5PIDFrameGenerator::NextRoamerPID,
     &Gen5PIDFrameGenerator::NextSimpleFrame,
+    &Gen5PIDFrameGenerator::NoESV,
     &Gen5PIDFrameGenerator::NoESV },
   // DoublesFrame
   { &Gen5PIDFrameGenerator::NextWildPID,
     &Gen5PIDFrameGenerator::NextDoublesFrame,
-    &Gen5PIDFrameGenerator::LandESV },
+    &Gen5PIDFrameGenerator::BWLandESV,
+    &Gen5PIDFrameGenerator::B2W2LandESV },
   // HiddenHollowFrame
   { &Gen5PIDFrameGenerator::NextEntraLinkPID,
     &Gen5PIDFrameGenerator::NextHiddenHollowFrame,
+    &Gen5PIDFrameGenerator::NoESV,
     &Gen5PIDFrameGenerator::NoESV }
 };
 
-void Gen5PIDFrameGenerator::LandESV()
+void Gen5PIDFrameGenerator::BWLandESV()
 {
   uint32_t  raw_esv = (m_RNG.Next() >> 48) / 0x290;
   
   m_frame.esv = ESV::Gen5Land(raw_esv);
 }
 
-void Gen5PIDFrameGenerator::SurfESV()
+void Gen5PIDFrameGenerator::B2W2LandESV()
+{
+  uint32_t  raw_esv = ((m_RNG.Next() >> 32) * 100) >> 32;
+  
+  m_frame.esv = ESV::Gen5Land(raw_esv);
+}
+
+void Gen5PIDFrameGenerator::BWSurfESV()
 {
   uint32_t  raw_esv = (m_RNG.Next() >> 48) / 0x290;
   
   m_frame.esv = ESV::Gen5Surfing(raw_esv);
 }
 
-void Gen5PIDFrameGenerator::FishingESV()
+void Gen5PIDFrameGenerator::B2W2SurfESV()
+{
+  uint32_t  raw_esv = ((m_RNG.Next() >> 32) * 100) >> 32;
+  
+  m_frame.esv = ESV::Gen5Surfing(raw_esv);
+}
+
+void Gen5PIDFrameGenerator::BWFishingESV()
 {
   uint32_t  raw_esv = (m_RNG.Next() >> 48) / 0x290;
+  
+  m_frame.esv = ESV::Gen5Fishing(raw_esv);
+}
+
+void Gen5PIDFrameGenerator::B2W2FishingESV()
+{
+  uint32_t  raw_esv = ((m_RNG.Next() >> 32) * 100) >> 32;
   
   m_frame.esv = ESV::Gen5Fishing(raw_esv);
 }
@@ -320,9 +359,9 @@ void Gen5PIDFrameGenerator::NextFishingFrame()
   if (m_parameters.leadAbility == EncounterLead::SUCTION_CUPS)
     m_frame.isEncounter = true;
   else
-    m_frame.isEncounter = ((m_RNG.Next() >> 48) / 0x290) < 50;
+    m_frame.isEncounter = (((m_RNG.Next() >> 32) * 100) >> 32) < 50;
   
-  FishingESV();
+  (this->*m_ESVGenerator)();
   
   // level
   m_RNG.Next();
@@ -338,7 +377,9 @@ void Gen5PIDFrameGenerator::NextSwarmFrame()
   CheckLeadAbility();
   
   bool  isSwarm = (((m_RNG.Next() >> 32) * 100) >> 32) < 40;
-  LandESV();
+  
+  (this->*m_ESVGenerator)();
+  
   if (isSwarm)
     m_frame.esv = ESV::SWARM;
   
@@ -359,15 +400,15 @@ void Gen5PIDFrameGenerator::NextDoublesFrame()
   if (isDoubleBattle)
   {
     // right ESV
-    uint32_t  raw_esv = (m_RNG.Next() >> 48) / 0x290;
-    uint32_t  rightSlot = ESV::Slot(ESV::Gen5Land(raw_esv));
+    (this->*m_ESVGenerator)();
+    uint32_t  rightSlot = ESV::Slot(m_frame.esv);
     
     // right level
     m_RNG.Next();
     
     // left ESV
-    raw_esv = (m_RNG.Next() >> 48) / 0x290;
-    uint32_t  leftSlot = ESV::Slot(ESV::Gen5Land(raw_esv));
+    (this->*m_ESVGenerator)();
+    uint32_t  leftSlot = ESV::Slot(m_frame.esv);
     
     m_frame.esv =
       ESV::MakeDoublesESV(ESV::DOUBLES_GRASS_DOUBLE_TYPE, rightSlot, leftSlot);
@@ -381,8 +422,8 @@ void Gen5PIDFrameGenerator::NextDoublesFrame()
   }
   else
   {
-    uint32_t  raw_esv = (m_RNG.Next() >> 48) / 0x290;
-    uint32_t  rightSlot = ESV::Slot(ESV::Gen5Land(raw_esv));
+    (this->*m_ESVGenerator)();
+    uint32_t  rightSlot = ESV::Slot(m_frame.esv);
     
     m_frame.esv =
       ESV::MakeDoublesESV(ESV::DOUBLES_GRASS_SINGLE_TYPE, rightSlot, 0);

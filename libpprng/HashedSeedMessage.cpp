@@ -263,7 +263,47 @@ enum Nazo
   ENWhite2Nazo0 = 0x0209AF28,
   ENWhite2Nazo1 = 0x02039E15,
   ENWhite2Nazo2DS = 0x02200050,
-  ENWhite2Nazo2DSi = 0x027A5E90
+  ENWhite2Nazo2DSi = 0x027A5E90,
+  
+  FRBlack2Nazo0 = 0x0209AF08,
+  FRBlack2Nazo1 = 0x02039df9,
+  FRBlack2Nazo2DS = 0x02200030,
+  FRBlack2Nazo2DSi = 0x027A5F90,
+  
+  FRWhite2Nazo0 = 0x0209AF28,
+  FRWhite2Nazo1 = 0x02039E25,
+  FRWhite2Nazo2DS = 0x02200050,
+  FRWhite2Nazo2DSi = 0x027A5E90,
+  
+  DEBlack2Nazo0 = 0x0209AE28,
+  DEBlack2Nazo1 = 0x02039D69,
+  DEBlack2Nazo2DS = 0x021FFF50,
+  DEBlack2Nazo2DSi = 0x027A5F70,
+  
+  DEWhite2Nazo0 = 0x0209AE48,
+  DEWhite2Nazo1 = 0x02039D95,
+  DEWhite2Nazo2DS = 0x021FFF70,
+  DEWhite2Nazo2DSi = 0x027A6010,
+  
+  ITBlack2Nazo0 = 0x0209ADE8,
+  ITBlack2Nazo1 = 0x02039D69,
+  ITBlack2Nazo2DS = 0x021FFF10,
+  ITBlack2Nazo2DSi = 0x027A5F70,
+  
+  ITWhite2Nazo0 = 0x0209AE28,
+  ITWhite2Nazo1 = 0x02039D95,
+  ITWhite2Nazo2DS = 0x021FFF50,
+  ITWhite2Nazo2DSi = 0x027A5E90,
+  
+  SPBlack2Nazo0 = 0x0209AEA8,
+  SPBlack2Nazo1 = 0x02039DB9,
+  SPBlack2Nazo2DS = 0x021FFFD0,
+  SPBlack2Nazo2DSi = 0x027A5F70,
+  
+  SPWhite2Nazo0 = 0x0209AEC8,
+  SPWhite2Nazo1 = 0x02039DE5,
+  SPWhite2Nazo2DS = 0x021FFFF0,
+  SPWhite2Nazo2DSi = 0x027A5E90
 };
 
 static Nazo NazoForVersionAndDS(Game::Version version, DS::Type dsType)
@@ -342,6 +382,38 @@ static Nazo NazoForVersionAndDS(Game::Version version, DS::Type dsType)
     
     case Game::White2English:
       return isPlainDS ? ENWhite2Nazo2DS : ENWhite2Nazo2DSi;
+      break;
+      
+    case Game::Black2French:
+      return isPlainDS ? FRBlack2Nazo2DS : FRBlack2Nazo2DSi;
+      break;
+    
+    case Game::White2French:
+      return isPlainDS ? FRWhite2Nazo2DS : FRWhite2Nazo2DSi;
+      break;
+      
+    case Game::Black2German:
+      return isPlainDS ? DEBlack2Nazo2DS : DEBlack2Nazo2DSi;
+      break;
+    
+    case Game::White2German:
+      return isPlainDS ? DEWhite2Nazo2DS : DEWhite2Nazo2DSi;
+      break;
+      
+    case Game::Black2Italian:
+      return isPlainDS ? ITBlack2Nazo2DS : ITBlack2Nazo2DSi;
+      break;
+    
+    case Game::White2Italian:
+      return isPlainDS ? ITWhite2Nazo2DS : ITWhite2Nazo2DSi;
+      break;
+      
+    case Game::Black2Spanish:
+      return isPlainDS ? SPBlack2Nazo2DS : SPBlack2Nazo2DSi;
+      break;
+    
+    case Game::White2Spanish:
+      return isPlainDS ? SPWhite2Nazo2DS : SPWhite2Nazo2DSi;
       break;
       
     default:
