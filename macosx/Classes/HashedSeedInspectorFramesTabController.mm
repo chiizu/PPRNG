@@ -135,7 +135,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
     targetGender = newGender;
     if (targetGender == Gender::GENDERLESS)
     {
-      self.targetGenderRatio = Gender::NO_RATIO;
+      self.targetGenderRatio = Gender::ANY_RATIO;
       self.genderRatioRequired = NO;
     }
     else
@@ -150,7 +150,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   self.encounterFrameType = Gen5PIDFrameGenerator::GrassCaveFrame;
   self.encounterLeadAbility = EncounterLead::SYNCHRONIZE;
   self.targetGender = Gender::GENDERLESS;
-  self.targetGenderRatio = Gender::NO_RATIO;
+  self.targetGenderRatio = Gender::ANY_RATIO;
   self.cgearStartOffset = 3;
   self.startFromInitialPIDFrame = YES;
   self.minPIDFrame = 50;

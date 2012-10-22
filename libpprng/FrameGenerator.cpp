@@ -224,7 +224,7 @@ const Gen5PIDFrameGenerator::FrameGeneratorInfo
     &Gen5PIDFrameGenerator::BWLandESV,
     &Gen5PIDFrameGenerator::B2W2LandESV },
   // HiddenHollowFrame
-  { &Gen5PIDFrameGenerator::NextEntraLinkPID,
+  { &Gen5PIDFrameGenerator::NextHiddenHollowPID,
     &Gen5PIDFrameGenerator::NextHiddenHollowFrame,
     &Gen5PIDFrameGenerator::NoESV,
     &Gen5PIDFrameGenerator::NoESV }
@@ -304,6 +304,13 @@ void Gen5PIDFrameGenerator::NextWildPID()
 void Gen5PIDFrameGenerator::NextEntraLinkPID()
 {
   m_frame.pid = Gen5PIDRNG::NextEntraLinkPIDWord
+                  (m_RNG, m_parameters.targetGender, m_parameters.targetRatio,
+                   m_parameters.tid, m_parameters.sid);
+}
+
+void Gen5PIDFrameGenerator::NextHiddenHollowPID()
+{
+  m_frame.pid = Gen5PIDRNG::NextDreamRadarPIDWord
                   (m_RNG, m_parameters.targetGender, m_parameters.targetRatio,
                    m_parameters.tid, m_parameters.sid);
 }

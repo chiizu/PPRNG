@@ -148,7 +148,7 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   self.encounterFrameType = Gen5PIDFrameGenerator::GrassCaveFrame;
   self.encounterLeadAbility = EncounterLead::SYNCHRONIZE;
   self.targetGender = Gender::GENDERLESS;
-  self.targetGenderRatio = Gender::NO_RATIO;
+  self.targetGenderRatio = Gender::ANY_RATIO;
   self.cgearStartOffset = 3;
 }
 

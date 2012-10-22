@@ -10553,7 +10553,7 @@ IC0gMTAwJSk</string>
 														<reference key="NSOnImage" ref="1035084626"/>
 														<reference key="NSMixedImage" ref="667343312"/>
 														<string key="NSAction">_popUpItemAction:</string>
-														<int key="NSTag">-1</int>
+														<int key="NSTag">6</int>
 														<reference key="NSTarget" ref="275142184"/>
 													</object>
 													<bool key="NSMenuItemRespectAlignment">YES</bool>
@@ -39480,7 +39480,7 @@ IC0gMTAwJSk</string>
 						<bytes key="NSTransformStruct">P4AAAL+AAABDiQAAw/WAAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-840, 456}, {82, 113}}</string>
+					<string>{{-951, 428}, {82, 113}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSMutableDictionary">
 						<string key="NS.key.0">ToolTip</string>
@@ -39575,7 +39575,7 @@ IC0gMTAwJSk</string>
 						<bytes key="NSTransformStruct">P4AAAL+AAABEWgAAw84AAA</bytes>
 					</object>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{-513, 662}, {82, 113}}</string>
+					<string>{{-279, 480}, {82, 113}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSMutableDictionary">
 						<string key="NS.key.0">ToolTip</string>

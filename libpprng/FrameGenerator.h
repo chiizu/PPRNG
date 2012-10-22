@@ -636,6 +636,7 @@ private:
   
   void NextWildPID();
   void NextEntraLinkPID();
+  void NextHiddenHollowPID();
   void NextNonShinyPID();
   void NextGiftPID();
   void NextRoamerPID();

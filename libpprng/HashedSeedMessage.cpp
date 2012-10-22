@@ -278,7 +278,7 @@ enum Nazo
   DEBlack2Nazo0 = 0x0209AE28,
   DEBlack2Nazo1 = 0x02039D69,
   DEBlack2Nazo2DS = 0x021FFF50,
-  DEBlack2Nazo2DSi = 0x027A5F70,
+  DEBlack2Nazo2DSi = 0x027A6110,
   
   DEWhite2Nazo0 = 0x0209AE48,
   DEWhite2Nazo1 = 0x02039D95,
@@ -444,6 +444,46 @@ static void SetBlack2White2FirstNazos(uint32_t message[], Game::Version version)
     case Game::White2English:
       message[0] = SwapEndianess(ENWhite2Nazo0);
       message[1] = SwapEndianess(ENWhite2Nazo1);
+      break;
+      
+    case Game::Black2French:
+      message[0] = SwapEndianess(FRBlack2Nazo0);
+      message[1] = SwapEndianess(FRBlack2Nazo1);
+      break;
+    
+    case Game::White2French:
+      message[0] = SwapEndianess(FRWhite2Nazo0);
+      message[1] = SwapEndianess(FRWhite2Nazo1);
+      break;
+      
+    case Game::Black2German:
+      message[0] = SwapEndianess(DEBlack2Nazo0);
+      message[1] = SwapEndianess(DEBlack2Nazo1);
+      break;
+    
+    case Game::White2German:
+      message[0] = SwapEndianess(DEWhite2Nazo0);
+      message[1] = SwapEndianess(DEWhite2Nazo1);
+      break;
+      
+    case Game::Black2Italian:
+      message[0] = SwapEndianess(ITBlack2Nazo0);
+      message[1] = SwapEndianess(ITBlack2Nazo1);
+      break;
+    
+    case Game::White2Italian:
+      message[0] = SwapEndianess(ITWhite2Nazo0);
+      message[1] = SwapEndianess(ITWhite2Nazo1);
+      break;
+      
+    case Game::Black2Spanish:
+      message[0] = SwapEndianess(SPBlack2Nazo0);
+      message[1] = SwapEndianess(SPBlack2Nazo1);
+      break;
+    
+    case Game::White2Spanish:
+      message[0] = SwapEndianess(SPWhite2Nazo0);
+      message[1] = SwapEndianess(SPWhite2Nazo1);
       break;
       
     default:
