@@ -32,70 +32,63 @@ namespace pprng
 class HashedSeed
 {
 public:
-  enum GxStat
-  {
-    HardResetGxStat = 0x06000000
-  };
-  
   struct Parameters
   {
     Game::Version           version;
     DS::Type                dsType;
-    MACAddress              macAddress;
-    GxStat                  gxStat;
-    uint32_t                vcount, vframe, timer0;
+    uint64_t                macAddress;
+    uint32_t                timer0, vcount, vframe;
     boost::gregorian::date  date;
     uint32_t                hour, minute, second;
     uint32_t                heldButtons;
     
     Parameters()
       : version(Game::Version(0)), dsType(DS::Type(0)), macAddress(),
-        gxStat(HardResetGxStat), vcount(0), vframe(0), timer0(0),
-        date(), hour(0), minute(0), second(0), heldButtons(0)
+        timer0(0), vcount(0), vframe(0), date(),
+        hour(0), minute(0), second(0), heldButtons(0)
+    {}
+    
+    explicit Parameters(Game::Version version_)
+      : version(version_), dsType(DS::Type(0)), macAddress(),
+        timer0(0), vcount(0), vframe(0), date(),
+        hour(0), minute(0), second(0), heldButtons(0)
     {}
   };
   
-  HashedSeed(const Parameters &parameters);
+  explicit HashedSeed(const Parameters &parameters);
   
   // to be used when raw seed is already calculated (see UnhashedSeed)
-  HashedSeed(const Parameters &parameters, uint64_t rawSeed);
+  HashedSeed(const Parameters &parameters_, uint64_t rawSeed)
+    : parameters(parameters_), rawSeed(rawSeed),
+      m_skippedPIDFramesCalculated(false),
+      m_skippedPIDFramesMemoryLinkUsed(false), m_skippedPIDFrames(0),
+      m_skippedPIDFramesSeed(0)
+  {}
   
-  // sometimes you just want to work with the raw seed value,
-  //  but still need the game version because of differences between bw and b2w2
-  HashedSeed(uint64_t rawSeed, Game::Version v)
-    : version(v), dsType(DS::Type(0)), macAddress(),
-      gxStat(HardResetGxStat), vcount(0), vframe(0), timer0(0),
-      date(), hour(0), minute(0), second(0), heldButtons(0),
-      rawSeed(rawSeed),
-      m_skippedPIDFramesCalculated(false), m_skippedPIDFrames(0),
+  // to be used when only raw seed is known / important
+  HashedSeed(Game::Version version, uint64_t rawSeed)
+    : parameters(version), rawSeed(rawSeed),
+      m_skippedPIDFramesCalculated(false),
+      m_skippedPIDFramesMemoryLinkUsed(false), m_skippedPIDFrames(0),
       m_skippedPIDFramesSeed(0)
   {}
   
   // this is needed to decode a HashedSeed from a byte array
   HashedSeed()
-    : version(Game::Version(0)), dsType(DS::Type(0)), macAddress(),
-      gxStat(HardResetGxStat), vcount(0), vframe(0), timer0(0),
-      date(), hour(0), minute(0), second(0), heldButtons(0),
-      rawSeed(rawSeed),
-      m_skippedPIDFramesCalculated(false), m_skippedPIDFrames(0),
+    : parameters(), rawSeed(0),
+      m_skippedPIDFramesCalculated(false),
+      m_skippedPIDFramesMemoryLinkUsed(false), m_skippedPIDFrames(0),
       m_skippedPIDFramesSeed(0)
   {}
   
-  const Game::Version           version;
-  const DS::Type                dsType;
-  const MACAddress              macAddress;
-  const GxStat                  gxStat;
-  const uint32_t                vcount, vframe, timer0;
-  const boost::gregorian::date  date;
-  const uint32_t                hour, minute, second;
-  const uint32_t                heldButtons;
-  
-  uint32_t year() const { return date.year(); }
-  uint32_t month() const { return date.month(); }
-  uint32_t day() const { return date.day(); }
+  const Parameters  parameters;
   
   // calculated raw seed
   const uint64_t    rawSeed;
+  
+  uint32_t year() const { return parameters.date.year(); }
+  uint32_t month() const { return parameters.date.month(); }
+  uint32_t day() const { return parameters.date.day(); }
   
   uint32_t SeedAndSkipPIDFrames(LCRNG5 &rng, bool memoryLinkUsed) const;
   

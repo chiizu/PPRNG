@@ -142,7 +142,7 @@ struct Gen5PIDRNG
   
   static uint32_t ClearAbility(uint32_t pid)
   {
-    return pid & ~0x00010000;
+    return pid & ~0x00010000U;
   }
   
   static uint32_t TIDBitTwiddle(uint32_t pid, uint32_t tid, uint32_t sid)
@@ -168,7 +168,7 @@ struct Gen5PIDRNG
       break;
       
     case Ability::ZERO:
-      return pid & ~0x00010000;
+      return pid & ~0x00010000U;
       break;
       
     case Ability::ONE:
@@ -176,7 +176,7 @@ struct Gen5PIDRNG
       break;
       
     case Ability::HIDDEN:
-      return pid & ~0x00010000;
+      return pid & ~0x00010000U;
       break;
     }
   }

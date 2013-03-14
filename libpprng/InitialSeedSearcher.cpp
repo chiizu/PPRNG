@@ -47,10 +47,9 @@ void InitialIVSeedSearcher::Search
   c.seedParameters = criteria.seedParameters;
   c.ivFrame.min = 1;
   c.ivFrame.max = 1;
-  c.ivs.shouldCheckMax = true;
   c.ivs.min = criteria.minIVs;
   c.ivs.max = criteria.maxIVs;
-  c.ivs.hiddenType = Element::ANY;
+  c.ivs.hiddenTypeMask = 0;
   c.ivs.minHiddenPower = 30;
   c.ivs.isRoamer = criteria.isRoamer;
   

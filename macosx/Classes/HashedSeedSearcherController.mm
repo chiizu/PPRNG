@@ -94,6 +94,39 @@ using namespace pprng;
   return self;
 }
 
+- (HashedSeedSearchResult*)makeBasicCopy
+{
+  HashedSeedSearchResult  *result = [[HashedSeedSearchResult alloc] init];
+  
+  // seed data
+  result.dsType = dsType;
+  result.macAddress = macAddress;
+  result.version = version;
+  result.date = date;
+  result.time = time;
+  result.timer0 = timer0;
+  result.vcount = vcount;
+  result.vframe = vframe;
+  result.heldButtons = heldButtons;
+  result.rawSeed = rawSeed;
+  
+  result.pidStartFrame = pidStartFrame;
+  
+  // IV data
+  result.ivFrame = ivFrame;
+  result.hp = hp;
+  result.atk = atk;
+  result.def = def;
+  result.spa = spa;
+  result.spd = spd;
+  result.spe = spe;
+  result.hiddenType = hiddenType;
+  result.hiddenPower = hiddenPower;
+  result.isRoamer = isRoamer;
+  
+  return result;
+}
+
 SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES();
 
 @synthesize ivFrame;
@@ -272,7 +305,7 @@ struct ResultHandler
       {
         PID  pid(eit->first);
         
-        HashedSeedSearchResult  *pidResult = NSCopyObject(ivResult, 0, NULL);
+        HashedSeedSearchResult  *pidResult = [ivResult makeBasicCopy];
         
         pidResult.leadAbility = data.leadAbility;
         
@@ -408,10 +441,10 @@ struct ResultHandler
                 Gen5PIDFrameGenerator::StationaryFrame) ||
                (parameters.frameType ==
                 Gen5PIDFrameGenerator::HiddenHollowFrame) ||
-               ((parameters.frameType == Gen5PIDFrameGenerator::SwarmFrame) &&
-                (frame.esv == ESV::SWARM)) ||
-               ((m_criteria.esvMask.find(ESV::SlotType(frame.esv))->second &
-                 (0x1 << ESV::Slot(frame.esv))) != 0)))
+               ((parameters.frameType == Gen5PIDFrameGenerator::SwarmFrame) ?
+                  (frame.esv == ESV::SWARM) :
+                  ((m_criteria.esvMask.find(ESV::SlotType(frame.esv))->second &
+                    (0x1 << ESV::Slot(frame.esv))) != 0))))
           {
             PIDEncounterData  *data;
             std::map<uint32_t, PIDEncounterData>::iterator  it;
@@ -656,7 +689,7 @@ struct ProgressHandler
   self.threeButtonsHeld = NO;
   
   self.minIVFrame = 1;
-  self.maxIVFrame = 6;
+  self.maxIVFrame = 1;
   
   self.showShinyOnly = NO;
   self.ability = Ability::ANY;
@@ -954,19 +987,10 @@ struct ProgressHandler
   
   criteria.ivs.min = ivParameterController.minIVs;
   criteria.ivs.max = ivParameterController.maxIVs;
-  criteria.ivs.shouldCheckMax =
-    (criteria.ivs.max != IVs(31, 31, 31, 31, 31, 31));
   criteria.ivs.isRoamer = ivParameterController.isRoamer;
   
-  if (ivParameterController.considerHiddenPower)
-  {
-    criteria.ivs.hiddenType = ivParameterController.hiddenType;
-    criteria.ivs.minHiddenPower = ivParameterController.minHiddenPower;
-  }
-  else
-  {
-    criteria.ivs.hiddenType = Element::NONE;
-  }
+  criteria.ivs.hiddenTypeMask = ivParameterController.hiddenTypeMask;
+  criteria.ivs.minHiddenPower = ivParameterController.minHiddenPower;
   
   criteria.tid = [gen5ConfigController tid];
   criteria.sid = [gen5ConfigController sid];

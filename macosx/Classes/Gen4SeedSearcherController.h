@@ -40,7 +40,6 @@
   int                     mode;
   
   BOOL                    shinyOnly;
-  int                     nature;
   int                     ability;
   int                     gender;
   int                     genderRatio;
@@ -53,7 +52,6 @@
 
 @property int       mode;
 @property BOOL      shinyOnly;
-@property int       nature;
 @property int       ability;
 @property int       gender;
 @property int       genderRatio;
@@ -62,6 +60,7 @@
 @property uint32_t  minDelay;
 @property uint32_t  maxDelay;
 
+- (IBAction)toggleNatureChoice:(id)sender;
 - (IBAction)toggleESVChoice:(id)sender;
 
 @end

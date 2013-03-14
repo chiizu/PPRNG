@@ -69,9 +69,8 @@
 
 - (pprng::DS::Type)dsType;
 
-- (pprng::MACAddress)macAddress;
+- (uint64_t)macAddress;
 - (uint32_t)macAddressLow;
-- (uint32_t)macAddressHigh;
 
 - (uint32_t)timer0Low;
 - (uint32_t)timer0High;

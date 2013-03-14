@@ -299,6 +299,68 @@ std::string Game::ToString(Game::Version v)
   }
 }
 
+Game::Version Game::VersionForColorAndLanguage(Game::Color c, Game::Language l)
+{
+  switch (c)
+  {
+  case Emerald:    return EmeraldVersion;
+  case Diamond:    return DiamondVersion;
+  case Pearl:      return PearlVersion;
+  case Platinum:   return PlatinumVersion;
+  case HeartGold:  return HeartGoldVersion;
+  case SoulSilver: return SoulSilverVersion;
+  case Black:
+    switch (l)
+    {
+    case English: return BlackEnglish;
+    case French: return BlackFrench;
+    case German: return BlackGerman;
+    case Italian: return BlackItalian;
+    case Japanese: return BlackJapanese;
+    case Korean: return BlackKorean;
+    case Spanish: return BlackSpanish;
+    default: return NoVersion;
+    }
+  case White:
+    switch (l)
+    {
+    case English: return WhiteEnglish;
+    case French: return WhiteFrench;
+    case German: return WhiteGerman;
+    case Italian: return WhiteItalian;
+    case Japanese: return WhiteJapanese;
+    case Korean: return WhiteKorean;
+    case Spanish: return WhiteSpanish;
+    default: return NoVersion;
+    }
+  case Black2:
+    switch (l)
+    {
+    case English: return Black2English;
+    case French: return Black2French;
+    case German: return Black2German;
+    case Italian: return Black2Italian;
+    case Japanese: return Black2Japanese;
+    case Korean: return Black2Korean;
+    case Spanish: return Black2Spanish;
+    default: return NoVersion;
+    }
+  case White2:
+    switch (l)
+    {
+    case English: return White2English;
+    case French: return White2French;
+    case German: return White2German;
+    case Italian: return White2Italian;
+    case Japanese: return White2Japanese;
+    case Korean: return White2Korean;
+    case Spanish: return White2Spanish;
+    default: return NoVersion;
+    }
+  default: return NoVersion;
+  }
+}
+
 const std::string& Nature::ToString(Nature::Type t)
 {
   if ((t >= HARDY) && (t <= MIXED))
@@ -538,15 +600,16 @@ IVs::ImpossibleMinHiddenPowerException::ImpossibleMinHiddenPowerException
 
 // This complicated function (including helper function above) is used to
 // properly adjust the number of expected results that will be returned based
-// on the desired hidden power and type.
+// on the desired hidden power and types.
 uint64_t IVs::AdjustExpectedResultsForHiddenPower
   (uint64_t numResults, IndividualValues minIVs, IndividualValues maxIVs,
-   Element::Type type, uint32_t minPower)
+   uint32_t typeMask, uint32_t minPower)
       throw (ImpossibleHiddenTypeException, ImpossibleMinHiddenPowerException)
 {
   static const Type  IVOrdering[] = { HP, AT, DF, SP, SA, SD };
+  static const uint32_t  AllHiddenTypes = (0x1 << 16) - 1;
   
-  if ((type == Element::ANY) || (type == Element::NONE))
+  if ((typeMask == AllHiddenTypes) || (typeMask == 0))
     return numResults;
   
   uint32_t  addend = 0x1;
@@ -611,15 +674,31 @@ uint64_t IVs::AdjustExpectedResultsForHiddenPower
   
   uint64_t  hpDivisor = numIVCombos;
   
-  if (type != Element::ANY)
+  if (typeMask != AllHiddenTypes)
   {
-    std::map<Element::Type, uint32_t>::const_iterator  it;
-    it = typeCountMap.find(type);
+    uint64_t  typeMultiplier = 0;
+    uint32_t  typeIdx = 1;
     
-    if (it == typeCountMap.end())
-      throw ImpossibleHiddenTypeException(minIVs, maxIVs, type);
+    while (typeMask != 0)
+    {
+      if ((typeMask & 0x1) != 0)
+      {
+        Element::Type  type = Element::Type(typeIdx);
+        
+        std::map<Element::Type, uint32_t>::const_iterator  it;
+        it = typeCountMap.find(type);
+        
+        if (it == typeCountMap.end())
+          throw ImpossibleHiddenTypeException(minIVs, maxIVs, type);
+        
+        typeMultiplier += it->second;
+      }
+      
+      typeMask >>= 1;
+      ++typeIdx;
+    }
     
-    hpMultiplier *= it->second;
+    hpMultiplier *= typeMultiplier;
     hpDivisor *= numIVCombos;
   }
   

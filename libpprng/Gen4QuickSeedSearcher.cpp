@@ -38,7 +38,7 @@ struct SeedChecker
   void operator()(const Gen34Frame &frame) const
   {
     uint32_t  seed = frame.rngValue;
-    uint32_t  frameNumber = 0, limit = m_criteria.minFrame - 1;
+    uint32_t  frameNumber = 0, limit = m_criteria.frame.min - 1;
     
     while (frameNumber < limit)
     {
@@ -46,7 +46,7 @@ struct SeedChecker
       ++frameNumber;
     }
     
-    limit = m_criteria.maxFrame;
+    limit = m_criteria.frame.max;
     while (frameNumber < limit)
     {
       seed = LCRNG34_R::NextForSeed(seed);
@@ -55,8 +55,8 @@ struct SeedChecker
       TimeSeed  ts(seed);
       
       if (ts.IsValid() &&
-          (ts.BaseDelay() >= m_criteria.minDelay) &&
-          (ts.BaseDelay() <= m_criteria.maxDelay))
+          (ts.BaseDelay() >= m_criteria.delay.min) &&
+          (ts.BaseDelay() <= m_criteria.delay.max))
       {
         Gen34Frame  actualFrame = frame;
         actualFrame.seed = seed;
@@ -66,8 +66,8 @@ struct SeedChecker
         
         Gen4Frame::EncounterData  *data;
         
-        if ((m_criteria.version == Game::HeartGold) ||
-            (m_criteria.version == Game::SoulSilver))
+        if ((m_criteria.version == Game::HeartGoldVersion) ||
+            (m_criteria.version == Game::SoulSilverVersion))
         {
           data = &g4Frame.methodK;
         }
@@ -114,44 +114,32 @@ struct FrameChecker
   
   bool CheckNature(const PID &pid) const
   {
-    return (m_criteria.nature == Nature::ANY) ||
-           (m_criteria.nature == pid.Gen34Nature());
+    return m_criteria.pid.CheckNature(pid.Gen34Nature());
   }
   
   bool CheckAbility(const PID &pid) const
   {
-    return (m_criteria.ability == Ability::ANY) ||
-           (m_criteria.ability == pid.Gen34Ability());
+    return (m_criteria.pid.ability == Ability::ANY) ||
+           (m_criteria.pid.ability == pid.Gen34Ability());
   }
   
   bool CheckGender(const PID &pid) const
   {
     return Gender::GenderValueMatches(pid.GenderValue(),
-                                      m_criteria.gender,
-                                      m_criteria.genderRatio);
+                                      m_criteria.pid.gender,
+                                      m_criteria.pid.genderRatio);
   }
   
   bool CheckIVs(const IVs &ivs) const
   {
-    return ivs.betterThanOrEqual(m_criteria.minIVs) &&
-           (!m_criteria.shouldCheckMaxIVs ||
-            ivs.worseThanOrEqual(m_criteria.maxIVs));
+    return ivs.betterThanOrEqual(m_criteria.ivs.min) &&
+           (m_criteria.ivs.max.isMax() ||
+            ivs.worseThanOrEqual(m_criteria.ivs.max));
   }
 
   bool CheckHiddenPower(const IVs &ivs) const
   {
-    if (m_criteria.hiddenType == Element::NONE)
-    {
-      return true;
-    }
-    
-    if ((m_criteria.hiddenType == Element::ANY) ||
-        (m_criteria.hiddenType == ivs.HiddenType()))
-    {
-      return ivs.HiddenPower() >= m_criteria.minHiddenPower;
-    }
-    
-    return false;
+    return m_criteria.ivs.CheckHiddenPower(ivs.HiddenType(), ivs.HiddenPower());
   }
   
   const Gen4QuickSeedSearcher::Criteria  &m_criteria;
@@ -178,33 +166,23 @@ struct SeedSearcher
 
 uint64_t Gen4QuickSeedSearcher::Criteria::ExpectedNumberOfResults()
 {
-  uint64_t  delays = maxDelay - minDelay + 1;
+  uint64_t  delays = delay.max - delay.min + 1;
   
   uint64_t  numSeeds = delays * 256 * 24;
   
-  uint64_t  numFrames = maxFrame - minFrame + 1;
+  uint64_t  numFrames = frame.max - frame.min + 1;
   
-  IVs  maxIVs = shouldCheckMaxIVs ? this->maxIVs : IVs(0x7FFF7FFF);
+  uint32_t  numIVs = IVs::CalculateNumberOfCombinations(ivs.min, ivs.max);
   
-  uint32_t  numIVs = (maxIVs.hp() - minIVs.hp() + 1) *
-                     (maxIVs.at() - minIVs.at() + 1) *
-                     (maxIVs.df() - minIVs.df() + 1) *
-                     (maxIVs.sa() - minIVs.sa() + 1) *
-                     (maxIVs.sd() - minIVs.sd() + 1) *
-                     (maxIVs.sp() - minIVs.sp() + 1);
-  
-  uint64_t  natureDivisor = (nature != Nature::ANY) ? 25 : 1;
+  uint64_t  natureMultiplier = pid.NumNatures(), natureDivisor = 25;
   
   uint64_t  shinyDivisor = shinyOnly ? 8196 : 1;
   
-  uint64_t  numResults = numFrames * numSeeds * numIVs /
+  uint64_t  numResults = numFrames * numSeeds * numIVs * natureMultiplier /
     (32 * 32 * 32 * 32 * 32 * 32 * natureDivisor * shinyDivisor);
   
-  if (hiddenType != Element::NONE)
-  {
-    numResults = IVs::AdjustExpectedResultsForHiddenPower
-      (numResults, minIVs, maxIVs, hiddenType, minHiddenPower);
-  }
+  numResults = IVs::AdjustExpectedResultsForHiddenPower
+  (numResults, ivs.min, ivs.max, ivs.hiddenTypeMask, ivs.minHiddenPower);
   
   return numResults;
 }
@@ -213,7 +191,7 @@ void Gen4QuickSeedSearcher::Search
   (const Criteria &criteria, const ResultCallback &resultHandler,
    const SearchRunner::ProgressCallback &progressHandler)
 {
-  Gen34IVSeedGenerator  seedGenerator(criteria.minIVs, criteria.maxIVs);
+  Gen34IVSeedGenerator  seedGenerator(criteria.ivs.min, criteria.ivs.max);
   SeedSearcher          seedSearcher;
   
   FrameChecker          frameChecker(criteria);

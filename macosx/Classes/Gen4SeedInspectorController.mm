@@ -1130,7 +1130,8 @@ OptionalIVs GetEggIVs(const Gen4BreedingFrame &frame,
     [NSMutableArray arrayWithCapacity: maxEggIVFrame - minEggIVFrame + 1];
   
   Gen4BreedingFrameGenerator  generator(rawSeed,
-                                        mode ? Game::HeartGold : Game::Diamond);
+                                        mode ? Game::HeartGoldVersion :
+                                               Game::DiamondVersion);
   generator.SkipFrames(frameNum);
   
   OptionalIVs  aIVs, bIVs;

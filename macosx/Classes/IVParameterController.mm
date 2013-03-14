@@ -22,6 +22,8 @@
 
 #import "IVParameterController.h"
 
+#import "Utilities.h"
+
 using namespace pprng;
 
 @implementation IVParameterController
@@ -30,7 +32,7 @@ using namespace pprng;
 @synthesize  minHP, minAT, minDF, minSA, minSD, minSP;
 @synthesize  maxHP, maxAT, maxDF, maxSA, maxSD, maxSP;
 @synthesize  considerHiddenPower;
-@synthesize  hiddenType;
+@synthesize  hiddenTypeMask;
 @synthesize  minHiddenPower;
 @synthesize  isRoamer;
 
@@ -41,7 +43,7 @@ using namespace pprng;
   [self setMaxIVs: IVs(31, 31, 31, 31, 31, 31)];
   
   self.considerHiddenPower = NO;
-  self.hiddenType = Element::ANY;
+  self.hiddenTypeMask = 0xffff;
   self.minHiddenPower = 70;
   self.isRoamer = NO;
 }
@@ -108,10 +110,18 @@ using namespace pprng;
       }
       
       self.considerHiddenPower = shouldCheckHiddenPower;
-      self.minHiddenPower = 70;
+      if (shouldCheckHiddenPower)
+        self.minHiddenPower = 70;
     }
     isSettingPattern = NO;
   }
+}
+
+- (void)updateIVPattern
+{
+  if (!isSettingPattern)
+    self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
+                                    considerHiddenPower, minHiddenPower);
 }
 
 - (void)setMinHP:(uint32_t)newValue
@@ -125,9 +135,7 @@ using namespace pprng;
       self.maxHP = newValue;
     }
     
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    [self updateIVPattern];
   }
 }
 
@@ -142,9 +150,7 @@ using namespace pprng;
       self.maxAT = newValue;
     }
     
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    [self updateIVPattern];
   }
 }
 
@@ -159,9 +165,7 @@ using namespace pprng;
       self.maxDF = newValue;
     }
     
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    [self updateIVPattern];
   }
 }
 
@@ -176,9 +180,7 @@ using namespace pprng;
       self.maxSA = newValue;
     }
     
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    [self updateIVPattern];
   }
 }
 
@@ -193,9 +195,7 @@ using namespace pprng;
       self.maxSD = newValue;
     }
     
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    [self updateIVPattern];
   }
 }
 
@@ -210,9 +210,7 @@ using namespace pprng;
       self.maxSP = newValue;
     }
     
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    [self updateIVPattern];
   }
 }
 
@@ -251,9 +249,7 @@ using namespace pprng;
       self.minHP = newValue;
     }
     
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    [self updateIVPattern];
   }
 }
 
@@ -268,9 +264,7 @@ using namespace pprng;
       self.minAT = newValue;
     }
     
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    [self updateIVPattern];
   }
 }
 
@@ -285,9 +279,7 @@ using namespace pprng;
       self.minDF = newValue;
     }
     
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    [self updateIVPattern];
   }
 }
 
@@ -302,9 +294,7 @@ using namespace pprng;
       self.minSA = newValue;
     }
     
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    [self updateIVPattern];
   }
 }
 
@@ -319,9 +309,7 @@ using namespace pprng;
       self.minSD = newValue;
     }
     
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    [self updateIVPattern];
   }
 }
 
@@ -336,9 +324,7 @@ using namespace pprng;
       self.minSP = newValue;
     }
     
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    [self updateIVPattern];
   }
 }
 
@@ -371,9 +357,26 @@ using namespace pprng;
   if (considerHiddenPower != newValue)
   {
     considerHiddenPower = newValue;
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    
+    [self updateIVPattern];
+  }
+}
+
+- (uint32_t)hiddenTypeMask
+{
+  return considerHiddenPower ?
+    ((hiddenTypeMask == 0) ? 0xffff : hiddenTypeMask) :
+    0;
+}
+
+- (void)setHiddenTypeMask:(uint32_t)newMask
+{
+  if (hiddenTypeMask != newMask)
+  {
+    hiddenTypeMask = newMask;
+    SetComboMenuBitMask(hpTypeDropDown, newMask << 1);
+    
+    [self updateIVPattern];
   }
 }
 
@@ -382,10 +385,15 @@ using namespace pprng;
   if (minHiddenPower != newPower)
   {
     minHiddenPower = newPower;
-    if (!isSettingPattern)
-      self.ivPattern = IVPattern::Get([self minIVs], [self maxIVs],
-                                      considerHiddenPower, minHiddenPower);
+    
+    [self updateIVPattern];
   }
+}
+
+- (IBAction)handleHPTypeDropDownChoice:(id)sender
+{
+  HandleComboMenuItemChoice(sender);
+  self.hiddenTypeMask = GetComboMenuBitMask(sender) >> 1;
 }
 
 - (uint32_t)numberOfIVCombinations

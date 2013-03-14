@@ -157,9 +157,7 @@ struct IVFrameChecker
 {
   IVFrameChecker(const EggSeedSearcher::Criteria &criteria)
     : m_possibleIVs(GenerateIVRanges(criteria.femaleIVs, criteria.maleIVs,
-                                     criteria.ivs.min,
-                                     criteria.ivs.shouldCheckMax ?
-                                       criteria.ivs.max : IVs(0x7fff7fff)))
+                                     criteria.ivs.min, criteria.ivs.max))
   {}
   
   bool operator()(const HashedIVFrame &frame) const
@@ -267,25 +265,16 @@ struct IVFrameResultHandler
   bool CheckIVs(const OptionalIVs &ivs) const
   {
     return ivs.betterThanOrEqual(m_criteria.ivs.min) &&
-           (!m_criteria.ivs.shouldCheckMax ||
+           (m_criteria.ivs.max.isMax() ||
             ivs.worseThanOrEqual(m_criteria.ivs.max));
   }
 
   bool CheckHiddenPower(const OptionalIVs &oivs) const
   {
-    if (m_criteria.ivs.hiddenType == Element::NONE)
-    {
-      return true;
-    }
-    
-    if (oivs.allSet() &&
-        ((m_criteria.ivs.hiddenType == Element::ANY) ||
-         (m_criteria.ivs.hiddenType == oivs.values.HiddenType())))
-    {
-      return oivs.values.HiddenPower() >= m_criteria.ivs.minHiddenPower;
-    }
-    
-    return false;
+    return (m_criteria.ivs.hiddenTypeMask == 0) ||
+           (oivs.allSet() &&
+            m_criteria.ivs.CheckHiddenPower(oivs.values.HiddenType(),
+                                            oivs.values.HiddenPower()));
   }
   
   const EggSeedSearcher::Criteria        &m_criteria;
@@ -483,10 +472,8 @@ struct SeedSearcher
 
 uint64_t EggSeedSearcher::Criteria::ExpectedNumberOfResults() const
 {
-  IVs  maxIVs = ivs.shouldCheckMax ? ivs.max : IVs(0x7FFF7FFF);
-  
   std::vector<IVRange>  ivRanges =
-    GenerateIVRanges(femaleIVs, maleIVs, ivs.min, maxIVs);
+    GenerateIVRanges(femaleIVs, maleIVs, ivs.min, ivs.max);
   
   if (ivRanges.size() == 0)
     return 0;
@@ -549,11 +536,8 @@ uint64_t EggSeedSearcher::Criteria::ExpectedNumberOfResults() const
   
   uint64_t  result = ivMatches * multiplier / divisor;
   
-  if (ivs.hiddenType != Element::NONE)
-  {
-    result = IVs::AdjustExpectedResultsForHiddenPower
-      (result, ivs.min, ivs.max, ivs.hiddenType, ivs.minHiddenPower);
-  }
+  result = IVs::AdjustExpectedResultsForHiddenPower
+    (result, ivs.min, ivs.max, ivs.hiddenTypeMask, ivs.minHiddenPower);
   
   return result + 1;
 }

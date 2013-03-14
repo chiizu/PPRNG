@@ -47,7 +47,7 @@ class NatureSeedGenerator
 {
 public:
   typedef CGearNatureSeed  SeedType;
-  typedef uint32_t         SeedCountType;
+  typedef uint64_t         SeedCountType;
   
   enum { SeedsPerChunk = 1000 };
   
@@ -95,7 +95,7 @@ private:
     TimesList  result;
     
     CGearSeed  cgearSeed(criteria.cgearSeed,
-                         criteria.hashedSeedParameters.macAddress.low);
+                         criteria.hashedSeedParameters.macAddress & 0x00ffffff);
     
     TimeSeed::TimeElements  cgearTimes =
       cgearSeed.GetTimeElements(criteria.year);

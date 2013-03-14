@@ -171,7 +171,6 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   targetSeedParams.version = inspectorController.version;
   targetSeedParams.dsType = inspectorController.dsType;
   targetSeedParams.macAddress = [inspectorController macAddress];
-  targetSeedParams.gxStat = HashedSeed::HardResetGxStat;
   targetSeedParams.vcount = [inspectorController.vcount unsignedIntValue];
   targetSeedParams.vframe = [inspectorController.vframe unsignedIntValue];
   targetSeedParams.timer0 = [inspectorController.timer0 unsignedIntValue];

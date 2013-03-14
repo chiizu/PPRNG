@@ -1,16 +1,29 @@
-PPRNG 1.14.4
+PPRNG 1.15.0
+
+IMPORTANT NOTICE:
+Barring any critical bug fixes, this is the last version of PPRNG that will
+support OS X 10.5, also making it the last version that supports PPC.  Thank you
+for your understanding.
 
 Mac Requirements:
 Intel or PPC Mac with OS X 10.5 or greater.
 
 DS Requirements:
 All DS types are supported for English, Japanese, French, German, Italian, and
-Spanish language Black / White. Only DS and DS Lite are supported for Korean
-Black / White at this time.
+Spanish language Black, White, Black 2, and White 2, as well as Korean White 2.
+Only DS and DS Lite are supported for Korean Black, White, and Black 2 at this
+time.
 
-All DS types are supported for Japanese, English, and German Black 2 and
-White 2, and French and Italian Black 2 only.  Only DS and DS Lite are supported
-for French and Italian White 2 and Spanish Black 2 and White 2 at this time.
+
+New in 1.15.0
+
+* Added DSi / 3DS support for French White 2, Italian White 2, Spanish Black 2,
+  and Spanish White 2.
+* Added DS / DS Lite support for Korean Black 2 and White 2, and DSi / 3DS
+  support for Korean White 2.
+* Filtering on multiple Hidden Types is now possible in searches.
+* Fixed an issue where the Standard Seed Searcher could incorrectly indicate a
+  result had a swarm frame.
 
 
 New in 1.14.4

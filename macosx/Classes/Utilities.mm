@@ -284,6 +284,21 @@ uint32_t GetComboMenuBitMask(NSPopUpButton *menu)
   return mask;
 }
 
+void SetComboMenuBitMask(NSPopUpButton *menu, uint32_t bitmask)
+{
+  NSInteger  numItems = [menu numberOfItems];
+  NSInteger  i;
+  
+  for (i = 0; i < numItems; ++i)
+  {
+    NSMenuItem  *item = [menu itemAtIndex: i];
+    NSInteger   tag = [item tag];
+    
+    if (tag >= 0)
+      [item setState:((bitmask & (0x1 << tag)) != 0) ? NSOnState : NSOffState];
+  }
+}
+
 
 // adapted from
 // http://blog.mbcharbonneau.com/2006/12/17/end-editing-in-an-nstextfield/

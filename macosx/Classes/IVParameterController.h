@@ -25,12 +25,14 @@
 
 @interface IVParameterController : NSObject
 {
+  IBOutlet NSPopUpButton  *hpTypeDropDown;
+  
   pprng::IVPattern::Type  ivPattern;
   BOOL                    isSettingPattern;
   uint32_t                minHP, minAT, minDF, minSA, minSD, minSP;
   uint32_t                maxHP, maxAT, maxDF, maxSA, maxSD, maxSP;
   BOOL                    considerHiddenPower;
-  pprng::Element::Type    hiddenType;
+  uint32_t                hiddenTypeMask;
   uint32_t                minHiddenPower;
   BOOL                    isRoamer;
 }
@@ -39,11 +41,13 @@
 @property uint32_t                minHP, minAT, minDF, minSA, minSD, minSP;
 @property uint32_t                maxHP, maxAT, maxDF, maxSA, maxSD, maxSP;
 @property BOOL                    considerHiddenPower;
-@property pprng::Element::Type    hiddenType;
+@property uint32_t                hiddenTypeMask;
 @property uint32_t                minHiddenPower;
 @property BOOL                    isRoamer;
 
 @property pprng::IVs  minIVs, maxIVs;
+
+- (IBAction)handleHPTypeDropDownChoice:(id)sender;
 
 - (uint32_t)numberOfIVCombinations;
 

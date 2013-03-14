@@ -173,25 +173,16 @@ struct FrameResultHandler
   bool CheckIVs(const OptionalIVs &ivs) const
   {
     return ivs.betterThanOrEqual(m_criteria.ivs.min) &&
-           (!m_criteria.ivs.shouldCheckMax ||
+           (m_criteria.ivs.max.isMax() ||
             ivs.worseThanOrEqual(m_criteria.ivs.max));
   }
 
   bool CheckHiddenPower(const OptionalIVs &oivs) const
   {
-    if (m_criteria.ivs.hiddenType == Element::NONE)
-    {
-      return true;
-    }
-    
-    if (oivs.allSet() &&
-        ((m_criteria.ivs.hiddenType == Element::ANY) ||
-         (m_criteria.ivs.hiddenType == oivs.values.HiddenType())))
-    {
-      return oivs.values.HiddenPower() >= m_criteria.ivs.minHiddenPower;
-    }
-    
-    return false;
+    return (m_criteria.ivs.hiddenTypeMask == 0) ||
+           (oivs.allSet() &&
+            m_criteria.ivs.CheckHiddenPower(oivs.values.HiddenType(),
+                                            oivs.values.HiddenPower()));
   }
   
   const Gen4EggIVSeedSearcher::Criteria        &m_criteria;
@@ -219,10 +210,8 @@ struct FrameGeneratorFactory
 
 uint64_t Gen4EggIVSeedSearcher::Criteria::ExpectedNumberOfResults() const
 {
-  IVs  maxIVs = ivs.shouldCheckMax ? ivs.max : IVs(0x7FFF7FFF);
-  
   std::vector<IVRange>  ivRanges =
-    GenerateIVRanges(aIVs, bIVs, ivs.min, maxIVs);
+    GenerateIVRanges(aIVs, bIVs, ivs.min, ivs.max);
   
   if (ivRanges.size() == 0)
     return 0;
@@ -238,12 +227,7 @@ uint64_t Gen4EggIVSeedSearcher::Criteria::ExpectedNumberOfResults() const
   uint64_t                              ivMatches = 0UL;
   for (i = ivRanges.begin(); i != ivRanges.end(); ++i)
   {
-    uint64_t  ivSets = (i->maxIVs.hp() - i->minIVs.hp() + 1) *
-                       (i->maxIVs.at() - i->minIVs.at() + 1) *
-                       (i->maxIVs.df() - i->minIVs.df() + 1) *
-                       (i->maxIVs.sa() - i->minIVs.sa() + 1) *
-                       (i->maxIVs.sd() - i->minIVs.sd() + 1) *
-                       (i->maxIVs.sp() - i->minIVs.sp() + 1);
+    uint64_t  ivSets = IVs::CalculateNumberOfCombinations(i->minIVs, i->maxIVs);
     
     ivMatches += ivSets * i->inheritancePatterns /
                  /* total inheritance patterns * 6c3 */ 160UL;
@@ -252,11 +236,8 @@ uint64_t Gen4EggIVSeedSearcher::Criteria::ExpectedNumberOfResults() const
   uint64_t  result = ivMatches * numSeeds * numFrames /
                      (32ULL * 32ULL * 32ULL * 32ULL * 32ULL * 32ULL);
   
-  if (ivs.hiddenType != Element::NONE)
-  {
-    result = IVs::AdjustExpectedResultsForHiddenPower
-      (result, ivs.min, ivs.max, ivs.hiddenType, ivs.minHiddenPower);
-  }
+  result = IVs::AdjustExpectedResultsForHiddenPower
+    (result, ivs.min, ivs.max, ivs.hiddenTypeMask, ivs.minHiddenPower);
   
   return result + 1;
 }

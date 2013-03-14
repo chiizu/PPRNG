@@ -37,7 +37,7 @@ TimeSeed::GetTimeElements(uint32_t year, uint32_t wantedSecond) const
   uint32_t  delay = BaseDelay() - (year - 2000);
   uint32_t  startSecond, endSecond;
   
-  if ((wantedSecond >= 0) && (wantedSecond < 60))
+  if (wantedSecond < 60)
   {
     startSecond = endSecond = wantedSecond;
   }

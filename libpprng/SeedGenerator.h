@@ -153,7 +153,7 @@ public:
   {
     Game::Version             version;
     DS::Type                  dsType;
-    MACAddress                macAddress;
+    uint64_t                  macAddress;
     uint32_t                  timer0Low, timer0High;
     uint32_t                  vcountLow, vcountHigh;
     uint32_t                  vframeLow, vframeHigh;
@@ -161,7 +161,7 @@ public:
     Button::List              heldButtons;
     
     Parameters()
-      : version(Game::Version(0)), macAddress(), timer0Low(0), timer0High(0),
+      : version(Game::Version(0)), macAddress(0), timer0Low(0), timer0High(0),
         vcountLow(0), vcountHigh(0), vframeLow(0), vframeHigh(0),
         fromTime(), toTime(), heldButtons()
     {}

@@ -59,6 +59,7 @@ extern NSString* SpeciesString(pprng::EggSpecies::Type eggSpecies);
 
 extern void HandleComboMenuItemChoice(NSPopUpButton *menu);
 extern uint32_t GetComboMenuBitMask(NSPopUpButton *menu);
+extern void SetComboMenuBitMask(NSPopUpButton *menu, uint32_t bitmask);
 
 // attempt to commit any current edit
 // for example, if user is typing in a text field, and then clicks a button

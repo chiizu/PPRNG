@@ -22,6 +22,7 @@
 #define GEN_4_QUICK_SEED_SEARCHER_H
 
 #include "PPRNGTypes.h"
+#include "SearchCriteria.h"
 #include "SearchRunner.h"
 #include "SeedGenerator.h"
 #include "FrameGenerator.h"
@@ -36,19 +37,13 @@ class Gen4QuickSeedSearcher
 public:
   struct Criteria
   {
-    uint32_t       minDelay, maxDelay;
-    uint32_t       minFrame, maxFrame;
-    bool           shouldCheckMaxIVs;
-    IVs            minIVs, maxIVs;
-    Element::Type  hiddenType;
-    uint32_t       minHiddenPower, maxHiddenPower;
+    SearchCriteria::DelayRange   delay;
+    SearchCriteria::FrameRange   frame;
+    SearchCriteria::IVCriteria   ivs;
+    SearchCriteria::PIDCriteria  pid;
     
     bool           shinyOnly;
     uint32_t       tid, sid;
-    Nature::Type   nature;
-    Ability::Type  ability;
-    Gender::Type   gender;
-    Gender::Ratio  genderRatio;
     
     Game::Version  version;
     

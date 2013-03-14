@@ -144,7 +144,6 @@ struct ProgressHandler
 
 @synthesize  mode;
 @synthesize  shinyOnly;
-@synthesize  nature;
 @synthesize  ability;
 @synthesize  gender;
 @synthesize  genderRatio;
@@ -185,11 +184,10 @@ struct ProgressHandler
     setHidden: YES];
   
   Game::Version  version = [gen4ConfigController version];
-  BOOL           isDPPt = (version != Game::HeartGold) &&
-                          (version != Game::SoulSilver);
+  BOOL           isDPPt = (version != Game::HeartGoldVersion) &&
+                          (version != Game::SoulSilverVersion);
   self.mode = isDPPt ? 0 : 1;
   self.shinyOnly = NO;
-  self.nature = Nature::ANY;
   self.ability = Ability::ANY;
   self.gender = Gender::ANY;
   self.genderRatio = Gender::ANY_RATIO;
@@ -227,6 +225,11 @@ struct ProgressHandler
 {
   if ([searcherController isSearching])
     [searcherController startStop: self];
+}
+
+- (IBAction)toggleNatureChoice:(id)sender
+{
+  HandleComboMenuItemChoice(sender);
 }
 
 - (IBAction)toggleESVChoice:(id)sender
@@ -320,15 +323,15 @@ struct ProgressHandler
   criteria.tid = [gen4ConfigController tid];
   criteria.sid = [gen4ConfigController sid];
   
-  criteria.minDelay = minDelay;
-  criteria.maxDelay = maxDelay;
-  criteria.minFrame = minFrame;
-  criteria.maxFrame = maxFrame;
+  criteria.delay.min = minDelay;
+  criteria.delay.max = maxDelay;
+  criteria.frame.min = minFrame;
+  criteria.frame.max = maxFrame;
   
-  criteria.nature = Nature::Type([[naturePopup selectedItem] tag]);
-  criteria.ability = Ability::Type([[abilityPopUp selectedItem] tag]);
-  criteria.gender = Gender::Type([[genderPopUp selectedItem] tag]);
-  criteria.genderRatio =
+  criteria.pid.natureMask = GetComboMenuBitMask(naturePopup);
+  criteria.pid.ability = Ability::Type([[abilityPopUp selectedItem] tag]);
+  criteria.pid.gender = Gender::Type([[genderPopUp selectedItem] tag]);
+  criteria.pid.genderRatio =
     Gender::Ratio([[genderRatioPopUp selectedItem] tag]);
   criteria.shinyOnly = shinyOnly;
   criteria.landESVs = GetESVBitmaskForTypeMask(0x00, esvPopUp);
@@ -337,21 +340,11 @@ struct ProgressHandler
   criteria.goodRodESVs = GetESVBitmaskForTypeMask(0x30, esvPopUp);
   criteria.superRodESVs = GetESVBitmaskForTypeMask(0x40, esvPopUp);
   
-  criteria.minIVs = ivParameterController.minIVs;
-  criteria.maxIVs = ivParameterController.maxIVs;
-  criteria.shouldCheckMaxIVs =
-    (criteria.maxIVs != IVs(31, 31, 31, 31, 31, 31));
+  criteria.ivs.min = ivParameterController.minIVs;
+  criteria.ivs.max = ivParameterController.maxIVs;
   
-  if (ivParameterController.considerHiddenPower)
-  {
-    criteria.hiddenType = ivParameterController.hiddenType;
-    criteria.minHiddenPower = ivParameterController.minHiddenPower;
-    criteria.maxHiddenPower = 70;
-  }
-  else
-  {
-    criteria.hiddenType = Element::NONE;
-  }
+  criteria.ivs.hiddenTypeMask = ivParameterController.hiddenTypeMask;
+  criteria.ivs.minHiddenPower = ivParameterController.minHiddenPower;
   
   if (criteria.ExpectedNumberOfResults() > 10000)
   {

@@ -39,11 +39,11 @@ using namespace pprng;
   NSNumber       *hiddenPower;
 }
 
-@property uint32_t         seed, delay, frame;
-@property OptionalIVs      aIVs, bIVs;
-@property (copy) id        hp, atk, def, spa, spd, spe;
-@property Element::Type    hiddenType;
-@property (copy) NSNumber  *hiddenPower;
+@property uint32_t                 seed, delay, frame;
+@property (nonatomic) OptionalIVs  aIVs, bIVs;
+@property (copy) id                hp, atk, def, spa, spd, spe;
+@property Element::Type            hiddenType;
+@property (copy) NSNumber          *hiddenPower;
 
 @end
 
@@ -177,8 +177,8 @@ struct ProgressHandler
   [resultsTableView setDoubleAction: @selector(inspectSeed:)];
   
   Game::Version  version = [gen4ConfigController version];
-  BOOL           isDPPt = (version != Game::HeartGold) &&
-                          (version != Game::SoulSilver);
+  BOOL           isDPPt = (version != Game::HeartGoldVersion) &&
+                          (version != Game::SoulSilverVersion);
   self.mode = isDPPt ? 0 : 1;
   self.minDelay = 600;
   self.maxDelay = 650;
@@ -279,7 +279,7 @@ struct ProgressHandler
   
   Gen4EggIVSeedSearcher::Criteria  criteria;
   
-  criteria.version = mode ? Game::HeartGold : Game::Diamond;
+  criteria.version = mode ? Game::HeartGoldVersion : Game::DiamondVersion;
   
   criteria.delay.min = minDelay;
   criteria.delay.max = maxDelay;
@@ -292,19 +292,9 @@ struct ProgressHandler
   
   criteria.ivs.min = ivParameterController.minIVs;
   criteria.ivs.max = ivParameterController.maxIVs;
-  criteria.ivs.shouldCheckMax =
-    (criteria.ivs.max != IVs(31, 31, 31, 31, 31, 31));
-  criteria.ivs.isRoamer = false;
   
-  if (ivParameterController.considerHiddenPower)
-  {
-    criteria.ivs.hiddenType = ivParameterController.hiddenType;
-    criteria.ivs.minHiddenPower = ivParameterController.minHiddenPower;
-  }
-  else
-  {
-    criteria.ivs.hiddenType = Element::NONE;
-  }
+  criteria.ivs.hiddenTypeMask = ivParameterController.hiddenTypeMask;
+  criteria.ivs.minHiddenPower = ivParameterController.minHiddenPower;
   
   uint64_t  numResults = criteria.ExpectedNumberOfResults();
   

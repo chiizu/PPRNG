@@ -39,7 +39,6 @@ public:
     uint32_t       minDelay, maxDelay;
     uint32_t       minFrame, maxFrame;
     Nature::Type   nature;
-    bool           shouldCheckMaxIVs;
     IVs            minIVs, maxIVs;
     Element::Type  hiddenType;
     uint32_t       minHiddenPower, maxHiddenPower;

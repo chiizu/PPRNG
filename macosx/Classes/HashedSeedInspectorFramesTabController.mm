@@ -169,8 +169,8 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   
   [pidFrameContentArray setContent: [NSMutableArray array]];
   
-  HashedSeed  seed([inspectorController.rawSeed unsignedLongLongValue],
-                   inspectorController.version);
+  HashedSeed  seed(inspectorController.version,
+                   [inspectorController.rawSeed unsignedLongLongValue]);
   
   uint32_t  minFrame = startFromInitialPIDFrame ? 0 : minPIDFrame - 1;
   uint32_t  frameNum = 0;
@@ -287,8 +287,8 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   
   [ivFrameContentArray setContent: [NSMutableArray array]];
   
-  HashedSeed  seed([inspectorController.rawSeed unsignedLongLongValue],
-                   inspectorController.version);
+  HashedSeed  seed(inspectorController.version,
+                   [inspectorController.rawSeed unsignedLongLongValue]);
   
   uint32_t  frameNum = 0, limitFrame = minIVFrame - 1;
   bool      isRoamer = [ivParameterController isRoamer];

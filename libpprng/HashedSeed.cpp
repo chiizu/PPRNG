@@ -120,30 +120,11 @@ static uint32_t SkipPIDRNGFrames(LCRNG5 &rng, Game::Version version,
 
 }
 
-HashedSeed::HashedSeed(const HashedSeed::Parameters &parameters)
-  : version(parameters.version), dsType(parameters.dsType),
-    macAddress(parameters.macAddress), gxStat(parameters.gxStat),
-    vcount(parameters.vcount), vframe(parameters.vframe),
-    timer0(parameters.timer0),
-    date(parameters.date), hour(parameters.hour),
-    minute(parameters.minute), second(parameters.second),
-    heldButtons(parameters.heldButtons),
-    rawSeed(HashedSeedMessage(parameters).GetRawSeed()),
+HashedSeed::HashedSeed(const HashedSeed::Parameters &p)
+  : parameters(p), rawSeed(HashedSeedMessage(parameters).GetRawSeed()),
     m_skippedPIDFramesCalculated(false),
-    m_skippedPIDFrames(0)
-{}
-
-HashedSeed::HashedSeed(const Parameters &parameters, uint64_t rawSeed_)
-  : version(parameters.version), dsType(parameters.dsType),
-    macAddress(parameters.macAddress), gxStat(parameters.gxStat),
-    vcount(parameters.vcount), vframe(parameters.vframe),
-    timer0(parameters.timer0),
-    date(parameters.date), hour(parameters.hour),
-    minute(parameters.minute), second(parameters.second),
-    heldButtons(parameters.heldButtons),
-    rawSeed(rawSeed_),
-    m_skippedPIDFramesCalculated(false),
-    m_skippedPIDFrames(0)
+    m_skippedPIDFramesMemoryLinkUsed(false),
+    m_skippedPIDFrames(0), m_skippedPIDFramesSeed(0)
 {}
 
 
@@ -154,7 +135,7 @@ uint32_t HashedSeed::SeedAndSkipPIDFrames(LCRNG5 &rng, bool memLinkUsed) const
   {
     rng.Seed(rawSeed);
     
-    m_skippedPIDFrames = SkipPIDRNGFrames(rng, version, memLinkUsed);
+    m_skippedPIDFrames = SkipPIDRNGFrames(rng, parameters.version, memLinkUsed);
     m_skippedPIDFramesSeed = rng.Seed();
     
     m_skippedPIDFramesCalculated = true;

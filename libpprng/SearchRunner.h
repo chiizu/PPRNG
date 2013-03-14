@@ -54,7 +54,7 @@ public:
     if (seedPercent > 0.002)
       seedPercent = 0.002;
     
-    SeedCountType stepPercentSeeds = (seedPercent * (numSeeds * numSplits)) + 1;
+    SeedCountType stepPercentSeeds((seedPercent * (numSeeds * numSplits)) + 1);
     
     const double stepPercent = seedPercent * 100.0;
     
@@ -66,7 +66,7 @@ public:
     {
       for (/* empty */; i < threshold; ++i)
       {
-        SeedType          seed = seedGenerator.Next();
+        SeedType  seed = seedGenerator.Next();
         
         seedSearcher.Search(seed, resultChecker, resultHandler);
       }
@@ -104,7 +104,8 @@ public:
     typedef std::list<boost::shared_ptr<boost::thread> >  ThreadList;
     ThreadList  threadList;
     
-    ThreadResultHandler<ResultType>  threadResultHandler(resultMutex, resultQueue);
+    ThreadResultHandler<ResultType>  threadResultHandler(resultMutex,
+                                                         resultQueue);
     ThreadProgressHandler  threadProgressHandler(progressUpdate, progressMutex,
                                                  progressQueue, shouldContinue,
                                                  numProcs);
@@ -127,10 +128,11 @@ public:
       // update progress display
       {
         boost::unique_lock<boost::mutex>  lock(progressMutex);
-        if (progressQueue.empty())
-        {
+        
+        if (progressQueue.empty() &&
+            (threadProgressHandler.m_numActiveThreads > 0))
           progressUpdate.wait(lock);
-        }
+        
         while (!progressQueue.empty())
         {
           shouldContinue = shouldContinue &&
@@ -189,8 +191,9 @@ private:
         boost::unique_lock<boost::mutex>  lock(m_mut);
         
         m_queue.push_back(progress);
+        
+        m_condVar.notify_one();
       }
-      m_condVar.notify_one();
       
       return m_shouldContinue;
     }
@@ -199,9 +202,11 @@ private:
     {
       {
         boost::unique_lock<boost::mutex>  lock(m_mut);
+        
         --m_numActiveThreads;
+        
+        m_condVar.notify_one();
       }
-      m_condVar.notify_one();
     }
     
     boost::condition_variable  &m_condVar;

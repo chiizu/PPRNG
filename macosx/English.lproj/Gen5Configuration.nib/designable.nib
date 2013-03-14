@@ -2048,7 +2048,6 @@
 														</object>
 														<object class="NSMenuItem" id="411210475">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">Black 2 (Korean)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -2146,7 +2145,6 @@
 														</object>
 														<object class="NSMenuItem" id="363995826">
 															<reference key="NSMenu" ref="514636871"/>
-															<bool key="NSIsDisabled">YES</bool>
 															<string key="NSTitle">White 2 (Korean)</string>
 															<string key="NSKeyEquiv"/>
 															<int key="NSKeyEquivModMask">1048576</int>
@@ -5046,7 +5044,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{598, 512}, {120, 133}}</string>
+					<string>{{598, 489}, {120, 133}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>

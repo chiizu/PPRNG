@@ -101,7 +101,7 @@ using namespace pprng;
   self.button3 = 0;
 }
 
-- (MACAddress)macAddress
+- (uint64_t)macAddress
 {
   uint32_t  macAddressLow = [macAddress0 unsignedIntValue] |
                             ([macAddress1 unsignedIntValue] << 8) |
@@ -110,22 +110,23 @@ using namespace pprng;
                              ([macAddress4 unsignedIntValue] << 8) |
                              ([macAddress5 unsignedIntValue] << 16);
   
-  return MACAddress(macAddressHigh, macAddressLow);
+  return (uint64_t(macAddressHigh) << 24) | macAddressLow;
 }
 
-- (void)setMACAddress:(MACAddress)macAddress
+- (void)setMACAddress:(uint64_t)macAddress
 {
-  self.macAddress0 = [NSNumber numberWithUnsignedInt:macAddress.low & 0xff];
+  self.macAddress0 = [NSNumber numberWithUnsignedInt:macAddress & 0xff];
   self.macAddress1 =
-    [NSNumber numberWithUnsignedInt:(macAddress.low >> 8) & 0xff];
+    [NSNumber numberWithUnsignedInt:(macAddress >> 8) & 0xff];
   self.macAddress2 =
-    [NSNumber numberWithUnsignedInt:(macAddress.low >> 16) & 0xff];
+    [NSNumber numberWithUnsignedInt:(macAddress >> 16) & 0xff];
   
-  self.macAddress3 = [NSNumber numberWithUnsignedInt:macAddress.high & 0xff];
+  self.macAddress3 =
+    [NSNumber numberWithUnsignedInt:(macAddress >> 24) & 0xff];
   self.macAddress4 =
-    [NSNumber numberWithUnsignedInt:(macAddress.high >> 8) & 0xff];
+    [NSNumber numberWithUnsignedInt:(macAddress >> 32) & 0xff];
   self.macAddress5 =
-    [NSNumber numberWithUnsignedInt:(macAddress.high >> 16) & 0xff];
+    [NSNumber numberWithUnsignedInt:(macAddress >> 40) & 0xff];
 }
 
 - (NSNumber*)calcRawSeed
@@ -141,7 +142,6 @@ using namespace pprng;
   p.version = version;
   p.dsType = dsType;
   p.macAddress = [self macAddress];
-  p.gxStat = HashedSeed::HardResetGxStat;
   p.vcount = [vcount unsignedIntValue];
   p.vframe = [vframe unsignedIntValue];
   p.timer0 = [timer0 unsignedIntValue];
@@ -164,7 +164,7 @@ using namespace pprng;
   }
   else
   {
-    HashedSeed  seed([rawSeed unsignedLongLongValue], version);
+    HashedSeed  seed(version, [rawSeed unsignedLongLongValue]);
     self.initialPIDFrame =
       [NSNumber numberWithUnsignedInt:
         seed.GetSkippedPIDFrames(memoryLinkUsed) + 1];
@@ -212,7 +212,7 @@ using namespace pprng;
   HashedSeed::Parameters  p;
   
   p.dsType = result.dsType;
-  p.macAddress = MACAddress(result.macAddressHigh, result.macAddressLow);
+  p.macAddress = result.macAddress;
   p.version = result.version;
   p.timer0 = result.timer0;
   p.vcount = result.vcount;
@@ -228,24 +228,25 @@ using namespace pprng;
 
 - (void)setSeed:(const pprng::HashedSeed&)seed
 {
-  self.dsType = seed.dsType;
-  [self setMACAddress: seed.macAddress];
+  self.dsType = seed.parameters.dsType;
+  [self setMACAddress:seed.parameters.macAddress];
   
-  self.version = seed.version;
+  self.version = seed.parameters.version;
   
   self.startDate = MakeNSDate(seed.year(), seed.month(), seed.day());
-  self.startHour = [NSNumber numberWithUnsignedInt: seed.hour];
-  self.startMinute = [NSNumber numberWithUnsignedInt: seed.minute];
-  self.startSecond = [NSNumber numberWithUnsignedInt: seed.second];
+  self.startHour = [NSNumber numberWithUnsignedInt:seed.parameters.hour];
+  self.startMinute = [NSNumber numberWithUnsignedInt:seed.parameters.minute];
+  self.startSecond = [NSNumber numberWithUnsignedInt:seed.parameters.second];
   
-  self.timer0 = [NSNumber numberWithUnsignedInt: seed.timer0];
-  self.vcount = [NSNumber numberWithUnsignedInt: seed.vcount];
-  self.vframe = [NSNumber numberWithUnsignedInt: seed.vframe];
+  self.timer0 = [NSNumber numberWithUnsignedInt:seed.parameters.timer0];
+  self.vcount = [NSNumber numberWithUnsignedInt:seed.parameters.vcount];
+  self.vframe = [NSNumber numberWithUnsignedInt:seed.parameters.vframe];
   
   uint32_t  button[3] = { 0, 0, 0 };
   uint32_t  i = 0;
-  uint32_t  dpadPress = seed.heldButtons & Button::DPAD_MASK;
-  uint32_t  buttonPress = seed.heldButtons & Button::SINGLE_BUTTON_MASK;
+  uint32_t  dpadPress = seed.parameters.heldButtons & Button::DPAD_MASK;
+  uint32_t  buttonPress =
+    seed.parameters.heldButtons & Button::SINGLE_BUTTON_MASK;
   
   if (dpadPress != 0)
   {

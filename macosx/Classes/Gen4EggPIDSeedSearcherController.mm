@@ -167,8 +167,8 @@ struct ProgressHandler
   [resultsTableView setDoubleAction: @selector(inspectSeed:)];
   
   Game::Version  version = [gen4ConfigController version];
-  BOOL           isDPPt = (version != Game::HeartGold) &&
-                          (version != Game::SoulSilver);
+  BOOL           isDPPt = (version != Game::HeartGoldVersion) &&
+                          (version != Game::SoulSilverVersion);
   self.mode = isDPPt ? 0 : 1;
   self.minDelay = 600;
   self.maxDelay = 650;

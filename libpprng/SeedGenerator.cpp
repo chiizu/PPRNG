@@ -156,7 +156,6 @@ HashedSeed::Parameters
   parameters.version = version;
   parameters.dsType = dsType;
   parameters.macAddress = macAddress;
-  parameters.gxStat = HashedSeed::HardResetGxStat;
   parameters.timer0 = timer0High;
   parameters.vcount = vcountHigh;
   parameters.vframe = vframeHigh;

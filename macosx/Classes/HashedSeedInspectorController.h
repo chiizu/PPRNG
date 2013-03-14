@@ -75,8 +75,8 @@
 - (IBAction) memoryLinkUsedChanged:(id)sender;
 - (IBAction) seedValueChanged:(id)sender;
 
-- (pprng::MACAddress)macAddress;
-- (void)setMACAddress:(pprng::MACAddress)macAddress;
+- (uint64_t)macAddress;
+- (void)setMACAddress:(uint64_t)macAddress;
 
 - (void)setSeedFromResult:(id <HashedSeedResultParameters>)result;
 - (void)setSeed:(const pprng::HashedSeed&)seed;

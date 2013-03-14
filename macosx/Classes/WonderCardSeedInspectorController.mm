@@ -185,7 +185,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   [[frameTableView tableColumnWithIdentifier:@"characteristic"]
    setHidden: hidePIDInfo];
   
-  HashedSeed  seed([rawSeed unsignedLongLongValue], version);
+  HashedSeed  seed(version, [rawSeed unsignedLongLongValue]);
   
   uint32_t  frameNum = 0;
   
@@ -292,7 +292,6 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   targetSeedParams.version = version;
   targetSeedParams.dsType = dsType;
   targetSeedParams.macAddress = [self macAddress];
-  targetSeedParams.gxStat = HashedSeed::HardResetGxStat;
   targetSeedParams.vcount = [vcount unsignedIntValue];
   targetSeedParams.vframe = [vframe unsignedIntValue];
   targetSeedParams.timer0 = [timer0 unsignedIntValue];
@@ -301,23 +300,24 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
   targetSeedParams.minute = [startMinute unsignedIntValue];
   targetSeedParams.second = [startSecond unsignedIntValue];
   targetSeedParams.heldButtons = button1 | button2 | button3;
+  
   HashedSeed  targetSeed(targetSeedParams);
   
-  uint32_t  timer0Low = targetSeed.timer0 - timer0Variance;
-  uint32_t  timer0High = targetSeed.timer0 + timer0Variance;
+  uint32_t  timer0Low = targetSeedParams.timer0 - timer0Variance;
+  uint32_t  timer0High = targetSeedParams.timer0 + timer0Variance;
   
-  if (targetSeed.timer0 == 0)
+  if (targetSeedParams.timer0 == 0)
   {
     timer0Low = 0;
   }
-  if (targetSeed.timer0 == 0xffffffff)
+  if (targetSeedParams.timer0 == 0xffffffff)
   {
     timer0High = 0xffffffff;
   }
   
-  ptime  seedTime(date(targetSeed.year(), targetSeed.month(), targetSeed.day()),
-                  hours(targetSeed.hour) + minutes(targetSeed.minute) +
-                  seconds(targetSeed.second));
+  ptime  seedTime(targetSeedParams.date, hours(targetSeedParams.hour) +
+                                         minutes(targetSeedParams.minute) +
+                                         seconds(targetSeedParams.second));
   ptime  dt = seedTime;
   ptime  endTime = dt + seconds(secondsVariance);
   dt = dt - seconds(secondsVariance);
@@ -329,14 +329,7 @@ SYNTHESIZE_IV_RESULT_PROPERTIES();
     (targetFrame - targetSeed.GetSkippedPIDFrames(memoryLinkUsed) - 1) :
     (targetFrame - 1);
   
-  HashedSeed::Parameters  seedParams;
-  seedParams.macAddress = targetSeed.macAddress;
-  seedParams.version = targetSeed.version;
-  seedParams.dsType = targetSeed.dsType;
-  seedParams.gxStat = targetSeed.gxStat;
-  seedParams.vcount = targetSeed.vcount;
-  seedParams.vframe = targetSeed.vframe;
-  seedParams.heldButtons = targetSeed.heldButtons;
+  HashedSeed::Parameters  seedParams = targetSeedParams;
   
   WonderCardFrameGenerator::Parameters  frameParams;
   frameParams.startFromLowestFrame = useOffset;

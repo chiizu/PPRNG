@@ -92,21 +92,25 @@ public:
     
     uint32_t  word = 0;
     for (uint32_t i = 0; i < 5; ++i)
-    {
-      word = (word >> 5) | ((m_RNG.Next() >> LowBitOffset) << 25);
-    }
+      word = NextRawWord(word);
+    
     m_word = word;
   }
   
   uint32_t NextIVWord()
   {
-    uint32_t  word = (m_word >> 5) | ((m_RNG.Next() >> LowBitOffset) << 25);
+    uint32_t  word = NextRawWord(m_word);
     m_word = word;
     
     return (this->*m_IVWordGenerator)(word);
   }
   
 private:
+  uint32_t NextRawWord(uint32_t currentWord)
+  {
+    return (currentWord >> 5) | (uint32_t(m_RNG.Next() >> LowBitOffset) << 25);
+  }
+  
   typedef uint32_t (Gen5BufferingIVRNG::*IVWordGenerator)(uint32_t buffer);
   
   const IVWordGenerator  m_IVWordGenerator;

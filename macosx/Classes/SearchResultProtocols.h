@@ -26,7 +26,7 @@
 @protocol HashedSeedResultParameters
 
 @property pprng::DS::Type       dsType;
-@property uint32_t              macAddressLow, macAddressHigh;
+@property uint64_t              macAddress;
 @property pprng::Game::Version  version;
 @property uint32_t              date, time, timer0, vcount, vframe, heldButtons;
 @property uint64_t              rawSeed;
@@ -35,13 +35,13 @@
 
 #define DECLARE_HASHED_SEED_RESULT_PARAMETERS_VARIABLES() \
   DS::Type       dsType; \
-  uint32_t       macAddressLow, macAddressHigh; \
+  uint64_t       macAddress; \
   Game::Version  version; \
   uint32_t       date, time, timer0, vcount, vframe, heldButtons; \
   uint64_t       rawSeed
 
 #define SYNTHESIZE_HASHED_SEED_RESULT_PARAMETERS_PROPERTIES() \
-  @synthesize dsType, macAddressLow, macAddressHigh, version; \
+  @synthesize dsType, macAddress, version; \
   @synthesize date, time, timer0, vcount, vframe, heldButtons, rawSeed
 
 extern void SetHashedSeedResultParameters

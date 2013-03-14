@@ -40,11 +40,8 @@ public:
   // calculated raw seed
   uint64_t GetRawSeed() const;
   
-  const MACAddress& GetMACAddress() const { return m_parameters.macAddress; }
-  void SetMACAddress(const MACAddress &macAddress);
-  
-  HashedSeed::GxStat GetGxStat() const { return m_parameters.gxStat; }
-  void SetGxStat(HashedSeed::GxStat gxStat);
+  uint64_t GetMACAddress() const { return m_parameters.macAddress; }
+  void SetMACAddress(uint64_t macAddress);
   
   uint32_t GetVCount() const { return m_parameters.vcount; }
   void SetVCount(uint32_t vcount);

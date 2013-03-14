@@ -79,24 +79,13 @@ struct FrameChecker
   bool CheckIVs(const IVs &ivs) const
   {
     return ivs.betterThanOrEqual(m_criteria.ivs.min) &&
-           (!m_criteria.ivs.shouldCheckMax ||
+           (m_criteria.ivs.max.isMax() ||
             ivs.worseThanOrEqual(m_criteria.ivs.max));
   }
 
   bool CheckHiddenPower(const IVs &ivs) const
   {
-    if (m_criteria.ivs.hiddenType == Element::NONE)
-    {
-      return true;
-    }
-    
-    if ((m_criteria.ivs.hiddenType == Element::ANY) ||
-        (m_criteria.ivs.hiddenType == ivs.HiddenType()))
-    {
-      return ivs.HiddenPower() >= m_criteria.ivs.minHiddenPower;
-    }
-    
-    return false;
+    return m_criteria.ivs.CheckHiddenPower(ivs.HiddenType(), ivs.HiddenPower());
   }
   
   const CGearSeedSearcher::Criteria  &m_criteria;
@@ -190,18 +179,13 @@ uint64_t CGearSeedSearcher::Criteria::ExpectedNumberOfResults() const
   
   uint64_t  numFrames = frameRange.max - frameRange.min + 1;
   
-  IVs  maxIVs = ivs.shouldCheckMax ? ivs.max : IVs(0x7FFF7FFF);
-  
   uint64_t  numIVs = IVs::CalculateNumberOfCombinations(ivs.min, ivs.max);
   
   uint64_t  numResults = numFrames * numSeeds * numIVs /
                            (32 * 32 * 32 * 32 * 32 * 32);
   
-  if (ivs.hiddenType != Element::NONE)
-  {
-    numResults = IVs::AdjustExpectedResultsForHiddenPower
-      (numResults, ivs.min, ivs.max, ivs.hiddenType, ivs.minHiddenPower);
-  }
+  numResults = IVs::AdjustExpectedResultsForHiddenPower
+    (numResults, ivs.min, ivs.max, ivs.hiddenTypeMask, ivs.minHiddenPower);
   
   return numResults;
 }

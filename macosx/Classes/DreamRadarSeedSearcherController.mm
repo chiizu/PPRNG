@@ -378,18 +378,10 @@ struct ProgressHandler
   
   criteria.ivs.min = ivParameterController.minIVs;
   criteria.ivs.max = ivParameterController.maxIVs;
-  criteria.ivs.shouldCheckMax =
-    (criteria.ivs.max != IVs(31, 31, 31, 31, 31, 31));
   
-  if (ivParameterController.considerHiddenPower)
-  {
-    criteria.ivs.hiddenType = ivParameterController.hiddenType;
-    criteria.ivs.minHiddenPower = ivParameterController.minHiddenPower;
-  }
-  else
-  {
-    criteria.ivs.hiddenType = Element::NONE;
-  }
+  criteria.ivs.hiddenTypeMask = ivParameterController.hiddenTypeMask;
+  criteria.ivs.minHiddenPower = ivParameterController.minHiddenPower;
+  
   criteria.pid.natureMask = GetComboMenuBitMask(natureDropDown);
   
   criteria.frame.min = minFrame;

@@ -427,13 +427,13 @@ private:
   {
     switch (version)
     {
-    case Game::Diamond:
-    case Game::Pearl:
-    case Game::Platinum:
+    case Game::DiamondVersion:
+    case Game::PearlVersion:
+    case Game::PlatinumVersion:
       return &Gen4BreedingFrameGenerator::GenerateDPPt;
       
-    case Game::HeartGold:
-    case Game::SoulSilver:
+    case Game::HeartGoldVersion:
+    case Game::SoulSilverVersion:
       return &Gen4BreedingFrameGenerator::GenerateHGSS;
     
     default:
@@ -575,6 +575,7 @@ public:
     RoamerFrame,
     DoublesFrame,
     HiddenHollowFrame,
+    LarvestaEggFrame,
     
     NumFrameTypes
   };
@@ -649,6 +650,7 @@ private:
   void NextShadowFrame();
   void NextStationaryFrame();
   void NextHiddenHollowFrame();
+  void NextLarvestaEggFrame();
   void NextEntraLinkFrame();
   void NextSimpleFrame();
   

@@ -64,21 +64,37 @@ struct SearchCriteria
   
   struct IVCriteria
   {
-    bool             shouldCheckMax;
-    IVs              min, max;
-    Element::Type    hiddenType;
-    uint32_t         minHiddenPower;
-    bool             isRoamer;
+    IVs       min, max;
+    uint32_t  hiddenTypeMask;
+    uint32_t  minHiddenPower;
+    bool      isRoamer;
     
     IVCriteria()
-      : shouldCheckMax(true), min(), max(),
-        hiddenType(Element::ANY), minHiddenPower(30), isRoamer(false)
+      : min(), max(), hiddenTypeMask(0), minHiddenPower(30), isRoamer(false)
     {}
     
     IVPattern::Type GetPattern() const
     {
-      return IVPattern::Get(min, max,
-                            (hiddenType != Element::NONE), minHiddenPower);
+      return IVPattern::Get(min, max, (hiddenTypeMask != 0), minHiddenPower);
+    }
+    
+    bool CheckHiddenPower(Element::Type hpType, uint32_t hpPower) const
+    {
+      return (hiddenTypeMask == 0) ||
+             ((((0x1 << (hpType - 1)) & hiddenTypeMask) != 0) &&
+              (hpPower >= minHiddenPower));
+    }
+    
+    uint32_t NumHiddenPowers() const
+    {
+      uint32_t  c = 0, n = hiddenTypeMask;
+      while (n != 0)
+      {
+        n &= n - 1;
+        ++c;
+      }
+      
+      return (c == 0) ? 16 : c;
     }
   };
   

@@ -27,16 +27,16 @@ using namespace pprng;
 void SetHashedSeedResultParameters(id <HashedSeedResultParameters> result,
                                    const HashedSeed &seed)
 {
-  result.dsType = seed.dsType;
-  result.macAddressLow = seed.macAddress.low;
-  result.macAddressHigh = seed.macAddress.high;
-  result.version = seed.version;
+  result.dsType = seed.parameters.dsType;
+  result.macAddress = seed.parameters.macAddress;
+  result.version = seed.parameters.version;
   result.date = MakeUInt32Date(seed.year(), seed.month(), seed.day());
-  result.time = MakeUInt32Time(seed.hour, seed.minute, seed.second);
-  result.timer0 = seed.timer0;
-  result.vcount = seed.vcount;
-  result.vframe = seed.vframe;
-  result.heldButtons = seed.heldButtons;
+  result.time = MakeUInt32Time(seed.parameters.hour, seed.parameters.minute,
+                               seed.parameters.second);
+  result.timer0 = seed.parameters.timer0;
+  result.vcount = seed.parameters.vcount;
+  result.vframe = seed.parameters.vframe;
+  result.heldButtons = seed.parameters.heldButtons;
   result.rawSeed = seed.rawSeed;
 }
 

@@ -148,7 +148,9 @@ struct ProgressHandler
     }
     else if ((version == Game::White2Japanese) ||
              (version == Game::Black2French) ||
-             (version == Game::Black2German))
+             (version == Game::White2French) ||
+             (version == Game::Black2German) ||
+             (version == Game::Black2Spanish))
     {
       self.timer0Low = 0x1780;
       self.timer0High = 0x197F;
@@ -203,9 +205,7 @@ struct ProgressHandler
   
   InitialIVSeedSearcher::Criteria  criteria;
   
-  criteria.seedParameters.macAddress.low = [gen5ConfigController macAddressLow];
-  criteria.seedParameters.macAddress.high = [gen5ConfigController macAddressHigh];
-  
+  criteria.seedParameters.macAddress = [gen5ConfigController macAddress];
   criteria.seedParameters.version = [gen5ConfigController version];
   criteria.seedParameters.dsType = [gen5ConfigController dsType];
   

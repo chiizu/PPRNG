@@ -56,15 +56,6 @@ struct DS
 };
 
 
-struct MACAddress
-{
-  MACAddress() : high(0), low(0) {}
-  MACAddress(uint32_t h, uint32_t l) : high(h), low(l) {}
-  
-  uint32_t  high, low; // high 3 bytes and low 3 bytes
-};
-
-
 struct Button
 {
   enum Binary
@@ -113,27 +104,83 @@ struct Button
 
 struct Game
 {
-  enum Version
+  enum Color
   {
     None = -1,
     
+    Ruby = 0,
+    Saphire,
+    Emerald,
+    
+    FireRed,
+    LeafGreen,
+    
+    Diamond,
+    Pearl,
+    Platinum,
+    HeartGold,
+    SoulSilver,
+    
+    Black,
+    White,
+    Black2,
+    White2,
+    
+    NumColors,
+    UnknownColor = NumColors
+  };
+  
+  static bool IsGen3(Color c)
+  { return (c >= Ruby) && (c <= LeafGreen); }
+  
+  static bool IsGen4(Color c)
+  { return (c >= Diamond) && (c <= SoulSilver); }
+  
+  static bool IsBlackWhite(Color c)
+  { return (c == Black) || (c == White); }
+  
+  static bool IsBlack2White2(Color c)
+  { return (c == Black2) || (c == White2); }
+  
+  
+  
+  enum Language
+  {
+    English,
+    French,
+    German,
+    Italian,
+    Japanese,
+    Korean,
+    Spanish,
+    
+    NumLanguages,
+    UnknownLanguage = NumLanguages
+  };
+  
+  
+  // legacy definitions which older preferences are dependent on
+  enum Version
+  {
+    NoVersion = -1,
+    
     ThirdGenStart = 0,
     
-    Emerald = ThirdGenStart,
+    EmeraldVersion = ThirdGenStart,
     
-    ThirdGenEnd = Emerald + 1,
+    ThirdGenEnd = EmeraldVersion + 1,
     
     
     FourthGenStart = ThirdGenEnd,
     
-    Diamond = FourthGenStart,
-    Pearl,
-    Platinum,
+    DiamondVersion = FourthGenStart,
+    PearlVersion,
+    PlatinumVersion,
     
-    HeartGold,
-    SoulSilver,
+    HeartGoldVersion,
+    SoulSilverVersion,
     
-    FourthGenEnd = SoulSilver + 1,
+    FourthGenEnd = SoulSilverVersion + 1,
     
     
     FifthGenStart = FourthGenEnd,
@@ -191,6 +238,8 @@ struct Game
   { return (v >= Game::Black2White2Start) && (v < Game::Black2White2End); }
   
   static std::string ToString(Version v);
+  
+  static Version VersionForColorAndLanguage(Color c, Language l);
 };
 
 
@@ -348,7 +397,7 @@ struct Gender
         
       case GENDERLESS:
       default:
-        return randomValue;
+        return (randomValue >> 32);
       }
     }
   }
@@ -375,6 +424,13 @@ struct PersonalityValue
   }
   
   uint32_t GenderValue() const { return word & 0xff; }
+  
+  Gender::Type GenderForRatio(Gender::Ratio ratio) const
+  {
+    Gender::Threshold  threshold = Gender::GetThreshold(ratio);
+    
+    return (GenderValue() < threshold) ? Gender::FEMALE : Gender::MALE;
+  }
   
   Ability::Type Gen34Ability() const
   { return Ability::Type(word & 0x1); }
@@ -517,6 +573,9 @@ struct IndividualValues
     return *this;
   }
   
+  bool isMin() const { return word == 0x0; }
+  bool isMax() const { return word == 0x7fff7fff; }
+  
   // don't use comparison operators because they will break the rules
   // like if operator< is false, mathematically operator>= should be true
   bool betterThan(const IndividualValues &ivs) const;
@@ -658,7 +717,7 @@ struct IndividualValues
   
   static uint64_t AdjustExpectedResultsForHiddenPower
     (uint64_t numResults, IndividualValues minIVs, IndividualValues maxIVs,
-     Element::Type type, uint32_t minPower)
+     uint32_t typeMask, uint32_t minPower)
     throw (ImpossibleHiddenTypeException, ImpossibleMinHiddenPowerException);
 };
 

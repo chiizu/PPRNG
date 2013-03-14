@@ -71,7 +71,7 @@ HashedIVFrameGenerator::HashedIVFrameGenerator
   : m_RNG(seed.rawSeed >> 32), m_IVRNG(m_RNG, IVRNG::FrameType(frameType)),
     m_frame(seed)
 {
-  if (Game::IsBlack2White2(seed.version))
+  if (Game::IsBlack2White2(seed.parameters.version))
   {
     // b2w2 skips first 2 frames
     m_IVRNG.NextIVWord();
@@ -107,7 +107,8 @@ Gen5PIDFrameGenerator::Gen5PIDFrameGenerator
                    s_FrameGeneratorInfo[parameters.frameType].bwEsvGenerator),
     m_RNG(seed.rawSeed), m_frame(seed), m_parameters(parameters),
     m_shinyChances((m_parameters.hasShinyCharm &&
-                    Game::IsBlack2White2(m_frame.seed.version)) ? 3 : 1)
+                    Game::IsBlack2White2(m_frame.seed.parameters.version)) ?
+                      3 : 1)
 {
   m_frame.number = 0;
   m_frame.rngValue = 0;
@@ -226,6 +227,11 @@ const Gen5PIDFrameGenerator::FrameGeneratorInfo
   // HiddenHollowFrame
   { &Gen5PIDFrameGenerator::NextHiddenHollowPID,
     &Gen5PIDFrameGenerator::NextHiddenHollowFrame,
+    &Gen5PIDFrameGenerator::NoESV,
+    &Gen5PIDFrameGenerator::NoESV },
+  // LarvestaEggFrame
+  { &Gen5PIDFrameGenerator::NextRoamerPID,
+    &Gen5PIDFrameGenerator::NextLarvestaEggFrame,
     &Gen5PIDFrameGenerator::NoESV,
     &Gen5PIDFrameGenerator::NoESV }
 };
@@ -544,6 +550,13 @@ void Gen5PIDFrameGenerator::NextHiddenHollowFrame()
   NextSimpleFrame();
   ApplySync();
   NextHeldItem();
+}
+
+void Gen5PIDFrameGenerator::NextLarvestaEggFrame()
+{
+  NextRoamerPID();
+  m_RNG.Next();
+  m_frame.nature = Nature::Type(((m_RNG.Next() >> 32) * 25) >> 32);
 }
 
 void Gen5PIDFrameGenerator::NextSimpleFrame()

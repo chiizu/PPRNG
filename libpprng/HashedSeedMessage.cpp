@@ -204,6 +204,10 @@ uint32_t ToBCD(uint32_t value)
          (value - (allTens * 10));
 }
 
+enum GxStat
+{
+  HardResetGxStat = 0x06000000
+};
 
 enum Nazo
 {
@@ -273,7 +277,7 @@ enum Nazo
   FRWhite2Nazo0 = 0x0209AF28,
   FRWhite2Nazo1 = 0x02039E25,
   FRWhite2Nazo2DS = 0x02200050,
-  FRWhite2Nazo2DSi = 0x027A5E90,
+  FRWhite2Nazo2DSi = 0x027A5EF0,
   
   DEBlack2Nazo0 = 0x0209AE28,
   DEBlack2Nazo1 = 0x02039D69,
@@ -293,17 +297,27 @@ enum Nazo
   ITWhite2Nazo0 = 0x0209AE28,
   ITWhite2Nazo1 = 0x02039D95,
   ITWhite2Nazo2DS = 0x021FFF50,
-  ITWhite2Nazo2DSi = 0x027A5E90,
+  ITWhite2Nazo2DSi = 0x027A5ED0,
   
   SPBlack2Nazo0 = 0x0209AEA8,
   SPBlack2Nazo1 = 0x02039DB9,
   SPBlack2Nazo2DS = 0x021FFFD0,
-  SPBlack2Nazo2DSi = 0x027A5F70,
+  SPBlack2Nazo2DSi = 0x027A6070,
   
   SPWhite2Nazo0 = 0x0209AEC8,
   SPWhite2Nazo1 = 0x02039DE5,
   SPWhite2Nazo2DS = 0x021FFFF0,
-  SPWhite2Nazo2DSi = 0x027A5E90
+  SPWhite2Nazo2DSi = 0x027A5FB0,
+  
+  KRBlack2Nazo0 = 0x0209B60C,
+  KRBlack2Nazo1 = 0x0203A4D5,
+  KRBlack2Nazo2DS = 0x02200750,
+  KRBlack2Nazo2DSi = 0x02200770,
+  
+  KRWhite2Nazo0 = 0x0209B62C,
+  KRWhite2Nazo1 = 0x0203A501,
+  KRWhite2Nazo2DS = 0x02200770,
+  KRWhite2Nazo2DSi = 0x027A57B0
 };
 
 static Nazo NazoForVersionAndDS(Game::Version version, DS::Type dsType)
@@ -416,6 +430,14 @@ static Nazo NazoForVersionAndDS(Game::Version version, DS::Type dsType)
       return isPlainDS ? SPWhite2Nazo2DS : SPWhite2Nazo2DSi;
       break;
       
+    case Game::Black2Korean:
+      return isPlainDS ? KRBlack2Nazo2DS : KRBlack2Nazo2DSi;
+      break;
+      
+    case Game::White2Korean:
+      return isPlainDS ? KRWhite2Nazo2DS : KRWhite2Nazo2DSi;
+      break;
+      
     default:
       return static_cast<Nazo>(0);
       break;
@@ -486,6 +508,16 @@ static void SetBlack2White2FirstNazos(uint32_t message[], Game::Version version)
       message[1] = SwapEndianess(SPWhite2Nazo1);
       break;
       
+    case Game::Black2Korean:
+      message[0] = SwapEndianess(KRBlack2Nazo0);
+      message[1] = SwapEndianess(KRBlack2Nazo1);
+      break;
+    
+    case Game::White2Korean:
+      message[0] = SwapEndianess(KRWhite2Nazo0);
+      message[1] = SwapEndianess(KRWhite2Nazo1);
+      break;
+      
     default:
       message[0] = 0;
       message[1] = 0;
@@ -527,11 +559,10 @@ void MakeMessage(uint32_t message[], const HashedSeed::Parameters &parameters)
   
   message[5] = SwapEndianess((parameters.vcount << 16) | parameters.timer0);
   
-  message[6] = parameters.macAddress.low & 0xffff;
+  message[6] = parameters.macAddress & 0xffff;
   
-  message[7] = (((parameters.macAddress.low >> 16) & 0xff) |
-                (parameters.macAddress.high << 8)) ^
-               SwapEndianess(parameters.gxStat ^ parameters.vframe);
+  message[7] = (parameters.macAddress >> 16) ^
+               SwapEndianess(HardResetGxStat ^ parameters.vframe);
   
   message[8] = ((ToBCD(parameters.date.year()) & 0xff) << 24) |
                ((ToBCD(parameters.date.month()) & 0xff) << 16) |
@@ -591,24 +622,13 @@ uint64_t HashedSeedMessage::GetRawSeed() const
   return m_rawSeed;
 }
 
-void HashedSeedMessage::SetMACAddress(const MACAddress &macAddress)
+void HashedSeedMessage::SetMACAddress(uint64_t macAddress)
 {
-  m_message[6] = macAddress.low & 0xffff;
-  m_message[7] = (m_message[7] ^
-                  (((m_parameters.macAddress.low >> 16) & 0xff) |
-                   (m_parameters.macAddress.high << 8))) ^
-                 (((macAddress.low >> 16) & 0xff) | (macAddress.high << 8));
+  m_message[6] = macAddress & 0xffff;
+  m_message[7] = (m_message[7] ^ (m_parameters.macAddress >> 16)) ^
+                 (macAddress >> 16);
   
   m_parameters.macAddress = macAddress;
-  m_rawSeedCalculated = false;
-}
-
-void HashedSeedMessage::SetGxStat(HashedSeed::GxStat gxStat)
-{
-  m_message[7] = m_message[7] ^
-                 SwapEndianess(m_parameters.gxStat) ^ SwapEndianess(gxStat);
-  
-  m_parameters.gxStat = gxStat;
   m_rawSeedCalculated = false;
 }
 

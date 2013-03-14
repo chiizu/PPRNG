@@ -278,8 +278,8 @@ SYNTHESIZE_PID_RESULT_PROPERTIES();
   
   [eggsContentArray setContent: [NSMutableArray array]];
   
-  HashedSeed  seed([inspectorController.rawSeed unsignedLongLongValue],
-                   inspectorController.version);
+  HashedSeed  seed(inspectorController.version,
+                   [inspectorController.rawSeed unsignedLongLongValue]);
   
   uint32_t  ivFrameNum = enableIVs ? ivFrame : 0;
   uint32_t  frameNum = 0;
